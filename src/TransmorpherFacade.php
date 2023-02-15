@@ -5,7 +5,7 @@ namespace Cybex\Transmorpher;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Cybex\Transmorpher\Skeleton\SkeletonClass
+ * @see \Cybex\Transmorpher\Transmorpher
  */
 class TransmorpherFacade extends Facade
 {
