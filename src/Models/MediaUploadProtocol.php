@@ -31,6 +31,11 @@ class MediaUploadProtocol extends Model
         'state' => State::class,
     ];
 
+    /**
+     * Returns the MediaUpload this protocol entry belongs to.
+     *
+     * @return BelongsTo
+     */
     public function MediaUpload(): BelongsTo
     {
         return $this->belongsTo(MediaUpload::class);

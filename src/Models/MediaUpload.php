@@ -23,11 +23,21 @@ class MediaUpload extends Model
         'id_token',
     ];
 
+    /**
+     * Return the parent uploadable model.
+     *
+     * @return MorphTo
+     */
     public function Uploadable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * Return MediaUploadProtocols for this MediaUpload.
+     *
+     * @return HasMany
+     */
     public function MediaUploadProtocols(): HasMany
     {
         return $this->hasMany(MediaUploadProtocol::class);

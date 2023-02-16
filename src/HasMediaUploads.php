@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasMediaUploads
 {
+    /**
+     * Return all media uploads.
+     *
+     * @return MorphMany
+     */
     public function MediaUploads(): MorphMany
     {
         return $this->morphMany(MediaUpload::class, 'uploadable');

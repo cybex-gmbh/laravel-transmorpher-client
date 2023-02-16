@@ -46,6 +46,15 @@ class TransmorpherServiceProvider extends ServiceProvider
         $this->publishMigration('CreateMediaUploadProtocolsTable', 'create_media_upload_protocols_table.php', 1);
     }
 
+    /**
+     * Publish a single migration with a timestamp.
+     *
+     * @param string   $className
+     * @param string   $migrationName
+     * @param int|null $addSeconds
+     *
+     * @return void
+     */
     protected function publishMigration(string $className, string $migrationName, int $addSeconds = null)
     {
         if (class_exists($className)) {
