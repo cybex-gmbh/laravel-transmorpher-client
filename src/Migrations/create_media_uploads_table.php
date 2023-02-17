@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('id_token')->unique();
             $table->timestamps();
 
-            $table->unique(['uploadable_id', 'uploadable_type', 'differentiator']);
+            $table->unique(['uploadable_id', 'uploadable_type', 'differentiator'], 'uploadable_id_type_differentiator_unique');
         });
     }
 };
