@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('media_upload_protocols', function (Blueprint $table) {
             $table->id();
             $table->enum('state', ['processing', 'error', 'success', 'deleted']);
-            $table->string('public_path');
+            $table->string('public_path')->nullable();
             $table->foreignId('media_upload_id')->constrained();
             $table->timestamps();
         });
