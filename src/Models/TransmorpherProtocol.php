@@ -1,13 +1,13 @@
 <?php
 
-namespace Cybex\Transmorpher\Models;
+namespace Transmorpher\Models;
 
-use Cybex\Transmorpher\State;
+use Transmorpher\Enums\State;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MediaUploadProtocol extends Model
+class TransmorpherProtocol extends Model
 {
     use HasFactory;
 
@@ -18,7 +18,7 @@ class MediaUploadProtocol extends Model
      */
     protected $fillable = [
         'state',
-        'public_path',
+        'message',
         'id_token',
         'media_upload_id',
     ];
@@ -33,12 +33,12 @@ class MediaUploadProtocol extends Model
     ];
 
     /**
-     * Returns the MediaUpload this protocol entry belongs to.
+     * Returns the TransmorpherMedia this protocol entry belongs to.
      *
      * @return BelongsTo
      */
-    public function MediaUpload(): BelongsTo
+    public function TransmorpherMedia(): BelongsTo
     {
-        return $this->belongsTo(MediaUpload::class);
+        return $this->belongsTo(TransmorpherMedia::class);
     }
 }

@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Cybex\\Transmorpher\\": "src"
+            "Transmorpher\\": "src"
         }
     },
     "config": {
@@ -32,11 +32,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Cybex\\Transmorpher\\TransmorpherServiceProvider"
-            ],
-            "aliases": {
-                "Transmorpher": "Cybex\\Transmorpher\\TransmorpherFacade"
-            }
+                "Transmorpher\\TransmorpherServiceProvider"
+            ]
         }
     }
 }
