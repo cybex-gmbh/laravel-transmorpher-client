@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
+use Transmorpher\Enums\State;
 
 class TransmorpherMedia extends Model
 {
@@ -24,7 +25,7 @@ class TransmorpherMedia extends Model
         'public_path',
         'type',
         'is_ready',
-        'is_processing'
+        'last_response'
     ];
 
     /**
@@ -34,6 +35,7 @@ class TransmorpherMedia extends Model
      */
     protected $casts = [
         'type' => MediaType::class,
+        'last_response' => State::class,
     ];
 
 
