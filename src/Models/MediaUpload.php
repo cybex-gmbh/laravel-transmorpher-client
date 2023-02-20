@@ -20,7 +20,6 @@ class MediaUpload extends Model
         'uploadable_type',
         'uploadable_id',
         'differentiator',
-        'id_token',
     ];
 
     /**
