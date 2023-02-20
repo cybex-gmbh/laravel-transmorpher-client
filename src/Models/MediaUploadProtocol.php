@@ -19,6 +19,7 @@ class MediaUploadProtocol extends Model
     protected $fillable = [
         'state',
         'public_path',
+        'id_token',
         'media_upload_id',
     ];
 
