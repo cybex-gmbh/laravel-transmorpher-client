@@ -1,15 +1,15 @@
 <?php
 
-namespace Cybex\Transmorpher;
+namespace Transmorpher;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-interface HasMediaUploadsInterface
+interface HasTransmorpherMediaInterface
 {
     /**
      * Return all media uploads.
      *
      * @return MorphMany
      */
-    public function MediaUploads(): MorphMany;
+    public function TransmorpherMedia(): MorphMany;
 }

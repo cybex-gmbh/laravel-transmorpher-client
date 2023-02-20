@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'client_name' => 'Marco',
+    'client_name' => '',
 
     'api' => [
-        'url'        => 'http://transmorpher/api',
+        'url' => '',
         'auth_token' => env('TRANSMORPHER_AUTH_TOKEN'),
         'callback_route' => 'transmorpher/callback'
     ],
 
     'public' => [
-        'url' => 'http://transmorpher'
+        'url' => ''
     ],
 ];

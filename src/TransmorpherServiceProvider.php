@@ -3,10 +3,9 @@
 namespace Transmorpher;
 
 use Cybex\Transmorpher\Models\MediaUpload;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Transmorpher\Helpers\Callback;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {
@@ -36,19 +35,7 @@ class TransmorpherServiceProvider extends ServiceProvider
 
     protected function registerRoutes()
     {
-        Route::post(config('transmorpher.api.callback_route'), function (Request $request) {
-            //        file_put_contents('blabla', sodium_crypto_sign_open(sodium_hex2bin($request->get(0)), Http::get(config('transmorpher.api.url') . '/publickey')), true);
-            $response = json_decode(sodium_crypto_sign_open(sodium_hex2bin($request->get(0)), Http::get(config('transmorpher.api.url') . '/publickey')), true);
-            // TODO id_token has to belong to a protocol entry, else can't identify protocol entry to update
-            $protocolEntry = MediaUpload::whereIdToken($response['id_token'])->first()->MediaUploadProtocols();
-
-            $protocolEntry->update([
-                'public_path' => $response['public_path'],
-                'state'       => $response['success'] ? State::SUCCESS : State::ERROR,
-            ]);
-
-            return $response;
-        })->name('transmorpherCallback');
+        Route::post(config('transmorpher.api.callback_route'), [Callback::class, 'handle'])->name('transmorpherCallback');
     }
 
     /**
