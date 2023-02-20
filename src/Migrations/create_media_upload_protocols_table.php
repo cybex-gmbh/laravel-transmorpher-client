@@ -19,6 +19,7 @@ return new class extends Migration
             $table->id();
             $table->enum('state', ['processing', 'error', 'success', 'deleted']);
             $table->string('public_path')->nullable();
+            $table->string('id_token')->unique();
             $table->foreignId('media_upload_id')->constrained();
             $table->timestamps();
         });
