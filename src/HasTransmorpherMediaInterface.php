@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 interface HasTransmorpherMediaInterface
 {
     /**
-     * Return all media uploads.
+     * Return all transmorpher media.
      *
      * @return MorphMany
      */
