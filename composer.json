@@ -32,10 +32,7 @@
         "laravel": {
             "providers": [
                 "Transmorpher\\TransmorpherServiceProvider"
-            ],
-            "aliases": {
-                "Transmorpher": "Transmorpher\\TransmorpherFacade"
-            }
+            ]
         }
     }
 }

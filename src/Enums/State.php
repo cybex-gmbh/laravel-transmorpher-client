@@ -1,6 +1,6 @@
 <?php
 
-namespace Cybex\Transmorpher;
+namespace Transmorpher\Enums;
 
 enum State: string
 {
