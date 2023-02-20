@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('public_path')->nullable();
             $table->enum('type', ['image', 'video']);
             $table->boolean('is_ready')->default(0);
-            $table->boolean('is_processing')->default(0);
+            $table->enum('last_response', ['processing', 'error', 'success', 'deleted'])->nullable();
             $table->timestamps();
 
             $table->unique(['transmorphable_id', 'transmorphable_type', 'differentiator'], 'transmorphable_id_type_differentiator_unique');
