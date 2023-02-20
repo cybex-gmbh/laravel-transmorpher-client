@@ -1,6 +1,6 @@
 <?php
 
-namespace Cybex\Transmorpher;
+namespace Transmorpher;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -27,11 +27,6 @@ class TransmorpherServiceProvider extends ServiceProvider
     {
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher.php', 'transmorpher');
-
-        // Register the main class to use with the facade
-        $this->app->singleton('transmorpher', function () {
-            return new Transmorpher;
-        });
     }
 
     /**
@@ -41,9 +36,9 @@ class TransmorpherServiceProvider extends ServiceProvider
      */
     protected function publishMigrations()
     {
-        $this->publishMigration('CreateMediaUploadsTable', 'create_media_uploads_table.php');
-        // This has to be done after the CreateMediaUploadsTable migration.
-        $this->publishMigration('CreateMediaUploadProtocolsTable', 'create_media_upload_protocols_table.php', 1);
+        $this->publishMigration('CreateTransmorpherMediaTable', 'create_transmorpher_media_table.php');
+        // This has to be done after the CreateTransmorpherMediaTable migration.
+        $this->publishMigration('CreateTransmorpherProtocolsTable', 'create_transmorpher_protocols_table.php', 1);
     }
 
     /**
