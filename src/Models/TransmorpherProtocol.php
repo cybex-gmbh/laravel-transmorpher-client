@@ -20,7 +20,7 @@ class TransmorpherProtocol extends Model
         'state',
         'message',
         'id_token',
-        'media_upload_id',
+        'transmorpher_media_id',
     ];
 
     /**
