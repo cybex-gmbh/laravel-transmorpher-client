@@ -3,6 +3,7 @@
 namespace Transmorpher\Helpers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\State;
 use Transmorpher\Models\TransmorpherProtocol;
@@ -14,11 +15,14 @@ class Callback
      *
      * @param Request $request
      *
-     * @return array
+     * @return Response
      */
-    public static function handle(Request $request): array
+    public static function handle(Request $request): Response
     {
-        $verifiedRequest   = sodium_crypto_sign_open(sodium_hex2bin($request->get(0)), Http::get(sprintf('%s/publickey', config('transmorpher.api.url'))));
+        if (! $verifiedRequest = sodium_crypto_sign_open(sodium_hex2bin($request->get(0)), Http::get(sprintf('%s/publickey', config('transmorpher.api.url'))))) {
+            return response()->noContent(403);
+        }
+
         $body              = json_decode($verifiedRequest, true);
         $protocolEntry     = TransmorpherProtocol::whereIdToken($body['id_token'])->first();
         $transmorpherMedia = $protocolEntry->TransmorpherMedia;
@@ -31,6 +35,6 @@ class Callback
             $protocolEntry->update(['state' => State::ERROR, 'message' => $body['response']]);
         }
 
-        return $body;
+        return response()->noContent(200);
     }
 }
