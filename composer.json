@@ -1,11 +1,12 @@
 {
-    "name": "cybex/transmorpher",
+    "name": "cybex/transmorpher-client",
     "description": "A client package for Laravel applications that use the Transmorpher media server.",
     "keywords": [
         "cybex",
-        "transmorpher"
+        "transmorpher",
+        "transmorpher-client"
     ],
-    "homepage": "https://github.com/cybex/transmorpher",
+    "homepage": "https://github.com/cybex-gmbh/transmorpher-client",
     "license": "MIT",
     "type": "library",
     "authors": [
