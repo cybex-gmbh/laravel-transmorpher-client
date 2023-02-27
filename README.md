@@ -1,4 +1,4 @@
-# Cybex/Transmorpher
+# Cybex/Transmorpher-Client
 
 A client package for Laravel applications that use the Transmorpher media server.
 
@@ -7,7 +7,7 @@ A client package for Laravel applications that use the Transmorpher media server
 To get the latest version, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-$ composer require cybex/transmorpher
+$ composer require cybex/transmorpher-client
 ```
 
 ## License
