@@ -2,7 +2,6 @@
 
 namespace Transmorpher;
 
-use Cybex\Transmorpher\Models\MediaUpload;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
