@@ -1,6 +1,6 @@
 <?php
 
-namespace Cybex\Transmorpher;
+namespace Transmorpher;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -14,8 +14,10 @@ class TransmorpherServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
-            ], 'config');
+            ], 'transmorpher.config');
         }
+
+        $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
     }
 
     /**
@@ -25,10 +27,5 @@ class TransmorpherServiceProvider extends ServiceProvider
     {
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher.php', 'transmorpher');
-
-        // Register the main class to use with the facade
-        $this->app->singleton('transmorpher', function () {
-            return new Transmorpher;
-        });
     }
 }
