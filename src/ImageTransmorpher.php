@@ -25,12 +25,12 @@ class ImageTransmorpher extends Transmorpher
      *
      * @return array The Transmorpher response.
      */
-    public function upload(string $pathToFile): array
+    public function upload($fileHandle): array
     {
         $request       = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
         $response      = $request
-            ->attach('image', Storage::disk('local')->readStream($pathToFile))
+            ->attach('image', $fileHandle)
             ->post($this->getApiUrl('image/upload'), ['identifier' => $this->getIdentifier()]);
 
         return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);

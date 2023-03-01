@@ -19,13 +19,13 @@ class VideoTransmorpher extends Transmorpher
         $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::VIDEO]);
     }
 
-    public function upload(string $pathToFile): array
+    public function upload($fileHandle): array
     {
         $request       = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
 
         $response = $request
-            ->attach('video', Storage::disk('local')->readStream($pathToFile))
+            ->attach('video', $fileHandle)
             ->post($this->getApiUrl('video/upload'), [
                 'identifier'   => $this->getIdentifier(),
                 'id_token'     => $protocolEntry->id_token,
