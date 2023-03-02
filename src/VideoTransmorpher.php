@@ -2,7 +2,7 @@
 
 namespace Transmorpher;
 
-use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
 
@@ -19,8 +19,19 @@ class VideoTransmorpher extends Transmorpher
         $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::VIDEO]);
     }
 
+    /**
+     * Upload a video to the Transmorpher.
+     *
+     * @param resource $fileHandle
+     *
+     * @return array
+     */
     public function upload($fileHandle): array
     {
+        if (!is_resource($fileHandle)) {
+            throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
+        }
+
         $request       = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
 

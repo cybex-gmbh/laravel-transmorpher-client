@@ -3,7 +3,7 @@
 namespace Transmorpher;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
 
@@ -23,10 +23,16 @@ class ImageTransmorpher extends Transmorpher
     /**
      * Upload an image to the Transmorpher.
      *
+     * @param resource $fileHandle
+     *
      * @return array The Transmorpher response.
      */
     public function upload($fileHandle): array
     {
+        if (!is_resource($fileHandle)) {
+            throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
+        }
+
         $request       = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
         $response      = $request
