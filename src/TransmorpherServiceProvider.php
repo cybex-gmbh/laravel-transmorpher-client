@@ -34,6 +34,6 @@ class TransmorpherServiceProvider extends ServiceProvider
 
     protected function registerRoutes()
     {
-        Route::post(config('transmorpher.api.callback_route'), [Callback::class, 'handle'])->name('transmorpherCallback');
+        Route::post(config('transmorpher.api.callback_route'), Callback::class)->name('transmorpherCallback');
     }
 }
