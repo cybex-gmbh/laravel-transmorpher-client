@@ -43,7 +43,16 @@ class VideoTransmorpher extends Transmorpher
                 'callback_url' => route('transmorpherCallback'),
             ]);
 
-        return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
+        $body = json_decode($response->body(), true);
+
+        if (array_key_exists('message', $body)) {
+            $body = [
+                'success'  => false,
+                'response' => $body['exception'] ?? $body['message'],
+            ];
+        }
+
+        return $this->handleUploadResponse($body, $protocolEntry);
     }
 
     public function getMp4Url(): string
