@@ -39,16 +39,7 @@ class ImageTransmorpher extends Transmorpher
             ->attach('image', $fileHandle)
             ->post($this->getApiUrl('image/upload'), ['identifier' => $this->getIdentifier()]);
 
-        $body = json_decode($response->body(), true);
-
-        if (array_key_exists('message', $body)) {
-            $body = [
-                'success'  => false,
-                'response' => $body['exception'] ?? $body['message'],
-            ];
-        }
-
-        return $this->handleUploadResponse($body, $protocolEntry);
+        return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
     }
 
     /**

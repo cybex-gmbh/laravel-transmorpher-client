@@ -126,6 +126,14 @@ abstract class Transmorpher
      */
     protected function handleUploadResponse(array $body, TransmorpherProtocol $protocolEntry): array
     {
+        // An error was returned from the server.
+        if (array_key_exists('message', $body)) {
+            $body = [
+                'success'  => false,
+                'response' => $body['exception'] ?? $body['message'],
+            ];
+        }
+
         if ($body['success']) {
             if ($this->transmorpherMedia->type === MediaType::IMAGE) {
                 $this->transmorpherMedia->update(['is_ready' => 1, 'last_response' => State::SUCCESS, 'public_path' => $body['public_path']]);
