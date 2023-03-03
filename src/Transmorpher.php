@@ -6,6 +6,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
+use Transmorpher\Enums\Transformation;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherProtocol;
 
@@ -222,10 +223,10 @@ abstract class Transmorpher
     {
         foreach ($transformations as $transformation => $value) {
             match ($transformation) {
-                'width'   => $transformationParts[] = sprintf('w-%d', $value),
-                'height'  => $transformationParts[] = sprintf('h-%d', $value),
-                'format'  => $transformationParts[] = sprintf('f-%s', $value),
-                'quality' => $transformationParts[] = sprintf('q-%d', $value),
+                'width'   => $transformationParts[] = Transformation::WIDTH->getUrlRepresentation($value),
+                'height'  => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
+                'format'  => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
+                'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
                 default   => null
             };
         }
