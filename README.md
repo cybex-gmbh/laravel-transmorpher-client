@@ -32,13 +32,13 @@ TRANSMORPHER_AUTH_TOKEN=
 The `TRANSMORPHER_API_URL` is the Transmorpher endpoint for making API calls.
 
 ```dotenv
-TRANSMORPHER_API_URL=
+TRANSMORPHER_API_URL=https://example.com/api
 ```
 
 The `TRANSMORPHER_PUBLIC_URL` is the Transmorpher endpoint which is used to request image derivatives.
 
 ```dotenv
-TRANSMORPHER_PUBLIC_URL=
+TRANSMORPHER_PUBLIC_URL=https://example.com
 ```
 
 ### Allow models to have images and videos
