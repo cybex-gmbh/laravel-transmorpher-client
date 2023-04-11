@@ -23,13 +23,13 @@ $ php artisan migrate
 Before u can use this package u have to configure some .env keys (or config values).
 
 The `TRANSMORPHER_AUTH_TOKEN` is a Laravel Sanctum token which is used for authentication at the Transmorpher media
-server. This token should be provided to you by an admin of the Transmorpher.
+server. This token should be provided to you by an admin of the Transmorpher media server.
 
 ```dotenv
 TRANSMORPHER_AUTH_TOKEN=
 ```
 
-The `TRANSMORPHER_API_URL` is the Transmorpher endpoint for making API calls.
+The `TRANSMORPHER_API_URL` is the server endpoint for making API calls.
 
 ```dotenv
 TRANSMORPHER_API_URL=https://example.com/api
@@ -56,8 +56,10 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 }
 ```
 
-To configure your model to be able to have media and make API calls to the transmorpher, you have to define a method for
+To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define a method for
 each image or video you want the model to have.
+
+**_NOTE:_** This package uses polymorphic relations. You might want to set a morph alias for your class.
 
 For images you will have to return an instance of an ImageTransmorpher:
 
@@ -77,8 +79,19 @@ public function video(): VideoTransmorpher
 }
 ```
 
-The instance of the corresponding `Transmorpher`-class can the be used to make API calls to the Transmorpher media
+The instance of the corresponding `Transmorpher`-class can then be used to make API calls to the Transmorpher media
 server.
+
+```php
+$imageTransmorpher = $yourModel->$image();
+
+// Upload an image to the media server.
+$imageTransmorpher->upload($fileHandle);
+
+// Get the public URL of the image for retrieving a derivative.
+// Transformations are optional and will be included in the URL. 
+$imageTransmorpher->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
+```
 
 ### Callback Route
 
@@ -88,11 +101,6 @@ you can do so by publishing the `transmorpher.php` file to your project director
 ```bash
 php artisan vendor:publish --tag=transmorpher.config
 ```
-
-## Usage
-
-To upload media, you will have to call the `upload`-method on an `ImageTransmorpher` or `VideoTransmorpher` and pass a
-valid file handle.
 
 ## License
 
