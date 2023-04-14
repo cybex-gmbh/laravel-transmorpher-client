@@ -3,9 +3,11 @@
 namespace Transmorpher;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
+use Transmorpher\Exceptions\InvalidIdentifierException;
 
 class ImageTransmorpher extends Transmorpher
 {
@@ -13,11 +15,14 @@ class ImageTransmorpher extends Transmorpher
      * Create a new ImageTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string                        $differentiator
+     * @param string $differentiator
+     * @throws InvalidIdentifierException
      */
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
         $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::IMAGE]);
+
+        $this->validateIdentifier($model, $differentiator);
     }
 
     /**
@@ -33,9 +38,9 @@ class ImageTransmorpher extends Transmorpher
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
-        $request       = $this->configureApiRequest();
+        $request = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response      = $request
+        $response = $request
             ->attach('image', $fileHandle)
             ->post($this->getApiUrl('image/upload'), ['identifier' => $this->getIdentifier()]);
 
