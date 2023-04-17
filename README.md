@@ -90,7 +90,7 @@ If you need a more dynamic approach to defining images or videos for a model, yo
 
 ```php
 public $transmorpherImages = [
-    'frontView'
+    'frontView',
     'sideView',
 ];
 
