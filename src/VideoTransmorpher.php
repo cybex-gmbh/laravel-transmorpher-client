@@ -62,4 +62,23 @@ class VideoTransmorpher extends Transmorpher
     {
         return sprintf('%sdash/video.mpd', $this->getUrl());
     }
+
+    public function prepareUpload(): array
+    {
+        $request = $this->configureApiRequest();
+        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
+        $response = $request->post($this->getApiUrl('video/upload'), [
+            'identifier'   => $this->getIdentifier(),
+            'id_token'     => $protocolEntry->id_token,
+            'callback_url' => route('transmorpherCallback'),
+        ]);
+        $body = json_decode($response, true);
+
+        if ($body['success']) {
+            return [
+                'upload_token' => $body['upload_token'],
+                'id_token' => $protocolEntry->id_token
+            ];
+        }
+    }
 }

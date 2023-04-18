@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
+use Transmorpher\ImageTransmorpher;
+use Transmorpher\Transmorpher;
+use Transmorpher\VideoTransmorpher;
 
 class TransmorpherMedia extends Model
 {
@@ -57,5 +60,12 @@ class TransmorpherMedia extends Model
     public function TransmorpherProtocols(): HasMany
     {
         return $this->hasMany(TransmorpherProtocol::class);
+    }
+
+    public function getTransmorpher(): Transmorpher
+    {
+        return $this->type === MediaType::IMAGE
+            ? ImageTransmorpher::getInstanceFor($this->Transmorphable, $this->differentiator)
+            : VideoTransmorpher::getInstanceFor($this->Transmorphable, $this->differentiator);
     }
 }

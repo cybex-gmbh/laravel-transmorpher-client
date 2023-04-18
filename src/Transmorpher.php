@@ -119,6 +119,11 @@ abstract class Transmorpher
         return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
     }
 
+    public function getTransmorpherMedia(): TransmorpherMedia
+    {
+        return $this->transmorpherMedia;
+    }
+
     /**
      * Updates database fields for TransmorpherMedia and TransmorpherProtocol for a response.
      *
@@ -127,7 +132,7 @@ abstract class Transmorpher
      *
      * @return array The response body.
      */
-    protected function handleUploadResponse(array $body, TransmorpherProtocol $protocolEntry): array
+    public function handleUploadResponse(array $body, TransmorpherProtocol $protocolEntry): array
     {
         // An error was returned from the server.
         if (array_key_exists('message', $body)) {

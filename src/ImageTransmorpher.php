@@ -70,4 +70,19 @@ class ImageTransmorpher extends Transmorpher
     {
         return Http::get($this->getUrl($transformations))->body();
     }
+
+    public function prepareUpload(): array
+    {
+        $request = $this->configureApiRequest();
+        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
+        $response = $request->post($this->getApiUrl('image/token'), ['identifier' => $this->getIdentifier()]);
+        $body = json_decode($response, true);
+
+        if ($body['success']) {
+            return [
+                'upload_token' => $body['upload_token'],
+                'id_token' => $protocolEntry->id_token
+            ];
+        }
+    }
 }
