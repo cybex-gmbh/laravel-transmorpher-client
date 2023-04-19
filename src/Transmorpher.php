@@ -158,6 +158,28 @@ abstract class Transmorpher
     }
 
     /**
+     * Get the api URL to make calls to the Transmorpher.
+     *
+     * @param string|null $path An optional path which gets included in the URL.
+     *
+     * @return string The api URL.
+     */
+    public function getApiUrl(string $path = null): string
+    {
+        return sprintf('%s/%s', config('transmorpher.api.url'), $path);
+    }
+
+    /**
+     * Get the identifier for this TransmorpherMedia.
+     *
+     * @return string The identifier for this TransmorpherMedia.
+     */
+    public function getIdentifier(): string
+    {
+        return sprintf('%s-%s-%s', $this->transmorpherMedia->differentiator, $this->transmorpherMedia->transmorphable_type, $this->transmorpherMedia->transmorphable_id);
+    }
+
+    /**
      * Get the configured client name.
      *
      * @return string The client name.
@@ -178,18 +200,6 @@ abstract class Transmorpher
     }
 
     /**
-     * Get the api URL to make calls to the Transmorpher.
-     *
-     * @param string|null $path An optional path which gets included in the URL.
-     *
-     * @return string The api URL.
-     */
-    protected function getApiUrl(string $path = null): string
-    {
-        return sprintf('%s/%s', config('transmorpher.api.url'), $path);
-    }
-
-    /**
      * Get the public URL to retrieve a derivative.
      *
      * @return string The public URL.
@@ -197,16 +207,6 @@ abstract class Transmorpher
     protected function getPublicUrl(): string
     {
         return config('transmorpher.public.url');
-    }
-
-    /**
-     * Get the identifier for this TransmorpherMedia.
-     *
-     * @return string The identifier for this TransmorpherMedia.
-     */
-    protected function getIdentifier(): string
-    {
-        return sprintf('%s-%s-%s', $this->transmorpherMedia->differentiator, $this->transmorpherMedia->transmorphable_type, $this->transmorpherMedia->transmorphable_id);
     }
 
     /**

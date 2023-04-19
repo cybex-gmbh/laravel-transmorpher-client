@@ -1,54 +1,144 @@
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css"/>
 
-<form method="POST" id="test" class="dropzone" action="http://transmorpher.test/api/image/upload">
-    @csrf
-</form>
+<style>
+    .card {
+        display: flex;
+        flex-direction: column;
+        width: 200px;
+        padding: 10px;
+        border: black 1px solid;
+        border-radius: 15px;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: center;
+    }
+
+    .dz-message {
+        background-color: red;
+        border: 1px dotted grey;
+        margin: 0;
+        padding: 1rem;
+    }
+
+    .dz-preview.dz-image-preview {
+        background: transparent;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        {{ $imageTransmorpher->getTransmorpherMedia()->differentiator }}
+    </div>
+    <div class="card-body">
+        <form method="POST" class="dropzone" id="{{ $imageTransmorpher->getIdentifier() }}" action="{{ $imageTransmorpher->getApiUrl('image/upload') }}">
+            @csrf
+            <div class="dz-image">
+{{--                <img src="{{ $imageTransmorpher->getUrl(['width' => 400, 'height' => 400]) }}" />--}}
+                <img src="{{ 'http://transmorpher.test/Marco/' . $imageTransmorpher->getIdentifier() . '/w-400+h-400' }}" />
+            </div>
+        </form>
+    </div>
+</div>
 
 <script type="text/javascript">
-    const csrfToken = document.querySelector("input[name='_token']").value;
-    let transmorpherMediaKey = {{ App\Models\User::first()->image()->getTransmorpherMedia()->getKey() }};
-    let idToken;
-    let uploadToken;
+    Dropzone.autoDiscover = false;
 
-    Dropzone.options.test = {
+    new Dropzone("#{{$imageTransmorpher->getIdentifier()}}", {
+        {{--url: '{{ $imageTransmorpher->getApiUrl('image/upload') }}',--}}
         url: 'http://transmorpher.test/api/image/upload',
-        maxFilesize: 80, // MB
-        maxThumbnailFilesize: 80,
+        chunking: true,
+        chunkSize: 1000000, // 1MB
+        // retryChunks: true, // default: 3 retries
+        parallelChunkUploads: true,
+        maxFilesize: 100, // MB
+        maxThumbnailFilesize: 100,
         timeout: 60000, // ms
         uploadMultiple: false,
         paramName: 'image',
-        headers: {
-            'Authorization': 'Bearer 2|ruWCzoepgETQOQNWwbHIKcQbODtjtoA6NuISQzy4'
-        },
-        params: {
-            upload_token: null
+        idToken: null,
+        init: function() {
+            this.on("addedfile", function() {
+                if (this.files[1]!=null){
+                    this.removeFile(this.files[0]);
+                }
+            });
         },
         accept: function (file, done) {
-            fetch('/transmorpher/image/token', {
+            fetch('{{ route('transmorpherImageToken') }}', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-Token": csrfToken,
+                    "X-CSRF-Token": document.querySelector("#{{$imageTransmorpher->getIdentifier()}} > input[name='_token']").value,
                 },
                 body: JSON.stringify({
-                    transmorpher_media_key: transmorpherMediaKey
-                })
-            }).then((response) => {
+                    transmorpher_media_key: {{ $imageTransmorpher->getTransmorpherMedia()->getKey() }},
+                }),
+            }).then(response => {
                 return response.json();
-            }).then((data) => {
-                console.log(data);
-                idToken = data.id_token;
-                Dropzone.options.test.params.upload_token = data.upload_token;
-                console.log(Dropzone.options.test);
+            }).then(data => {
+                this.options.params = function (files, xhr, chunk) {
+                    if (chunk) {
+                        return {
+                            dzuuid: chunk.file.upload.uuid,
+                            dzchunkindex: chunk.index,
+                            dztotalfilesize: chunk.file.size,
+                            dzchunksize: this.options.chunkSize,
+                            dztotalchunkcount: chunk.file.upload.totalChunkCount,
+                            dzchunkbyteoffset: chunk.index * this.options.chunkSize,
+                            upload_token: data.upload_token
+                        };
+                    } else {
+                        return {
+                            upload_token: data.upload_token
+                        }
+                    }
+                }
+                this.options.idToken = data.id_token;
                 done()
             });
         },
-        success: function () {
-            alert('worked');
+        chunksUploaded: function (file, done) {
+            done();
         },
-        error: function () {
-            alert('failed');
+        success: function (file, response) {
+            handleImageUploadResponse(file, response, this.options.idToken)
+        },
+        error: function (file, response) {
+            handleImageUploadResponse(file, response, this.options.idToken)
+        },
+    });
+
+    function handleImageUploadResponse(file, response, idToken) {
+        fetch('{{ route('transmorpherHandleUploadResponse') }}', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": document.querySelector("#{{$imageTransmorpher->getIdentifier()}} > input[name='_token']").value,
+            },
+            body: JSON.stringify({
+                transmorpher_media_key: {{ $imageTransmorpher->getTransmorpherMedia()->getKey() }},
+                id_token: idToken,
+                response: response
+            })
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            handleDropzoneResult(data);
+        });
+    }
+
+    function handleDropzoneResult(data) {
+        console.log(data);
+        if (!data.success) {
+            form = document.querySelector("#{{ $imageTransmorpher->getIdentifier() }}");
+            errorMessage = form.querySelector('.dz-error-message')
+            form.querySelector('.dz-preview').classList.add('dz-error');
+
+            errorMessage.append('<p>'+data.response+'</p>');
+            console.log(errorMessage);
         }
     }
 </script>

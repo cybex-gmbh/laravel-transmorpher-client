@@ -38,8 +38,8 @@ class UploadToken
     {
         $transmorpherMedia = TransmorpherMedia::findOrFail($request->input('transmorpher_media_key'));
         $transmorpher = $transmorpherMedia->getTransmorpher();
-        $protocolEntry = $transmorpherMedia->ProtocolEntries()->whereIdToken($request->id_token);
+        $protocolEntry = $transmorpherMedia->TransmorpherProtocols()->whereIdToken($request->id_token)->first();
 
-        return response()->json($transmorpher->handleUploadResponse(json_decode($request->input('response')), $protocolEntry));
+        return response()->json($transmorpher->handleUploadResponse($request->input('response'), $protocolEntry));
     }
 }
