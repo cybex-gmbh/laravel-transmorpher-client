@@ -42,7 +42,7 @@ class ImageTransmorpher extends Transmorpher
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
         $response = $request
             ->attach('image', $fileHandle)
-            ->post($this->getApiUrl('image/upload'), ['identifier' => $this->getIdentifier()]);
+            ->post($this->getS2sApiUrl('image/upload'), ['identifier' => $this->getIdentifier()]);
 
         return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
     }
@@ -56,7 +56,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getOriginal(int $versionNumber): string
     {
-        return $this->configureApiRequest()->get($this->getApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)))->body();
+        return $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)))->body();
     }
 
     /**
@@ -75,8 +75,10 @@ class ImageTransmorpher extends Transmorpher
     {
         $request = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response = $request->post($this->getApiUrl('image/token'), ['identifier' => $this->getIdentifier()]);
+        $response = $request->post($this->getS2sApiUrl('image/token'), ['identifier' => $this->getIdentifier()]);
         $body = json_decode($response, true);
+
+        $success = $body['success'] ?? false;
 
         if ($body['success']) {
             return [
@@ -84,5 +86,19 @@ class ImageTransmorpher extends Transmorpher
                 'id_token' => $protocolEntry->id_token
             ];
         }
+
+        return [
+            'success' => $success,
+        ];
+    }
+
+    public function getUploadUrl(): string
+    {
+        return $this->getWebApiUrl('image/upload');
+    }
+
+    public function getUploadTokenRoute(): string
+    {
+        return route('transmorpherImageToken');
     }
 }

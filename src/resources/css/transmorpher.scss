@@ -1,0 +1,28 @@
+@import '~dropzone/src/dropzone.scss';
+
+.card {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    padding: 10px;
+    border: black 2px solid;
+    border-radius: 15px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.border-success {
+    border: green 2px solid;
+}
+
+.border-error {
+    border: red 2px solid;
+}
+
+.border-warning {
+    border: orange 2px solid;
+}

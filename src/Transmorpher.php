@@ -60,7 +60,7 @@ abstract class Transmorpher
     {
         $request       = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response      = $request->delete($this->getApiUrl(sprintf('media/%s', $this->getIdentifier())));
+        $response      = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
         $body          = json_decode($response->body(), true);
 
         if ($body['success']) {
@@ -83,10 +83,11 @@ abstract class Transmorpher
      */
     public function getUrl(array $transformations = []): string
     {
-        return sprintf('%s/%s/%s',
-            $this->getPublicUrl(),
+        return sprintf('%s/%s/%s?c=%s',
+            $this->getDeliveryUrl(),
             $this->transmorpherMedia->public_path,
-            $this->getTransformations($transformations)
+            $this->getTransformations($transformations),
+            hash('sha256', $this->transmorpherMedia->updated_at)
         );
     }
 
@@ -97,7 +98,7 @@ abstract class Transmorpher
      */
     public function getVersions(): array
     {
-        return json_decode($this->configureApiRequest()->get($this->getApiUrl(sprintf('media/%s/versions', $this->getIdentifier()))), true);
+        return json_decode($this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('media/%s/versions', $this->getIdentifier()))), true);
     }
 
     /**
@@ -111,7 +112,7 @@ abstract class Transmorpher
     {
         $request       = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response      = $request->patch($this->getApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
+        $response      = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
             'id_token'     => $protocolEntry->id_token,
             'callback_url' => route('transmorpherCallback'),
         ]);
@@ -158,15 +159,27 @@ abstract class Transmorpher
     }
 
     /**
-     * Get the api URL to make calls to the Transmorpher.
+     * Get the s2s api URL to make calls to the Transmorpher.
      *
      * @param string|null $path An optional path which gets included in the URL.
      *
-     * @return string The api URL.
+     * @return string The s2s api URL.
      */
-    public function getApiUrl(string $path = null): string
+    public function getS2sApiUrl(string $path = null): string
     {
-        return sprintf('%s/%s', config('transmorpher.api.url'), $path);
+        return sprintf('%s/%s', config('transmorpher.api.s2s_url'), $path);
+    }
+
+    /**
+     * Get the web api URL to make calls to the Transmorpher.
+     *
+     * @param string|null $path An optional path which gets included in the URL.
+     *
+     * @return string The web api URL.
+     */
+    public function getWebApiUrl(string $path = null): string
+    {
+        return sprintf('%s/%s', config('transmorpher.api.web_url'), $path);
     }
 
     /**
@@ -204,9 +217,9 @@ abstract class Transmorpher
      *
      * @return string The public URL.
      */
-    protected function getPublicUrl(): string
+    protected function getDeliveryUrl(): string
     {
-        return config('transmorpher.public.url');
+        return config('transmorpher.delivery.url');
     }
 
     /**

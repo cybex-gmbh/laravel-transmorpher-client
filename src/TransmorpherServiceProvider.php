@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\UploadToken;
-use Transmorpher\ViewComponents\ImageDropzone;
+use Transmorpher\ViewComponents\TransmorpherDropzone;
 use Transmorpher\ViewComponents\VideoDropzone;
 
 class TransmorpherServiceProvider extends ServiceProvider
@@ -21,14 +21,17 @@ class TransmorpherServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
             ], 'transmorpher.config');
+
+            $this->publishes([
+                __DIR__ . '/../dist' => public_path('vendor/transmorpher'),
+            ], 'transmorpher.assets');
         }
 
         $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
         $this->registerRoutes();
-        $this->loadViewsFrom(__DIR__ . '/Views', 'transmorpher');
+        $this->loadViewsFrom(__DIR__ . '/resources/views', 'transmorpher');
 
-        Blade::component('image-dropzone', ImageDropzone::class);
-        Blade::component('video-dropzone', VideoDropzone::class);
+        Blade::component('transmorpher-dropzone', TransmorpherDropzone::class);
     }
 
     /**

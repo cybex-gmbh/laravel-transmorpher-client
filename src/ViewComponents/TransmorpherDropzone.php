@@ -4,11 +4,11 @@ namespace Transmorpher\ViewComponents;
 
 use Illuminate\View\Component;
 use Illuminate\View\View;
-use Transmorpher\ImageTransmorpher;
+use Transmorpher\Transmorpher;
 
-class ImageDropzone extends Component
+class TransmorpherDropzone extends Component
 {
-    public function __construct(public ImageTransmorpher $imageTransmorpher)
+    public function __construct(public Transmorpher $transmorpher)
     {
     }
 
@@ -19,6 +19,6 @@ class ImageDropzone extends Component
      */
     public function render(): string|View
     {
-        return view('transmorpher::image-dropzone');
+        return view('transmorpher::transmorpher-dropzone');
     }
 }

@@ -39,7 +39,7 @@ class VideoTransmorpher extends Transmorpher
 
         $response = $request
             ->attach('video', $fileHandle)
-            ->post($this->getApiUrl('video/upload'), [
+            ->post($this->getS2sApiUrl('video/upload'), [
                 'identifier'   => $this->getIdentifier(),
                 'id_token'     => $protocolEntry->id_token,
                 'callback_url' => route('transmorpherCallback'),
@@ -67,12 +67,14 @@ class VideoTransmorpher extends Transmorpher
     {
         $request = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response = $request->post($this->getApiUrl('video/token'), [
+        $response = $request->post($this->getS2sApiUrl('video/token'), [
             'identifier' => $this->getIdentifier(),
             'id_token' => $protocolEntry->id_token,
             'callback_url' => route('transmorpherCallback'),
         ]);
         $body = json_decode($response, true);
+
+        $success = $body['success'] ?? false;
 
         if ($body['success']) {
             return [
@@ -80,5 +82,19 @@ class VideoTransmorpher extends Transmorpher
                 'id_token' => $protocolEntry->id_token
             ];
         }
+
+        return [
+            'success' => $success,
+        ];
+    }
+
+    public function getUploadUrl(): string
+    {
+        return $this->getWebApiUrl('video/upload');
+    }
+
+    public function getUploadTokenRoute(): string
+    {
+        return route('transmorpherVideoToken');
     }
 }
