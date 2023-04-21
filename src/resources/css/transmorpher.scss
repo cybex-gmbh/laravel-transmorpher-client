@@ -1,28 +1,78 @@
 @import '~dropzone/src/dropzone.scss';
+@import 'variables';
+
+.dropzone {
+    border: none;
+    border-radius: 0 0 15px 15px;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .dz-message {
+        background-color: white;
+        border: 2px dotted grey;
+        margin: 5px;
+        padding: 1rem;
+    }
+
+    .dz-preview.dz-image-preview {
+        background: transparent;
+    }
+
+    .dz-image > img {
+        max-height: 200px;
+    }
+}
 
 .card {
     display: flex;
     flex-direction: column;
     width: 200px;
-    padding: 10px;
-    border: black 2px solid;
+    border: $cardDefaultBorder 2px solid;
     border-radius: 15px;
+    max-height: 400px;
 }
 
 .card-header {
     display: flex;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    background-color: $cardHeader;
+    border-bottom: $cardDefaultBorder 2px solid;
+    border-radius: 15px 15px 0 0;
+}
+
+.badge {
+    padding: 3px;
+    border-radius: 10px;
+}
+
+.badge-processing {
+    background-color: $processing;
+}
+
+.badge-success{
+    background-color: $success;
+}
+
+.badge-error {
+    background-color: $error;
+}
+
+.d-none {
+    display: none;
 }
 
 .border-success {
-    border: green 2px solid;
+    border-color: $success;
 }
 
 .border-error {
-    border: red 2px solid;
+    border-color: $error;
 }
 
 .border-warning {
-    border: orange 2px solid;
+    border-color: $warning;
 }

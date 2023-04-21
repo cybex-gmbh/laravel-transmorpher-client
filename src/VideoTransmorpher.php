@@ -76,8 +76,9 @@ class VideoTransmorpher extends Transmorpher
 
         $success = $body['success'] ?? false;
 
-        if ($body['success']) {
+        if ($success) {
             return [
+                'success' => $success,
                 'upload_token' => $body['upload_token'],
                 'id_token' => $protocolEntry->id_token
             ];
@@ -85,6 +86,8 @@ class VideoTransmorpher extends Transmorpher
 
         return [
             'success' => $success,
+            'response' => $body['message'],
+            'id_token' => $protocolEntry->id_token
         ];
     }
 

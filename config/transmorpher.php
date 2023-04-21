@@ -11,6 +11,7 @@ return [
     ],
 
     'delivery' => [
-        'url' => env('TRANSMORPHER_DELIVERY_URL')
+        'url' => env('TRANSMORPHER_DELIVERY_URL'),
+        'placeholder_url' => env('TRANSMORPHER_PLACEHOLDER_URL')
     ],
 ];

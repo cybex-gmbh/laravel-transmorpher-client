@@ -3,17 +3,21 @@
 
 <div class="card @if($transmorpher->getTransmorpherMedia()->is_ready === 0) border-warning @endif">
     <div class="card-header">
-        <p>{{ $transmorpher->getTransmorpherMedia()->differentiator }}</p>
-        @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING)
-            <p>currently processing</p>
-        @endif
+        {{$transmorpher->getTransmorpherMedia()->differentiator}}
+        <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
+            @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING)
+                Processing @endif
+        </span>
     </div>
     <div class="card-body">
-        <form method="POST" class="dropzone" id="{{ $transmorpher->getIdentifier() }}" action="{{ $transmorpher->getUploadUrl() }}">
+        <form method="POST" class="dropzone" id="{{ $transmorpher->getIdentifier() }}"
+              action="{{ $transmorpher->getUploadUrl() }}">
             @csrf
             @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
-                <div class="dz-image">
-                    <img data-source="{{ $transmorpher->getUrl(['width' => 400, 'height' => 400]) }}" src="{{ $transmorpher->getUrl(['width' => 400, 'height' => 400]) }}" />
+                <div class="dz-image image-transmorpher">
+                    <img data-delivery-url="{{ $transmorpher->getDeliveryUrl() }}"
+                         src="{{$transmorpher->getUrl(['height' => 150])}}"
+                         alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
                 </div>
             @endif
         </form>
@@ -27,8 +31,7 @@
         url: '{{ $transmorpher->getUploadUrl() }}',
         chunking: true,
         chunkSize: 1000000, // 1MB
-        // retryChunks: true, // default: 3 retries
-        parallelChunkUploads: true,
+        retryChunks: true, // default: 3 retries
         maxFilesize: 100, // MB
         maxThumbnailFilesize: 100,
         timeout: 60000, // ms
@@ -40,11 +43,6 @@
                 if (this.files[1] != null) {
                     this.removeFile(this.files[0]);
                 }
-            });
-
-            this.on('success', function (file, response) {
-                imgElement = this.element.querySelector('div.dz-image > img');
-                imgElement.src = imgElement.dataset.source + '?v=' + response.version;
             });
         },
         accept: function (file, done) {
@@ -60,6 +58,11 @@
             }).then(response => {
                 return response.json();
             }).then(data => {
+                if (!data.success) {
+                    this.options.idToken = data.id_token;
+                    done(data);
+                }
+
                 this.options.params = function (files, xhr, chunk) {
                     if (chunk) {
                         return {
@@ -85,6 +88,10 @@
             done();
         },
         success: function (file, response) {
+            if (imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img')) {
+                imgElement.src = imgElement.dataset.deliveryUrl + '/' + response.public_path + '/' + '{{ $transmorpher->getTransformations(['height' => 150]) }}' + '?v=' + response.version;
+            }
+
             handleUploadResponse(file, response, '{{ route('transmorpherHandleUploadResponse') }}', this.options.idToken, {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}')
         },
         error: function (file, response) {

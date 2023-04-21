@@ -11,38 +11,52 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.mjs");
 
-window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
-window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier) {
-  fetch(transmorpherHandleUploadResponseRoute, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value
-    },
-    body: JSON.stringify({
-      transmorpher_media_key: transmorpherMediaKey,
-      id_token: idToken,
-      response: response
-    })
-  }).then(function (response) {
-    return response.json();
-  }).then(function (data) {
-    handleDropzoneResult(data, transmorpherIdentifier);
-  });
-};
-window.handleDropzoneResult = function (data, transmorpherIdentifier) {
-  var form = document.querySelector("#" + transmorpherIdentifier);
-  var card = form.closest('.card');
-  if (!data.success) {
-    var errorMessage = form.querySelector('.dz-error-message');
-    form.querySelector('.dz-preview').classList.add('dz-error');
-    errorMessage.append(data.response);
-    card.setAttribute('class', 'card border-error');
-  } else {
-    form.querySelector('.dz-preview').remove();
-    card.setAttribute('class', 'card border-success');
-  }
-};
+if (!window.transmorpherScriptLoaded) {
+  window.transmorpherScriptLoaded = true;
+  window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
+  window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier) {
+    fetch(transmorpherHandleUploadResponseRoute, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value
+      },
+      body: JSON.stringify({
+        transmorpher_media_key: transmorpherMediaKey,
+        id_token: idToken,
+        response: response
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      handleDropzoneResult(data, transmorpherIdentifier);
+    });
+  };
+  window.handleDropzoneResult = function (data, transmorpherIdentifier) {
+    var form = document.querySelector("#" + transmorpherIdentifier);
+    var card = form.closest('.card');
+    var cardHeader = card.querySelector('.badge');
+    if (data.success) {
+      form.classList.remove('dz-started');
+      form.querySelector('.dz-preview').remove();
+      card.className = '';
+      card.classList.add('card', 'border', 'border-success');
+      cardHeader.className = '';
+      cardHeader.classList.add('badge', 'badge-success');
+      cardHeader.textContent = "Success";
+    } else {
+      card.className = '';
+      card.classList.add('card', 'border', 'border-error');
+      cardHeader.className = '';
+      cardHeader.classList.add('badge', 'badge-error');
+      cardHeader.textContent = "Error";
+      var errorMessage = form.querySelector('.dz-error-message');
+      errorMessage.replaceChildren();
+      errorMessage.append(data.response);
+      form.querySelector('.dz-preview').classList.add('dz-error');
+    }
+  };
+}
 
 /***/ }),
 

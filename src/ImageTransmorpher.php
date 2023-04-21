@@ -3,7 +3,6 @@
 namespace Transmorpher;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
@@ -80,8 +79,9 @@ class ImageTransmorpher extends Transmorpher
 
         $success = $body['success'] ?? false;
 
-        if ($body['success']) {
+        if ($success) {
             return [
+                'success' => $success,
                 'upload_token' => $body['upload_token'],
                 'id_token' => $protocolEntry->id_token
             ];
@@ -89,6 +89,8 @@ class ImageTransmorpher extends Transmorpher
 
         return [
             'success' => $success,
+            'response' => $body['message'],
+            'id_token' => $protocolEntry->id_token
         ];
     }
 

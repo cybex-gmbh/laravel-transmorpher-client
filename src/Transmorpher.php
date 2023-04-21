@@ -83,12 +83,15 @@ abstract class Transmorpher
      */
     public function getUrl(array $transformations = []): string
     {
-        return sprintf('%s/%s/%s?c=%s',
-            $this->getDeliveryUrl(),
-            $this->transmorpherMedia->public_path,
-            $this->getTransformations($transformations),
-            hash('sha256', $this->transmorpherMedia->updated_at)
-        );
+        if ($this->transmorpherMedia->is_ready && $this->transmorpherMedia->public_path) {
+            return sprintf('%s/%s/%s',
+                $this->getDeliveryUrl(),
+                $this->transmorpherMedia->public_path,
+                $this->getTransformations($transformations),
+            );
+        }
+
+        return config('transmorpher.delivery.placeholder_url');
     }
 
     /**
@@ -159,30 +162,6 @@ abstract class Transmorpher
     }
 
     /**
-     * Get the s2s api URL to make calls to the Transmorpher.
-     *
-     * @param string|null $path An optional path which gets included in the URL.
-     *
-     * @return string The s2s api URL.
-     */
-    public function getS2sApiUrl(string $path = null): string
-    {
-        return sprintf('%s/%s', config('transmorpher.api.s2s_url'), $path);
-    }
-
-    /**
-     * Get the web api URL to make calls to the Transmorpher.
-     *
-     * @param string|null $path An optional path which gets included in the URL.
-     *
-     * @return string The web api URL.
-     */
-    public function getWebApiUrl(string $path = null): string
-    {
-        return sprintf('%s/%s', config('transmorpher.api.web_url'), $path);
-    }
-
-    /**
      * Get the identifier for this TransmorpherMedia.
      *
      * @return string The identifier for this TransmorpherMedia.
@@ -190,6 +169,38 @@ abstract class Transmorpher
     public function getIdentifier(): string
     {
         return sprintf('%s-%s-%s', $this->transmorpherMedia->differentiator, $this->transmorpherMedia->transmorphable_type, $this->transmorpherMedia->transmorphable_id);
+    }
+
+    /**
+     * Get the public URL to retrieve a derivative.
+     *
+     * @return string The public URL.
+     */
+    public function getDeliveryUrl(): string
+    {
+        return config('transmorpher.delivery.url');
+    }
+
+    /**
+     * Get transformations as string.
+     *
+     * @param array $transformations An array of transformations.
+     *
+     * @return string The transformations converted to a string.
+     */
+    public function getTransformations(array $transformations): string
+    {
+        foreach ($transformations as $transformation => $value) {
+            match ($transformation) {
+                'width'   => $transformationParts[] = Transformation::WIDTH->getUrlRepresentation($value),
+                'height'  => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
+                'format'  => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
+                'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
+                default   => null
+            };
+        }
+
+        return implode('+', $transformationParts ?? []);
     }
 
     /**
@@ -213,16 +224,6 @@ abstract class Transmorpher
     }
 
     /**
-     * Get the public URL to retrieve a derivative.
-     *
-     * @return string The public URL.
-     */
-    protected function getDeliveryUrl(): string
-    {
-        return config('transmorpher.delivery.url');
-    }
-
-    /**
      * Get an Id-Token.
      *
      * @return string The generated Id-Token.
@@ -233,25 +234,27 @@ abstract class Transmorpher
     }
 
     /**
-     * Get transformations as string.
+     * Get the s2s api URL to make calls to the Transmorpher.
      *
-     * @param array $transformations An array of transformations.
+     * @param string|null $path An optional path which gets included in the URL.
      *
-     * @return string The transformations converted to a string.
+     * @return string The s2s api URL.
      */
-    protected function getTransformations(array $transformations): string
+    protected function getS2sApiUrl(string $path = null): string
     {
-        foreach ($transformations as $transformation => $value) {
-            match ($transformation) {
-                'width'   => $transformationParts[] = Transformation::WIDTH->getUrlRepresentation($value),
-                'height'  => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
-                'format'  => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
-                'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
-                default   => null
-            };
-        }
+        return sprintf('%s/%s', config('transmorpher.api.s2s_url'), $path);
+    }
 
-        return implode('+', $transformationParts ?? []);
+    /**
+     * Get the web api URL to make calls to the Transmorpher.
+     *
+     * @param string|null $path An optional path which gets included in the URL.
+     *
+     * @return string The web api URL.
+     */
+    protected function getWebApiUrl(string $path = null): string
+    {
+        return sprintf('%s/%s', config('transmorpher.api.web_url'), $path);
     }
 
     /**
