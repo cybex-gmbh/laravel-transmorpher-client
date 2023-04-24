@@ -117,7 +117,7 @@ abstract class Transmorpher
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
         $response      = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
             'id_token'     => $protocolEntry->id_token,
-            'callback_url' => route('transmorpherCallback'),
+            'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
         ]);
 
         return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);

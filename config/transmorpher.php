@@ -7,6 +7,7 @@ return [
         's2s_url' => env('TRANSMORPHER_S2S_API_URL', env('TRANSMORPHER_WEB_API_URL')),
         'web_url' => env('TRANSMORPHER_WEB_API_URL'),
         'auth_token' => env('TRANSMORPHER_AUTH_TOKEN'),
+        'callback_base_url' => env('TRANSMORPHER_CALLBACK_BASE_URL', env('APP_URL')),
         'callback_route' => 'transmorpher/callback'
     ],
 
