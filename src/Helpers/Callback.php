@@ -19,7 +19,7 @@ class Callback
      */
     public function __invoke(Request $request): Response
     {
-        if (! $verifiedRequest = sodium_crypto_sign_open(sodium_hex2bin($request->get('signed_response')), Http::get(sprintf('%s/publickey', config('transmorpher.api.url'))))) {
+        if (! $verifiedRequest = sodium_crypto_sign_open(sodium_hex2bin($request->get('signed_response')), Http::get(sprintf('%s/publickey', config('transmorpher.api.s2s_url'))))) {
             return response()->noContent(403);
         }
 
