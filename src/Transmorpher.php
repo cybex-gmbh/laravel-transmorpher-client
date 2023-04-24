@@ -204,6 +204,16 @@ abstract class Transmorpher
     }
 
     /**
+     * Get the configured chunk size for chunked uploads.
+     *
+     * @return int
+     */
+    public function getChunkSize(): int
+    {
+        return config('transmorpher.dropzone_upload.chunk_size');
+    }
+
+    /**
      * Get the configured client name.
      *
      * @return string The client name.

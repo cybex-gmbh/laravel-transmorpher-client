@@ -63,6 +63,11 @@ class VideoTransmorpher extends Transmorpher
         return sprintf('%sdash/video.mpd', $this->getUrl());
     }
 
+    /**
+     * Prepare an upload to the Transmorpher media server by requesting an upload token.
+     *
+     * @return array
+     */
     public function prepareUpload(): array
     {
         $request = $this->configureApiRequest();
@@ -91,13 +96,33 @@ class VideoTransmorpher extends Transmorpher
         ];
     }
 
-    public function getUploadUrl(): string
+    /**
+     * Get the web api url for uploads.
+     *
+     * @return string
+     */
+    public function getWebUploadUrl(): string
     {
         return $this->getWebApiUrl('video/upload');
     }
 
+    /**
+     * Get the route for receiving an upload token.
+     *
+     * @return string
+     */
     public function getUploadTokenRoute(): string
     {
         return route('transmorpherVideoToken');
+    }
+
+    /**
+     * Get the max file size for uploads with dropzone.
+     *
+     * @return int
+     */
+    public function getMaxFileSize(): int
+    {
+        return config('transmorpher.dropzone_upload.video_max_file_size');
     }
 }

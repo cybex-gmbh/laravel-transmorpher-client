@@ -11,7 +11,7 @@
     </div>
     <div class="card-body">
         <form method="POST" class="dropzone" id="{{ $transmorpher->getIdentifier() }}"
-              action="{{ $transmorpher->getUploadUrl() }}">
+              action="{{ $transmorpher->getWebUploadUrl() }}">
             @csrf
             @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
                 <div class="dz-image image-transmorpher">
@@ -28,12 +28,12 @@
     Dropzone.autoDiscover = false;
 
     new Dropzone("#{{$transmorpher->getIdentifier()}}", {
-        url: '{{ $transmorpher->getUploadUrl() }}',
+        url: '{{ $transmorpher->getWebUploadUrl() }}',
         chunking: true,
-        chunkSize: 1000000, // 1MB
-        maxFilesize: 100, // MB
-        maxThumbnailFilesize: 100,
-        timeout: 60000, // ms
+        chunkSize: {{ $transmorpher->getChunkSize() }},
+        maxFilesize: {{ $transmorpher->getMaxFileSize() }},
+        maxThumbnailFilesize: {{ $transmorpher->getMaxFileSize() }},
+        timeout: 60000,
         uploadMultiple: false,
         paramName: '{{ $transmorpher->getTransmorpherMedia()->type }}',
         idToken: null,

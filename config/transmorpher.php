@@ -14,4 +14,10 @@ return [
         'url' => env('TRANSMORPHER_DELIVERY_URL'),
         'placeholder_url' => env('TRANSMORPHER_PLACEHOLDER_URL')
     ],
+
+    'dropzone_upload' => [
+        'chunk_size' => 1 * 1024 * 1024,
+        'image_max_file_size' => 100,
+        'video_max_file_size' => 4000,
+    ]
 ];

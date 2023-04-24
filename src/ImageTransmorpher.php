@@ -70,6 +70,11 @@ class ImageTransmorpher extends Transmorpher
         return Http::get($this->getUrl($transformations))->body();
     }
 
+    /**
+     * Prepare an upload to the Transmorpher media server by requesting an upload token.
+     *
+     * @return array
+     */
     public function prepareUpload(): array
     {
         $request = $this->configureApiRequest();
@@ -94,13 +99,33 @@ class ImageTransmorpher extends Transmorpher
         ];
     }
 
-    public function getUploadUrl(): string
+    /**
+     * Get the web api url for uploads.
+     *
+     * @return string
+     */
+    public function getWebUploadUrl(): string
     {
         return $this->getWebApiUrl('image/upload');
     }
 
+    /**
+     * Get the route for receiving an upload token.
+     *
+     * @return string
+     */
     public function getUploadTokenRoute(): string
     {
         return route('transmorpherImageToken');
+    }
+
+    /**
+     * Get the max file size for uploads with dropzone.
+     *
+     * @return int
+     */
+    public function getMaxFileSize(): int
+    {
+        return config('transmorpher.dropzone_upload.image_max_file_size');
     }
 }
