@@ -83,9 +83,6 @@
                 done()
             });
         },
-        chunksUploaded: function (file, done) {
-            done();
-        },
         success: function (file, response) {
             if (imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img')) {
                 imgElement.src = imgElement.dataset.deliveryUrl + '/' + response.public_path + '/' + '{{ $transmorpher->getTransformations(['height' => 150]) }}' + '?v=' + response.version;
