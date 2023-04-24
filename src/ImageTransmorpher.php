@@ -37,11 +37,17 @@ class ImageTransmorpher extends Transmorpher
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
+        $tokenResponse = $this->prepareUpload();
+        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->whereIdToken($tokenResponse['id_token'])->first();
+
+        if (!$tokenResponse['success']) {
+            return $this->handleUploadResponse($tokenResponse, $protocolEntry);
+        }
+
         $request = $this->configureApiRequest();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
         $response = $request
             ->attach('image', $fileHandle)
-            ->post($this->getS2sApiUrl('image/upload'), ['identifier' => $this->getIdentifier()]);
+            ->post($this->getS2sApiUrl('image/upload'), ['upload_token'   => $tokenResponse['upload_token']]);
 
         return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
     }

@@ -34,15 +34,18 @@ class VideoTransmorpher extends Transmorpher
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
-        $request       = $this->configureApiRequest();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
+        $tokenResponse = $this->prepareUpload();
+        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->whereIdToken($tokenResponse['id_token'])->first();
 
+        if (!$tokenResponse['success']) {
+            return $this->handleUploadResponse($tokenResponse, $protocolEntry);
+        }
+
+        $request = $this->configureApiRequest();
         $response = $request
             ->attach('video', $fileHandle)
             ->post($this->getS2sApiUrl('video/upload'), [
-                'identifier'   => $this->getIdentifier(),
-                'id_token'     => $protocolEntry->id_token,
-                'callback_url' => route('transmorpherCallback'),
+                'upload_token'   => $tokenResponse['upload_token'],
             ]);
 
         return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
