@@ -25,6 +25,10 @@ class TransmorpherServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/../dist' => public_path('vendor/transmorpher'),
             ], 'transmorpher.assets');
+
+            $this->publishes([
+                __DIR__ . '/resources/views' => resource_path('views/vendor/transmorpher'),
+            ], 'transmorpher.views');
         }
 
         $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));

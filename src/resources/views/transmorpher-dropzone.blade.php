@@ -31,7 +31,6 @@
         url: '{{ $transmorpher->getUploadUrl() }}',
         chunking: true,
         chunkSize: 1000000, // 1MB
-        retryChunks: true, // default: 3 retries
         maxFilesize: 100, // MB
         maxThumbnailFilesize: 100,
         timeout: 60000, // ms
