@@ -10,7 +10,7 @@ return [
         'web_url' => env('TRANSMORPHER_WEB_API_URL'),
         // The Laravel Sanctum auth token used to authenticate at the Transmorpher media server.
         'auth_token' => env('TRANSMORPHER_AUTH_TOKEN'),
-        // The callback base url to which the Transmorpher media server sends information after transcoding a video. situations where for example docker containers communicate with each other.
+        // The callback base url to which the Transmorpher media server sends information after transcoding a video. Useful in situations where for example docker containers communicate with each other.
         'callback_base_url' => env('TRANSMORPHER_CALLBACK_BASE_URL', env('APP_URL')),
         'callback_route' => 'transmorpher/callback'
     ],
