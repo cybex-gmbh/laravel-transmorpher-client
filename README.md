@@ -65,7 +65,12 @@ a method for each image or video you want the model to have.
 For images you will have to return an instance of an ImageTransmorpher:
 
 ```php
-public function image(): ImageTransmorpher
+public function imageFrontView(): ImageTransmorpher
+{
+    return ImageTransmorpher::getInstanceFor($this, __FUNCTION__);
+}
+
+public function imageSideView(): ImageTransmorpher
 {
     return ImageTransmorpher::getInstanceFor($this, __FUNCTION__);
 }
@@ -80,11 +85,29 @@ public function video(): VideoTransmorpher
 }
 ```
 
+#### Dynamic images & videos
+
+If you need a more dynamic approach to defining images or videos for a model, you can instead use an array and a single method:
+
+```php
+public $transmorpherImages = [
+    'frontView',
+    'sideView',
+];
+
+public function image($motif): ImageTransmorpher
+{
+    return ImageTransmorpher::getInstanceFor($this, $motif);
+}
+```
+
+This can be used to iterate over all images for a model for example.
+
 The instance of the corresponding `Transmorpher`-class can then be used to make API calls to the Transmorpher media
 server.
 
 ```php
-$imageTransmorpher = $yourModel->$image();
+$imageTransmorpher = $yourModel->$imageFrontView();
 
 // Upload an image to the media server.
 $imageTransmorpher->upload($fileHandle);
