@@ -44,26 +44,26 @@ TRANSMORPHER_AUTH_TOKEN=
 The `TRANSMORPHER_WEB_API_URL` is the server endpoint for making API calls.
 
 ```dotenv
-TRANSMORPHER_WEB_API_URL=https://example.com/api
+TRANSMORPHER_WEB_API_BASE_URL=https://example.com/api
 ```
 
 The `TRANSMORPHER_DELIVERY_URL` is the Transmorpher endpoint which is used to request image derivatives.
 
 ```dotenv
-TRANSMORPHER_DELIVERY_URL=https://example.com
+TRANSMORPHER_WEB_DELIVERY_BASE_URL=https://example.com
 ```
 
 **_NOTE:_** In case you are in a docker environment or similar, you might want to set specific URLs for server to server communication. You can do so by using the following .env keys:
 
 ```dotenv
-TRANSMORPHER_S2S_API_URL=http://example/api
-TRANSMORPHER_CALLBACK_BASE_URL=http://example
+TRANSMORPHER_S2S_API_BASE_URL=http://example/api
+TRANSMORPHER_S2S_CALLBACK_BASE_URL=http://example
 ```
 
 For cases in which a medium doesn't have an upload yet, you can specify a URL to a placeholder image which will be used. 
 
 ```dotenv
-TRANSMORPHER_PLACEHOLDER_URL=http://example.com/placeholder.jpg
+TRANSMORPHER_WEB_PLACEHOLDER_URL=http://example.com/placeholder.jpg
 ```
 
 ### Allow models to have images and videos
