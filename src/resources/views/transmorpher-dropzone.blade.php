@@ -22,7 +22,7 @@
                 </div>
             @else
                 @if ($transmorpher->getTransmorpherMedia()->is_ready)
-                    <video preload="metadata" controls style="height:150px">
+                    <video preload="metadata" controls style="height:150px" class="video-transmorpher">
                         <source src="{{ $transmorpher->getMp4Url() }}" type="video/mp4">
                         <p style="padding: 5px;">
                             Your browser doesn't support HTML video. Here is a
@@ -40,6 +40,15 @@
 
 <script type="text/javascript">
     Dropzone.autoDiscover = false;
+
+    form = document.querySelector('#{{$transmorpher->getIdentifier()}}');
+    csrfToken = document.querySelector('#{{$transmorpher->getIdentifier()}} > input[name="_token"]').value
+    card = form.closest('.card');
+    cardHeader = card.querySelector('.badge');
+
+    if (form.querySelector('.video-transmorpher') && cardHeader.classList.contains('badge-processing')) {
+        startPolling('{{ route('transmorpherStateUpdate') }}', {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}', csrfToken, card, cardHeader)
+    }
 
     new Dropzone("#{{$transmorpher->getIdentifier()}}", {
         url: '{{ $transmorpher->getWebUploadUrl() }}',
@@ -63,7 +72,7 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-Token": document.querySelector("#{{$transmorpher->getIdentifier()}} > input[name='_token']").value,
+                    "X-CSRF-Token": csrfToken,
                 },
                 body: JSON.stringify({
                     transmorpher_media_key: {{ $transmorpher->getTransmorpherMedia()->getKey() }},

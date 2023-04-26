@@ -313,6 +313,10 @@
   border-radius: 10px;
 }
 
+.badge::first-letter {
+  text-transform: capitalize;
+}
+
 .badge-processing {
   background-color: orange;
 }

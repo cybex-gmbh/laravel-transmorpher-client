@@ -19,6 +19,7 @@ class StateUpdate
     {
         $transmorpherMedia = TransmorpherMedia::find($request->input('transmorpher_media_key'));
 
-        return response()->json(['state' => $transmorpherMedia->TransmorpherProtocols()->latest()->first()->state]);
+        $latestProtocol = $transmorpherMedia->TransmorpherProtocols()->latest()->first();
+        return response()->json(['state' => $latestProtocol->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestProtocol->updated_at)]);
     }
 }

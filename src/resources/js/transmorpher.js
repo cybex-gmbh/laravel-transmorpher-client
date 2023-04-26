@@ -4,6 +4,38 @@ if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
 
+    window.startPolling = function (transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, csrfToken, card, cardHeader) {
+        let statusPollingVariable = `statusPolling${transmorpherIdentifier}`
+        let startTime = new Date().getTime();
+        window[statusPollingVariable] = setInterval(function () {
+            if (new Date().getTime() - startTime > (1 * 60 * 60 * 24 * 1000)) {
+                clearInterval(window[statusPollingVariable]);
+            }
+            fetch(transmorpherStateUpdateRoute, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": csrfToken,
+                },
+                body: JSON.stringify({
+                    transmorpher_media_key: transmorpherMediaKey,
+                }),
+            })
+                .then(response => {
+                    return response.json();
+                }).then(data => {
+                if (data.state === 'success') {
+                    setStatusDisplay(card, cardHeader, 'success');
+                    document.querySelector(`#${transmorpherIdentifier} > .video-transmorpher`).src = data.url;
+                    clearInterval(window[statusPollingVariable]);
+                } else if (data.state === 'error') {
+                    setStatusDisplay(card, cardHeader, 'error');
+                    clearInterval(window[statusPollingVariable]);
+                }
+            })
+        }, 5000); // Poll every 5 seconds
+    }
+
     window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute) {
         let csrfToken = document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value
         fetch(transmorpherHandleUploadResponseRoute, {
@@ -34,30 +66,7 @@ if (!window.transmorpherScriptLoaded) {
 
             if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
                 setStatusDisplay(card, cardHeader, 'processing');
-                let statusPollingVariable = `statusPolling${transmorpherIdentifier}`
-                window[statusPollingVariable] = setInterval(function () {
-                    fetch(transmorpherStateUpdateRoute, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-Token": csrfToken,
-                        },
-                        body: JSON.stringify({
-                            transmorpher_media_key: transmorpherMediaKey,
-                        }),
-                    })
-                        .then(response => {
-                            return response.json();
-                        }).then(data => {
-                        if (data.state === 'success') {
-                            setStatusDisplay(card, cardHeader, 'success');
-                            clearInterval(window[statusPollingVariable]);
-                        } else if (data.state === 'error') {
-                            setStatusDisplay(card, cardHeader, 'error');
-                            clearInterval(window[statusPolling]);
-                        }
-                    })
-                }, 5000); // Poll every 5 seconds
+                startPolling(transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, csrfToken, card, cardHeader)
             } else {
                 setStatusDisplay(card, cardHeader, 'success');
             }
