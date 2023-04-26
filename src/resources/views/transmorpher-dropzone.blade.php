@@ -1,12 +1,13 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<div class="card @if($transmorpher->getTransmorpherMedia()->is_ready === 0) border-warning @endif">
+<div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-warning @endif">
     <div class="card-header">
         {{$transmorpher->getTransmorpherMedia()->differentiator}}
         <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
             @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING)
-                Processing @endif
+                Processing
+            @endif
         </span>
     </div>
     <div class="card-body">
@@ -19,6 +20,19 @@
                          src="{{$transmorpher->getUrl(['height' => 150])}}"
                          alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
                 </div>
+            @else
+                @if ($transmorpher->getTransmorpherMedia()->is_ready)
+                    <video preload="metadata" controls style="height:150px">
+                        <source src="{{ $transmorpher->getMp4Url() }}" type="video/mp4">
+                        <p style="padding: 5px;">
+                            Your browser doesn't support HTML video. Here is a
+                            <a href="{{ $transmorpher->getMp4Url() }}">link to the video</a> instead.
+                        </p>
+                    </video>
+                @else
+                    <img src="{{$transmorpher->getUrl()}}"
+                         alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
+                @endif
             @endif
         </form>
     </div>
