@@ -325,10 +325,6 @@
   background-color: red;
 }
 
-.d-none {
-  display: none;
-}
-
 .border-success {
   border-color: green;
 }
@@ -337,6 +333,10 @@
   border-color: red;
 }
 
-.border-warning {
+.border-processing {
   border-color: orange;
+}
+
+.d-none {
+  display: none;
 }

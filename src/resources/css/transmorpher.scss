@@ -2,83 +2,83 @@
 @import 'variables';
 
 .dropzone {
-    border: none;
-    border-radius: 0 0 15px 15px;
-    height: 100%;
-    padding: 2px;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: center;
+  border: none;
+  border-radius: 0 0 15px 15px;
+  height: 100%;
+  padding: 2px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
 
-    .dz-message {
-        background-color: white;
-        border: 2px dotted grey;
-        margin: 5px;
-        padding: 1rem;
-    }
+  .dz-message {
+    background-color: white;
+    border: 2px dotted grey;
+    margin: 5px;
+    padding: 1rem;
+  }
 
-    .dz-preview.dz-image-preview {
-        background: transparent;
-    }
+  .dz-preview.dz-image-preview {
+    background: transparent;
+  }
 
-    .dz-image > img {
-        max-height: 200px;
-    }
+  .dz-image > img {
+    max-height: 200px;
+  }
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  border: $cardDefaultBorder 2px solid;
+  border-radius: 15px;
+  max-height: 400px;
+
+  .card-header {
     display: flex;
     flex-direction: column;
-    width: 200px;
-    border: $cardDefaultBorder 2px solid;
-    border-radius: 15px;
-    max-height: 400px;
+    align-items: center;
+    padding: 5px;
+    background-color: $cardHeader;
+    border-bottom: $cardDefaultBorder 2px solid;
+    border-radius: 15px 15px 0 0;
+  }
 
-    .card-header {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 5px;
-        background-color: $cardHeader;
-        border-bottom: $cardDefaultBorder 2px solid;
-        border-radius: 15px 15px 0 0;
-    }
-
-    .card-body {
-        height: 100%;
-    }
+  .card-body {
+    height: 100%;
+  }
 }
 
 .badge {
-    padding: 3px;
-    border-radius: 10px;
+  padding: 3px;
+  border-radius: 10px;
 }
 
 .badge-processing {
-    background-color: $processing;
+  background-color: $processing;
 }
 
-.badge-success{
-    background-color: $success;
+.badge-success {
+  background-color: $success;
 }
 
 .badge-error {
-    background-color: $error;
-}
-
-.d-none {
-    display: none;
+  background-color: $error;
 }
 
 .border-success {
-    border-color: $success;
+  border-color: $success;
 }
 
 .border-error {
-    border-color: $error;
+  border-color: $error;
 }
 
-.border-warning {
-    border-color: $warning;
+.border-processing {
+  border-color: $warning;
+}
+
+.d-none {
+  display: none;
 }

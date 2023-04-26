@@ -14,12 +14,13 @@ __webpack_require__.r(__webpack_exports__);
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
-  window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier) {
+  window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute) {
+    var csrfToken = document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value;
     fetch(transmorpherHandleUploadResponseRoute, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value
+        "X-CSRF-Token": csrfToken
       },
       body: JSON.stringify({
         transmorpher_media_key: transmorpherMediaKey,
@@ -29,38 +30,58 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (data) {
-      handleDropzoneResult(data, transmorpherIdentifier);
+      handleDropzoneResult(data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken);
     });
   };
-  window.handleDropzoneResult = function (data, transmorpherIdentifier) {
+  window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken) {
     var form = document.querySelector("#" + transmorpherIdentifier);
     var card = form.closest('.card');
     var cardHeader = card.querySelector('.badge');
     if (data.success) {
       form.classList.remove('dz-started');
       form.querySelector('.dz-preview').remove();
-      card.className = '';
-      cardHeader.className = '';
       if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
-        card.classList.add('card', 'border', 'border-warning');
-        cardHeader.classList.add('badge', 'badge-processing');
-        cardHeader.textContent = "Processing";
+        setStatusDisplay(card, cardHeader, 'processing');
+        var statusPollingVariable = "statusPolling".concat(transmorpherIdentifier);
+        window[statusPollingVariable] = setInterval(function () {
+          fetch(transmorpherStateUpdateRoute, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrfToken
+            },
+            body: JSON.stringify({
+              transmorpher_media_key: transmorpherMediaKey
+            })
+          }).then(function (response) {
+            return response.json();
+          }).then(function (data) {
+            if (data.state === 'success') {
+              setStatusDisplay(card, cardHeader, 'success');
+              clearInterval(window[statusPollingVariable]);
+            } else if (data.state === 'error') {
+              setStatusDisplay(card, cardHeader, 'error');
+              clearInterval(window[statusPolling]);
+            }
+          });
+        }, 5000); // Poll every 5 seconds
       } else {
-        card.classList.add('card', 'border', 'border-success');
-        cardHeader.classList.add('badge', 'badge-success');
-        cardHeader.textContent = "Success";
+        setStatusDisplay(card, cardHeader, 'success');
       }
     } else {
-      card.className = '';
-      card.classList.add('card', 'border', 'border-error');
-      cardHeader.className = '';
-      cardHeader.classList.add('badge', 'badge-error');
-      cardHeader.textContent = "Error";
+      setStatusDisplay(card, cardHeader, 'error');
       var errorMessage = form.querySelector('.dz-error-message');
       errorMessage.replaceChildren();
       errorMessage.append(data.response);
       form.querySelector('.dz-preview').classList.add('dz-error');
     }
+  };
+  window.setStatusDisplay = function (card, cardHeader, state) {
+    card.className = '';
+    cardHeader.className = '';
+    card.classList.add('card', "border-".concat(state));
+    cardHeader.classList.add('badge', "badge-".concat(state));
+    cardHeader.textContent = state;
   };
 }
 

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
+use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
 use Transmorpher\ViewComponents\TransmorpherDropzone;
 use Transmorpher\ViewComponents\VideoDropzone;
@@ -54,6 +55,7 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::post('transmorpher/image/token', [UploadToken::class, 'getImageUploadToken'])->name('transmorpherImageToken');
             Route::post('transmorpher/video/token', [UploadToken::class, 'getVideoUploadToken'])->name('transmorpherVideoToken');;
             Route::post('transmorpher/handleUploadResponse', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
+            Route::post('transmorpher/stateUpdate', StateUpdate::class)->name('transmorpherStateUpdate');
         });
     }
 }

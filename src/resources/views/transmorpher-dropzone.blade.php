@@ -1,7 +1,7 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-warning @endif">
+<div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-processing @endif">
     <div class="card-header">
         {{$transmorpher->getTransmorpherMedia()->differentiator}}
         <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
@@ -98,14 +98,32 @@
             });
         },
         success: function (file, response) {
+            clearInterval(window['statusPolling' + '{{$transmorpher->getIdentifier()}}']);
+
             if (imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img')) {
                 imgElement.src = imgElement.dataset.deliveryUrl + '/' + response.public_path + '/' + '{{ $transmorpher->getTransformations(['height' => 150]) }}' + '?v=' + response.version;
             }
 
-            handleUploadResponse(file, response, '{{ route('transmorpherHandleUploadResponse') }}', this.options.idToken, {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}')
+            handleUploadResponse(
+                file,
+                response,
+                '{{ route('transmorpherHandleUploadResponse') }}',
+                this.options.idToken,
+                    {{ $transmorpher->getTransmorpherMedia()->getKey() }},
+                '{{$transmorpher->getIdentifier()}}',
+                '{{ route('transmorpherStateUpdate') }}'
+            );
         },
         error: function (file, response) {
-            handleUploadResponse(file, response, '{{ route('transmorpherHandleUploadResponse') }}', this.options.idToken, {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}')
+            handleUploadResponse(
+                file,
+                response,
+                '{{ route('transmorpherHandleUploadResponse') }}',
+                this.options.idToken,
+                    {{ $transmorpher->getTransmorpherMedia()->getKey() }},
+                '{{$transmorpher->getIdentifier()}}',
+                '{{ route('transmorpherStateUpdate') }}'
+            );
         },
     });
 </script>
