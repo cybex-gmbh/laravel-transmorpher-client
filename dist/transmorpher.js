@@ -40,10 +40,16 @@ if (!window.transmorpherScriptLoaded) {
       form.classList.remove('dz-started');
       form.querySelector('.dz-preview').remove();
       card.className = '';
-      card.classList.add('card', 'border', 'border-success');
       cardHeader.className = '';
-      cardHeader.classList.add('badge', 'badge-success');
-      cardHeader.textContent = "Success";
+      if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
+        card.classList.add('card', 'border', 'border-warning');
+        cardHeader.classList.add('badge', 'badge-processing');
+        cardHeader.textContent = "Processing";
+      } else {
+        card.classList.add('card', 'border', 'border-success');
+        cardHeader.classList.add('badge', 'badge-success');
+        cardHeader.textContent = "Success";
+      }
     } else {
       card.className = '';
       card.classList.add('card', 'border', 'border-error');
