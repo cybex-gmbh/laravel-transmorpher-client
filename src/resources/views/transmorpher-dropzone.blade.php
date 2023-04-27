@@ -4,8 +4,8 @@
 <div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-processing @endif">
     <div class="card-header">
         {{$transmorpher->getTransmorpherMedia()->differentiator}}
-        <span class="badge @if($transmorpher->getTransmorpherMedia()->TransmorpherProtocols()->where('state', '!=', \Transmorpher\Enums\State::ERROR)->latest()->first()->state === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
-            @if($transmorpher->getTransmorpherMedia()->TransmorpherProtocols()->where('state', '!=', \Transmorpher\Enums\State::ERROR)->latest()->first()->state === \Transmorpher\Enums\State::PROCESSING)
+        <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
+            @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING)
                 Processing
             @endif
         </span>
@@ -57,7 +57,7 @@
         maxThumbnailFilesize: {{ $transmorpher->getMaxFileSize() }},
         timeout: 60000,
         uploadMultiple: false,
-        paramName: '{{ $transmorpher->getTransmorpherMedia()->type }}',
+        paramName: 'file',
         idToken: null,
         init: function () {
             this.on("addedfile", function () {
