@@ -44,9 +44,7 @@ class VideoTransmorpher extends Transmorpher
         $request = $this->configureApiRequest();
         $response = $request
             ->attach('video', $fileHandle)
-            ->post($this->getS2sApiUrl('video/upload'), [
-                'upload_token'   => $tokenResponse['upload_token'],
-            ]);
+            ->post($this->getS2sApiUrl(sprintf('video/upload/%s', $tokenResponse['upload_token'])));
 
         return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
     }
@@ -102,11 +100,12 @@ class VideoTransmorpher extends Transmorpher
     /**
      * Get the web api url for uploads.
      *
+     * @param string|null $uploadToken
      * @return string
      */
-    public function getWebUploadUrl(): string
+    public function getWebUploadUrl(string $uploadToken = null): string
     {
-        return $this->getWebApiUrl('video/upload');
+        return $this->getWebApiUrl('video/upload/' . $uploadToken);
     }
 
     /**

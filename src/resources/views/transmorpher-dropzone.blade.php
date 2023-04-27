@@ -4,15 +4,14 @@
 <div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-processing @endif">
     <div class="card-header">
         {{$transmorpher->getTransmorpherMedia()->differentiator}}
-        <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
-            @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING)
+        <span class="badge @if($transmorpher->getTransmorpherMedia()->TransmorpherProtocols()->where('state', '!=', \Transmorpher\Enums\State::ERROR)->latest()->first()->state === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
+            @if($transmorpher->getTransmorpherMedia()->TransmorpherProtocols()->where('state', '!=', \Transmorpher\Enums\State::ERROR)->latest()->first()->state === \Transmorpher\Enums\State::PROCESSING)
                 Processing
             @endif
         </span>
     </div>
     <div class="card-body">
-        <form method="POST" class="dropzone" id="{{ $transmorpher->getIdentifier() }}"
-              action="{{ $transmorpher->getWebUploadUrl() }}">
+        <form method="POST" class="dropzone" id="{{ $transmorpher->getIdentifier() }}">
             @csrf
             @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
                 <div class="dz-image image-transmorpher">
@@ -84,7 +83,7 @@
                     this.options.idToken = data.id_token;
                     done(data);
                 }
-
+                this.options.url = '{{ $transmorpher->getWebUploadUrl() }}' + data.upload_token;
                 this.options.params = function (files, xhr, chunk) {
                     if (chunk) {
                         return {
@@ -94,12 +93,7 @@
                             dzchunksize: this.options.chunkSize,
                             dztotalchunkcount: chunk.file.upload.totalChunkCount,
                             dzchunkbyteoffset: chunk.index * this.options.chunkSize,
-                            upload_token: data.upload_token
                         };
-                    } else {
-                        return {
-                            upload_token: data.upload_token
-                        }
                     }
                 }
                 this.options.idToken = data.id_token;
