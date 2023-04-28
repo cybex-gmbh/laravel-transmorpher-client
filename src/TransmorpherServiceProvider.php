@@ -25,6 +25,7 @@ class TransmorpherServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__ . '/../dist' => public_path('vendor/transmorpher'),
+                __DIR__ . '/resources/css/icons' => public_path('vendor/transmorpher/icons'),
             ], 'transmorpher.assets');
 
             $this->publishes([

@@ -4,14 +4,18 @@
 <div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-processing @endif">
     <div class="card-header">
         {{$transmorpher->getTransmorpherMedia()->differentiator}}
-        <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-none @endif">
-            @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING)
+        <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-hidden @endif">
                 Processing
-            @endif
         </span>
+        <div class="details">
+            @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
+                <a target="_blank" href="{{$transmorpher->getUrl()}}"><img src="{{ asset('vendor/transmorpher/icons/magnifying-glass.svg') }}" alt="Enlarge image" class="icon"></a>
+            @endif
+            <img src="{{ asset('vendor/transmorpher/icons/more-info.svg') }}" alt="More information" class="icon">
+        </div>
     </div>
     <div class="card-body">
-        <form method="POST" class="dropzone" id="{{ $transmorpher->getIdentifier() }}">
+        <form method="POST" class="dropzone" id="dz-{{$transmorpher->getIdentifier()}}">
             @csrf
             @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
                 <div class="dz-image image-transmorpher">
@@ -40,8 +44,8 @@
 <script type="text/javascript">
     Dropzone.autoDiscover = false;
 
-    form = document.querySelector('#{{$transmorpher->getIdentifier()}}');
-    csrfToken = document.querySelector('#{{$transmorpher->getIdentifier()}} > input[name="_token"]').value
+    form = document.querySelector('#dz-{{$transmorpher->getIdentifier()}}');
+    csrfToken = document.querySelector('#dz-{{$transmorpher->getIdentifier()}} > input[name="_token"]').value
     card = form.closest('.card');
     cardHeader = card.querySelector('.badge');
 
@@ -49,7 +53,7 @@
         startPolling('{{ route('transmorpherStateUpdate') }}', {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}', csrfToken, card, cardHeader)
     }
 
-    new Dropzone("#{{$transmorpher->getIdentifier()}}", {
+    new Dropzone("#dz-{{$transmorpher->getIdentifier()}}", {
         url: '{{ $transmorpher->getWebUploadUrl() }}',
         chunking: true,
         chunkSize: {{ $transmorpher->getChunkSize() }},
@@ -105,6 +109,7 @@
 
             if (imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img')) {
                 imgElement.src = imgElement.dataset.deliveryUrl + '/' + response.public_path + '/' + '{{ $transmorpher->getTransformations(['height' => 150]) }}' + '?v=' + response.version;
+                this.element.closest('.card').querySelector('.details > a').href = imgElement.dataset.deliveryUrl + '/' + response.public_path + '?v=' + response.version;
             }
 
             handleUploadResponse(

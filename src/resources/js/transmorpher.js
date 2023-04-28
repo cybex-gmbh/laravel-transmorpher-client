@@ -37,7 +37,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute) {
-        let csrfToken = document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value
+        let csrfToken = document.querySelector("#dz-" + transmorpherIdentifier + " > input[name='_token']").value
         fetch(transmorpherHandleUploadResponseRoute, {
             method: "POST",
             headers: {
@@ -57,7 +57,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken) {
-        let form = document.querySelector("#" + transmorpherIdentifier);
+        let form = document.querySelector("#dz-" + transmorpherIdentifier);
         let card = form.closest('.card');
         let cardHeader = card.querySelector('.badge');
         if (data.success) {
@@ -86,6 +86,6 @@ if (!window.transmorpherScriptLoaded) {
         cardHeader.className = '';
         card.classList.add('card', `border-${state}`);
         cardHeader.classList.add('badge', `badge-${state}`);
-        cardHeader.textContent = state;
+        cardHeader.textContent = state[0].toUpperCase() + state.slice(1);
     }
 }

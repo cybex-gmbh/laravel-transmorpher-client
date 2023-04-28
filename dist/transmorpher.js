@@ -46,7 +46,7 @@ if (!window.transmorpherScriptLoaded) {
   };
 
   window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute) {
-    var csrfToken = document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value;
+    var csrfToken = document.querySelector("#dz-" + transmorpherIdentifier + " > input[name='_token']").value;
     fetch(transmorpherHandleUploadResponseRoute, {
       method: "POST",
       headers: {
@@ -65,7 +65,7 @@ if (!window.transmorpherScriptLoaded) {
     });
   };
   window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken) {
-    var form = document.querySelector("#" + transmorpherIdentifier);
+    var form = document.querySelector("#dz-" + transmorpherIdentifier);
     var card = form.closest('.card');
     var cardHeader = card.querySelector('.badge');
     if (data.success) {
@@ -90,7 +90,7 @@ if (!window.transmorpherScriptLoaded) {
     cardHeader.className = '';
     card.classList.add('card', "border-".concat(state));
     cardHeader.classList.add('badge', "badge-".concat(state));
-    cardHeader.textContent = state;
+    cardHeader.textContent = state[0].toUpperCase() + state.slice(1);
   };
 }
 
