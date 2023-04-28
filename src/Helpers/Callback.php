@@ -23,8 +23,8 @@ class Callback
             return response()->noContent(403);
         }
 
-        $body              = json_decode($verifiedRequest, true);
-        $protocolEntry     = TransmorpherProtocol::whereIdToken($body['id_token'])->first();
+        $body = json_decode($verifiedRequest, true);
+        $protocolEntry = TransmorpherProtocol::whereIdToken($body['callback_token'])->first();
         $transmorpherMedia = $protocolEntry->TransmorpherMedia;
 
         if ($body['success']) {

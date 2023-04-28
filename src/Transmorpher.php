@@ -113,10 +113,10 @@ abstract class Transmorpher
      */
     public function setVersion(int $versionNumber): array
     {
-        $request       = $this->configureApiRequest();
+        $request = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response      = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
-            'id_token'     => $protocolEntry->id_token,
+        $response = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
+            'callback_token' => $protocolEntry->id_token,
             'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
         ]);
 
