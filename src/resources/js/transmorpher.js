@@ -4,7 +4,7 @@ if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
 
-    window.startPolling = function (transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, csrfToken, card, cardHeader) {
+    window.startPolling = function (transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, uploadToken, csrfToken, card, cardHeader) {
         let statusPollingVariable = `statusPolling${transmorpherIdentifier}`
         let startTime = new Date().getTime();
         window[statusPollingVariable] = setInterval(function () {
@@ -12,18 +12,14 @@ if (!window.transmorpherScriptLoaded) {
                 clearInterval(window[statusPollingVariable]);
             }
             fetch(transmorpherStateUpdateRoute, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": csrfToken,
-                },
-                body: JSON.stringify({
-                    transmorpher_media_key: transmorpherMediaKey,
+                method: "POST", headers: {
+                    "Content-Type": "application/json", "X-CSRF-Token": csrfToken,
+                }, body: JSON.stringify({
+                    upload_token: uploadToken,
                 }),
-            })
-                .then(response => {
-                    return response.json();
-                }).then(data => {
+            }).then(response => {
+                return response.json();
+            }).then(data => {
                 if (data.state === 'success') {
                     setStatusDisplay(card, cardHeader, 'success');
                     document.querySelector(`#${transmorpherIdentifier} > .video-transmorpher`).src = data.url;
@@ -31,32 +27,30 @@ if (!window.transmorpherScriptLoaded) {
                 } else if (data.state === 'error') {
                     setStatusDisplay(card, cardHeader, 'error');
                     clearInterval(window[statusPollingVariable]);
+                } else if (data.state === 'deleted') {
+                    setStatusDisplay(card, cardHeader, 'error')
+                    clearInterval(window[statusPollingVariable]);
                 }
             })
         }, 5000); // Poll every 5 seconds
     }
 
-    window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute) {
+    window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute, uploadToken) {
         let csrfToken = document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value
         fetch(transmorpherHandleUploadResponseRoute, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": csrfToken,
-            },
-            body: JSON.stringify({
-                transmorpher_media_key: transmorpherMediaKey,
-                id_token: idToken,
-                response: response
+            method: "POST", headers: {
+                "Content-Type": "application/json", "X-CSRF-Token": csrfToken,
+            }, body: JSON.stringify({
+                transmorpher_media_key: transmorpherMediaKey, id_token: idToken, response: response
             })
         }).then(response => {
             return response.json();
         }).then(data => {
-            handleDropzoneResult(data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken);
+            handleDropzoneResult(data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken);
         });
     }
 
-    window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken) {
+    window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken) {
         let form = document.querySelector("#" + transmorpherIdentifier);
         let card = form.closest('.card');
         let cardHeader = card.querySelector('.badge');
@@ -66,7 +60,7 @@ if (!window.transmorpherScriptLoaded) {
 
             if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
                 setStatusDisplay(card, cardHeader, 'processing');
-                startPolling(transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, csrfToken, card, cardHeader)
+                startPolling(transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, uploadToken, csrfToken, card, cardHeader)
             } else {
                 setStatusDisplay(card, cardHeader, 'success');
             }

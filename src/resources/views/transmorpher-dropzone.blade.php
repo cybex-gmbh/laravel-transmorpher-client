@@ -30,7 +30,8 @@
                     </video>
                 @else
                     <img src="{{$transmorpher->getUrl()}}"
-                         alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
+                         alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"
+                         class="video-transmorpher" />
                 @endif
             @endif
         </form>
@@ -46,7 +47,7 @@
     cardHeader = card.querySelector('.badge');
 
     if (form.querySelector('.video-transmorpher') && cardHeader.classList.contains('badge-processing')) {
-        startPolling('{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}', {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}', csrfToken, card, cardHeader)
+        startPolling('{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}', {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}', '{{$transmorpher->getTransmorpherMedia()->last_upload_token}}', csrfToken, card, cardHeader)
     }
 
     new Dropzone("#{{$transmorpher->getIdentifier()}}", {
@@ -59,6 +60,7 @@
         uploadMultiple: false,
         paramName: 'file',
         idToken: null,
+        uploadToken: null,
         init: function () {
             this.on("addedfile", function () {
                 if (this.files[1] != null) {
@@ -83,6 +85,7 @@
                     this.options.idToken = data.id_token;
                     done(data);
                 }
+                this.options.uploadToken = data.upload_token
                 this.options.url = '{{ $transmorpher->getWebUploadUrl() }}' + data.upload_token;
                 this.options.params = function (files, xhr, chunk) {
                     if (chunk) {
@@ -114,10 +117,13 @@
                 this.options.idToken,
                     {{ $transmorpher->getTransmorpherMedia()->getKey() }},
                 '{{$transmorpher->getIdentifier()}}',
-                '{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}'
+                '{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}',
+                this.options.uploadToken
             );
         },
         error: function (file, response) {
+            clearInterval(window['statusPolling' + '{{$transmorpher->getIdentifier()}}']);
+
             handleUploadResponse(
                 file,
                 response,
@@ -125,7 +131,8 @@
                 this.options.idToken,
                     {{ $transmorpher->getTransmorpherMedia()->getKey() }},
                 '{{$transmorpher->getIdentifier()}}',
-                '{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}'
+                '{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}',
+                this.options.uploadToken
             );
         },
     });

@@ -14,7 +14,7 @@ __webpack_require__.r(__webpack_exports__);
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
-  window.startPolling = function (transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, csrfToken, card, cardHeader) {
+  window.startPolling = function (transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, uploadToken, csrfToken, card, cardHeader) {
     var statusPollingVariable = "statusPolling".concat(transmorpherIdentifier);
     var startTime = new Date().getTime();
     window[statusPollingVariable] = setInterval(function () {
@@ -28,7 +28,7 @@ if (!window.transmorpherScriptLoaded) {
           "X-CSRF-Token": csrfToken
         },
         body: JSON.stringify({
-          transmorpher_media_key: transmorpherMediaKey
+          upload_token: uploadToken
         })
       }).then(function (response) {
         return response.json();
@@ -40,12 +40,15 @@ if (!window.transmorpherScriptLoaded) {
         } else if (data.state === 'error') {
           setStatusDisplay(card, cardHeader, 'error');
           clearInterval(window[statusPollingVariable]);
+        } else if (data.state === 'deleted') {
+          setStatusDisplay(card, cardHeader, 'error');
+          clearInterval(window[statusPollingVariable]);
         }
       });
     }, 5000); // Poll every 5 seconds
   };
 
-  window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute) {
+  window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute, uploadToken) {
     var csrfToken = document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value;
     fetch(transmorpherHandleUploadResponseRoute, {
       method: "POST",
@@ -61,10 +64,10 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (data) {
-      handleDropzoneResult(data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken);
+      handleDropzoneResult(data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken);
     });
   };
-  window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken) {
+  window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken) {
     var form = document.querySelector("#" + transmorpherIdentifier);
     var card = form.closest('.card');
     var cardHeader = card.querySelector('.badge');
@@ -73,7 +76,7 @@ if (!window.transmorpherScriptLoaded) {
       form.querySelector('.dz-preview').remove();
       if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
         setStatusDisplay(card, cardHeader, 'processing');
-        startPolling(transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, csrfToken, card, cardHeader);
+        startPolling(transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, uploadToken, csrfToken, card, cardHeader);
       } else {
         setStatusDisplay(card, cardHeader, 'success');
       }
