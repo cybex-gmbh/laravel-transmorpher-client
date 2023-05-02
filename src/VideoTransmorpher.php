@@ -73,9 +73,9 @@ class VideoTransmorpher extends Transmorpher
     {
         $request = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response = $request->post($this->getS2sApiUrl('video/token'), [
+        $response = $request->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
             'identifier' => $this->getIdentifier(),
-            'id_token' => $protocolEntry->id_token,
+            'callback_token' => $protocolEntry->id_token,
             'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
         ]);
         $body = json_decode($response, true);

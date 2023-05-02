@@ -162,7 +162,7 @@ If you want to make sure you will always have the most recent assets, even when 
 }
 ```
 
-If you would like to customize the component in any way, you can also publish it to your `resources` directory:
+If you would like to customize the Dropzone component in any way, you can also publish it to your `resources` directory:
 
 ```bash
 php artisan vendor:publish --tag=transmorpher.views

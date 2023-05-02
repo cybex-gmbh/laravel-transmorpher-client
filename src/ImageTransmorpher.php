@@ -85,7 +85,7 @@ class ImageTransmorpher extends Transmorpher
     {
         $request = $this->configureApiRequest();
         $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response = $request->post($this->getS2sApiUrl('image/token'), ['identifier' => $this->getIdentifier()]);
+        $response = $request->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
         $body = json_decode($response, true);
 
         $success = $body['success'] ?? false;
