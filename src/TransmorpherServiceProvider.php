@@ -8,8 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
+use Transmorpher\Helpers\VersionManagement;
 use Transmorpher\ViewComponents\TransmorpherDropzone;
-use Transmorpher\ViewComponents\VideoDropzone;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {
@@ -57,6 +57,9 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::post('transmorpher/video/token', [UploadToken::class, 'getVideoUploadToken'])->name('transmorpherVideoToken');;
             Route::post('transmorpher/handleUploadResponse', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
             Route::post('transmorpher/stateUpdate', StateUpdate::class)->name('transmorpherStateUpdate');
+            Route::get('transmorpher/getVersions/{transmorpherMedia}', [VersionManagement::class, 'getVersions'])->name('transmorpherGetVersions');
+            Route::post('transmorpher/setVersion/{transmorpherMedia}', [VersionManagement::class, 'setVersion'])->name('transmorpherSetVersion');
+            Route::post('transmorpher/delete/{transmorpherMedia}', [VersionManagement::class, 'delete'])->name('transmorpherDelete');
         });
     }
 }

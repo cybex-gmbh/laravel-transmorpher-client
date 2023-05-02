@@ -13,7 +13,7 @@
   background-size: 40px 40px;
 
   .dz-message {
-    background-color: $darkgrey;
+    background-color: $darkgreySemiTransparent;
     border: 1px dotted $grey;
     margin: 0;
     padding: 1rem;
@@ -41,7 +41,6 @@
   border-radius: .25em;
   background-color: $darkgrey;
   margin-bottom: 1.5rem;
-  max-width: 300px;
   box-shadow: 0 1px 1px 0 rgba(60,75,100,.14),0 2px 1px -1px rgba(60,75,100,.12),0 1px 3px 0 rgba(60,75,100,.2);
 
   .card-header {
@@ -99,4 +98,30 @@
 
 .d-hidden {
   visibility: hidden;
+}
+
+.d-none {
+  display: none;
+}
+
+.modal {
+  width: 500px;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+  z-index: 1;
 }

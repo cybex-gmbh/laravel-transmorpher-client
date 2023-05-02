@@ -1,44 +1,67 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-processing @endif">
-    <div class="card-header">
-        {{$transmorpher->getTransmorpherMedia()->differentiator}}
-        <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-hidden @endif">
+<div>
+    <span id="csrf" class="d-hidden">@csrf</span>
+    <div class="card @if(!$transmorpher->getTransmorpherMedia()->is_ready) border-processing @endif">
+        <div class="card-header">
+            {{$transmorpher->getTransmorpherMedia()->differentiator}}
+            <span class="badge @if($transmorpher->getTransmorpherMedia()->last_response === \Transmorpher\Enums\State::PROCESSING) badge-processing @else d-hidden @endif">
                 Processing
         </span>
-        <div class="details">
-            @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
-                <a target="_blank" href="{{$transmorpher->getUrl()}}"><img src="{{ asset('vendor/transmorpher/icons/magnifying-glass.svg') }}" alt="Enlarge image" class="icon"></a>
-            @endif
-            <img src="{{ asset('vendor/transmorpher/icons/more-info.svg') }}" alt="More information" class="icon">
+            <div class="details">
+                @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
+                    <a target="_blank" href="{{$transmorpher->getUrl()}}"><img src="{{ asset('vendor/transmorpher/icons/magnifying-glass.svg') }}" alt="Enlarge image" class="icon"></a>
+                @endif
+                <img role="button" src="{{ asset('vendor/transmorpher/icons/more-info.svg') }}" alt="More information" class="icon"
+                     onclick="openModal('{{ $transmorpher->getIdentifier() }}',
+                      '{{ route('transmorpherGetVersions', $transmorpher->getTransmorpherMedia()->getKey()) }}',
+                      {{ $transmorpher->getTransmorpherMedia()->getKey() }},
+                      '{{ route('transmorpherSetVersion', $transmorpher->getTransmorpherMedia()->getKey()) }}')">
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="POST" class="dropzone" id="dz-{{$transmorpher->getIdentifier()}}">
+                @csrf
+                @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
+                    <div class="dz-image image-transmorpher">
+                        <img data-delivery-url="{{ $transmorpher->getDeliveryUrl() }}"
+                             src="{{$transmorpher->getUrl(['height' => 150])}}"
+                             alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
+                    </div>
+                @else
+                    @if ($transmorpher->getTransmorpherMedia()->is_ready)
+                        <video preload="metadata" controls style="height:150px" class="video-transmorpher">
+                            <source src="{{ $transmorpher->getMp4Url() }}" type="video/mp4">
+                            <p style="padding: 5px;">
+                                Your browser doesn't support HTML video. Here is a
+                                <a href="{{ $transmorpher->getMp4Url() }}">link to the video</a> instead.
+                            </p>
+                        </video>
+                    @else
+                        <img src="{{$transmorpher->getUrl()}}"
+                             alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
+                    @endif
+                @endif
+            </form>
         </div>
     </div>
-    <div class="card-body">
-        <form method="POST" class="dropzone" id="dz-{{$transmorpher->getIdentifier()}}">
-            @csrf
-            @if ($transmorpher->getTransmorpherMedia()->type === \Transmorpher\Enums\MediaType::IMAGE)
-                <div class="dz-image image-transmorpher">
-                    <img data-delivery-url="{{ $transmorpher->getDeliveryUrl() }}"
-                         src="{{$transmorpher->getUrl(['height' => 150])}}"
-                         alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
-                </div>
-            @else
-                @if ($transmorpher->getTransmorpherMedia()->is_ready)
-                    <video preload="metadata" controls style="height:150px" class="video-transmorpher">
-                        <source src="{{ $transmorpher->getMp4Url() }}" type="video/mp4">
-                        <p style="padding: 5px;">
-                            Your browser doesn't support HTML video. Here is a
-                            <a href="{{ $transmorpher->getMp4Url() }}">link to the video</a> instead.
-                        </p>
-                    </video>
-                @else
-                    <img src="{{$transmorpher->getUrl()}}"
-                         alt="{{$transmorpher->getTransmorpherMedia()->differentiator}}"/>
-                @endif
-            @endif
-        </form>
+
+    <div id="modal-{{$transmorpher->getIdentifier()}}" class="modal card d-none">
+        <div class="card-header">
+            {{$transmorpher->getTransmorpherMedia()->differentiator}}
+            <button class="btn-close" onclick="closeModal(this)">⨉</button>
+        </div>
+        <div class="card-body">
+            <div class="versionInformation">
+                <p>Current version: <span class="currentVersion"></span></p>
+                <p>Version overview:</p>
+                <ul class="versionList"></ul>
+            </div>
+            <button class="badge badge-error">Delete</button>
+        </div>
     </div>
+    <div class="modal-overlay d-none"></div>
 </div>
 
 <script type="text/javascript">
