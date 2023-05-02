@@ -46,7 +46,7 @@
     cardHeader = card.querySelector('.badge');
 
     if (form.querySelector('.video-transmorpher') && cardHeader.classList.contains('badge-processing')) {
-        startPolling('{{ route('transmorpherStateUpdate') }}', {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}', csrfToken, card, cardHeader)
+        startPolling('{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}', {{ $transmorpher->getTransmorpherMedia()->getKey() }}, '{{$transmorpher->getIdentifier()}}', csrfToken, card, cardHeader)
     }
 
     new Dropzone("#{{$transmorpher->getIdentifier()}}", {
@@ -67,7 +67,7 @@
             });
         },
         accept: function (file, done) {
-            fetch('{{ $transmorpher->getUploadTokenRoute() }}', {
+            fetch('{{ route('transmorpherUploadToken', $transmorpher->getTransmorpherMedia()->getKey()) }}', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -110,22 +110,22 @@
             handleUploadResponse(
                 file,
                 response,
-                '{{ route('transmorpherHandleUploadResponse') }}',
+                '{{ route('transmorpherHandleUploadResponse', $transmorpher->getTransmorpherMedia()->getKey()) }}',
                 this.options.idToken,
                     {{ $transmorpher->getTransmorpherMedia()->getKey() }},
                 '{{$transmorpher->getIdentifier()}}',
-                '{{ route('transmorpherStateUpdate') }}'
+                '{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}'
             );
         },
         error: function (file, response) {
             handleUploadResponse(
                 file,
                 response,
-                '{{ route('transmorpherHandleUploadResponse') }}',
+                '{{ route('transmorpherHandleUploadResponse', $transmorpher->getTransmorpherMedia()->getKey()) }}',
                 this.options.idToken,
                     {{ $transmorpher->getTransmorpherMedia()->getKey() }},
                 '{{$transmorpher->getIdentifier()}}',
-                '{{ route('transmorpherStateUpdate') }}'
+                '{{ route('transmorpherStateUpdate', $transmorpher->getTransmorpherMedia()->getKey()) }}'
             );
         },
     });
