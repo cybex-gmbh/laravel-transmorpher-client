@@ -63,12 +63,19 @@ abstract class Transmorpher
         $response      = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
         $body          = json_decode($response->body(), true);
 
-        if ($body['success']) {
+        $success = $body['success'] ?? false;
+
+        if ($success) {
             $this->transmorpherMedia->update(['is_ready' => 0, 'last_response' => State::DELETED]);
             $protocolEntry->update(['state' => State::DELETED]);
         } else {
             $this->transmorpherMedia->update(['last_response' => State::ERROR]);
-            $protocolEntry->update(['state' => State::ERROR, 'message' => $body['response']]);
+            $protocolEntry->update(['state' => State::ERROR, 'message' => $body['message']]);
+
+            return [
+                'success' => $success,
+                'response' => $body['message'],
+            ];
         }
 
         return $body;
@@ -91,6 +98,14 @@ abstract class Transmorpher
             );
         }
 
+        return $this->getPlaceholderUrl();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlaceholderUrl(): string
+    {
         return config('transmorpher.delivery.placeholder_url');
     }
 

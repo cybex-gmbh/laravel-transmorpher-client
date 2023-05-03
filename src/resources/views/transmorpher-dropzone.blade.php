@@ -11,34 +11,33 @@
         </span>
             <div class="details">
                 @if ($isImage)
-                    <a target="_blank" href="{{ $transmorpher->getUrl() }}"><img src="{{ asset('vendor/transmorpher/icons/magnifying-glass.svg') }}" alt="Enlarge image" class="icon"></a>
+                    <a target="_blank" href="{{ $motif->getUrl() }}"><img src="{{ asset('vendor/transmorpher/icons/magnifying-glass.svg') }}" alt="Enlarge image" class="icon"></a>
                 @endif
                 <img role="button" src="{{ asset('vendor/transmorpher/icons/more-info.svg') }}" alt="More information" class="icon"
-                     onclick="openModal('{{ $transmorpher->getIdentifier() }}',
-                      '{{ route('transmorpherGetVersions', $transmorpher->getTransmorpherMedia()->getKey()) }}',
-                      {{ $transmorpher->getTransmorpherMedia()->getKey() }},
-                      '{{ route('transmorpherSetVersion', $transmorpher->getTransmorpherMedia()->getKey()) }}')">
+                     onclick="openModal('{{ $motif->getIdentifier() }}')">
             </div>
         </div>
         <div class="card-body">
-            <form method="POST" class="dropzone" id="dz-{{ $transmorpher->getIdentifier() }}">
+            <form method="POST" class="dropzone" id="dz-{{ $motif->getIdentifier() }}">
                 @if ($isImage)
                     <div class="dz-image image-transmorpher">
-                        <img data-delivery-url="{{ $transmorpher->getDeliveryUrl() }}"
-                             src="{{$transmorpher->getUrl(['height' => 150])}}"
+                        <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
+                             data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                             src="{{$motif->getUrl(['height' => 150])}}"
                              alt="{{ $differentiator }}"/>
                     </div>
                 @else
                     @if ($isReady)
                         <video preload="metadata" controls style="height:150px" class="video-transmorpher">
-                            <source src="{{ $transmorpher->getMp4Url() }}" type="video/mp4">
+                            <source src="{{ $motif->getMp4Url() }}" type="video/mp4">
                             <p style="padding: 5px;">
                                 Your browser doesn't support HTML video. Here is a
-                                <a href="{{ $transmorpher->getMp4Url() }}">link to the video</a> instead.
+                                <a href="{{ $motif->getMp4Url() }}">link to the video</a> instead.
                             </p>
                         </video>
                     @else
-                        <img src="{{ $motif->getUrl() }}"
+                        <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                             src="{{ $motif->getUrl() }}"
                              alt="{{ $differentiator }}"
                              class="video-transmorpher"/>
                     @endif
@@ -47,7 +46,7 @@
         </div>
     </div>
 
-    <div id="modal-{{$transmorpher->getIdentifier()}}" class="modal card d-none">
+    <div id="modal-{{$motif->getIdentifier()}}" class="modal card d-none">
         <div class="card-header">
             {{ $differentiator }}
             <button class="btn-close" onclick="closeModal(this)">⨉</button>
@@ -58,7 +57,9 @@
                 <p>Version overview:</p>
                 <ul class="versionList"></ul>
             </div>
-            <button class="badge badge-error">Delete</button>
+            <button class="badge badge-error" onclick="deleteTransmorpherMedia('{{ $motif->getIdentifier() }}')">
+                Delete
+            </button>
         </div>
     </div>
     <div class="modal-overlay d-none"></div>
@@ -72,11 +73,14 @@
         csrfToken: document.querySelector('#csrf > input[name="_token"]').value,
         routes: {
             stateUpdate: '{{ $stateUpdateRoute }}',
-            handleUploadResponse: '{{ $handleUploadResponseRoute }}'
+            handleUploadResponse: '{{ $handleUploadResponseRoute }}',
+            getVersions: '{{ $getVersionsRoute }}',
+            setVersion: '{{ $setVersionRoute }}',
+            delete: '{{ $deleteRoute }}'
         }
     }
 
-    form = document.querySelector('#dz-{{ $transmorpher->getIdentifier() }}');
+    form = document.querySelector('#dz-{{ $motif->getIdentifier() }}');
     card = form.closest('.card');
     cardHeader = card.querySelector('.badge');
 
@@ -84,8 +88,8 @@
         startPolling('{{ $motif->getIdentifier() }}', '{{ $lastUploadToken }}');
     }
 
-    new Dropzone("#dz-{{$transmorpher->getIdentifier()}}", {
-        url: '{{ $transmorpher->getWebUploadUrl() }}',
+    new Dropzone("#dz-{{$motif->getIdentifier()}}", {
+        url: '{{ $motif->getWebUploadUrl() }}',
         chunking: true,
         chunkSize: {{ $motif->getChunkSize() }},
         maxFilesize: {{ $motif->getMaxFileSize() }},
@@ -107,7 +111,6 @@
 
             if (errorElement = this.element.querySelector('.dz-error')) {
                 errorElement.remove();
-
             }
 
             fetch('{{ $uploadTokenRoute }}', {
@@ -147,14 +150,9 @@
         success: function (file, response) {
             this.element.querySelector('.dz-default').style.display = 'block';
             this.element.querySelector('.dz-preview').remove();
-            clearInterval(window['statusPolling' + '{{$motif->getIdentifier()}}']);
 
-            if ('{{ $isImage }}') {
-                imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img');
-                imgElement.src = imgElement.dataset.deliveryUrl + '/' + response.public_path + '/' + '{{ $motif->getTransformations(['height' => 150]) }}' + '?v=' + response.version;
-                this.element.closest('.card').querySelector('.details > a').href = imgElement.dataset.deliveryUrl + '/' + response.public_path + '?v=' + response.version;
-            }
-
+            clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+            updateImageDisplay('{{$motif->getIdentifier()}}', response.public_path, '{{ $motif->getTransformations(['height' => 150]) }}', response.version)
             handleUploadResponse(
                 file,
                 response,

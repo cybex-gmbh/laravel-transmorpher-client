@@ -23,7 +23,7 @@ if (!window.transmorpherScriptLoaded) {
             }).then(data => {
                 if (data.state === 'success') {
                     setStatusDisplay(transmorpherIdentifier, 'success');
-                    document.querySelector(`#${transmorpherIdentifier} > .video-transmorpher`).src = data.url;
+                    document.querySelector(`#dz-${transmorpherIdentifier} > .video-transmorpher`).src = data.url;
                     clearInterval(window[statusPollingVariable]);
                 } else if (data.state !== 'processing') {
                     setStatusDisplay(transmorpherIdentifier, 'error');
@@ -69,7 +69,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.setStatusDisplay = function (transmorpherIdentifier, state) {
-        let form = document.querySelector('#' + transmorpherIdentifier);
+        let form = document.querySelector(`#dz-${transmorpherIdentifier}`);
         let card = form.closest('.card');
         let cardHeader = card.querySelector('.badge');
 
@@ -80,35 +80,34 @@ if (!window.transmorpherScriptLoaded) {
         cardHeader.textContent = state[0].toUpperCase() + state.slice(1);
     }
 
-    window.updateVersionInformation = function (getVersionsRoute, modal, setVersionRoute, transmorpherMediaKey) {
-        console.log(modal.querySelector('.versionList'));
-
+    window.updateVersionInformation = function (transmorpherIdentifier, modal) {
         let versionList = modal.querySelector('.versionList');
         let currentVersion = modal.querySelector('.currentVersion');
 
         versionList.textContent = '';
 
-        fetch(getVersionsRoute, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
+        fetch(motifs[transmorpherIdentifier].routes.getVersions, {
+            method: 'GET', headers: {
+                'Content-Type': 'application/json',
             },
         }).then(response => {
             return response.json();
         }).then(versionInformation => {
             currentVersion.textContent = versionInformation.currentVersion;
 
-            for (const [version, timestamp] of Object.entries(versionInformation.versions)) {
+            for (const [version, timestamp] of Object.entries(versionInformation.versions ?? [])) {
                 let li = document.createElement('li');
                 let div = document.createElement('div');
                 let button = document.createElement('button');
+                let span = document.createElement('span');
+
+                span.textContent = `${version}: ${new Date(timestamp * 1000).toDateString()}`;
                 button.textContent = 'set';
                 button.classList.add('badge', 'badge-processing');
                 button.onclick = function () {
-                    setVersion(setVersionRoute, transmorpherMediaKey, version, getVersionsRoute, modal)
+                    setVersion(transmorpherIdentifier, version, modal)
                 }
-                let span = document.createElement('span');
-                span.textContent = `${version}: ${new Date(timestamp * 1000).toDateString()}`;
+
                 div.append(span, button)
                 li.appendChild(div)
                 versionList.appendChild(li);
@@ -117,20 +116,18 @@ if (!window.transmorpherScriptLoaded) {
 
     }
 
-    window.setVersion = function (setVersionRoute, transmorpherMediaKey, version, getVersionsRoute, modal) {
-        fetch(setVersionRoute, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": document.querySelector('#csrf > input[name="_token"]').value
-            },
-            body: JSON.stringify({
+    window.setVersion = function (transmorpherIdentifier, version, modal) {
+        fetch(motifs[transmorpherIdentifier].routes.setVersion, {
+            method: 'POST', headers: {
+                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+            }, body: JSON.stringify({
                 version: version,
             })
         }).then(response => {
             return response.json();
         }).then(data => {
-            updateVersionInformation(getVersionsRoute, modal, setVersionRoute, transmorpherMediaKey);
+            updateVersionInformation(transmorpherIdentifier, modal);
+            updateImageDisplay(transmorpherIdentifier, data.public_path, 'h-150', data.version);
         });
     }
 
@@ -142,18 +139,43 @@ if (!window.transmorpherScriptLoaded) {
         overlay.classList.add('d-none');
     }
 
-    window.openModal = function (transmorpherIdentifier, getVersionsRoute, transmorpherMediaKey, setVersionRoute) {
+    window.openModal = function (transmorpherIdentifier) {
         let modal = document.querySelector(`#modal-${transmorpherIdentifier}`);
         let overlay = modal.nextElementSibling;
 
         modal.classList.remove('d-none');
         overlay.classList.remove('d-none');
 
-        updateVersionInformation(getVersionsRoute, modal, setVersionRoute, transmorpherMediaKey);
+        updateVersionInformation(transmorpherIdentifier, modal);
+    }
+
+    window.deleteTransmorpherMedia = function (transmorpherIdentifier) {
+        fetch(motifs[transmorpherIdentifier].routes.delete, {
+            method: 'POST', headers: {
+                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+            },
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            updateVersionInformation(transmorpherIdentifier, document.querySelector(`#modal-${transmorpherIdentifier}`));
+            updateImageDisplay(transmorpherIdentifier, null, null, null, true);
+        });
+    }
+
+    window.updateImageDisplay = function (transmorpherIdentifier, path, transformations, version, placeholder = false) {
+        let imgElement;
+
+        if (imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)) {
+            imgElement.src = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + `/${path}/${transformations}?v=${version}`;
+            imgElement.closest('.card').querySelector('.details > a').href = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + `/${path}`;
+        } else if (placeholder) {
+            imgElement = document.querySelector(`#dz-${transmorpherIdentifier} > .video-transmorpher`);
+            imgElement.src = imgElement.dataset.placeholderUrl;
+        }
     }
 
     window.displayError = function (message, transmorpherIdentifier) {
-        let form = document.querySelector('#' + transmorpherIdentifier);
+        let form = document.querySelector('#dz-' + transmorpherIdentifier);
         if (!form.querySelector('.dz-preview')) {
             form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;
         }

@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
+use Transmorpher\Helpers\VersionManagement;
 use Transmorpher\ViewComponents\TransmorpherDropzone;
 
 class TransmorpherServiceProvider extends ServiceProvider
@@ -54,6 +55,9 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::post('transmorpher/{transmorpherMedia}/token', [UploadToken::class, 'getUploadToken'])->name('transmorpherUploadToken');
             Route::post('transmorpher/{transmorpherMedia}/handleUploadResponse', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
             Route::post('transmorpher/{transmorpherMedia}/stateUpdate', StateUpdate::class)->name('transmorpherStateUpdate');
+            Route::get('transmorpher/{transmorpherMedia}/getVersions', [VersionManagement::class, 'getVersions'])->name('transmorpherGetVersions');
+            Route::post('transmorpher/{transmorpherMedia}/setVersion', [VersionManagement::class, 'setVersion'])->name('transmorpherSetVersion');
+            Route::post('transmorpher/{transmorpherMedia}/delete', [VersionManagement::class, 'delete'])->name('transmorpherDelete');
         });
     }
 }

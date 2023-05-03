@@ -25,6 +25,6 @@ class VersionManagement
 
     public function delete(Request $request, TransmorpherMedia $transmorpherMedia)
     {
-        $transmorpherMedia = TransmorpherMedia::find($request->input('transmorpher_media_key'));
+        return response()->json($transmorpherMedia->getTransmorpher()->delete());
     }
 }
