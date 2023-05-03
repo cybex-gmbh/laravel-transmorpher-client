@@ -56,7 +56,7 @@
     cardHeader = card.querySelector('.badge');
 
     if (form.querySelector('.video-transmorpher') && cardHeader.classList.contains('badge-processing')) {
-        startPolling('{{ $motif->getIdentifier() }}', '{{ $lastUploadToken }}', card, cardHeader)
+        startPolling('{{ $motif->getIdentifier() }}', '{{ $lastUploadToken }}');
     }
 
     new Dropzone('#{{$motif->getIdentifier()}}', {
