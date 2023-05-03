@@ -8,7 +8,7 @@ use Transmorpher\Transmorpher;
 
 class TransmorpherDropzone extends Component
 {
-    public function __construct(public Transmorpher $transmorpher)
+    public function __construct(public Transmorpher $motif)
     {
     }
 
