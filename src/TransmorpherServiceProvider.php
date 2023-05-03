@@ -8,7 +8,6 @@ use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
-use Transmorpher\Helpers\VersionManagement;
 use Transmorpher\ViewComponents\TransmorpherDropzone;
 
 class TransmorpherServiceProvider extends ServiceProvider
@@ -25,7 +24,6 @@ class TransmorpherServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__ . '/../dist' => public_path('vendor/transmorpher'),
-                __DIR__ . '/resources/css/icons' => public_path('vendor/transmorpher/icons'),
             ], 'transmorpher.assets');
 
             $this->publishes([
@@ -53,13 +51,9 @@ class TransmorpherServiceProvider extends ServiceProvider
     {
         Route::post(config('transmorpher.api.callback_route'), Callback::class)->name('transmorpherCallback');
         Route::middleware('web')->group(function () {
-            Route::post('transmorpher/image/token', [UploadToken::class, 'getImageUploadToken'])->name('transmorpherImageToken');
-            Route::post('transmorpher/video/token', [UploadToken::class, 'getVideoUploadToken'])->name('transmorpherVideoToken');;
-            Route::post('transmorpher/handleUploadResponse', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
-            Route::post('transmorpher/stateUpdate', StateUpdate::class)->name('transmorpherStateUpdate');
-            Route::get('transmorpher/getVersions/{transmorpherMedia}', [VersionManagement::class, 'getVersions'])->name('transmorpherGetVersions');
-            Route::post('transmorpher/setVersion/{transmorpherMedia}', [VersionManagement::class, 'setVersion'])->name('transmorpherSetVersion');
-            Route::post('transmorpher/delete/{transmorpherMedia}', [VersionManagement::class, 'delete'])->name('transmorpherDelete');
+            Route::post('transmorpher/{transmorpherMedia}/token', [UploadToken::class, 'getUploadToken'])->name('transmorpherUploadToken');
+            Route::post('transmorpher/{transmorpherMedia}/handleUploadResponse', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
+            Route::post('transmorpher/{transmorpherMedia}/stateUpdate', StateUpdate::class)->name('transmorpherStateUpdate');
         });
     }
 }

@@ -2,7 +2,7 @@
 
 A client package for Laravel applications that use the Transmorpher media server.
 
-The client package provides a Dropzone component, which supports chunked uploads, out of the box. 
+The client package provides a Dropzone component, which supports chunked uploads, out of the box.
 
 ## Installation
 
@@ -28,7 +28,7 @@ If you want to configure certain configuration values used by the package, you c
 php artisan vendor:publish --tag=transmorpher.config
 ```
 
-There you can configure values such as the route to which the Transmorpher media server sends information after transcoding a video.  
+There you can configure values such as the route to which the Transmorpher media server sends information after transcoding a video.
 
 ### .env keys
 
@@ -53,14 +53,15 @@ The `TRANSMORPHER_DELIVERY_URL` is the Transmorpher endpoint which is used to re
 TRANSMORPHER_WEB_DELIVERY_BASE_URL=https://example.com
 ```
 
-**_NOTE:_** In case you are in a docker environment or similar, you might want to set specific URLs for server to server communication. You can do so by using the following .env keys:
+**_NOTE:_** In case you are in a docker environment or similar, you might want to set specific URLs for server to server communication. You can do so by using the following .env
+keys:
 
 ```dotenv
 TRANSMORPHER_S2S_API_BASE_URL=http://example/api
 TRANSMORPHER_S2S_CALLBACK_BASE_URL=http://example
 ```
 
-For cases in which a medium doesn't have an upload yet, you can specify a URL to a placeholder image which will be used. 
+For cases in which a medium doesn't have an upload yet, you can specify a URL to a placeholder image which will be used.
 
 ```dotenv
 TRANSMORPHER_WEB_PLACEHOLDER_URL=http://example.com/placeholder.jpg
@@ -70,7 +71,7 @@ TRANSMORPHER_WEB_PLACEHOLDER_URL=http://example.com/placeholder.jpg
 
 All Models which should be able to have media, have to implement the `HasTransmorpherMediaInterface` and use
 the `HasTransmorpherMedia` trait. The trait provides the implementation for the relation to `TransmorpherMedia`, the
-model which stores the information about uploaded images and videos.
+model which stores the information about uploaded images and videos,  as well as convenient methods for dynamically accessing your images and videos.
 
 ```php
 class YourModel extends Model implements HasTransmorpherMediaInterface
@@ -112,20 +113,20 @@ public function video(): VideoTransmorpher
 
 #### Dynamic images & videos
 
-If you need a more dynamic approach to defining images or videos for a model, you can instead use an array and a single method:
+If you need a more dynamic approach to defining images or videos for a model, you can also define an array and use the methods which are provided by the `HasTransmorpherMedia` trait.
+
+**_NOTE:_** These property names are not customizable when using the trait.
 
 ```php
-public $transmorpherImages = [
+protected $transmorpherImages = [
     'frontView',
     'sideView',
 ];
 
-public function image($motif): ImageTransmorpher
-{
-    return ImageTransmorpher::getInstanceFor($this, $motif);
-}
+protected $transmorpherVideos = [];
 ```
 
+The trait provides the methods `images()` and `videos()`, which will return a collection with the motifs as key and the corresponding `Transmorpher` class as value.
 This can be used to iterate over all images for a model for example.
 
 The instance of the corresponding `Transmorpher`-class can then be used to make API calls to the Transmorpher media
@@ -144,7 +145,8 @@ $imageTransmorpher->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg'
 
 ## Dropzone Blade component & assets
 
-For using the client package in the frontend you are provided with a convenient Dropzone component. In order to use the component, you will have to publish the necessary assets to your public folder.
+For using the client package in the frontend you are provided with a convenient Dropzone component. In order to use the component, you will have to publish the necessary assets to
+your public folder.
 
 ```bash
 php artisan vendor:publish --tag=transmorpher.assets
@@ -158,7 +160,7 @@ If you want to make sure you will always have the most recent assets, even when 
     "post-update-cmd": [
       "@php artisan vendor:publish --tag=transmorpher.assets --ansi --force"
     ]
-  }  
+  }
 }
 ```
 
@@ -173,18 +175,19 @@ php artisan vendor:publish --tag=transmorpher.views
 To use the dropzone component in a template, you can simply include it like this:
 
 ```html
-<x-transmorpher-dropzone :transmorpher="$yourModel->imageFrontView()"></x-transmorpher-dropzone>
+
+<x-transmorpher-dropzone :motif="$yourModel->imageFrontView()"></x-transmorpher-dropzone>
 ```
 
-Depending on whether you pass an ImageTransmorpher or a VideoTransmorpher, the component will function as your upload form for images or videos. 
+Depending on whether you pass an ImageTransmorpher or a VideoTransmorpher, the component will function as your upload form for images or videos.
 
 #### Dynamic usage
 
 If you want a more dynamic approach, to display a dropzone for each available image or video, you can use the dynamic way of defining images and videos mentioned above.
 
 ```html
-@foreach($yourModel->transmorpherImages as $differentiator)
-    <x-transmorpher-dropzone :transmorpher="$yourModel->image($differentiator)"></x-transmorpher-dropzone>
+@foreach($yourModel->images() as $imageMotif)
+    <x-transmorpher-dropzone :motif="$imageMotif"></x-transmorpher-dropzone>
 @endforeach
 ```
 

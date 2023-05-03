@@ -28,7 +28,8 @@ class TransmorpherMedia extends Model
         'public_path',
         'type',
         'is_ready',
-        'last_response'
+        'last_response',
+        'last_upload_token'
     ];
 
     /**

@@ -91,6 +91,8 @@ class ImageTransmorpher extends Transmorpher
         $success = $body['success'] ?? false;
 
         if ($success) {
+            $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
+
             return [
                 'success' => $success,
                 'upload_token' => $body['upload_token'],

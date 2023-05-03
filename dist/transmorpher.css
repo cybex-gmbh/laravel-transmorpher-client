@@ -265,26 +265,20 @@
 }
 
 .dropzone {
+  border: none;
+  border-radius: 0 0 15px 15px;
+  height: 100%;
+  padding: 2px;
   display: flex;
+  justify-content: space-between;
   flex-direction: column;
   align-items: center;
-  min-height: 150px;
-  border: 2px solid rgba(0, 0, 0, 0.2980392157);
-  border-radius: 0;
-  padding: 20px;
-  background-image: linear-gradient(135deg, #ebedef 25%, #d8dbe0 0, #d8dbe0 50%, #ebedef 0, #ebedef 75%, #d8dbe0 0, #d8dbe0);
-  background-size: 40px 40px;
 }
 .dropzone .dz-message {
-  background-color: rgba(235, 237, 239, 0.5);
-  border: 1px dotted #d8dbe0;
-  margin: 0;
+  background-color: white;
+  border: 2px dotted grey;
+  margin: 5px;
   padding: 1rem;
-}
-.dropzone .dz-message .dz-button {
-  background: none;
-  border: none;
-  padding: 0;
 }
 .dropzone .dz-preview.dz-image-preview {
   background: transparent;
@@ -296,35 +290,31 @@
 .card {
   display: flex;
   flex-direction: column;
-  border: 1px solid #ced2d8;
-  border-radius: 0.25em;
-  background-color: #ebedef;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 1px 1px 0 rgba(60, 75, 100, 0.14), 0 2px 1px -1px rgba(60, 75, 100, 0.12), 0 1px 3px 0 rgba(60, 75, 100, 0.2);
+  width: 200px;
+  border: black 2px solid;
+  border-radius: 15px;
+  max-height: 400px;
 }
 .card .card-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid #d8dbe0;
-}
-.card .card-header .details {
-  display: flex;
-  gap: 5px;
-}
-.card .card-header .details .icon {
-  height: 20px;
-  width: 20px;
+  padding: 5px;
+  background-color: lightgrey;
+  border-bottom: black 2px solid;
+  border-radius: 15px 15px 0 0;
 }
 .card .card-body {
-  flex: 1 1 auto;
-  padding: 1.25rem;
+  height: 100%;
 }
 
 .badge {
   padding: 3px;
-  border-radius: 5px;
+  border-radius: 10px;
+}
+
+.badge::first-letter {
+  text-transform: capitalize;
 }
 
 .badge-processing {
@@ -351,33 +341,10 @@
   border-color: orange;
 }
 
-.d-hidden {
-  visibility: hidden;
-}
-
 .d-none {
   display: none;
 }
 
-.modal {
-  width: 500px;
-  position: absolute;
-  left: 50%;
-  top: 40%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.1);
-  -webkit-backdrop-filter: blur(2px);
-          backdrop-filter: blur(2px);
-  z-index: 1;
+.d-hidden {
+  visibility: hidden;
 }
