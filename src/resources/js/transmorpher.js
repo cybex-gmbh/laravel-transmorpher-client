@@ -1,19 +1,20 @@
-import Dropzone from "dropzone";
+import Dropzone from 'dropzone';
 
 if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
+    window.motifs = [];
 
-    window.startPolling = function (transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, uploadToken, csrfToken, card, cardHeader) {
+    window.startPolling = function (transmorpherIdentifier, uploadToken) {
         let statusPollingVariable = `statusPolling${transmorpherIdentifier}`
         let startTime = new Date().getTime();
         window[statusPollingVariable] = setInterval(function () {
             if (new Date().getTime() - startTime > (1 * 60 * 60 * 24 * 1000)) {
                 clearInterval(window[statusPollingVariable]);
             }
-            fetch(transmorpherStateUpdateRoute, {
-                method: "POST", headers: {
-                    "Content-Type": "application/json", "X-CSRF-Token": csrfToken,
+            fetch(motifs[transmorpherIdentifier].routes.stateUpdate, {
+                method: 'POST', headers: {
+                    'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
                 }, body: JSON.stringify({
                     upload_token: uploadToken,
                 }),
@@ -21,11 +22,11 @@ if (!window.transmorpherScriptLoaded) {
                 return response.json();
             }).then(data => {
                 if (data.state === 'success') {
-                    setStatusDisplay(card, cardHeader, 'success');
+                    setStatusDisplay(transmorpherIdentifier, 'success');
                     document.querySelector(`#${transmorpherIdentifier} > .video-transmorpher`).src = data.url;
                     clearInterval(window[statusPollingVariable]);
                 } else if (data.state !== 'processing') {
-                    setStatusDisplay(card, cardHeader, 'error');
+                    setStatusDisplay(transmorpherIdentifier, 'error');
                     clearInterval(window[statusPollingVariable]);
                     displayError(data.response, transmorpherIdentifier);
                 }
@@ -33,42 +34,45 @@ if (!window.transmorpherScriptLoaded) {
         }, 5000); // Poll every 5 seconds
     }
 
-    window.handleUploadResponse = function (file, response, transmorpherHandleUploadResponseRoute, idToken, transmorpherMediaKey, transmorpherIdentifier, transmorpherStateUpdateRoute, uploadToken) {
-        let csrfToken = document.querySelector("#" + transmorpherIdentifier + " > input[name='_token']").value
-        fetch(transmorpherHandleUploadResponseRoute, {
-            method: "POST", headers: {
-                "Content-Type": "application/json", "X-CSRF-Token": csrfToken,
+    window.handleUploadResponse = function (file, response, transmorpherIdentifier, idToken, uploadToken) {
+        fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse, {
+            method: 'POST', headers: {
+                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
             }, body: JSON.stringify({
-                transmorpher_media_key: transmorpherMediaKey, id_token: idToken, response: response
+                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey, id_token: idToken, response: response
             })
         }).then(response => {
             return response.json();
         }).then(data => {
-            handleDropzoneResult(data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken);
+            handleDropzoneResult(data, transmorpherIdentifier, uploadToken);
         });
     }
 
-    window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken) {
-        let form = document.querySelector("#" + transmorpherIdentifier);
-        // form.querySelectorAll('.dz-preview').forEach(element => element.remove())
+    window.handleDropzoneResult = function (data, transmorpherIdentifier, uploadToken) {
+        let form = document.querySelector('#' + transmorpherIdentifier);
         let card = form.closest('.card');
         let cardHeader = card.querySelector('.badge');
+
         if (data.success) {
             form.classList.remove('dz-started');
 
             if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
-                setStatusDisplay(card, cardHeader, 'processing');
-                startPolling(transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, uploadToken, csrfToken, card, cardHeader)
+                setStatusDisplay(transmorpherIdentifier, 'processing');
+                startPolling(transmorpherIdentifier, uploadToken, card, cardHeader)
             } else {
-                setStatusDisplay(card, cardHeader, 'success');
+                setStatusDisplay(transmorpherIdentifier, 'success');
             }
         } else {
-            setStatusDisplay(card, cardHeader, 'error');
+            setStatusDisplay(transmorpherIdentifier, 'error');
             displayError(data.response, transmorpherIdentifier);
         }
     }
 
-    window.setStatusDisplay = function (card, cardHeader, state) {
+    window.setStatusDisplay = function (transmorpherIdentifier, state) {
+        let form = document.querySelector('#' + transmorpherIdentifier);
+        let card = form.closest('.card');
+        let cardHeader = card.querySelector('.badge');
+
         card.className = '';
         cardHeader.className = '';
         card.classList.add('card', `border-${state}`);
@@ -77,7 +81,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.displayError = function (message, transmorpherIdentifier) {
-        let form = document.querySelector("#" + transmorpherIdentifier);
+        let form = document.querySelector('#' + transmorpherIdentifier);
         if (!form.querySelector('.dz-preview')) {
             form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;
         }
