@@ -24,12 +24,10 @@ if (!window.transmorpherScriptLoaded) {
                     setStatusDisplay(card, cardHeader, 'success');
                     document.querySelector(`#${transmorpherIdentifier} > .video-transmorpher`).src = data.url;
                     clearInterval(window[statusPollingVariable]);
-                } else if (data.state === 'error') {
+                } else if (data.state !== 'processing') {
                     setStatusDisplay(card, cardHeader, 'error');
                     clearInterval(window[statusPollingVariable]);
-                } else if (data.state === 'deleted') {
-                    setStatusDisplay(card, cardHeader, 'error')
-                    clearInterval(window[statusPollingVariable]);
+                    displayError(data.response, transmorpherIdentifier);
                 }
             })
         }, 5000); // Poll every 5 seconds
@@ -52,11 +50,11 @@ if (!window.transmorpherScriptLoaded) {
 
     window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken) {
         let form = document.querySelector("#" + transmorpherIdentifier);
+        // form.querySelectorAll('.dz-preview').forEach(element => element.remove())
         let card = form.closest('.card');
         let cardHeader = card.querySelector('.badge');
         if (data.success) {
             form.classList.remove('dz-started');
-            form.querySelector('.dz-preview').remove();
 
             if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
                 setStatusDisplay(card, cardHeader, 'processing');
@@ -66,12 +64,7 @@ if (!window.transmorpherScriptLoaded) {
             }
         } else {
             setStatusDisplay(card, cardHeader, 'error');
-
-            let errorMessage = form.querySelector('.dz-error-message')
-            errorMessage.replaceChildren();
-            errorMessage.append(data.response);
-
-            form.querySelector('.dz-preview').classList.add('dz-error');
+            displayError(data.response, transmorpherIdentifier);
         }
     }
 
@@ -81,5 +74,22 @@ if (!window.transmorpherScriptLoaded) {
         card.classList.add('card', `border-${state}`);
         cardHeader.classList.add('badge', `badge-${state}`);
         cardHeader.textContent = state;
+    }
+
+    window.displayError = function (message, transmorpherIdentifier) {
+        let form = document.querySelector("#" + transmorpherIdentifier);
+        if (!form.querySelector('.dz-preview')) {
+            form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;
+        }
+
+        let errorMessage = form.querySelector('.dz-error-message')
+        errorMessage.replaceChildren();
+        errorMessage.append(message);
+        errorMessage.style.display = 'block';
+        form.querySelector('.dz-preview').classList.add('dz-error');
+
+        form.querySelector('.dz-default').style.display = 'none';
+        form.querySelector('.dz-progress').style.display = 'none';
+        form.querySelector('.dz-details').style.display = 'none';
     }
 }

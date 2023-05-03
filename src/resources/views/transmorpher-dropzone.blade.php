@@ -69,6 +69,9 @@
             });
         },
         accept: function (file, done) {
+            if (errorElement = this.element.querySelector('.dz-error')) {
+                errorElement.remove();
+            }
             fetch('{{ route('transmorpherUploadToken', $transmorpher->getTransmorpherMedia()->getKey()) }}', {
                 method: "POST",
                 headers: {
@@ -104,6 +107,8 @@
             });
         },
         success: function (file, response) {
+            this.element.querySelector('.dz-default').style.display = 'block';
+            this.element.querySelector('.dz-preview').remove();
             clearInterval(window['statusPolling' + '{{$transmorpher->getIdentifier()}}']);
 
             if (imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img')) {

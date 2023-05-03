@@ -37,12 +37,10 @@ if (!window.transmorpherScriptLoaded) {
           setStatusDisplay(card, cardHeader, 'success');
           document.querySelector("#".concat(transmorpherIdentifier, " > .video-transmorpher")).src = data.url;
           clearInterval(window[statusPollingVariable]);
-        } else if (data.state === 'error') {
+        } else if (data.state !== 'processing') {
           setStatusDisplay(card, cardHeader, 'error');
           clearInterval(window[statusPollingVariable]);
-        } else if (data.state === 'deleted') {
-          setStatusDisplay(card, cardHeader, 'error');
-          clearInterval(window[statusPollingVariable]);
+          displayError(data.response, transmorpherIdentifier);
         }
       });
     }, 5000); // Poll every 5 seconds
@@ -69,11 +67,11 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.handleDropzoneResult = function (data, transmorpherIdentifier, transmorpherStateUpdateRoute, transmorpherMediaKey, csrfToken, uploadToken) {
     var form = document.querySelector("#" + transmorpherIdentifier);
+    // form.querySelectorAll('.dz-preview').forEach(element => element.remove())
     var card = form.closest('.card');
     var cardHeader = card.querySelector('.badge');
     if (data.success) {
       form.classList.remove('dz-started');
-      form.querySelector('.dz-preview').remove();
       if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
         setStatusDisplay(card, cardHeader, 'processing');
         startPolling(transmorpherStateUpdateRoute, transmorpherMediaKey, transmorpherIdentifier, uploadToken, csrfToken, card, cardHeader);
@@ -82,10 +80,7 @@ if (!window.transmorpherScriptLoaded) {
       }
     } else {
       setStatusDisplay(card, cardHeader, 'error');
-      var errorMessage = form.querySelector('.dz-error-message');
-      errorMessage.replaceChildren();
-      errorMessage.append(data.response);
-      form.querySelector('.dz-preview').classList.add('dz-error');
+      displayError(data.response, transmorpherIdentifier);
     }
   };
   window.setStatusDisplay = function (card, cardHeader, state) {
@@ -94,6 +89,20 @@ if (!window.transmorpherScriptLoaded) {
     card.classList.add('card', "border-".concat(state));
     cardHeader.classList.add('badge', "badge-".concat(state));
     cardHeader.textContent = state;
+  };
+  window.displayError = function (message, transmorpherIdentifier) {
+    var form = document.querySelector("#" + transmorpherIdentifier);
+    if (!form.querySelector('.dz-preview')) {
+      form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;
+    }
+    var errorMessage = form.querySelector('.dz-error-message');
+    errorMessage.replaceChildren();
+    errorMessage.append(message);
+    errorMessage.style.display = 'block';
+    form.querySelector('.dz-preview').classList.add('dz-error');
+    form.querySelector('.dz-default').style.display = 'none';
+    form.querySelector('.dz-progress').style.display = 'none';
+    form.querySelector('.dz-details').style.display = 'none';
   };
 }
 
