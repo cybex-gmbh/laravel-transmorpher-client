@@ -21,7 +21,7 @@ class StateUpdate
         $latestProtocol = $transmorpherMedia->TransmorpherProtocols()->latest()->first();
 
         if ($request->input('upload_token') !== $transmorpherMedia->last_upload_token) {
-            $response = 'Upload slot was overwritten by a new upload.';
+            $response = 'Canceled by a new upload.';
             $state = State::DELETED;
             $transmorpherMedia->TransmorpherProtocols()->whereNot('id', $latestProtocol->id)->whereState(State::PROCESSING)->update(['message' => $response, 'state' => $state]);
         }
