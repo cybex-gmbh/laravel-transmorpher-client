@@ -381,3 +381,7 @@
           backdrop-filter: blur(2px);
   z-index: 1;
 }
+
+.video-transmorpher, .image-transmorpher > img {
+  height: 150px;
+}

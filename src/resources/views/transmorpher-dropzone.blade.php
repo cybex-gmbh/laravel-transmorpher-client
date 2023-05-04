@@ -27,20 +27,17 @@
                              alt="{{ $differentiator }}"/>
                     </div>
                 @else
-                    @if ($isReady)
-                        <video preload="metadata" controls style="height:150px" class="video-transmorpher">
-                            <source src="{{ $motif->getMp4Url() }}" type="video/mp4">
+                        <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
+                            <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
                             <p style="padding: 5px;">
                                 Your browser doesn't support HTML video. Here is a
-                                <a href="{{ $motif->getMp4Url() }}">link to the video</a> instead.
+                                <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
                             </p>
                         </video>
-                    @else
                         <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                             src="{{ $motif->getUrl() }}"
+                             src="{{ !$isReady ? $motif->getUrl() : '' }}"
                              alt="{{ $differentiator }}"
-                             class="video-transmorpher"/>
-                    @endif
+                             class="video-transmorpher @if($isReady) d-none @endif"/>
                 @endif
             </form>
         </div>
@@ -84,7 +81,7 @@
     card = form.closest('.card');
     cardHeader = card.querySelector('.badge');
 
-    if (form.querySelector('.video-transmorpher') && cardHeader.classList.contains('badge-processing')) {
+    if ('{{ !$isImage }}' && cardHeader.classList.contains('badge-processing')) {
         startPolling('{{ $motif->getIdentifier() }}', '{{ $lastUploadToken }}');
     }
 

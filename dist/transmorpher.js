@@ -42,7 +42,11 @@ if (!window.transmorpherScriptLoaded) {
       }).then(function (data) {
         if (data.state === 'success') {
           setStatusDisplay(transmorpherIdentifier, 'success');
-          document.querySelector("#dz-".concat(transmorpherIdentifier, " > .video-transmorpher")).src = data.url;
+          var videoElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher"));
+          videoElement.src = data.url;
+          videoElement.querySelector('a').href = data.url;
+          videoElement.style.display = 'block';
+          document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher")).style.display = 'none';
           clearInterval(window[statusPollingVariable]);
         } else if (data.state !== 'processing') {
           setStatusDisplay(transmorpherIdentifier, 'error');
@@ -186,8 +190,10 @@ if (!window.transmorpherScriptLoaded) {
       imgElement.src = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + "/".concat(path, "/").concat(transformations, "?v=").concat(version);
       imgElement.closest('.card').querySelector('.details > a').href = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + "/".concat(path);
     } else if (placeholder) {
-      imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > .video-transmorpher"));
+      imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher"));
       imgElement.src = imgElement.dataset.placeholderUrl;
+      imgElement.style.display = 'block';
+      document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher")).style.display = 'none';
     }
   };
   window.displayError = function (message, transmorpherIdentifier) {

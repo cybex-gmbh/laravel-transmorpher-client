@@ -8,10 +8,12 @@ if (!window.transmorpherScriptLoaded) {
     window.startPolling = function (transmorpherIdentifier, uploadToken) {
         let statusPollingVariable = `statusPolling${transmorpherIdentifier}`
         let startTime = new Date().getTime();
+
         window[statusPollingVariable] = setInterval(function () {
             if (new Date().getTime() - startTime > (1 * 60 * 60 * 24 * 1000)) {
                 clearInterval(window[statusPollingVariable]);
             }
+
             fetch(motifs[transmorpherIdentifier].routes.stateUpdate, {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
@@ -23,7 +25,13 @@ if (!window.transmorpherScriptLoaded) {
             }).then(data => {
                 if (data.state === 'success') {
                     setStatusDisplay(transmorpherIdentifier, 'success');
-                    document.querySelector(`#dz-${transmorpherIdentifier} > .video-transmorpher`).src = data.url;
+
+                    let videoElement = document.querySelector(`#dz-${transmorpherIdentifier} > video.video-transmorpher`);
+                    videoElement.src = data.url;
+                    videoElement.querySelector('a').href = data.url;
+                    videoElement.style.display = 'block';
+                    document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`).style.display = 'none';
+
                     clearInterval(window[statusPollingVariable]);
                 } else if (data.state !== 'processing') {
                     setStatusDisplay(transmorpherIdentifier, 'error');
@@ -169,8 +177,10 @@ if (!window.transmorpherScriptLoaded) {
             imgElement.src = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + `/${path}/${transformations}?v=${version}`;
             imgElement.closest('.card').querySelector('.details > a').href = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + `/${path}`;
         } else if (placeholder) {
-            imgElement = document.querySelector(`#dz-${transmorpherIdentifier} > .video-transmorpher`);
+            imgElement = document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`);
             imgElement.src = imgElement.dataset.placeholderUrl;
+            imgElement.style.display = 'block';
+            document.querySelector(`#dz-${transmorpherIdentifier} > video.video-transmorpher`).style.display = 'none';
         }
     }
 
