@@ -18,10 +18,16 @@ if (!window.transmorpherScriptLoaded) {
   window.startPolling = function (transmorpherIdentifier, uploadToken) {
     var statusPollingVariable = "statusPolling".concat(transmorpherIdentifier);
     var startTime = new Date().getTime();
+
+    // Set a timer to start polling for new information on the status of the processing video.
+    // Has to be stored in a global variable, to be able to clear the timer when a new video is dropped in the dropzone.
     window[statusPollingVariable] = setInterval(function () {
+      // Clear timer after 24 hours.
       if (new Date().getTime() - startTime > 1 * 60 * 60 * 24 * 1000) {
         clearInterval(window[statusPollingVariable]);
       }
+
+      // Poll for status updates.
       fetch(motifs[transmorpherIdentifier].routes.stateUpdate, {
         method: 'POST',
         headers: {
@@ -67,13 +73,12 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.handleDropzoneResult = function (data, transmorpherIdentifier, uploadToken) {
     var form = document.querySelector('#' + transmorpherIdentifier);
-    var card = form.closest('.card');
-    var cardHeader = card.querySelector('.badge');
     if (data.success) {
       form.classList.remove('dz-started');
       if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
+        // It's a video dropzone, indicate that it is now processing and start polling for updates.
         setStatusDisplay(transmorpherIdentifier, 'processing');
-        startPolling(transmorpherIdentifier, uploadToken, card, cardHeader);
+        startPolling(transmorpherIdentifier, uploadToken);
       } else {
         setStatusDisplay(transmorpherIdentifier, 'success');
       }
@@ -94,6 +99,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayError = function (message, transmorpherIdentifier) {
     var form = document.querySelector('#' + transmorpherIdentifier);
+    // Add preview element, which also displays errors, when it is not present yet.
     if (!form.querySelector('.dz-preview')) {
       form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;
     }
@@ -102,6 +108,8 @@ if (!window.transmorpherScriptLoaded) {
     errorMessage.append(message);
     errorMessage.style.display = 'block';
     form.querySelector('.dz-preview').classList.add('dz-error');
+
+    // Remove visual clutter.
     form.querySelector('.dz-default').style.display = 'none';
     form.querySelector('.dz-progress').style.display = 'none';
     form.querySelector('.dz-details').style.display = 'none';

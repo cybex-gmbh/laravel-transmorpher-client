@@ -52,10 +52,9 @@
     }
 
     form = document.querySelector('#' + '{{ $motif->getIdentifier() }}');
-    card = form.closest('.card');
-    cardHeader = card.querySelector('.badge');
 
-    if (form.querySelector('.video-transmorpher') && cardHeader.classList.contains('badge-processing')) {
+    // Start polling if the video is still processing.
+    if ('{{ !$isImage }}' && '{{ $isProcessing }}') {
         startPolling('{{ $motif->getIdentifier() }}', '{{ $lastUploadToken }}');
     }
 
@@ -71,6 +70,7 @@
         idToken: null,
         uploadToken: null,
         init: function () {
+            // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
             this.on('addedfile', function () {
                 if (this.files[1] != null) {
                     this.removeFile(this.files[0]);
@@ -78,13 +78,13 @@
             });
         },
         accept: function (file, done) {
+            // Remove previous elements to maintain a clean overlay.
             this.element.querySelector('.dz-default').style.display = 'none';
-
             if (errorElement = this.element.querySelector('.dz-error')) {
                 errorElement.remove();
-
             }
 
+            // Reserve an upload slot at the Transmorpher media server.
             fetch('{{ $uploadTokenRoute }}', {
                 method: 'POST',
                 headers: {
@@ -101,20 +101,10 @@
                     this.options.idToken = data.id_token;
                     done(data);
                 }
+
                 this.options.uploadToken = data.upload_token
+                // Set the dropzone target to the media server upload url, which needs a valid upload token.
                 this.options.url = '{{ $motif->getWebUploadUrl() }}' + data.upload_token;
-                this.options.params = function (files, xhr, chunk) {
-                    if (chunk) {
-                        return {
-                            dzuuid: chunk.file.upload.uuid,
-                            dzchunkindex: chunk.index,
-                            dztotalfilesize: chunk.file.size,
-                            dzchunksize: this.options.chunkSize,
-                            dztotalchunkcount: chunk.file.upload.totalChunkCount,
-                            dzchunkbyteoffset: chunk.index * this.options.chunkSize,
-                        };
-                    }
-                }
                 this.options.idToken = data.id_token;
                 done()
             });
@@ -122,8 +112,11 @@
         success: function (file, response) {
             this.element.querySelector('.dz-default').style.display = 'block';
             this.element.querySelector('.dz-preview').remove();
-            clearInterval(window['statusPolling' + '{{$motif->getIdentifier()}}']);
 
+            // Clear the old timer.
+            clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+
+            // Set the newly uploaded image as display image.
             if ('{{ $isImage }}') {
                 imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img');
                 imgElement.src = imgElement.dataset.deliveryUrl + '/' + response.public_path + '/' + '{{ $motif->getTransformations(['height' => 150]) }}' + '?v=' + response.version;
@@ -138,6 +131,7 @@
             );
         },
         error: function (file, response) {
+            // Clear the old timer.
             clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
 
             handleUploadResponse(
