@@ -57,11 +57,13 @@ class ImageTransmorpher extends Transmorpher
      *
      * @param int $versionNumber The version which should be retrieved.
      *
-     * @return string Binary string of the image.
+     * @return array Binary string of the image and its content type.
      */
-    public function getOriginal(int $versionNumber): string
+    public function getOriginal(int $versionNumber): array
     {
-        return $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)))->body();
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)));
+
+        return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
 
     /**

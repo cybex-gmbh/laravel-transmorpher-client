@@ -18,13 +18,35 @@ class VersionManagement
         return response()->json($transmorpherMedia->getTransmorpher()->getVersions());
     }
 
+    /**
+     * @param Request $request
+     * @param TransmorpherMedia $transmorpherMedia
+     * @return JsonResponse
+     */
     public function setVersion(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
         return response()->json($transmorpherMedia->getTransmorpher()->setVersion($request->input('version')));
     }
 
-    public function delete(Request $request, TransmorpherMedia $transmorpherMedia)
+    /**
+     * @param Request $request
+     * @param TransmorpherMedia $transmorpherMedia
+     * @return JsonResponse
+     */
+    public function delete(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
         return response()->json($transmorpherMedia->getTransmorpher()->delete());
+    }
+
+    /**
+     * @param Request $request
+     * @param TransmorpherMedia $transmorpherMedia
+     * @param int $version
+     */
+    public function getOriginal(Request $request, TransmorpherMedia $transmorpherMedia, int $version)
+    {
+        $response = $transmorpherMedia->getTransmorpher()->getOriginal($version);
+
+        return response($response['binary'], 200, ['Content-Type' => $response['mimetype']]);
     }
 }

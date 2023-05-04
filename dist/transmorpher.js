@@ -10,12 +10,6 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.mjs");
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
@@ -114,11 +108,11 @@ if (!window.transmorpherScriptLoaded) {
     cardHeader.textContent = state[0].toUpperCase() + state.slice(1);
   };
   window.updateVersionInformation = function (transmorpherIdentifier, modal) {
-    var versionList = modal.querySelector('.versionList');
+    var versionList = modal.querySelector('.versionList > ul');
     var currentVersion = modal.querySelector('.currentVersion');
 
     // Clear the list of versions.
-    versionList.textContent = '';
+    versionList.replaceChildren();
 
     // Get all versions for this media.
     fetch(motifs[transmorpherIdentifier].routes.getVersions, {
@@ -129,31 +123,30 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (versionInformation) {
+      var _versionInformation$v;
       currentVersion.textContent = versionInformation.currentVersion;
 
       // Add elements to display each version.
-      var _loop = function _loop() {
-        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-          version = _Object$entries$_i[0],
-          timestamp = _Object$entries$_i[1];
-        var li = document.createElement('li');
-        var div = document.createElement('div');
-        var button = document.createElement('button');
-        var span = document.createElement('span');
-        span.textContent = "".concat(version, ": ").concat(new Date(timestamp * 1000).toDateString());
-        button.textContent = 'set';
-        button.classList.add('badge', 'badge-processing');
-        button.onclick = function () {
-          setVersion(transmorpherIdentifier, version, modal);
+      Object.keys((_versionInformation$v = versionInformation.versions) !== null && _versionInformation$v !== void 0 ? _versionInformation$v : []).reverse().forEach(function (version) {
+        var versionEntry = document.createElement('li');
+        var controls = document.createElement('div');
+        var setVersionButton = document.createElement('button');
+        var versionData = document.createElement('span');
+        var linkToOriginalImage = document.createElement('a');
+        if (document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"))) {
+          linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + "/".concat(version);
+          linkToOriginalImage.target = '_blank';
+          linkToOriginalImage.append(modal.previousElementSibling.querySelector('.details > a > img').cloneNode());
+        }
+        versionData.textContent = "".concat(version, ": ").concat(new Date(versionInformation.versions[version] * 1000).toDateString());
+        setVersionButton.textContent = 'restore';
+        setVersionButton.onclick = function () {
+          return setVersion(transmorpherIdentifier, version, modal);
         };
-        div.append(span, button);
-        li.appendChild(div);
-        versionList.appendChild(li);
-      };
-      for (var _i = 0, _Object$entries = Object.entries((_versionInformation$v = versionInformation.versions) !== null && _versionInformation$v !== void 0 ? _versionInformation$v : []); _i < _Object$entries.length; _i++) {
-        var _versionInformation$v;
-        _loop();
-      }
+        controls.append(linkToOriginalImage, setVersionButton);
+        versionEntry.append(versionData, controls);
+        versionList.append(versionEntry);
+      });
     });
   };
   window.setVersion = function (transmorpherIdentifier, version, modal) {

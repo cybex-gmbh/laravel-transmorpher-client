@@ -23,6 +23,7 @@ class TransmorpherDropzone extends Component
     public string $getVersionsRoute;
     public string $setVersionRoute;
     public string $deleteRoute;
+    public string $getOriginalRoute;
 
     public function __construct(public Transmorpher $motif)
     {
@@ -39,6 +40,7 @@ class TransmorpherDropzone extends Component
         $this->getVersionsRoute = route('transmorpherGetVersions', $this->transmorpherMediaKey);
         $this->setVersionRoute = route('transmorpherSetVersion', $this->transmorpherMediaKey);
         $this->deleteRoute = route('transmorpherDelete', $this->transmorpherMediaKey);
+        $this->getOriginalRoute = route('transmorpherGetOriginal', [$this->transmorpherMediaKey, '']);
     }
 
     /**

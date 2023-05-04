@@ -96,11 +96,11 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.updateVersionInformation = function (transmorpherIdentifier, modal) {
-        let versionList = modal.querySelector('.versionList');
+        let versionList = modal.querySelector('.versionList > ul');
         let currentVersion = modal.querySelector('.currentVersion');
 
         // Clear the list of versions.
-        versionList.textContent = '';
+        versionList.replaceChildren();
 
         // Get all versions for this media.
         fetch(motifs[transmorpherIdentifier].routes.getVersions, {
@@ -113,23 +113,27 @@ if (!window.transmorpherScriptLoaded) {
             currentVersion.textContent = versionInformation.currentVersion;
 
             // Add elements to display each version.
-            for (const [version, timestamp] of Object.entries(versionInformation.versions ?? [])) {
-                let li = document.createElement('li');
-                let div = document.createElement('div');
-                let button = document.createElement('button');
-                let span = document.createElement('span');
+            Object.keys(versionInformation.versions ?? []).reverse().forEach(version => {
+                let versionEntry = document.createElement('li');
+                let controls = document.createElement('div');
+                let setVersionButton = document.createElement('button');
+                let versionData = document.createElement('span');
+                let linkToOriginalImage = document.createElement('a');
 
-                span.textContent = `${version}: ${new Date(timestamp * 1000).toDateString()}`;
-                button.textContent = 'set';
-                button.classList.add('badge', 'badge-processing');
-                button.onclick = function () {
-                    setVersion(transmorpherIdentifier, version, modal)
+                if (document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)) {
+                    linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + `/${version}`;
+                    linkToOriginalImage.target = '_blank';
+                    linkToOriginalImage.append(modal.previousElementSibling.querySelector('.details > a > img').cloneNode());
                 }
 
-                div.append(span, button)
-                li.appendChild(div)
-                versionList.appendChild(li);
-            }
+                versionData.textContent = `${version}: ${new Date(versionInformation.versions[version] * 1000).toDateString()}`;
+                setVersionButton.textContent = 'restore';
+                setVersionButton.onclick = () => setVersion(transmorpherIdentifier, version, modal);
+
+                controls.append(linkToOriginalImage, setVersionButton)
+                versionEntry.append(versionData, controls)
+                versionList.append(versionEntry);
+            })
         });
 
     }

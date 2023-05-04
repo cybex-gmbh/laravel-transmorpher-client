@@ -27,17 +27,17 @@
                              alt="{{ $differentiator }}"/>
                     </div>
                 @else
-                        <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
-                            <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
-                            <p style="padding: 5px;">
-                                Your browser doesn't support HTML video. Here is a
-                                <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
-                            </p>
-                        </video>
-                        <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                             src="{{ !$isReady ? $motif->getUrl() : '' }}"
-                             alt="{{ $differentiator }}"
-                             class="video-transmorpher @if($isReady) d-none @endif"/>
+                    <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
+                        <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
+                        <p style="padding: 5px;">
+                            Your browser doesn't support HTML video. Here is a
+                            <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
+                        </p>
+                    </video>
+                    <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                         src="{{ !$isReady ? $motif->getUrl() : '' }}"
+                         alt="{{ $differentiator }}"
+                         class="video-transmorpher @if($isReady) d-none @endif"/>
                 @endif
             </form>
         </div>
@@ -51,8 +51,11 @@
         <div class="card-body">
             <div class="versionInformation">
                 <p>Current version: <span class="currentVersion"></span></p>
-                <p>Version overview:</p>
-                <ul class="versionList"></ul>
+                <div class="versionList">
+                    <p>Version overview:</p>
+                    <hr>
+                    <ul></ul>
+                </div>
             </div>
             <button class="badge badge-error" onclick="deleteTransmorpherMedia('{{ $motif->getIdentifier() }}')">
                 Delete
@@ -73,7 +76,8 @@
             handleUploadResponse: '{{ $handleUploadResponseRoute }}',
             getVersions: '{{ $getVersionsRoute }}',
             setVersion: '{{ $setVersionRoute }}',
-            delete: '{{ $deleteRoute }}'
+            delete: '{{ $deleteRoute }}',
+            getOriginal: '{{ $getOriginalRoute }}'
         }
     }
 
