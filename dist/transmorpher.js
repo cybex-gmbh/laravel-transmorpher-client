@@ -10,6 +10,12 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.mjs");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
@@ -39,15 +45,23 @@ if (!window.transmorpherScriptLoaded) {
         })
       }).then(function (response) {
         return response.json();
-      }).then(function (data) {
-        if (data.state === 'success') {
+      }).then(function (pollingInformation) {
+        if (pollingInformation.state === 'success') {
+          // Processing has finished, the timer can be cleared.
+          clearInterval(window[statusPollingVariable]);
           setStatusDisplay(transmorpherIdentifier, 'success');
-          document.querySelector("#".concat(transmorpherIdentifier, " > .video-transmorpher")).src = data.url;
+
+          // Display the newly processed video and update links, also hide the placeholder image.
+          var videoElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher"));
+          videoElement.src = pollingInformation.url;
+          videoElement.querySelector('a').href = pollingInformation.url;
+          videoElement.style.display = 'block';
+          document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher")).style.display = 'none';
+        } else if (pollingInformation.state !== 'processing') {
+          // There was either an error or the upload slot was overwritten by another upload.
           clearInterval(window[statusPollingVariable]);
-        } else if (data.state !== 'processing') {
           setStatusDisplay(transmorpherIdentifier, 'error');
-          clearInterval(window[statusPollingVariable]);
-          displayError(data.response, transmorpherIdentifier);
+          displayError(pollingInformation.response, transmorpherIdentifier);
         }
       });
     }, 5000); // Poll every 5 seconds
@@ -67,38 +81,145 @@ if (!window.transmorpherScriptLoaded) {
       })
     }).then(function (response) {
       return response.json();
-    }).then(function (data) {
-      handleDropzoneResult(data, transmorpherIdentifier, uploadToken);
+    }).then(function (uploadResult) {
+      handleDropzoneResult(uploadResult, transmorpherIdentifier, uploadToken);
     });
   };
-  window.handleDropzoneResult = function (data, transmorpherIdentifier, uploadToken) {
-    var form = document.querySelector('#' + transmorpherIdentifier);
-    if (data.success) {
+  window.handleDropzoneResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
+    var form = document.querySelector("#dz-".concat(transmorpherIdentifier));
+    if (uploadResult.success) {
       form.classList.remove('dz-started');
       if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
         // It's a video dropzone, indicate that it is now processing and start polling for updates.
         setStatusDisplay(transmorpherIdentifier, 'processing');
         startPolling(transmorpherIdentifier, uploadToken);
       } else {
+        // It's an image dropzone, indicate success.
         setStatusDisplay(transmorpherIdentifier, 'success');
       }
     } else {
+      // There was an error.
       setStatusDisplay(transmorpherIdentifier, 'error');
-      displayError(data.response, transmorpherIdentifier);
+      displayError(uploadResult.response, transmorpherIdentifier);
     }
   };
   window.setStatusDisplay = function (transmorpherIdentifier, state) {
-    var form = document.querySelector('#' + transmorpherIdentifier);
+    var form = document.querySelector("#dz-".concat(transmorpherIdentifier));
     var card = form.closest('.card');
     var cardHeader = card.querySelector('.badge');
     card.className = '';
     cardHeader.className = '';
     card.classList.add('card', "border-".concat(state));
     cardHeader.classList.add('badge', "badge-".concat(state));
-    cardHeader.textContent = state;
+    cardHeader.textContent = state[0].toUpperCase() + state.slice(1);
+  };
+  window.updateVersionInformation = function (transmorpherIdentifier, modal) {
+    var versionList = modal.querySelector('.versionList');
+    var currentVersion = modal.querySelector('.currentVersion');
+
+    // Clear the list of versions.
+    versionList.textContent = '';
+
+    // Get all versions for this media.
+    fetch(motifs[transmorpherIdentifier].routes.getVersions, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(function (response) {
+      return response.json();
+    }).then(function (versionInformation) {
+      currentVersion.textContent = versionInformation.currentVersion;
+
+      // Add elements to display each version.
+      var _loop = function _loop() {
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+          version = _Object$entries$_i[0],
+          timestamp = _Object$entries$_i[1];
+        var li = document.createElement('li');
+        var div = document.createElement('div');
+        var button = document.createElement('button');
+        var span = document.createElement('span');
+        span.textContent = "".concat(version, ": ").concat(new Date(timestamp * 1000).toDateString());
+        button.textContent = 'set';
+        button.classList.add('badge', 'badge-processing');
+        button.onclick = function () {
+          setVersion(transmorpherIdentifier, version, modal);
+        };
+        div.append(span, button);
+        li.appendChild(div);
+        versionList.appendChild(li);
+      };
+      for (var _i = 0, _Object$entries = Object.entries((_versionInformation$v = versionInformation.versions) !== null && _versionInformation$v !== void 0 ? _versionInformation$v : []); _i < _Object$entries.length; _i++) {
+        var _versionInformation$v;
+        _loop();
+      }
+    });
+  };
+  window.setVersion = function (transmorpherIdentifier, version, modal) {
+    fetch(motifs[transmorpherIdentifier].routes.setVersion, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+      },
+      body: JSON.stringify({
+        version: version
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (setVersionResult) {
+      updateVersionInformation(transmorpherIdentifier, modal);
+      updateImageDisplay(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version);
+    });
+  };
+  window.closeModal = function (closeButton) {
+    var modal = closeButton.closest('.modal');
+    var overlay = modal.nextElementSibling;
+    modal.classList.add('d-none');
+    overlay.classList.add('d-none');
+  };
+  window.openModal = function (transmorpherIdentifier) {
+    var modal = document.querySelector("#modal-".concat(transmorpherIdentifier));
+    var overlay = modal.nextElementSibling;
+    modal.classList.remove('d-none');
+    overlay.classList.remove('d-none');
+
+    // Update version information when the modal is opened.
+    updateVersionInformation(transmorpherIdentifier, modal);
+  };
+  window.deleteTransmorpherMedia = function (transmorpherIdentifier) {
+    fetch(motifs[transmorpherIdentifier].routes["delete"], {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+      }
+    }).then(function (response) {
+      return response.json();
+    }).then(function (deleteResult) {
+      updateVersionInformation(transmorpherIdentifier, document.querySelector("#modal-".concat(transmorpherIdentifier)));
+      updateImageDisplay(transmorpherIdentifier, null, null, null, true);
+    });
+  };
+  window.updateImageDisplay = function (transmorpherIdentifier, path, transformations, version) {
+    var placeholder = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    var imgElement;
+    if (imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"))) {
+      // It's an image dropzone, update displayed image.
+      imgElement.src = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + "/".concat(path, "/").concat(transformations, "?v=").concat(version);
+      imgElement.closest('.card').querySelector('.details > a').href = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + "/".concat(path);
+    } else if (placeholder) {
+      // It's a video dropzone and the media was deleted, set placeholder as displayed image.
+      imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher"));
+      imgElement.src = imgElement.dataset.placeholderUrl;
+      imgElement.style.display = 'block';
+      document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher")).style.display = 'none';
+    }
   };
   window.displayError = function (message, transmorpherIdentifier) {
-    var form = document.querySelector('#' + transmorpherIdentifier);
+    var form = document.querySelector('#dz-' + transmorpherIdentifier);
+
     // Add preview element, which also displays errors, when it is not present yet.
     if (!form.querySelector('.dz-preview')) {
       form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;

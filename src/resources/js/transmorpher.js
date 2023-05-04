@@ -26,21 +26,23 @@ if (!window.transmorpherScriptLoaded) {
                 }),
             }).then(response => {
                 return response.json();
-            }).then(data => {
-                if (data.state === 'success') {
+            }).then(pollingInformation => {
+                if (pollingInformation.state === 'success') {
+                    // Processing has finished, the timer can be cleared.
+                    clearInterval(window[statusPollingVariable]);
                     setStatusDisplay(transmorpherIdentifier, 'success');
 
+                    // Display the newly processed video and update links, also hide the placeholder image.
                     let videoElement = document.querySelector(`#dz-${transmorpherIdentifier} > video.video-transmorpher`);
-                    videoElement.src = data.url;
-                    videoElement.querySelector('a').href = data.url;
+                    videoElement.src = pollingInformation.url;
+                    videoElement.querySelector('a').href = pollingInformation.url;
                     videoElement.style.display = 'block';
                     document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`).style.display = 'none';
-
+                } else if (pollingInformation.state !== 'processing') {
+                    // There was either an error or the upload slot was overwritten by another upload.
                     clearInterval(window[statusPollingVariable]);
-                } else if (data.state !== 'processing') {
                     setStatusDisplay(transmorpherIdentifier, 'error');
-                    clearInterval(window[statusPollingVariable]);
-                    displayError(data.response, transmorpherIdentifier);
+                    displayError(pollingInformation.response, transmorpherIdentifier);
                 }
             })
         }, 5000); // Poll every 5 seconds
@@ -55,15 +57,15 @@ if (!window.transmorpherScriptLoaded) {
             })
         }).then(response => {
             return response.json();
-        }).then(data => {
-            handleDropzoneResult(data, transmorpherIdentifier, uploadToken);
+        }).then(uploadResult => {
+            handleDropzoneResult(uploadResult, transmorpherIdentifier, uploadToken);
         });
     }
 
-    window.handleDropzoneResult = function (data, transmorpherIdentifier, uploadToken) {
-        let form = document.querySelector('#' + transmorpherIdentifier);
+    window.handleDropzoneResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
+        let form = document.querySelector(`#dz-${transmorpherIdentifier}`);
 
-        if (data.success) {
+        if (uploadResult.success) {
             form.classList.remove('dz-started');
 
             if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
@@ -71,11 +73,13 @@ if (!window.transmorpherScriptLoaded) {
                 setStatusDisplay(transmorpherIdentifier, 'processing');
                 startPolling(transmorpherIdentifier, uploadToken)
             } else {
+                // It's an image dropzone, indicate success.
                 setStatusDisplay(transmorpherIdentifier, 'success');
             }
         } else {
+            // There was an error.
             setStatusDisplay(transmorpherIdentifier, 'error');
-            displayError(data.response, transmorpherIdentifier);
+            displayError(uploadResult.response, transmorpherIdentifier);
         }
     }
 
@@ -95,8 +99,10 @@ if (!window.transmorpherScriptLoaded) {
         let versionList = modal.querySelector('.versionList');
         let currentVersion = modal.querySelector('.currentVersion');
 
+        // Clear the list of versions.
         versionList.textContent = '';
 
+        // Get all versions for this media.
         fetch(motifs[transmorpherIdentifier].routes.getVersions, {
             method: 'GET', headers: {
                 'Content-Type': 'application/json',
@@ -106,6 +112,7 @@ if (!window.transmorpherScriptLoaded) {
         }).then(versionInformation => {
             currentVersion.textContent = versionInformation.currentVersion;
 
+            // Add elements to display each version.
             for (const [version, timestamp] of Object.entries(versionInformation.versions ?? [])) {
                 let li = document.createElement('li');
                 let div = document.createElement('div');
@@ -136,9 +143,9 @@ if (!window.transmorpherScriptLoaded) {
             })
         }).then(response => {
             return response.json();
-        }).then(data => {
+        }).then(setVersionResult => {
             updateVersionInformation(transmorpherIdentifier, modal);
-            updateImageDisplay(transmorpherIdentifier, data.public_path, 'h-150', data.version);
+            updateImageDisplay(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version);
         });
     }
 
@@ -157,6 +164,7 @@ if (!window.transmorpherScriptLoaded) {
         modal.classList.remove('d-none');
         overlay.classList.remove('d-none');
 
+        // Update version information when the modal is opened.
         updateVersionInformation(transmorpherIdentifier, modal);
     }
 
@@ -167,7 +175,7 @@ if (!window.transmorpherScriptLoaded) {
             },
         }).then(response => {
             return response.json();
-        }).then(data => {
+        }).then(deleteResult => {
             updateVersionInformation(transmorpherIdentifier, document.querySelector(`#modal-${transmorpherIdentifier}`));
             updateImageDisplay(transmorpherIdentifier, null, null, null, true);
         });
@@ -177,9 +185,11 @@ if (!window.transmorpherScriptLoaded) {
         let imgElement;
 
         if (imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)) {
+            // It's an image dropzone, update displayed image.
             imgElement.src = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + `/${path}/${transformations}?v=${version}`;
             imgElement.closest('.card').querySelector('.details > a').href = placeholder ? imgElement.dataset.placeholderUrl : imgElement.dataset.deliveryUrl + `/${path}`;
         } else if (placeholder) {
+            // It's a video dropzone and the media was deleted, set placeholder as displayed image.
             imgElement = document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`);
             imgElement.src = imgElement.dataset.placeholderUrl;
             imgElement.style.display = 'block';

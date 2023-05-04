@@ -120,16 +120,16 @@
                 }),
             }).then(response => {
                 return response.json();
-            }).then(data => {
-                if (!data.success) {
-                    this.options.idToken = data.id_token;
-                    done(data);
+            }).then(getUploadTokenResult => {
+                if (!getUploadTokenResult.success) {
+                    this.options.idToken = getUploadTokenResult.id_token;
+                    done(getUploadTokenResult);
                 }
 
-                this.options.uploadToken = data.upload_token
+                this.options.uploadToken = getUploadTokenResult.upload_token
                 // Set the dropzone target to the media server upload url, which needs a valid upload token.
-                this.options.url = '{{ $motif->getWebUploadUrl() }}' + data.upload_token;
-                this.options.idToken = data.id_token;
+                this.options.url = '{{ $motif->getWebUploadUrl() }}' + getUploadTokenResult.upload_token;
+                this.options.idToken = getUploadTokenResult.id_token;
                 done()
             });
         },
