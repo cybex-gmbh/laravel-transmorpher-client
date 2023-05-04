@@ -23,7 +23,6 @@ class StateUpdate
         if ($request->input('upload_token') !== $transmorpherMedia->last_upload_token) {
             $response = 'Canceled by a new upload.';
             $state = State::DELETED;
-            $transmorpherMedia->TransmorpherProtocols()->whereNot('id', $latestProtocol->id)->whereState(State::PROCESSING)->update(['message' => $response, 'state' => $state]);
         }
 
         return response()->json(['response' => $response ?? $latestProtocol->message, 'state' => $state ?? $latestProtocol->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestProtocol->updated_at)]);
