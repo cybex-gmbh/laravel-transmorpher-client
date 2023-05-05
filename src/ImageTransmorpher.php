@@ -39,10 +39,10 @@ class ImageTransmorpher extends Transmorpher
         }
 
         $tokenResponse = $this->prepareUpload();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->whereUploadToken($tokenResponse['upload_token'])->first();
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereUploadToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
-            return $this->handleUploadResponse($tokenResponse, $uploadEntry);
+            return $this->handleUploadResponse($tokenResponse, $upload);
         }
 
         $request = $this->configureApiRequest();
@@ -60,7 +60,7 @@ class ImageTransmorpher extends Transmorpher
             ];
         }
 
-        return $this->handleUploadResponse($body, $uploadEntry);
+        return $this->handleUploadResponse($body, $upload);
     }
 
     /**
@@ -97,7 +97,7 @@ class ImageTransmorpher extends Transmorpher
         $request = $this->configureApiRequest();
 
         $this->transmorpherMedia->update(['last_response' => State::INIT]);
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending request.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending request.']);
 
         try {
             $response = $request->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
@@ -105,14 +105,14 @@ class ImageTransmorpher extends Transmorpher
         } catch (Exception $exception) {
             $message = 'Could not connect to server.';
             $this->transmorpherMedia->update(['last_response' => State::ERROR]);
-            $uploadEntry->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
+            $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
         }
 
         $success = $body['success'] ?? false;
 
         if ($success) {
             $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
-            $uploadEntry->update(['upload_token' => $body['upload_token'], 'message' => $body['response']]);
+            $upload->update(['upload_token' => $body['upload_token'], 'message' => $body['response']]);
 
             return [
                 'success' => $success,
@@ -123,7 +123,7 @@ class ImageTransmorpher extends Transmorpher
         return [
             'success' => $success,
             'response' => $message ?? $body['message'],
-            'upload_token' => $uploadEntry->upload_token
+            'upload_token' => $upload->upload_token
         ];
     }
 

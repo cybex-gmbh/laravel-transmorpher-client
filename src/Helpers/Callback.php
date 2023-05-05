@@ -24,15 +24,15 @@ class Callback
         }
 
         $body = json_decode($verifiedRequest, true);
-        $uploadEntry = TransmorpherUpload::whereUploadToken($body['upload_token'])->first();
-        $transmorpherMedia = $uploadEntry->TransmorpherMedia;
+        $upload = TransmorpherUpload::whereUploadToken($body['upload_token'])->first();
+        $transmorpherMedia = $upload->TransmorpherMedia;
 
         if ($body['success']) {
             $transmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path'], 'last_response' => State::SUCCESS]);
-            $uploadEntry->update(['state' => State::SUCCESS, 'message' => $body['response']]);
+            $upload->update(['state' => State::SUCCESS, 'message' => $body['response']]);
         } else {
             $transmorpherMedia->update(['last_response' => State::ERROR]);
-            $uploadEntry->update(['state' => State::ERROR, 'message' => $body['response']]);
+            $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
         }
 
         return response()->noContent(200);
