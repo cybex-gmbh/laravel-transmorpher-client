@@ -61,7 +61,7 @@ if (!window.transmorpherScriptLoaded) {
     }, 5000); // Poll every 5 seconds
   };
 
-  window.handleUploadResponse = function (file, response, transmorpherIdentifier, idToken, uploadToken) {
+  window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
     fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse, {
       method: 'POST',
       headers: {
@@ -70,7 +70,7 @@ if (!window.transmorpherScriptLoaded) {
       },
       body: JSON.stringify({
         transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey,
-        id_token: idToken,
+        upload_token: uploadToken,
         response: response
       })
     }).then(function (response) {

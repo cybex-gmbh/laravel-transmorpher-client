@@ -10,7 +10,7 @@ use Transmorpher\Enums\State;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
-use Transmorpher\Models\TransmorpherProtocol;
+use Transmorpher\Models\TransmorpherUpload;
 
 abstract class Transmorpher
 {
@@ -58,19 +58,19 @@ abstract class Transmorpher
      */
     public function delete(): array
     {
-        $request       = $this->configureApiRequest();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response      = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
-        $body          = json_decode($response->body(), true);
+        $request = $this->configureApiRequest();
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
+        $response = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
+        $body = json_decode($response->body(), true);
 
         $success = $body['success'] ?? false;
 
         if ($success) {
             $this->transmorpherMedia->update(['is_ready' => 0, 'last_response' => State::DELETED]);
-            $protocolEntry->update(['state' => State::DELETED]);
+            $uploadEntry->update(['state' => State::DELETED]);
         } else {
             $this->transmorpherMedia->update(['last_response' => State::ERROR]);
-            $protocolEntry->update(['state' => State::ERROR, 'message' => $body['message']]);
+            $uploadEntry->update(['state' => State::ERROR, 'message' => $body['response']]);
 
             return [
                 'success' => $success,
@@ -129,13 +129,12 @@ abstract class Transmorpher
     public function setVersion(int $versionNumber): array
     {
         $request = $this->configureApiRequest();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
         $response = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
-            'callback_token' => $protocolEntry->id_token,
             'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
         ]);
 
-        return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
+        return $this->handleUploadResponse(json_decode($response->body(), true), $uploadEntry);
     }
 
     public function getTransmorpherMedia(): TransmorpherMedia
@@ -144,14 +143,14 @@ abstract class Transmorpher
     }
 
     /**
-     * Updates database fields for TransmorpherMedia and TransmorpherProtocol for a response.
+     * Updates database fields for TransmorpherMedia and TransmorpherUpload for a response.
      *
-     * @param array                $body          The body of the response.
-     * @param TransmorpherProtocol $protocolEntry The TransmorpherProtocol entry for the corresponding api request.
+     * @param array              $body        The body of the response.
+     * @param TransmorpherUpload $uploadEntry The TransmorpherUpload entry for the corresponding api request.
      *
      * @return array The response body.
      */
-    public function handleUploadResponse(array $body, TransmorpherProtocol $protocolEntry): array
+    public function handleUploadResponse(array $body, TransmorpherUpload $uploadEntry): array
     {
         // An error was returned from the server.
         if (array_key_exists('message', $body)) {
@@ -164,13 +163,14 @@ abstract class Transmorpher
         if ($body['success']) {
             if ($this->transmorpherMedia->type === MediaType::IMAGE) {
                 $this->transmorpherMedia->update(['is_ready' => 1, 'last_response' => State::SUCCESS, 'public_path' => $body['public_path']]);
-                $protocolEntry->update(['state' => State::SUCCESS]);
+                $uploadEntry->update(['state' => State::SUCCESS]);
             } else {
                 $this->transmorpherMedia->update(['last_response' => State::PROCESSING]);
+                $uploadEntry->update(['upload_token' => $body['upload_token']]);
             }
         } else {
             $this->transmorpherMedia->update(['last_response' => State::ERROR]);
-            $protocolEntry->update(['state' => State::ERROR, 'message' => $body['response']]);
+            $uploadEntry->update(['state' => State::ERROR, 'message' => $body['response']]);
         }
 
         return $body;
@@ -246,16 +246,6 @@ abstract class Transmorpher
     protected function getAuthToken(): string
     {
         return config('transmorpher.api.auth_token');
-    }
-
-    /**
-     * Get an Id-Token.
-     *
-     * @return string The generated Id-Token.
-     */
-    protected function getIdToken(): string
-    {
-        return uniqid();
     }
 
     /**

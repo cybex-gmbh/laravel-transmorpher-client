@@ -18,14 +18,13 @@ class StateUpdate
      */
     public function __invoke(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        $latestProtocol = $transmorpherMedia->TransmorpherProtocols()->latest()->first();
+        $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
         if ($request->input('upload_token') !== $transmorpherMedia->last_upload_token) {
-            $response = 'Upload slot was overwritten by a new upload.';
-            $state = State::DELETED;
-            $transmorpherMedia->TransmorpherProtocols()->whereNot('id', $latestProtocol->id)->whereState(State::PROCESSING)->update(['message' => $response, 'state' => $state]);
+            $response = 'Canceled by a new upload.';
+            $state = State::ERROR;
         }
 
-        return response()->json(['response' => $response ?? $latestProtocol->message, 'state' => $state ?? $latestProtocol->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestProtocol->updated_at)]);
+        return response()->json(['response' => $response ?? $latestUpload->message, 'state' => $state ?? $latestUpload->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestUpload->updated_at)]);
     }
 }

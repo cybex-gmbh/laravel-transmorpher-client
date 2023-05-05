@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TransmorpherProtocol extends Model
+class TransmorpherUpload extends Model
 {
     use HasFactory;
 
@@ -19,7 +19,7 @@ class TransmorpherProtocol extends Model
     protected $fillable = [
         'state',
         'message',
-        'id_token',
+        'upload_token',
         'transmorpher_media_id',
     ];
 
@@ -33,7 +33,7 @@ class TransmorpherProtocol extends Model
     ];
 
     /**
-     * Returns the TransmorpherMedia this protocol entry belongs to.
+     * Returns the TransmorpherMedia this upload entry belongs to.
      *
      * @return BelongsTo
      */

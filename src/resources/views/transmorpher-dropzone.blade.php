@@ -95,7 +95,6 @@
         timeout: 60000,
         uploadMultiple: false,
         paramName: 'file',
-        idToken: null,
         uploadToken: null,
         init: function () {
             // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
@@ -126,14 +125,12 @@
                 return response.json();
             }).then(getUploadTokenResult => {
                 if (!getUploadTokenResult.success) {
-                    this.options.idToken = getUploadTokenResult.id_token;
                     done(getUploadTokenResult);
                 }
 
                 this.options.uploadToken = getUploadTokenResult.upload_token
                 // Set the dropzone target to the media server upload url, which needs a valid upload token.
                 this.options.url = '{{ $motif->getWebUploadUrl() }}' + getUploadTokenResult.upload_token;
-                this.options.idToken = getUploadTokenResult.id_token;
                 done()
             });
         },
@@ -150,7 +147,6 @@
                 file,
                 response,
                 '{{ $motif->getIdentifier() }}',
-                this.options.idToken,
                 this.options.uploadToken
             );
         },
@@ -162,7 +158,6 @@
                 file,
                 response,
                 '{{ $motif->getIdentifier() }}',
-                this.options.idToken,
                 this.options.uploadToken
             );
         },
