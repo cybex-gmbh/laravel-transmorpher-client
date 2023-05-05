@@ -9,7 +9,6 @@ use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
 use Transmorpher\ViewComponents\TransmorpherDropzone;
-use Transmorpher\ViewComponents\VideoDropzone;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {

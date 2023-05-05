@@ -38,10 +38,10 @@ class ImageTransmorpher extends Transmorpher
         }
 
         $tokenResponse = $this->prepareUpload();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->whereIdToken($tokenResponse['id_token'])->first();
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->whereUploadToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
-            return $this->handleUploadResponse($tokenResponse, $protocolEntry);
+            return $this->handleUploadResponse($tokenResponse, $uploadEntry);
         }
 
         $request = $this->configureApiRequest();
@@ -49,7 +49,7 @@ class ImageTransmorpher extends Transmorpher
             ->attach('image', $fileHandle)
             ->post($this->getS2sApiUrl(sprintf('image/upload/%s', $tokenResponse['upload_token'])));
 
-        return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
+        return $this->handleUploadResponse(json_decode($response->body(), true), $uploadEntry);
     }
 
     /**
@@ -84,7 +84,7 @@ class ImageTransmorpher extends Transmorpher
     public function prepareUpload(): array
     {
         $request = $this->configureApiRequest();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
         $response = $request->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
         $body = json_decode($response, true);
 
@@ -92,18 +92,18 @@ class ImageTransmorpher extends Transmorpher
 
         if ($success) {
             $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
+            $uploadEntry->update(['upload_token' => $body['upload_token']]);
 
             return [
                 'success' => $success,
                 'upload_token' => $body['upload_token'],
-                'id_token' => $protocolEntry->id_token
             ];
         }
 
         return [
             'success' => $success,
             'response' => $body['message'],
-            'id_token' => $protocolEntry->id_token
+            'upload_token' => $uploadEntry->upload_token
         ];
     }
 

@@ -54,13 +54,13 @@ class TransmorpherMedia extends Model
     }
 
     /**
-     * Return TransmorpherProtocols for this TransmorpherMedia.
+     * Return TransmorpherUploads for this TransmorpherMedia.
      *
      * @return HasMany
      */
-    public function TransmorpherProtocols(): HasMany
+    public function TransmorpherUploads(): HasMany
     {
-        return $this->hasMany(TransmorpherProtocol::class);
+        return $this->hasMany(TransmorpherUpload::class);
     }
 
     public function getTransmorpher(): Transmorpher

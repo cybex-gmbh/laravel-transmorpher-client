@@ -35,10 +35,10 @@ class VideoTransmorpher extends Transmorpher
         }
 
         $tokenResponse = $this->prepareUpload();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->whereIdToken($tokenResponse['id_token'])->first();
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->whereUploadToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
-            return $this->handleUploadResponse($tokenResponse, $protocolEntry);
+            return $this->handleUploadResponse($tokenResponse, $uploadEntry);
         }
 
         $request = $this->configureApiRequest();
@@ -46,7 +46,7 @@ class VideoTransmorpher extends Transmorpher
             ->attach('video', $fileHandle)
             ->post($this->getS2sApiUrl(sprintf('video/upload/%s', $tokenResponse['upload_token'])));
 
-        return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
+        return $this->handleUploadResponse(json_decode($response->body(), true), $uploadEntry);
     }
 
     public function getMp4Url(): string
@@ -72,10 +72,9 @@ class VideoTransmorpher extends Transmorpher
     public function prepareUpload(): array
     {
         $request = $this->configureApiRequest();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
         $response = $request->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
             'identifier' => $this->getIdentifier(),
-            'callback_token' => $protocolEntry->id_token,
             'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
         ]);
         $body = json_decode($response, true);
@@ -84,18 +83,18 @@ class VideoTransmorpher extends Transmorpher
 
         if ($success) {
             $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
+            $uploadEntry->update(['upload_token' => $body['upload_token']]);
 
             return [
                 'success' => $success,
                 'upload_token' => $body['upload_token'],
-                'id_token' => $protocolEntry->id_token
             ];
         }
 
         return [
             'success' => $success,
             'response' => $body['message'],
-            'id_token' => $protocolEntry->id_token
+            'upload_token' => $uploadEntry->upload_token
         ];
     }
 
