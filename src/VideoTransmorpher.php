@@ -83,7 +83,7 @@ class VideoTransmorpher extends Transmorpher
     public function prepareUpload(): array
     {
         $request = $this->configureApiRequest();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending request.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending request.']);
 
         try {
             $response = $request->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
@@ -99,7 +99,7 @@ class VideoTransmorpher extends Transmorpher
         $success = $body['success'] ?? false;
 
         if ($success) {
-            $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
+            $this->transmorpherMedia->update(['latest_upload_token' => $body['upload_token']]);
             $upload->update(['upload_token' => $body['upload_token'], 'message' => $body['response']]);
 
             return [

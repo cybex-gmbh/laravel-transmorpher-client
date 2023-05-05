@@ -95,23 +95,20 @@ class ImageTransmorpher extends Transmorpher
     public function prepareUpload(): array
     {
         $request = $this->configureApiRequest();
-
-        $this->transmorpherMedia->update(['last_response' => State::INIT]);
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending request.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending request.']);
 
         try {
             $response = $request->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
             $body = json_decode($response, true);
         } catch (Exception $exception) {
             $message = 'Could not connect to server.';
-            $this->transmorpherMedia->update(['last_response' => State::ERROR]);
             $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
         }
 
         $success = $body['success'] ?? false;
 
         if ($success) {
-            $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
+            $this->transmorpherMedia->update(['latest_upload_token' => $body['upload_token']]);
             $upload->update(['upload_token' => $body['upload_token'], 'message' => $body['response']]);
 
             return [

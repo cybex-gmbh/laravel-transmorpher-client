@@ -60,13 +60,12 @@ abstract class Transmorpher
     public function delete(): array
     {
         $request = $this->configureApiRequest();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending delete request.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending delete request.']);
 
         try {
             $response = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
             $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
-            $this->transmorpherMedia->update(['last_response' => State::ERROR]);
             $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
 
             return [
@@ -76,10 +75,9 @@ abstract class Transmorpher
         }
 
         if ($body['success']) {
-            $this->transmorpherMedia->update(['is_ready' => 0, 'last_response' => State::DELETED]);
+            $this->transmorpherMedia->update(['is_ready' => 0]);
             $upload->update(['state' => State::DELETED, 'message' => $body['response']]);
         } else {
-            $this->transmorpherMedia->update(['last_response' => State::ERROR]);
             $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
         }
 
@@ -126,7 +124,7 @@ abstract class Transmorpher
     public function setVersion(int $versionNumber): array
     {
         $request = $this->configureApiRequest();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending request to restore version.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
             $response = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
@@ -169,14 +167,12 @@ abstract class Transmorpher
 
         if ($body['success']) {
             if ($this->transmorpherMedia->type === MediaType::IMAGE) {
-                $this->transmorpherMedia->update(['is_ready' => 1, 'last_response' => State::SUCCESS, 'public_path' => $body['public_path']]);
+                $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path']]);
                 $upload->update(['state' => State::SUCCESS, 'message' => $body['response']]);
             } else {
-                $this->transmorpherMedia->update(['last_response' => State::PROCESSING]);
                 $upload->update(['upload_token' => $body['upload_token'], 'state' => State::PROCESSING, 'message' => $body['response']]);
             }
         } else {
-            $this->transmorpherMedia->update(['last_response' => State::ERROR]);
             $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
         }
 

@@ -20,7 +20,7 @@ class StateUpdate
     {
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
-        if ($request->input('upload_token') !== $transmorpherMedia->last_upload_token) {
+        if ($request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
             $response = 'Canceled by a new upload.';
             $state = State::ERROR;
         }

@@ -33,6 +33,16 @@ class TransmorpherUpload extends Model
     ];
 
     /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::saved(function (TransmorpherUpload $transmorpherUpload) {
+            $transmorpherUpload->TransmorpherMedia()->update(['latest_state' => $transmorpherUpload->state]);
+        });
+    }
+
+    /**
      * Returns the TransmorpherMedia this upload entry belongs to.
      *
      * @return BelongsTo

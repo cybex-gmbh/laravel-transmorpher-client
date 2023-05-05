@@ -28,10 +28,9 @@ class Callback
         $transmorpherMedia = $upload->TransmorpherMedia;
 
         if ($body['success']) {
-            $transmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path'], 'last_response' => State::SUCCESS]);
+            $transmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path']]);
             $upload->update(['state' => State::SUCCESS, 'message' => $body['response']]);
         } else {
-            $transmorpherMedia->update(['last_response' => State::ERROR]);
             $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
         }
 
