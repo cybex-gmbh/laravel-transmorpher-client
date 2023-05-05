@@ -17,12 +17,9 @@ enum MediaType: string
      */
     public function getTransmorpherClass(): string
     {
-        if ($this === MediaType::IMAGE) {
-            $className = ImageTransmorpher::class;
-        } else {
-            $className = VideoTransmorpher::class;
-        }
-
-        return $className;
+        return match ($this) {
+            MediaType::IMAGE => ImageTransmorpher::class,
+            MediaType::VIDEO => VideoTransmorpher::class,
+        };
     }
 }

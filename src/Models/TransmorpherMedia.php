@@ -62,6 +62,6 @@ class TransmorpherMedia extends Model
 
     public function getTransmorpher(): Transmorpher
     {
-        return $this->type->getTransmorpherClass()->getInstanceFor($this->Transmorphable, $this->differentiator);
+        return $this->type->getTransmorpherClass()::getInstanceFor($this->Transmorphable, $this->differentiator);
     }
 }
