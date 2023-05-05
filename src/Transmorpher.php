@@ -32,64 +32,10 @@ abstract class Transmorpher
         return static::$instances[$model::class][$model->getKey()][$differentiator] ??= new static(...func_get_args());
     }
 
-    protected function createTransmorpherMedia(MediaType $type) {
-        $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
-            ['differentiator' => $this->differentiator, 'type' => $type],
-            ['differentiator' => $this->differentiator, 'type' => $type, 'is_ready' => 0]
-        );
-
-        $this->validateIdentifier($this->model, $this->differentiator);
-    }
-
-    /**
-     * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
-     *
-     * @param HasTransmorpherMediaInterface $model
-     * @param string                        $differentiator
-     */
-    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $differentiator);
-
-    /**
-     * Upload media to the Transmorpher.
-     *
-     * @param resource  $fileHandle
-     * @param MediaType $type
-     *
-     * @return array The Transmorpher response.
-     */
-    protected function uploadMedia($fileHandle, MediaType $type): array
-    {
-        if (!is_resource($fileHandle)) {
-            throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
-        }
-
-        $tokenResponse = $this->prepareUpload();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
-
-        if (!$tokenResponse['success']) {
-            return $this->handleUploadResponse($tokenResponse, $upload);
-        }
-
-        $request = $this->configureApiRequest();
-
-        try {
-            $response = $request
-                ->attach('file', $fileHandle)
-                ->post($this->getS2sApiUrl(sprintf('%s/upload/%s', $type->value, $tokenResponse['upload_token'])));
-
-            $body = json_decode($response->body());
-        } catch (Exception $exception) {
-            $body = [
-                'success' => false,
-                'response' => 'Could not connect to server.'
-            ];
-        }
-
-        return $this->handleUploadResponse($body, $upload);
-    }
-
     /**
      * Prepare an upload to the Transmorpher media server by requesting an upload token.
+     *
+     * @param MediaType $type
      *
      * @return array
      */
@@ -136,19 +82,6 @@ abstract class Transmorpher
     }
 
     /**
-     * Configure an HTTP-Request with the Laravel Sanctum Token.
-     *
-     * @return PendingRequest The configured request.
-     */
-    protected function configureApiRequest(): PendingRequest
-    {
-        return Http::withToken($this->getAuthToken())
-            ->withOptions(['stream' => true])
-            ->acceptJson()
-            ->withoutRedirecting();
-    }
-
-    /**
      * Delete all originals and derivatives for this differentiator on the Transmorpher.
      *
      * @return array The Transmorpher response.
@@ -190,10 +123,11 @@ abstract class Transmorpher
     public function getUrl(array $transformations = []): string
     {
         if ($this->transmorpherMedia->is_ready && $this->transmorpherMedia->public_path) {
-            return sprintf('%s/%s/%s',
+            return sprintf(
+                '%s/%s/%s',
                 $this->getDeliveryUrl(),
                 $this->transmorpherMedia->public_path,
-                $this->getTransformations($transformations),
+                $this->getTransformations($transformations)
             );
         }
 
@@ -325,6 +259,81 @@ abstract class Transmorpher
     public function getChunkSize(): int
     {
         return config('transmorpher.dropzone_upload.chunk_size');
+    }
+
+    /**
+     * Configure an HTTP-Request with the Laravel Sanctum Token.
+     *
+     * @return PendingRequest The configured request.
+     */
+    protected function configureApiRequest(): PendingRequest
+    {
+        return Http::withToken($this->getAuthToken())
+            ->withOptions(['stream' => true])
+            ->acceptJson()
+            ->withoutRedirecting();
+    }
+
+    /**
+     * @param MediaType $type
+     *
+     * @return void
+     * @throws InvalidIdentifierException
+     */
+    protected function createTransmorpherMedia(MediaType $type) {
+        $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
+            ['differentiator' => $this->differentiator, 'type' => $type],
+            ['differentiator' => $this->differentiator, 'type' => $type, 'is_ready' => 0]
+        );
+
+        $this->validateIdentifier($this->model, $this->differentiator);
+    }
+
+    /**
+     * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
+     *
+     * @param HasTransmorpherMediaInterface $model
+     * @param string                        $differentiator
+     */
+    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $differentiator);
+
+    /**
+     * Upload media to the Transmorpher.
+     *
+     * @param resource  $fileHandle
+     * @param MediaType $type
+     *
+     * @return array The Transmorpher response.
+     */
+    protected function uploadMedia($fileHandle, MediaType $type): array
+    {
+        if (!is_resource($fileHandle)) {
+            throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
+        }
+
+        $tokenResponse = $this->prepareUpload();
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
+
+        if (!$tokenResponse['success']) {
+            return $this->handleUploadResponse($tokenResponse, $upload);
+        }
+
+        $request = $this->configureApiRequest();
+
+        try {
+            $response = $request
+                ->attach('file', $fileHandle)
+                ->post($this->getS2sApiUrl(sprintf('%s/upload/%s', $type->value, $tokenResponse['upload_token'])));
+
+            $body = json_decode($response->body());
+        } catch (Exception $exception) {
+            $body = [
+                'success' => false,
+                'response' => 'Could not connect to server.'
+            ];
+        }
+
+        return $this->handleUploadResponse($body, $upload);
     }
 
     /**
