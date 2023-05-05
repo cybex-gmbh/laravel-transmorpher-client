@@ -12,10 +12,10 @@ class TransmorpherDropzone extends Component
 {
     public bool $isImage;
     public bool $isProcessing;
-    public bool $isReady;
+    public ?bool $isReady;
     public string $differentiator;
     public $transmorpherMediaKey;
-    public string $lastUploadToken;
+    public ?string $lastUploadToken;
     public string $stateUpdateRoute;
     public string $uploadTokenRoute;
     public string $handleUploadResponseRoute;
