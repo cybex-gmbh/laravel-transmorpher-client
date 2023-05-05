@@ -211,6 +211,8 @@ abstract class Transmorpher
 
     /**
      * Get the identifier for this TransmorpherMedia.
+     * This identifier is used on the Transmorpher server to uniquely identify a media per user.
+     * It should not contain any special characters such as slashes, since it will be used in URLs.
      *
      * @return string The identifier for this TransmorpherMedia.
      */
