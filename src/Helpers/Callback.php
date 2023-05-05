@@ -29,7 +29,7 @@ class Callback
 
         if ($body['success']) {
             $transmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path'], 'last_response' => State::SUCCESS]);
-            $uploadEntry->update(['state' => State::SUCCESS]);
+            $uploadEntry->update(['state' => State::SUCCESS, 'message' => $body['response']]);
         } else {
             $transmorpherMedia->update(['last_response' => State::ERROR]);
             $uploadEntry->update(['state' => State::ERROR, 'message' => $body['response']]);

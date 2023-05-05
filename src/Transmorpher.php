@@ -2,6 +2,7 @@
 
 namespace Transmorpher;
 
+use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -58,14 +59,25 @@ abstract class Transmorpher
      */
     public function delete(): array
     {
-        $request       = $this->configureApiRequest();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
-        $response      = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
-        $body          = json_decode($response->body(), true);
+        $request = $this->configureApiRequest();
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending delete request.']);
+
+        try {
+            $response = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
+            $body = json_decode($response->body(), true);
+        } catch (Exception $exception) {
+            $this->transmorpherMedia->update(['last_response' => State::ERROR]);
+            $uploadEntry->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
+
+            return [
+                'success' => false,
+                'response' => 'Could not connect to server.'
+            ];
+        }
 
         if ($body['success']) {
             $this->transmorpherMedia->update(['is_ready' => 0, 'last_response' => State::DELETED]);
-            $uploadEntry->update(['state' => State::DELETED]);
+            $uploadEntry->update(['state' => State::DELETED, 'message' => $body['response']]);
         } else {
             $this->transmorpherMedia->update(['last_response' => State::ERROR]);
             $uploadEntry->update(['state' => State::ERROR, 'message' => $body['response']]);
@@ -114,12 +126,22 @@ abstract class Transmorpher
     public function setVersion(int $versionNumber): array
     {
         $request = $this->configureApiRequest();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
-        $response = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
-            'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
-        ]);
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending request to restore version.']);
 
-        return $this->handleUploadResponse(json_decode($response->body(), true), $uploadEntry);
+        try {
+            $response = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
+                'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
+            ]);
+
+            $body = json_decode($response->body());
+        } catch (Exception $exception) {
+            $body = [
+                'success'  => false,
+                'response' => 'Could not connect to server.'
+            ];
+        }
+
+        return $this->handleUploadResponse($body, $uploadEntry);
     }
 
     public function getTransmorpherMedia(): TransmorpherMedia
@@ -148,10 +170,10 @@ abstract class Transmorpher
         if ($body['success']) {
             if ($this->transmorpherMedia->type === MediaType::IMAGE) {
                 $this->transmorpherMedia->update(['is_ready' => 1, 'last_response' => State::SUCCESS, 'public_path' => $body['public_path']]);
-                $uploadEntry->update(['state' => State::SUCCESS]);
+                $uploadEntry->update(['state' => State::SUCCESS, 'message' => $body['response']]);
             } else {
                 $this->transmorpherMedia->update(['last_response' => State::PROCESSING]);
-                $uploadEntry->update(['upload_token' => $body['upload_token']]);
+                $uploadEntry->update(['upload_token' => $body['upload_token'], 'state' => State::PROCESSING, 'message' => $body['response']]);
             }
         } else {
             $this->transmorpherMedia->update(['last_response' => State::ERROR]);

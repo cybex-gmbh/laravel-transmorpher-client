@@ -2,6 +2,7 @@
 
 namespace Transmorpher;
 
+use Exception;
 use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
@@ -42,11 +43,21 @@ class VideoTransmorpher extends Transmorpher
         }
 
         $request = $this->configureApiRequest();
-        $response = $request
-            ->attach('video', $fileHandle)
-            ->post($this->getS2sApiUrl(sprintf('video/upload/%s', $tokenResponse['upload_token'])));
 
-        return $this->handleUploadResponse(json_decode($response->body(), true), $uploadEntry);
+        try {
+            $response = $request
+                ->attach('video', $fileHandle)
+                ->post($this->getS2sApiUrl(sprintf('video/upload/%s', $tokenResponse['upload_token'])));
+
+            $body = json_decode($response->body());
+        } catch (Exception $exception) {
+            $body = [
+                'success' => false,
+                'response' => 'Could not connect to server.'
+            ];
+        }
+
+        return $this->handleUploadResponse($body, $uploadEntry);
     }
 
     public function getMp4Url(): string
@@ -72,18 +83,24 @@ class VideoTransmorpher extends Transmorpher
     public function prepareUpload(): array
     {
         $request = $this->configureApiRequest();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
-        $response = $request->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
-            'identifier' => $this->getIdentifier(),
-            'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
-        ]);
-        $body = json_decode($response, true);
+        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INIT, 'message' => 'Sending request.']);
+
+        try {
+            $response = $request->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
+                'identifier' => $this->getIdentifier(),
+                'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
+            ]);
+            $body = json_decode($response, true);
+        } catch (Exception $exception) {
+            $message = 'Could not connect to server.';
+            $uploadEntry->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
+        }
 
         $success = $body['success'] ?? false;
 
         if ($success) {
             $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
-            $uploadEntry->update(['upload_token' => $body['upload_token']]);
+            $uploadEntry->update(['upload_token' => $body['upload_token'], 'message' => $body['response']]);
 
             return [
                 'success' => $success,
@@ -93,7 +110,7 @@ class VideoTransmorpher extends Transmorpher
 
         return [
             'success' => $success,
-            'response' => $body['message'],
+            'response' => $message ?? $body['message'],
             'upload_token' => $uploadEntry->upload_token
         ];
     }
