@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
-use Transmorpher\Exceptions\InvalidIdentifierException;
 
 class ImageTransmorpher extends Transmorpher
 {

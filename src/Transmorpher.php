@@ -32,7 +32,10 @@ abstract class Transmorpher
     }
 
     protected function createTransmorpherMedia(MediaType $type) {
-        $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(['differentiator' => $this->differentiator, 'type' => $type, 'is_ready' => 0]);
+        $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
+            ['differentiator' => $this->differentiator, 'type' => $type],
+            ['differentiator' => $this->differentiator, 'type' => $type, 'is_ready' => 0]
+        );
 
         $this->validateIdentifier($this->model, $this->differentiator);
     }
