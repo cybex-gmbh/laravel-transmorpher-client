@@ -28,7 +28,7 @@ class TransmorpherMedia extends Model
         'public_path',
         'type',
         'is_ready',
-        'latest_state',
+        'latest_upload_state',
         'latest_upload_token'
     ];
 
@@ -39,7 +39,7 @@ class TransmorpherMedia extends Model
      */
     protected $casts = [
         'type' => MediaType::class,
-        'latest_state' => State::class,
+        'latest_upload_state' => State::class,
     ];
 
 

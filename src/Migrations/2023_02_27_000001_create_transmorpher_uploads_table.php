@@ -19,7 +19,7 @@ return new class extends Migration
             $table->id();
             $table->enum('state', ['initializing', 'processing', 'error', 'success', 'deleted']);
             $table->string('message');
-            $table->string('upload_token')->unique()->nullable();
+            $table->string('token')->unique()->nullable();
             $table->foreignId('transmorpher_media_id')->constrained();
             $table->timestamps();
         });

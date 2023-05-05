@@ -19,7 +19,7 @@ class TransmorpherUpload extends Model
     protected $fillable = [
         'state',
         'message',
-        'upload_token',
+        'token',
         'transmorpher_media_id',
     ];
 
@@ -38,7 +38,7 @@ class TransmorpherUpload extends Model
     protected static function booted(): void
     {
         static::saved(function (TransmorpherUpload $transmorpherUpload) {
-            $transmorpherUpload->TransmorpherMedia()->update(['latest_state' => $transmorpherUpload->state]);
+            $transmorpherUpload->TransmorpherMedia()->update(['latest_upload_state' => $transmorpherUpload->state]);
         });
     }
 

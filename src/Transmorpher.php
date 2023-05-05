@@ -179,7 +179,7 @@ abstract class Transmorpher
                 $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path']]);
                 $upload->update(['state' => State::SUCCESS, 'message' => $body['response']]);
             } else {
-                $upload->update(['upload_token' => $body['upload_token'], 'state' => State::PROCESSING, 'message' => $body['response']]);
+                $upload->update(['token' => $body['upload_token'], 'state' => State::PROCESSING, 'message' => $body['response']]);
             }
         } else {
             $upload->update(['state' => State::ERROR, 'message' => $body['response']]);

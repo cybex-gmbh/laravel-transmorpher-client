@@ -24,7 +24,7 @@ class Callback
         }
 
         $body = json_decode($verifiedRequest, true);
-        $upload = TransmorpherUpload::whereUploadToken($body['upload_token'])->first();
+        $upload = TransmorpherUpload::whereToken($body['upload_token'])->first();
         if ($body['success']) {
             $upload->TransmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path']]);
             $upload->update(['state' => State::SUCCESS, 'message' => $body['response']]);

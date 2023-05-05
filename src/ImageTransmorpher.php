@@ -35,7 +35,7 @@ class ImageTransmorpher extends Transmorpher
         }
 
         $tokenResponse = $this->prepareUpload();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereUploadToken($tokenResponse['upload_token'])->first();
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
             return $this->handleUploadResponse($tokenResponse, $upload);
@@ -105,7 +105,7 @@ class ImageTransmorpher extends Transmorpher
 
         if ($success) {
             $this->transmorpherMedia->update(['latest_upload_token' => $body['upload_token']]);
-            $upload->update(['upload_token' => $body['upload_token'], 'message' => $body['response']]);
+            $upload->update(['token' => $body['upload_token'], 'message' => $body['response']]);
 
             return [
                 'success' => $success,
@@ -116,7 +116,7 @@ class ImageTransmorpher extends Transmorpher
         return [
             'success' => $success,
             'response' => $message ?? $body['message'],
-            'upload_token' => $upload->upload_token
+            'upload_token' => $upload->token
         ];
     }
 
