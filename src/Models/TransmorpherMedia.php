@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
-use Transmorpher\ImageTransmorpher;
 use Transmorpher\Transmorpher;
-use Transmorpher\VideoTransmorpher;
 
 class TransmorpherMedia extends Model
 {
@@ -41,7 +39,6 @@ class TransmorpherMedia extends Model
         'type' => MediaType::class,
         'latest_upload_state' => State::class,
     ];
-
 
     /**
      * Return the parent transmorphable model.

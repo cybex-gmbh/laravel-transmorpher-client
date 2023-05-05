@@ -2,10 +2,8 @@
 
 namespace Transmorpher;
 
-use Exception;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
 
 class ImageTransmorpher extends Transmorpher
 {
