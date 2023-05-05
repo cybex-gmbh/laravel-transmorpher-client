@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->enum('type', ['image', 'video']);
             $table->boolean('is_ready');
             $table->enum('latest_upload_state', ['initializing', 'processing', 'error', 'success', 'deleted'])->nullable();
-            $table->string('latest_upload_token')->nullable();
+            $table->string('latest_upload_token')->unique()->nullable();
             $table->timestamps();
 
             $table->unique(['transmorphable_id', 'transmorphable_type', 'differentiator'], 'transmorphable_id_type_differentiator_unique');

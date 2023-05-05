@@ -43,7 +43,7 @@ class TransmorpherUpload extends Model
     }
 
     /**
-     * Returns the TransmorpherMedia this upload entry belongs to.
+     * Returns the TransmorpherMedia this upload belongs to.
      *
      * @return BelongsTo
      */
