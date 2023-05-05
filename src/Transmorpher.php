@@ -31,6 +31,12 @@ abstract class Transmorpher
         return static::$instances[$model::class][$model->getKey()][$differentiator] ??= new static(...func_get_args());
     }
 
+    protected function createTransmorpherMedia(MediaType $type) {
+        $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(['differentiator' => $this->differentiator, 'type' => $type, 'is_ready' => 0]);
+
+        $this->validateIdentifier($this->model, $this->differentiator);
+    }
+
     /**
      * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
      *

@@ -16,13 +16,10 @@ class ImageTransmorpher extends Transmorpher
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
-     * @throws InvalidIdentifierException
      */
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
-        $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::IMAGE]);
-
-        $this->validateIdentifier($model, $differentiator);
+        $this->createTransmorpherMedia(MediaType::IMAGE);
     }
 
     /**
