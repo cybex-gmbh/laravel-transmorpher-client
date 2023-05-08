@@ -65,8 +65,7 @@ abstract class Transmorpher
         $success = $body['success'] ?? false;
 
         if ($success) {
-            $this->transmorpherMedia->update(['latest_upload_token' => $body['upload_token']]);
-            $upload->update(['token'   => $body['upload_token'], 'message' => $body['response']]);
+            $upload->update(['token' => $body['upload_token'], 'message' => $body['response']]);
 
             return [
                 'success' => $success,

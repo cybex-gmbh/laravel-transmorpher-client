@@ -38,7 +38,10 @@ class TransmorpherUpload extends Model
     protected static function booted(): void
     {
         static::saved(function (TransmorpherUpload $transmorpherUpload) {
-            $transmorpherUpload->TransmorpherMedia()->update(['latest_upload_state' => $transmorpherUpload->state]);
+            // Only update the corresponding TransmorpherMedia model if this is the latest upload.
+            if ($transmorpherUpload->getKey() === TransmorpherUpload::whereTransmorpherMediaId($transmorpherUpload->TransmorpherMedia->getKey())->latest()->first()->getKey()) {
+                $transmorpherUpload->TransmorpherMedia()->update(['latest_upload_state' => $transmorpherUpload->state, 'latest_upload_token' => $transmorpherUpload->token]);
+            }
         });
     }
 
