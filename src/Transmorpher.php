@@ -168,7 +168,7 @@ abstract class Transmorpher
                 'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
             ]);
 
-            $body = json_decode($response->body());
+            $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
             $body = [
                 'success'  => false,
