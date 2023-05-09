@@ -51,8 +51,6 @@
         }
     }
 
-    form = document.querySelector('#' + '{{ $motif->getIdentifier() }}');
-
     // Start polling if the video is still processing.
     if ('{{ !$isImage }}' && '{{ $isProcessing }}') {
         startPolling('{{ $motif->getIdentifier() }}', '{{ $latestUploadToken }}');
