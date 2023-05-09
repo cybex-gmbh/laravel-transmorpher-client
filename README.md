@@ -32,7 +32,7 @@ There you can configure values such as the route to which the Transmorpher media
 
 ### .env keys
 
-Before u can use this package u have to configure some .env keys (or config values).
+Before you can use this package you have to configure some .env keys (or config values).
 
 The `TRANSMORPHER_AUTH_TOKEN` is a Laravel Sanctum token which is used for authentication at the Transmorpher media
 server. This token should be provided to you by an admin of the Transmorpher media server.
