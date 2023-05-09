@@ -2,7 +2,7 @@
 
 namespace Transmorpher;
 
-use InvalidArgumentException;
+use Exception;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
 
@@ -16,9 +16,7 @@ class VideoTransmorpher extends Transmorpher
      */
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
-        $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::VIDEO]);
-
-        $this->validateIdentifier($model, $differentiator);
+        $this->createTransmorpherMedia(MediaType::VIDEO);
     }
 
     /**
@@ -26,27 +24,11 @@ class VideoTransmorpher extends Transmorpher
      *
      * @param resource $fileHandle
      *
-     * @return array
+     * @return array The Transmorpher response.
      */
     public function upload($fileHandle): array
     {
-        if (!is_resource($fileHandle)) {
-            throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
-        }
-
-        $tokenResponse = $this->prepareUpload();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->whereUploadToken($tokenResponse['upload_token'])->first();
-
-        if (!$tokenResponse['success']) {
-            return $this->handleUploadResponse($tokenResponse, $uploadEntry);
-        }
-
-        $request = $this->configureApiRequest();
-        $response = $request
-            ->attach('video', $fileHandle)
-            ->post($this->getS2sApiUrl(sprintf('video/upload/%s', $tokenResponse['upload_token'])));
-
-        return $this->handleUploadResponse(json_decode($response->body(), true), $uploadEntry);
+        return $this->uploadMedia($fileHandle, MediaType::VIDEO);
     }
 
     public function getMp4Url(): string
@@ -71,31 +53,7 @@ class VideoTransmorpher extends Transmorpher
      */
     public function prepareUpload(): array
     {
-        $request = $this->configureApiRequest();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
-        $response = $request->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
-            'identifier' => $this->getIdentifier(),
-            'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
-        ]);
-        $body = json_decode($response, true);
-
-        $success = $body['success'] ?? false;
-
-        if ($success) {
-            $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
-            $uploadEntry->update(['upload_token' => $body['upload_token']]);
-
-            return [
-                'success' => $success,
-                'upload_token' => $body['upload_token'],
-            ];
-        }
-
-        return [
-            'success' => $success,
-            'response' => $body['message'],
-            'upload_token' => $uploadEntry->upload_token
-        ];
+        return $this->prepareMediaUpload(MediaType::VIDEO);
     }
 
     /**

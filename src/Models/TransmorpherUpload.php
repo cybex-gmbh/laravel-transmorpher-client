@@ -19,7 +19,7 @@ class TransmorpherUpload extends Model
     protected $fillable = [
         'state',
         'message',
-        'upload_token',
+        'token',
         'transmorpher_media_id',
     ];
 
@@ -33,7 +33,20 @@ class TransmorpherUpload extends Model
     ];
 
     /**
-     * Returns the TransmorpherMedia this upload entry belongs to.
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::saved(function (TransmorpherUpload $transmorpherUpload) {
+            // Only update the corresponding TransmorpherMedia model if this is the latest upload.
+            if ($transmorpherUpload->getKey() === TransmorpherUpload::whereTransmorpherMediaId($transmorpherUpload->TransmorpherMedia->getKey())->latest()->first()->getKey()) {
+                $transmorpherUpload->TransmorpherMedia()->update(['latest_upload_state' => $transmorpherUpload->state, 'latest_upload_token' => $transmorpherUpload->token]);
+            }
+        });
+    }
+
+    /**
+     * Returns the TransmorpherMedia this upload belongs to.
      *
      * @return BelongsTo
      */

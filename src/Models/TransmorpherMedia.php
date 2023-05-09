@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
-use Transmorpher\ImageTransmorpher;
 use Transmorpher\Transmorpher;
-use Transmorpher\VideoTransmorpher;
 
 class TransmorpherMedia extends Model
 {
@@ -28,8 +26,8 @@ class TransmorpherMedia extends Model
         'public_path',
         'type',
         'is_ready',
-        'last_response',
-        'last_upload_token'
+        'latest_upload_state',
+        'latest_upload_token'
     ];
 
     /**
@@ -39,9 +37,8 @@ class TransmorpherMedia extends Model
      */
     protected $casts = [
         'type' => MediaType::class,
-        'last_response' => State::class,
+        'latest_upload_state' => State::class,
     ];
-
 
     /**
      * Return the parent transmorphable model.
@@ -65,8 +62,6 @@ class TransmorpherMedia extends Model
 
     public function getTransmorpher(): Transmorpher
     {
-        return $this->type === MediaType::IMAGE
-            ? ImageTransmorpher::getInstanceFor($this->Transmorphable, $this->differentiator)
-            : VideoTransmorpher::getInstanceFor($this->Transmorphable, $this->differentiator);
+        return $this->type->getTransmorpherClass()::getInstanceFor($this->Transmorphable, $this->differentiator);
     }
 }

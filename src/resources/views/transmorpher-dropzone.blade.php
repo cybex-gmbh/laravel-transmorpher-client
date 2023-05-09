@@ -83,7 +83,7 @@
 
     // Start polling if the video is still processing.
     if ('{{ !$isImage }}' && '{{ $isProcessing }}') {
-        startPolling('{{ $motif->getIdentifier() }}', '{{ $lastUploadToken }}');
+        startPolling('{{ $motif->getIdentifier() }}', '{{ $latestUploadToken }}');
     }
 
     new Dropzone("#dz-{{$motif->getIdentifier()}}", {

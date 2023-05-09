@@ -20,9 +20,9 @@ return new class extends Migration {
             $table->string('differentiator');
             $table->string('public_path')->nullable();
             $table->enum('type', ['image', 'video']);
-            $table->boolean('is_ready')->default(0);
-            $table->enum('last_response', ['processing', 'error', 'success', 'deleted'])->nullable();
-            $table->string('last_upload_token')->nullable();
+            $table->boolean('is_ready');
+            $table->enum('latest_upload_state', ['initializing', 'processing', 'error', 'success', 'deleted'])->nullable();
+            $table->string('latest_upload_token')->unique()->nullable();
             $table->timestamps();
 
             $table->unique(['transmorphable_id', 'transmorphable_type', 'differentiator'], 'transmorphable_id_type_differentiator_unique');

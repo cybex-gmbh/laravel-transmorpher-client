@@ -3,10 +3,7 @@
 namespace Transmorpher;
 
 use Illuminate\Support\Facades\Http;
-use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
-use Transmorpher\Exceptions\InvalidIdentifierException;
 
 class ImageTransmorpher extends Transmorpher
 {
@@ -15,13 +12,10 @@ class ImageTransmorpher extends Transmorpher
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
-     * @throws InvalidIdentifierException
      */
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
-        $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::IMAGE]);
-
-        $this->validateIdentifier($model, $differentiator);
+        $this->createTransmorpherMedia(MediaType::IMAGE);
     }
 
     /**
@@ -33,23 +27,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function upload($fileHandle): array
     {
-        if (!is_resource($fileHandle)) {
-            throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
-        }
-
-        $tokenResponse = $this->prepareUpload();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->whereUploadToken($tokenResponse['upload_token'])->first();
-
-        if (!$tokenResponse['success']) {
-            return $this->handleUploadResponse($tokenResponse, $uploadEntry);
-        }
-
-        $request = $this->configureApiRequest();
-        $response = $request
-            ->attach('image', $fileHandle)
-            ->post($this->getS2sApiUrl(sprintf('image/upload/%s', $tokenResponse['upload_token'])));
-
-        return $this->handleUploadResponse(json_decode($response->body(), true), $uploadEntry);
+        return $this->uploadMedia($fileHandle, MediaType::IMAGE);
     }
 
     /**
@@ -85,28 +63,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function prepareUpload(): array
     {
-        $request = $this->configureApiRequest();
-        $uploadEntry = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::PROCESSING]);
-        $response = $request->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
-        $body = json_decode($response, true);
-
-        $success = $body['success'] ?? false;
-
-        if ($success) {
-            $this->transmorpherMedia->update(['last_upload_token' => $body['upload_token']]);
-            $uploadEntry->update(['upload_token' => $body['upload_token']]);
-
-            return [
-                'success' => $success,
-                'upload_token' => $body['upload_token'],
-            ];
-        }
-
-        return [
-            'success' => $success,
-            'response' => $body['message'],
-            'upload_token' => $uploadEntry->upload_token
-        ];
+        return $this->prepareMediaUpload(MediaType::IMAGE);
     }
 
     /**

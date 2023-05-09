@@ -27,7 +27,7 @@ class UploadToken
     {
         return response()->json($transmorpherMedia->getTransmorpher()->handleUploadResponse(
             $request->input('response'),
-            $transmorpherMedia->TransmorpherUploads()->whereUploadToken($request->input('upload_token'))->first())
+            $transmorpherMedia->TransmorpherUploads()->whereToken($request->input('upload_token'))->first())
         );
     }
 }
