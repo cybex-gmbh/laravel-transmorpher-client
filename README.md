@@ -71,7 +71,7 @@ TRANSMORPHER_WEB_PLACEHOLDER_URL=http://example.com/placeholder.jpg
 
 All Models which should be able to have media, have to implement the `HasTransmorpherMediaInterface` and use
 the `HasTransmorpherMedia` trait. The trait provides the implementation for the relation to `TransmorpherMedia`, the
-model which stores the information about uploaded images and videos,  as well as convenient methods for dynamically accessing your images and videos.
+model which stores the information about uploaded images and videos, as well as convenient methods for dynamically accessing your images and videos.
 
 ```php
 class YourModel extends Model implements HasTransmorpherMediaInterface
