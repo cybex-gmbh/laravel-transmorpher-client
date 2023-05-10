@@ -166,17 +166,13 @@ if (!window.transmorpherScriptLoaded) {
       updateImageDisplay(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version);
     });
   };
-  window.closeModal = function (closeButton) {
-    var modal = closeButton.closest('.modal');
-    var overlay = modal.nextElementSibling;
-    modal.classList.add('d-none');
-    overlay.classList.add('d-none');
+  window.closeModal = function (transmorpherIdentifier) {
+    document.querySelector("#modal-".concat(transmorpherIdentifier)).classList.add('d-none');
+    document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
   };
   window.openModal = function (transmorpherIdentifier) {
     var modal = document.querySelector("#modal-".concat(transmorpherIdentifier));
-    var overlay = modal.nextElementSibling;
     modal.classList.remove('d-none');
-    overlay.classList.remove('d-none');
 
     // Update version information when the modal is opened.
     updateVersionInformation(transmorpherIdentifier, modal);
@@ -193,6 +189,7 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (deleteResult) {
       updateVersionInformation(transmorpherIdentifier, document.querySelector("#modal-".concat(transmorpherIdentifier)));
       updateImageDisplay(transmorpherIdentifier, null, null, null, true);
+      document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
     });
   };
   window.updateImageDisplay = function (transmorpherIdentifier, path, transformations, version) {
@@ -227,6 +224,12 @@ if (!window.transmorpherScriptLoaded) {
     form.querySelector('.dz-default').style.display = 'none';
     form.querySelector('.dz-progress').style.display = 'none';
     form.querySelector('.dz-details').style.display = 'none';
+  };
+  window.showDeleteModal = function (transmorpherIdentifier) {
+    document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.remove('d-none');
+  };
+  window.closeDeleteModal = function (transmorpherIdentifier) {
+    document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
   };
 }
 

@@ -8,7 +8,7 @@
             {{ $differentiator }}
             <span class="badge @if($isProcessing) badge-processing @else d-hidden @endif">
                 Processing
-        </span>
+            </span>
             <div class="details">
                 @if ($isImage)
                     <a target="_blank" href="{{ $motif->getUrl() }}"><img src="{{ asset('vendor/transmorpher/icons/magnifying-glass.svg') }}" alt="Enlarge image" class="icon"></a>
@@ -43,26 +43,41 @@
         </div>
     </div>
 
-    <div id="modal-{{$motif->getIdentifier()}}" class="modal card d-none">
-        <div class="card-header">
-            {{ $differentiator }}
-            <button class="btn-close" onclick="closeModal(this)">⨉</button>
-        </div>
-        <div class="card-body">
-            <div class="versionInformation">
-                <p>Current version: <span class="currentVersion"></span></p>
-                <div class="versionList">
-                    <p>Version overview:</p>
-                    <hr>
-                    <ul></ul>
-                </div>
+    <div id="modal-{{ $motif->getIdentifier() }}" class="modal d-none">
+        <div class="card">
+            <div class="card-header">
+                {{ $differentiator }}
+                <button class="btn-close" onclick="closeModal('{{ $motif->getIdentifier() }}')">⨉</button>
             </div>
-            <button class="badge badge-error" onclick="deleteTransmorpherMedia('{{ $motif->getIdentifier() }}')">
-                Delete
-            </button>
+            <div class="card-body">
+                <div class="versionInformation">
+                    <p>Current version: <span class="currentVersion"></span></p>
+                    <div class="versionList">
+                        <p>Version overview:</p>
+                        <hr>
+                        <ul></ul>
+                    </div>
+                </div>
+                <button class="button badge-error" onclick="showDeleteModal('{{ $motif->getIdentifier() }}')">
+                    Delete
+                </button>
+            </div>
+        </div>
+
+        <div id="delete-{{ $motif->getIdentifier() }}" class="card d-none">
+            <div class="card-header">
+                Are you sure you want to delete all versions of {{ $differentiator }}?
+            </div>
+            <div class="card-body">
+                <button class="button" onclick="closeDeleteModal('{{ $motif->getIdentifier() }}')">
+                    Cancel
+                </button>
+                <button class="button badge-error" onclick="deleteTransmorpherMedia('{{ $motif->getIdentifier() }}')">
+                    Delete
+                </button>
+            </div>
         </div>
     </div>
-    <div class="modal-overlay d-none"></div>
 </div>
 
 <script type="text/javascript">

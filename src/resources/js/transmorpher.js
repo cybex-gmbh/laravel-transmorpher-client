@@ -153,20 +153,14 @@ if (!window.transmorpherScriptLoaded) {
         });
     }
 
-    window.closeModal = function (closeButton) {
-        let modal = closeButton.closest('.modal');
-        let overlay = modal.nextElementSibling;
-
-        modal.classList.add('d-none');
-        overlay.classList.add('d-none');
+    window.closeModal = function (transmorpherIdentifier) {
+        document.querySelector(`#modal-${transmorpherIdentifier}`).classList.add('d-none');
+        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
     }
 
     window.openModal = function (transmorpherIdentifier) {
-        let modal = document.querySelector(`#modal-${transmorpherIdentifier}`);
-        let overlay = modal.nextElementSibling;
-
+        let modal = document.querySelector(`#modal-${transmorpherIdentifier}`)
         modal.classList.remove('d-none');
-        overlay.classList.remove('d-none');
 
         // Update version information when the modal is opened.
         updateVersionInformation(transmorpherIdentifier, modal);
@@ -182,6 +176,7 @@ if (!window.transmorpherScriptLoaded) {
         }).then(deleteResult => {
             updateVersionInformation(transmorpherIdentifier, document.querySelector(`#modal-${transmorpherIdentifier}`));
             updateImageDisplay(transmorpherIdentifier, null, null, null, true);
+            document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
         });
     }
 
@@ -219,5 +214,13 @@ if (!window.transmorpherScriptLoaded) {
         form.querySelector('.dz-default').style.display = 'none';
         form.querySelector('.dz-progress').style.display = 'none';
         form.querySelector('.dz-details').style.display = 'none';
+    }
+
+    window.showDeleteModal = function (transmorpherIdentifier) {
+        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.remove('d-none');
+    }
+
+    window.closeDeleteModal = function (transmorpherIdentifier) {
+        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
     }
 }
