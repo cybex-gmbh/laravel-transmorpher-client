@@ -56,7 +56,7 @@ abstract class Transmorpher
                 ]);
             }
 
-            $body = json_decode($response, true);
+            $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
             $message = 'Could not connect to server.';
             $upload->update(['state'   => State::ERROR, 'message' => $exception->getMessage()]);
@@ -338,7 +338,7 @@ abstract class Transmorpher
                 ->attach('file', $fileHandle)
                 ->post($this->getS2sApiUrl(sprintf('%s/upload/%s', $type->value, $tokenResponse['upload_token'])));
 
-            $body = json_decode($response->body());
+            $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
             $body = [
                 'success' => false,
