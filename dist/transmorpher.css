@@ -453,7 +453,7 @@
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  border: 2px solid #fff;
+  border: 2px solid;
   border-color: #000 transparent #000 transparent;
   animation: loading-indicator 1.2s linear infinite;
 }
