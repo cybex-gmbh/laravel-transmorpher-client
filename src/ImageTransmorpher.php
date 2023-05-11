@@ -67,17 +67,6 @@ class ImageTransmorpher extends Transmorpher
     }
 
     /**
-     * Get the web api url for uploads.
-     *
-     * @param string|null $uploadToken
-     * @return string
-     */
-    public function getWebUploadUrl(string $uploadToken = null): string
-    {
-        return $this->getWebApiUrl('image/upload/' . $uploadToken);
-    }
-
-    /**
      * Get the route for receiving an upload token.
      *
      * @return string

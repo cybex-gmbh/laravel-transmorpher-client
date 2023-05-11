@@ -32,7 +32,7 @@ There you can configure values such as the route to which the Transmorpher media
 
 ### .env keys
 
-Before u can use this package u have to configure some .env keys (or config values).
+Before you can use this package you have to configure some .env keys (or config values).
 
 The `TRANSMORPHER_AUTH_TOKEN` is a Laravel Sanctum token which is used for authentication at the Transmorpher media
 server. This token should be provided to you by an admin of the Transmorpher media server.
@@ -71,7 +71,7 @@ TRANSMORPHER_WEB_PLACEHOLDER_URL=http://example.com/placeholder.jpg
 
 All Models which should be able to have media, have to implement the `HasTransmorpherMediaInterface` and use
 the `HasTransmorpherMedia` trait. The trait provides the implementation for the relation to `TransmorpherMedia`, the
-model which stores the information about uploaded images and videos,  as well as convenient methods for dynamically accessing your images and videos.
+model which stores the information about uploaded images and videos, as well as convenient methods for dynamically accessing your images and videos.
 
 ```php
 class YourModel extends Model implements HasTransmorpherMediaInterface
