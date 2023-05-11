@@ -5,15 +5,18 @@
     <span id="csrf" class="d-hidden">@csrf</span>
     <div class="card @if(!$isReady) border-processing @endif">
         <div class="card-header">
-            {{ $differentiator }}
+            <div>
+                <img src="{{ mix(sprintf('icons/%s.svg', $motif->getTransmorpherMedia()->type->value), 'vendor/transmorpher') }}" alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
+                {{ $differentiator }}
+            </div>
             <span class="badge @if($isProcessing) badge-processing @else d-hidden @endif">
                 Processing
             </span>
             <div class="details">
                 @if ($isImage)
-                    <a target="_blank" href="{{ $motif->getUrl() }}"><img src="{{ asset('vendor/transmorpher/icons/magnifying-glass.svg') }}" alt="Enlarge image" class="icon"></a>
+                    <a target="_blank" href="{{ $motif->getUrl() }}"><img src="{{ mix('icons/magnifying-glass.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon"></a>
                 @endif
-                <img role="button" src="{{ asset('vendor/transmorpher/icons/more-info.svg') }}" alt="More information" class="icon"
+                <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="More information" class="icon"
                      onclick="openModal('{{ $motif->getIdentifier() }}')">
             </div>
         </div>
@@ -55,8 +58,11 @@
             <div class="card-body">
                 <div class="version-information">
                     <p>Current version: <span class="current-version"></span></p>
+                    <p class="age">uploaded <span class="current-version-age"></span></p>
                     @if(!$isImage)
+                        <hr>
                         <p>Currently processed version: <span class="processed-version"></span></p>
+                        <p class="age">uploaded <span class="processed-version-age"></span></p>
                     @endif
                     <div class="version-list">
                         <p>Version overview:</p>

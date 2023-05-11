@@ -81,8 +81,6 @@ if (!window.transmorpherScriptLoaded) {
     window.updateVersionInformation = function (transmorpherIdentifier) {
         let modal = document.querySelector(`#modal-${transmorpherIdentifier}`);
         let versionList = modal.querySelector('.version-list > ul');
-        let currentVersion = modal.querySelector('.current-version');
-
         // Clear the list of versions.
         versionList.replaceChildren();
 
@@ -94,14 +92,18 @@ if (!window.transmorpherScriptLoaded) {
         }).then(response => {
             return response.json();
         }).then(versionInformation => {
-            currentVersion.textContent = versionInformation.currentVersion;
+            let versions = versionInformation.success ? versionInformation.versions : [];
+
+            modal.querySelector('.current-version').textContent = versionInformation.currentVersion || 'none';
+            modal.querySelector('.current-version-age').textContent = timeAgo(new Date((versions[versionInformation.currentVersion]) * 1000)) || 'never';
+
             if (!motifs[transmorpherIdentifier].isImage) {
-                let processedVersion = modal.querySelector('.processed-version');
-                processedVersion.textContent = versionInformation.currentlyProcessedVersion ?? 'none';
+                modal.querySelector('.processed-version').textContent = versionInformation.currentlyProcessedVersion || 'none';
+                modal.querySelector('.processed-version-age').textContent = timeAgo(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000)) || 'never';
             }
 
             // Add elements to display each version.
-            Object.keys(versionInformation.versions ?? []).reverse().forEach(version => {
+            Object.keys(versions).reverse().forEach(version => {
                 // Don't show the currently processed or current version.
                 if (version == versionInformation.currentlyProcessedVersion || version == versionInformation.currentVersion) {
                     return;
@@ -119,7 +121,7 @@ if (!window.transmorpherScriptLoaded) {
                     linkToOriginalImage.append(modal.previousElementSibling.querySelector('.details > a > img').cloneNode());
                 }
 
-                versionData.textContent = `${version}: ${new Date(versionInformation.versions[version] * 1000).toDateString()}`;
+                versionData.textContent = `${version}: ${timeAgo(new Date(versions[version] * 1000))}`;
                 setVersionButton.textContent = 'restore';
                 setVersionButton.onclick = () => setVersion(transmorpherIdentifier, version, modal);
 
@@ -181,14 +183,19 @@ if (!window.transmorpherScriptLoaded) {
         }).then(deleteResult => {
             if (deleteResult.success) {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
-                setStateDisplays(transmorpherIdentifier, 'success')
+                setModalStateDisplay(transmorpherIdentifier, 'success')
                 updateVersionInformation(transmorpherIdentifier);
                 updateImageDisplay(transmorpherIdentifier, null, null, null, true);
-                document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
+
+                // Hide processing display after deletion.
+                document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge-processing').style.visibility = 'hidden';
             } else {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
                 setModalStateDisplay(transmorpherIdentifier, 'error', deleteResult.response);
             }
+
+            // Hide delete modal.
+            document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
         })
     }
 
@@ -298,4 +305,41 @@ if (!window.transmorpherScriptLoaded) {
             previewElement.style.display = 'none'
         }
     }
+
+    window.timeAgo = function (date) {
+        if (isNaN(date)) {
+            return false;
+        }
+
+        const seconds = Math.floor((new Date() - date) / 1000);
+
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) {
+            return interval + ' years ago';
+        }
+
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+            return interval + ' months ago';
+        }
+
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+            return interval + ' days ago';
+        }
+
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+            return interval + ' hours ago';
+        }
+
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+            return interval + ' minutes ago';
+        }
+
+        if (seconds < 10) return 'just now';
+
+        return Math.floor(seconds) + ' seconds ago';
+    };
 }

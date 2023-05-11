@@ -1,7 +1,8 @@
 let mix = require('laravel-mix');
 
-mix.js('src/resources/js/transmorpher.js', 'dist')
-    .setPublicPath('dist')
+mix.setPublicPath('dist')
+    .js('src/resources/js/transmorpher.js', 'dist')
     .sass('src/resources/css/transmorpher.scss', 'dist')
-    .setPublicPath('dist')
+    .copyDirectory('src/resources/css/icons', 'dist/icons')
     .version();
+

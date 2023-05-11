@@ -96,8 +96,6 @@ if (!window.transmorpherScriptLoaded) {
   window.updateVersionInformation = function (transmorpherIdentifier) {
     var modal = document.querySelector("#modal-".concat(transmorpherIdentifier));
     var versionList = modal.querySelector('.version-list > ul');
-    var currentVersion = modal.querySelector('.current-version');
-
     // Clear the list of versions.
     versionList.replaceChildren();
 
@@ -110,16 +108,16 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (versionInformation) {
-      var _versionInformation$v;
-      currentVersion.textContent = versionInformation.currentVersion;
+      var versions = versionInformation.success ? versionInformation.versions : [];
+      modal.querySelector('.current-version').textContent = versionInformation.currentVersion || 'none';
+      modal.querySelector('.current-version-age').textContent = timeAgo(new Date(versions[versionInformation.currentVersion] * 1000)) || 'never';
       if (!motifs[transmorpherIdentifier].isImage) {
-        var _versionInformation$c;
-        var processedVersion = modal.querySelector('.processed-version');
-        processedVersion.textContent = (_versionInformation$c = versionInformation.currentlyProcessedVersion) !== null && _versionInformation$c !== void 0 ? _versionInformation$c : 'none';
+        modal.querySelector('.processed-version').textContent = versionInformation.currentlyProcessedVersion || 'none';
+        modal.querySelector('.processed-version-age').textContent = timeAgo(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)) || 'never';
       }
 
       // Add elements to display each version.
-      Object.keys((_versionInformation$v = versionInformation.versions) !== null && _versionInformation$v !== void 0 ? _versionInformation$v : []).reverse().forEach(function (version) {
+      Object.keys(versions).reverse().forEach(function (version) {
         // Don't show the currently processed or current version.
         if (version == versionInformation.currentlyProcessedVersion || version == versionInformation.currentVersion) {
           return;
@@ -134,7 +132,7 @@ if (!window.transmorpherScriptLoaded) {
           linkToOriginalImage.target = '_blank';
           linkToOriginalImage.append(modal.previousElementSibling.querySelector('.details > a > img').cloneNode());
         }
-        versionData.textContent = "".concat(version, ": ").concat(new Date(versionInformation.versions[version] * 1000).toDateString());
+        versionData.textContent = "".concat(version, ": ").concat(timeAgo(new Date(versions[version] * 1000)));
         setVersionButton.textContent = 'restore';
         setVersionButton.onclick = function () {
           return setVersion(transmorpherIdentifier, version, modal);
@@ -196,14 +194,19 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (deleteResult) {
       if (deleteResult.success) {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-        setStateDisplays(transmorpherIdentifier, 'success');
+        setModalStateDisplay(transmorpherIdentifier, 'success');
         updateVersionInformation(transmorpherIdentifier);
         updateImageDisplay(transmorpherIdentifier, null, null, null, true);
-        document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
+
+        // Hide processing display after deletion.
+        document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge-processing').style.visibility = 'hidden';
       } else {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         setModalStateDisplay(transmorpherIdentifier, 'error', deleteResult.response);
       }
+
+      // Hide delete modal.
+      document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
     });
   };
   window.updateImageDisplay = function (transmorpherIdentifier, path, transformations, version) {
@@ -298,6 +301,34 @@ if (!window.transmorpherScriptLoaded) {
     if (previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview"))) {
       previewElement.style.display = 'none';
     }
+  };
+  window.timeAgo = function (date) {
+    if (isNaN(date)) {
+      return false;
+    }
+    var seconds = Math.floor((new Date() - date) / 1000);
+    var interval = Math.floor(seconds / 31536000);
+    if (interval > 1) {
+      return interval + ' years ago';
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+      return interval + ' months ago';
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+      return interval + ' days ago';
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+      return interval + ' hours ago';
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+      return interval + ' minutes ago';
+    }
+    if (seconds < 10) return 'just now';
+    return Math.floor(seconds) + ' seconds ago';
   };
 }
 

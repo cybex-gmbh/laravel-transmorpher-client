@@ -51,6 +51,12 @@
     padding: .75rem 1.25rem;
     border-bottom: 1px solid $grey;
 
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
     .details {
       display: flex;
       gap: 5px;
@@ -126,9 +132,16 @@
   height: 150px;
 }
 
+.version-information hr {
+  height: 1px;
+  background-color: #9B9B9B;
+  margin: 10px 0;
+  border: none
+}
+
 .version-list {
   padding: 10px;
-  margin: 10px 0 20px;
+  margin: 20px 0;
   border: 1px solid $cardBorder;
   box-shadow: 0 1px 1px 0 rgba(60, 75, 100, .14), 0 2px 1px -1px rgba(60, 75, 100, .12), 0 1px 3px 0 rgba(60, 75, 100, .2);
   border-radius: 5px;
@@ -136,10 +149,7 @@
   overflow: auto;
 
   hr {
-    margin-bottom: 10px;
-    height: 1px;
-    background-color: black;
-    border: none
+    margin: 0 0 10px;
   }
 
   button {
@@ -220,4 +230,10 @@
       transform: rotate(360deg);
     }
   }
+}
+
+.age {
+  line-height: .5;
+  font-size: small;
+  color: #4b5a6a;
 }
