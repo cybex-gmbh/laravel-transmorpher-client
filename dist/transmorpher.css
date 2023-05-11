@@ -320,11 +320,11 @@
 }
 
 .badge {
-  padding: 3px;
+  padding: 3px 10px;
   border-radius: 5px;
 }
 
-.badge-processing, .version-list button {
+.badge-processing {
   background-color: orange;
 }
 
@@ -396,6 +396,9 @@
   background-color: black;
   border: none;
 }
+.version-list button {
+  background-color: lightgreen;
+}
 .version-list ul {
   display: flex;
   flex-direction: column;
@@ -437,4 +440,28 @@
   padding-bottom: 10px;
   overflow: auto;
   white-space: nowrap;
+}
+
+.loading-indicator, .badge-processing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.loading-indicator:after, .badge-processing:after {
+  content: " ";
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  border-color: #000 transparent #000 transparent;
+  animation: loading-indicator 1.2s linear infinite;
+}
+@keyframes loading-indicator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
