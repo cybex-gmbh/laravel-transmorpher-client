@@ -30,19 +30,15 @@ if (!window.transmorpherScriptLoaded) {
                 if (pollingInformation.state === 'success') {
                     // Processing has finished, the timer can be cleared.
                     clearInterval(window[statusPollingVariable]);
-                    setStatusDisplay(transmorpherIdentifier, 'success');
+                    setStateDisplays(transmorpherIdentifier, 'success');
 
                     // Display the newly processed video and update links, also hide the placeholder image.
-                    let videoElement = document.querySelector(`#dz-${transmorpherIdentifier} > video.video-transmorpher`);
-                    videoElement.src = pollingInformation.url;
-                    videoElement.querySelector('a').href = pollingInformation.url;
-                    videoElement.style.display = 'block';
-                    document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`).style.display = 'none';
+                    updateVideoDisplay(transmorpherIdentifier, pollingInformation.url)
+                    updateVersionInformation(transmorpherIdentifier)
                 } else if (pollingInformation.state !== 'processing') {
                     // There was either an error or the upload slot was overwritten by another upload.
                     clearInterval(window[statusPollingVariable]);
-                    setStatusDisplay(transmorpherIdentifier, 'error');
-                    displayError(pollingInformation.response, transmorpherIdentifier);
+                    setStateDisplays(transmorpherIdentifier, 'error', pollingInformation.response);
                 }
             })
         }, 5000); // Poll every 5 seconds
@@ -68,36 +64,24 @@ if (!window.transmorpherScriptLoaded) {
         if (uploadResult.success) {
             form.classList.remove('dz-started');
 
-            if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
-                // It's a video dropzone, indicate that it is now processing and start polling for updates.
-                setStatusDisplay(transmorpherIdentifier, 'processing');
-                startPolling(transmorpherIdentifier, uploadToken)
-            } else {
+            if (motifs[transmorpherIdentifier].isImage) {
                 // It's an image dropzone, indicate success.
-                setStatusDisplay(transmorpherIdentifier, 'success');
+                setStateDisplays(transmorpherIdentifier, 'success');
+            } else {
+                // It's a video dropzone, indicate that it is now processing and start polling for updates.
+                setStateDisplays(transmorpherIdentifier, 'processing');
+                startPolling(transmorpherIdentifier, uploadToken)
             }
         } else {
             // There was an error.
-            setStatusDisplay(transmorpherIdentifier, 'error');
-            displayError(uploadResult.response, transmorpherIdentifier);
+            setStateDisplays(transmorpherIdentifier, 'error', uploadResult.response);
         }
     }
 
-    window.setStatusDisplay = function (transmorpherIdentifier, state) {
-        let form = document.querySelector(`#dz-${transmorpherIdentifier}`);
-        let card = form.closest('.card');
-        let cardHeader = card.querySelector('.badge');
-
-        card.className = '';
-        cardHeader.className = '';
-        card.classList.add('card', `border-${state}`);
-        cardHeader.classList.add('badge', `badge-${state}`);
-        cardHeader.textContent = state[0].toUpperCase() + state.slice(1);
-    }
-
-    window.updateVersionInformation = function (transmorpherIdentifier, modal) {
-        let versionList = modal.querySelector('.versionList > ul');
-        let currentVersion = modal.querySelector('.currentVersion');
+    window.updateVersionInformation = function (transmorpherIdentifier) {
+        let modal = document.querySelector(`#modal-${transmorpherIdentifier}`);
+        let versionList = modal.querySelector('.version-list > ul');
+        let currentVersion = modal.querySelector('.current-version');
 
         // Clear the list of versions.
         versionList.replaceChildren();
@@ -111,16 +95,25 @@ if (!window.transmorpherScriptLoaded) {
             return response.json();
         }).then(versionInformation => {
             currentVersion.textContent = versionInformation.currentVersion;
+            if (!motifs[transmorpherIdentifier].isImage) {
+                let processedVersion = modal.querySelector('.processed-version');
+                processedVersion.textContent = versionInformation.currentlyProcessedVersion ?? 'none';
+            }
 
             // Add elements to display each version.
             Object.keys(versionInformation.versions ?? []).reverse().forEach(version => {
+                // Don't show the currently processed or current version.
+                if (version == versionInformation.currentlyProcessedVersion || version == versionInformation.currentVersion) {
+                    return;
+                }
+
                 let versionEntry = document.createElement('li');
                 let controls = document.createElement('div');
                 let setVersionButton = document.createElement('button');
                 let versionData = document.createElement('span');
                 let linkToOriginalImage = document.createElement('a');
 
-                if (document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)) {
+                if (motifs[transmorpherIdentifier].isImage) {
                     linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + `/${version}`;
                     linkToOriginalImage.target = '_blank';
                     linkToOriginalImage.append(modal.previousElementSibling.querySelector('.details > a > img').cloneNode());
@@ -134,8 +127,7 @@ if (!window.transmorpherScriptLoaded) {
                 versionEntry.append(versionData, controls)
                 versionList.append(versionEntry);
             })
-        });
-
+        })
     }
 
     window.setVersion = function (transmorpherIdentifier, version, modal) {
@@ -148,8 +140,21 @@ if (!window.transmorpherScriptLoaded) {
         }).then(response => {
             return response.json();
         }).then(setVersionResult => {
-            updateVersionInformation(transmorpherIdentifier, modal);
-            updateImageDisplay(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version);
+            if (setVersionResult.success) {
+                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+                updateVersionInformation(transmorpherIdentifier);
+
+                if (motifs[transmorpherIdentifier].isImage) {
+                    updateImageDisplay(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version);
+                } else {
+                    startPolling(transmorpherIdentifier, setVersionResult.upload_token);
+                }
+
+                setStateDisplays(transmorpherIdentifier, motifs[transmorpherIdentifier].isImage ? 'success' : 'processing');
+            } else {
+                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+                setModalStateDisplay(transmorpherIdentifier, 'error', setVersionResult.response);
+            }
         });
     }
 
@@ -163,7 +168,7 @@ if (!window.transmorpherScriptLoaded) {
         modal.classList.remove('d-none');
 
         // Update version information when the modal is opened.
-        updateVersionInformation(transmorpherIdentifier, modal);
+        updateVersionInformation(transmorpherIdentifier);
     }
 
     window.deleteTransmorpherMedia = function (transmorpherIdentifier) {
@@ -174,10 +179,17 @@ if (!window.transmorpherScriptLoaded) {
         }).then(response => {
             return response.json();
         }).then(deleteResult => {
-            updateVersionInformation(transmorpherIdentifier, document.querySelector(`#modal-${transmorpherIdentifier}`));
-            updateImageDisplay(transmorpherIdentifier, null, null, null, true);
-            document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
-        });
+            if (deleteResult.success) {
+                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+                setStateDisplays(transmorpherIdentifier, 'success')
+                updateVersionInformation(transmorpherIdentifier);
+                updateImageDisplay(transmorpherIdentifier, null, null, null, true);
+                document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
+            } else {
+                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+                setModalStateDisplay(transmorpherIdentifier, 'error', deleteResult.response);
+            }
+        })
     }
 
     window.updateImageDisplay = function (transmorpherIdentifier, path, transformations, version, placeholder = false) {
@@ -196,7 +208,64 @@ if (!window.transmorpherScriptLoaded) {
         }
     }
 
-    window.displayError = function (message, transmorpherIdentifier) {
+    window.updateVideoDisplay = function (transmorpherIdentifier, url) {
+        let videoElement = document.querySelector(`#dz-${transmorpherIdentifier} > video.video-transmorpher`);
+
+        videoElement.src = url;
+        videoElement.querySelector('a').href = url;
+        videoElement.style.display = 'block';
+
+        // Hide placeholder image.
+        document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`).style.display = 'none';
+    }
+
+    window.showDeleteModal = function (transmorpherIdentifier) {
+        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.remove('d-none');
+    }
+
+    window.closeDeleteModal = function (transmorpherIdentifier) {
+        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
+    }
+
+    window.setStateDisplays = function (transmorpherIdentifier, state, message = null) {
+        setDropzoneStateDisplay(transmorpherIdentifier, state, message);
+        setModalStateDisplay(transmorpherIdentifier, state, message);
+    }
+
+    window.setDropzoneStateDisplay = function (transmorpherIdentifier, state, message = null) {
+        let form = document.querySelector(`#dz-${transmorpherIdentifier}`);
+        let card = form.closest('.card');
+        let stateInfo = card.querySelector('.badge');
+
+        card.className = '';
+        card.classList.add('card', `border-${state}`);
+        setStateInfoDisplay(stateInfo, state)
+
+        if (message) {
+            setDropzoneErrorMessage(transmorpherIdentifier, message)
+        } else {
+            resetModalErrorMessageDisplay(transmorpherIdentifier, message);
+        }
+    }
+
+    window.setModalStateDisplay = function (transmorpherIdentifier, state, message = null) {
+        let stateInfo = document.querySelector(`#modal-${transmorpherIdentifier} .card-header > span`)
+        setStateInfoDisplay(stateInfo, state)
+
+        if (message) {
+            setModalErrorMessage(transmorpherIdentifier, message)
+        } else {
+            resetModalErrorMessageDisplay(transmorpherIdentifier, message);
+        }
+    }
+
+    window.setStateInfoDisplay = function (stateInfoElement, state) {
+        stateInfoElement.className = '';
+        stateInfoElement.classList.add('badge', `badge-${state}`);
+        stateInfoElement.textContent = state[0].toUpperCase() + state.slice(1);
+    }
+
+    window.setDropzoneErrorMessage = function (transmorpherIdentifier, message) {
         let form = document.querySelector('#dz-' + transmorpherIdentifier);
 
         // Add preview element, which also displays errors, when it is not present yet.
@@ -216,11 +285,17 @@ if (!window.transmorpherScriptLoaded) {
         form.querySelector('.dz-details').style.display = 'none';
     }
 
-    window.showDeleteModal = function (transmorpherIdentifier) {
-        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.remove('d-none');
+    window.setModalErrorMessage = function (transmorpherIdentifier, message) {
+        document.querySelector(`#modal-${transmorpherIdentifier} .delete-and-error > span`).textContent = message;
     }
 
-    window.closeDeleteModal = function (transmorpherIdentifier) {
-        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
+    window.resetModalErrorMessageDisplay = function (transmorpherIdentifier, message) {
+        document.querySelector(`#modal-${transmorpherIdentifier} .delete-and-error > span`).textContent = '';
+        document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
+
+        let previewElement = null;
+        if (previewElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview`)) {
+            previewElement.style.display = 'none'
+        }
     }
 }

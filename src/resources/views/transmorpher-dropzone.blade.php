@@ -47,20 +47,29 @@
         <div class="card">
             <div class="card-header">
                 {{ $differentiator }}
+                <span class="badge @if($isProcessing) badge-processing @else d-hidden @endif">
+                    Processing
+                </span>
                 <button class="btn-close" onclick="closeModal('{{ $motif->getIdentifier() }}')">⨉</button>
             </div>
             <div class="card-body">
-                <div class="versionInformation">
-                    <p>Current version: <span class="currentVersion"></span></p>
-                    <div class="versionList">
+                <div class="version-information">
+                    <p>Current version: <span class="current-version"></span></p>
+                    @if(!$isImage)
+                        <p>Currently processed version: <span class="processed-version"></span></p>
+                    @endif
+                    <div class="version-list">
                         <p>Version overview:</p>
                         <hr>
                         <ul></ul>
                     </div>
                 </div>
-                <button class="button badge-error" onclick="showDeleteModal('{{ $motif->getIdentifier() }}')">
-                    Delete
-                </button>
+                <div class="delete-and-error">
+                    <button class="button badge-error" onclick="showDeleteModal('{{ $motif->getIdentifier() }}')">
+                        Delete
+                    </button>
+                    <span class="error-message"></span>
+                </div>
             </div>
         </div>
 
@@ -93,10 +102,12 @@
             setVersion: '{{ $setVersionRoute }}',
             delete: '{{ $deleteRoute }}',
             getOriginal: '{{ $getOriginalRoute }}'
-        }
+        },
+        isImage: '{{ $isImage }}'
     }
 
     // Start polling if the video is still processing.
+    // Also set status display for the more information modal.
     if ('{{ !$isImage }}' && '{{ $isProcessing }}') {
         startPolling('{{ $motif->getIdentifier() }}', '{{ $latestUploadToken }}');
     }

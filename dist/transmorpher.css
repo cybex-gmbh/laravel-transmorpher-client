@@ -324,7 +324,7 @@
   border-radius: 5px;
 }
 
-.badge-processing, .versionList button {
+.badge-processing, .version-list button {
   background-color: orange;
 }
 
@@ -358,7 +358,7 @@
 
 .modal {
   position: fixed;
-  z-index: 1;
+  z-index: 999;
   left: 0;
   top: 0;
   width: 100%;
@@ -381,7 +381,7 @@
   height: 150px;
 }
 
-.versionList {
+.version-list {
   padding: 10px;
   margin: 10px 0 20px;
   border: 1px solid #ced2d8;
@@ -390,22 +390,23 @@
   max-height: 300px;
   overflow: auto;
 }
-.versionList hr {
+.version-list hr {
   margin-bottom: 10px;
   height: 1px;
   background-color: black;
   border: none;
 }
-.versionList ul {
+.version-list ul {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.versionList ul li {
+.version-list ul li {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
-.versionList ul li div {
+.version-list ul li div {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -416,11 +417,24 @@
   width: 20px;
 }
 
-.button, .versionList button {
-  padding: 3px;
+.button, .version-list button {
+  padding: 3px 15px;
   border: 0;
   border-radius: 0.25rem;
 }
-.button:hover, .versionList button:hover {
+.button:hover, .version-list button:hover {
   filter: brightness(0.85);
+}
+
+.delete-and-error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.delete-and-error span {
+  color: red;
+  margin-left: 10px;
+  padding-bottom: 10px;
+  overflow: auto;
+  white-space: nowrap;
 }

@@ -102,6 +102,13 @@ abstract class Transmorpher
             ];
         }
 
+        if ($response->status() === 404) {
+            $body = [
+                'success' => false,
+                'response' => 'Media is already deleted.'
+            ];
+        }
+
         if ($body['success']) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
             $upload->update(['state' => State::DELETED, 'message' => $body['response']]);
