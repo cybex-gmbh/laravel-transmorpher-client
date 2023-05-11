@@ -49,7 +49,7 @@ if (!window.transmorpherScriptLoaded) {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
             }, body: JSON.stringify({
-                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey, upload_token: uploadToken, response: response
+                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey, upload_token: uploadToken, response: response, http_code: file.xhr.status
             })
         }).then(response => {
             return response.json();

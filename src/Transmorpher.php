@@ -16,14 +16,14 @@ use Transmorpher\Models\TransmorpherUpload;
 
 abstract class Transmorpher
 {
-    protected TransmorpherMedia    $transmorpherMedia;
-    protected static array         $instances = [];
+    protected TransmorpherMedia $transmorpherMedia;
+    protected static array $instances = [];
 
     /**
      * Get either an existing instance or creates a new one.
      *
-     * @param HasTransmorpherMediaInterface $model          A model which has TransmorpherMedia.
-     * @param string                        $differentiator The Differentiator identifying the TransmorpherMedia.
+     * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
+     * @param string $differentiator The Differentiator identifying the TransmorpherMedia.
      *
      * @return static The Transmorpher instance.
      */
@@ -42,8 +42,8 @@ abstract class Transmorpher
     public function prepareMediaUpload(MediaType $type): array
     {
         $request = $this->configureApiRequest();
-        $upload  = $this->transmorpherMedia->TransmorpherUploads()->create(['state'   => State::INITIALIZING,
-                                                                            'message' => 'Sending request.'
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING,
+            'message' => 'Sending request.'
         ]);
 
         try {
@@ -59,7 +59,7 @@ abstract class Transmorpher
             $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
             $message = 'Could not connect to server.';
-            $upload->update(['state'   => State::ERROR, 'message' => $exception->getMessage()]);
+            $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
         }
 
         $success = $body['success'] ?? false;
@@ -178,7 +178,7 @@ abstract class Transmorpher
             $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
             $body = [
-                'success'  => false,
+                'success' => false,
                 'response' => 'Could not connect to server.'
             ];
         }
@@ -194,17 +194,17 @@ abstract class Transmorpher
     /**
      * Updates database fields for TransmorpherMedia and TransmorpherUpload for a response.
      *
-     * @param array              $body   The body of the response.
+     * @param array $body The body of the response.
      * @param TransmorpherUpload $upload The TransmorpherUpload entry for the corresponding api request.
      *
      * @return array The response body.
      */
-    public function handleUploadResponse(array $body, TransmorpherUpload $upload): array
+    public function handleUploadResponse(array $body, TransmorpherUpload $upload, int $code = null): array
     {
         // An error was returned from the server.
         if (array_key_exists('message', $body)) {
             $body = [
-                'success'  => false,
+                'success' => false,
                 'response' => $body['exception'] ?? $body['message'],
             ];
         }
@@ -218,6 +218,11 @@ abstract class Transmorpher
             }
         } else {
             $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
+
+            if ($code === 404) {
+                $body['response'] = 'Canceled by a new upload or the upload is no longer valid.';
+                return $body;
+            }
         }
 
         return $body;
@@ -268,11 +273,11 @@ abstract class Transmorpher
     {
         foreach ($transformations as $transformation => $value) {
             match ($transformation) {
-                'width'   => $transformationParts[] = Transformation::WIDTH->getUrlRepresentation($value),
-                'height'  => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
-                'format'  => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
+                'width' => $transformationParts[] = Transformation::WIDTH->getUrlRepresentation($value),
+                'height' => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
+                'format' => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
                 'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
-                default   => null
+                default => null
             };
         }
 
@@ -308,7 +313,8 @@ abstract class Transmorpher
      * @return void
      * @throws InvalidIdentifierException
      */
-    protected function createTransmorpherMedia(MediaType $type) {
+    protected function createTransmorpherMedia(MediaType $type)
+    {
         $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
             ['differentiator' => $this->differentiator, 'type' => $type],
             ['differentiator' => $this->differentiator, 'type' => $type, 'is_ready' => 0]
@@ -321,14 +327,14 @@ abstract class Transmorpher
      * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string                        $differentiator
+     * @param string $differentiator
      */
     protected abstract function __construct(HasTransmorpherMediaInterface $model, string $differentiator);
 
     /**
      * Upload media to the Transmorpher.
      *
-     * @param resource  $fileHandle
+     * @param resource $fileHandle
      * @param MediaType $type
      *
      * @return array The Transmorpher response.

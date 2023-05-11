@@ -67,7 +67,8 @@ if (!window.transmorpherScriptLoaded) {
       body: JSON.stringify({
         transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey,
         upload_token: uploadToken,
-        response: response
+        response: response,
+        http_code: file.xhr.status
       })
     }).then(function (response) {
       return response.json();
