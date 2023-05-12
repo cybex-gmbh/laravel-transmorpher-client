@@ -237,7 +237,7 @@ abstract class Transmorpher
      */
     public function getIdentifier(): string
     {
-        return sprintf('%s-%s-%s', $this->transmorpherMedia->differentiator, $this->transmorpherMedia->transmorphable_type, $this->transmorpherMedia->transmorphable_id);
+        return sprintf('%s-%s-%s', $this->differentiator, $this->model->getMorphClass(), $this->model->getKey());
     }
 
     /**
@@ -315,12 +315,12 @@ abstract class Transmorpher
      */
     protected function createTransmorpherMedia(MediaType $type)
     {
+        $this->validateIdentifier();
+
         $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
             ['differentiator' => $this->differentiator, 'type' => $type],
-            ['differentiator' => $this->differentiator, 'type' => $type, 'is_ready' => 0]
+            ['is_ready' => 0]
         );
-
-        $this->validateIdentifier($this->model, $this->differentiator);
     }
 
     /**
@@ -418,12 +418,10 @@ abstract class Transmorpher
      * Validate the identifier to make sure it doesn't contain forbidden characters.
      * @throws InvalidIdentifierException
      */
-    protected function validateIdentifier(HasTransmorpherMediaInterface $model, string $differentiator): void
+    protected function validateIdentifier(): void
     {
         if (Str::contains($this->getIdentifier(), ['/', '\\', '.', ':'])) {
-            $this->transmorpherMedia->delete();
-
-            throw new InvalidIdentifierException($model, $differentiator);
+            throw new InvalidIdentifierException($this->model, $this->differentiator);
         }
     }
 }
