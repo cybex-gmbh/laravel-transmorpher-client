@@ -58,6 +58,7 @@ if (!window.transmorpherScriptLoaded) {
   };
 
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
+    var _file$xhr;
     fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse, {
       method: 'POST',
       headers: {
@@ -68,7 +69,7 @@ if (!window.transmorpherScriptLoaded) {
         transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey,
         upload_token: uploadToken,
         response: response,
-        http_code: file.xhr.status
+        http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
       })
     }).then(function (response) {
       return response.json();
@@ -77,9 +78,8 @@ if (!window.transmorpherScriptLoaded) {
     });
   };
   window.handleDropzoneResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
-    var form = document.querySelector("#dz-".concat(transmorpherIdentifier));
     if (uploadResult.success) {
-      form.classList.remove('dz-started');
+      document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
       if (motifs[transmorpherIdentifier].isImage) {
         // It's an image dropzone, indicate success.
         setStateDisplays(transmorpherIdentifier, 'success');
@@ -176,8 +176,7 @@ if (!window.transmorpherScriptLoaded) {
     document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
   };
   window.openModal = function (transmorpherIdentifier) {
-    var modal = document.querySelector("#modal-".concat(transmorpherIdentifier));
-    modal.classList.remove('d-none');
+    document.querySelector("#modal-".concat(transmorpherIdentifier)).classList.remove('d-none');
 
     // Update version information when the modal is opened.
     updateVersionInformation(transmorpherIdentifier);
@@ -195,11 +194,12 @@ if (!window.transmorpherScriptLoaded) {
       if (deleteResult.success) {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         setModalStateDisplay(transmorpherIdentifier, 'success');
+        setCardBorderDisplay(transmorpherIdentifier, 'processing');
         updateVersionInformation(transmorpherIdentifier);
         updateImageDisplay(transmorpherIdentifier, null, null, null, true);
 
         // Hide processing display after deletion.
-        document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge-processing').style.visibility = 'hidden';
+        document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge').classList.add('d-hidden');
       } else {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         setModalStateDisplay(transmorpherIdentifier, 'error', deleteResult.response);
@@ -220,18 +220,18 @@ if (!window.transmorpherScriptLoaded) {
       // It's a video dropzone and the media was deleted, set placeholder as displayed image.
       imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher"));
       imgElement.src = imgElement.dataset.placeholderUrl;
-      imgElement.style.display = 'block';
-      document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher")).style.display = 'none';
+      imgElement.classList.remove('d-none');
+      document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher")).classList.add('d-none');
     }
   };
   window.updateVideoDisplay = function (transmorpherIdentifier, url) {
     var videoElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher"));
     videoElement.src = url;
     videoElement.querySelector('a').href = url;
-    videoElement.style.display = 'block';
+    videoElement.classList.remove('d-none');
 
     // Hide placeholder image.
-    document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher")).style.display = 'none';
+    document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher")).classList.add('d-none');
   };
   window.showDeleteModal = function (transmorpherIdentifier) {
     document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.remove('d-none');
@@ -246,11 +246,8 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.setDropzoneStateDisplay = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var form = document.querySelector("#dz-".concat(transmorpherIdentifier));
-    var card = form.closest('.card');
-    var stateInfo = card.querySelector('.badge');
-    card.className = '';
-    card.classList.add('card', "border-".concat(state));
+    var stateInfo = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge');
+    setCardBorderDisplay(transmorpherIdentifier, state);
     setStateInfoDisplay(stateInfo, state);
     if (message) {
       setDropzoneErrorMessage(transmorpherIdentifier, message);
@@ -260,8 +257,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.setModalStateDisplay = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var stateInfo = document.querySelector("#modal-".concat(transmorpherIdentifier, " .card-header > span"));
-    setStateInfoDisplay(stateInfo, state);
+    setStateInfoDisplay(document.querySelector("#modal-".concat(transmorpherIdentifier, " .card-header > span")), state);
     if (message) {
       setModalErrorMessage(transmorpherIdentifier, message);
     } else {
@@ -272,6 +268,11 @@ if (!window.transmorpherScriptLoaded) {
     stateInfoElement.className = '';
     stateInfoElement.classList.add('badge', "badge-".concat(state));
     stateInfoElement.textContent = state[0].toUpperCase() + state.slice(1);
+  };
+  window.setCardBorderDisplay = function (transmorpherIdentifier, state) {
+    var card = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card');
+    card.className = '';
+    card.classList.add('card', "border-".concat(state));
   };
   window.setDropzoneErrorMessage = function (transmorpherIdentifier, message) {
     var form = document.querySelector('#dz-' + transmorpherIdentifier);
