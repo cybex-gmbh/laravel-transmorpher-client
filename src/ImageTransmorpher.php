@@ -13,21 +13,9 @@ class ImageTransmorpher extends Transmorpher
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator, protected MediaType $type = MediaType::IMAGE)
     {
-        $this->createTransmorpherMedia(MediaType::IMAGE);
-    }
-
-    /**
-     * Upload an image to the Transmorpher.
-     *
-     * @param resource $fileHandle
-     *
-     * @return array The Transmorpher response.
-     */
-    public function upload($fileHandle): array
-    {
-        return $this->uploadMedia($fileHandle, MediaType::IMAGE);
+        $this->createTransmorpherMedia();
     }
 
     /**
@@ -52,35 +40,5 @@ class ImageTransmorpher extends Transmorpher
     public function getDerivative(array $transformations = []): string
     {
         return Http::get($this->getUrl($transformations))->body();
-    }
-
-    /**
-     * Prepare an upload to the Transmorpher media server by requesting an upload token.
-     *
-     * @return array
-     */
-    public function prepareUpload(): array
-    {
-        return $this->prepareMediaUpload(MediaType::IMAGE);
-    }
-
-    /**
-     * Get the route for receiving an upload token.
-     *
-     * @return string
-     */
-    public function getUploadTokenRoute(): string
-    {
-        return route('transmorpherImageToken');
-    }
-
-    /**
-     * Get the max file size for uploads with dropzone.
-     *
-     * @return int
-     */
-    public function getMaxFileSize(): int
-    {
-        return config('transmorpher.dropzone_upload.image_max_file_size');
     }
 }
