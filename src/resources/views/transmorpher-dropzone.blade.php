@@ -93,6 +93,26 @@
             </div>
         </div>
     </div>
+
+    <div id="modal-uc-{{ $motif->getIdentifier() }}" class="modal d-none">
+        <div class="card">
+            <div class="card-header">
+                @if($isImage)
+                    There is currently an upload in process, do you want to overwrite it?
+                @else
+                    A video is currently uploading or processing, do you want to overwrite it?
+                @endif
+            </div>
+            <div class="card-body">
+                <button class="button" onclick="closeUploadConfirmModal('{{ $motif->getIdentifier() }}')">
+                    Cancel
+                </button>
+                <button class="button badge-error">
+                    Overwrite
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -102,13 +122,16 @@
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         csrfToken: document.querySelector('#csrf > input[name="_token"]').value,
         routes: {
-            stateUpdate: '{{ $stateUpdateRoute }}',
+            processingState: '{{ $processingStateRoute }}',
             handleUploadResponse: '{{ $handleUploadResponseRoute }}',
             getVersions: '{{ $getVersionsRoute }}',
             setVersion: '{{ $setVersionRoute }}',
             delete: '{{ $deleteRoute }}',
-            getOriginal: '{{ $getOriginalRoute }}'
+            getOriginal: '{{ $getOriginalRoute }}',
+            uploadToken: '{{ $uploadTokenRoute }}',
+            uploadingState: '{{ $uploadingStateRoute }}'
         },
+        webUploadUrl: '{{ $motif->getWebUploadUrl() }}',
         isImage: '{{ $isImage }}'
     }
 
@@ -128,6 +151,7 @@
         uploadMultiple: false,
         paramName: 'file',
         uploadToken: null,
+        createImageThumbnails: false,
         init: function () {
             // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
             this.on('addedfile', function () {
@@ -143,32 +167,18 @@
                 errorElement.remove();
             }
 
-            // Reserve an upload slot at the Transmorpher media server.
-            fetch('{{ $uploadTokenRoute }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': motifs['{{ $motif->getIdentifier() }}'].csrfToken,
-                },
-                body: JSON.stringify({
-                    transmorpher_media_key: {{ $transmorpherMediaKey }},
-                }),
-            }).then(response => {
-                return response.json();
-            }).then(getUploadTokenResult => {
-                if (!getUploadTokenResult.success) {
-                    done(getUploadTokenResult);
-                }
-
-                this.options.uploadToken = getUploadTokenResult.upload_token
-                // Set the dropzone target to the media server upload url, which needs a valid upload token.
-                this.options.url = '{{ $motif->getWebUploadUrl() }}' + getUploadTokenResult.upload_token;
-                done()
-            });
+            getUploadingState('{{ $motif->getIdentifier() }}')
+                .then(uploadingStateResponse => {
+                    if (uploadingStateResponse) {
+                        openUploadConfirmModal('{{ $motif->getIdentifier() }}', partial(reserveUploadSlot, done));
+                    } else {
+                        reserveUploadSlot('{{ $motif->getIdentifier() }}', done);
+                    }
+                })
         },
         success: function (file, response) {
             this.element.querySelector('.dz-default').style.display = 'block';
-            this.element.querySelector('.dz-preview').remove();
+            this.element.querySelector('.dz-preview')?.remove();
 
             // Clear the old timer.
             clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);

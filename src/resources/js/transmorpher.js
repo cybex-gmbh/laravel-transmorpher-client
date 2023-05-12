@@ -18,7 +18,7 @@ if (!window.transmorpherScriptLoaded) {
             }
 
             // Poll for status updates.
-            fetch(motifs[transmorpherIdentifier].routes.stateUpdate, {
+            fetch(motifs[transmorpherIdentifier].routes.processingState, {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
                 }, body: JSON.stringify({
@@ -130,7 +130,17 @@ if (!window.transmorpherScriptLoaded) {
         })
     }
 
-    window.setVersion = function (transmorpherIdentifier, version, modal) {
+    window.setVersion = function (transmorpherIdentifier, version) {
+        getUploadingState(transmorpherIdentifier).then(uploadingStateResponse => {
+            if (uploadingStateResponse) {
+                openUploadConfirmModal(transmorpherIdentifier, partial(makeSetVersionCall, version));
+            } else {
+                makeSetVersionCall(transmorpherIdentifier, version);
+            }
+        })
+    }
+
+    window.makeSetVersionCall = function (transmorpherIdentifier, version) {
         fetch(motifs[transmorpherIdentifier].routes.setVersion, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
@@ -160,7 +170,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.closeModal = function (transmorpherIdentifier) {
         document.querySelector(`#modal-${transmorpherIdentifier}`).classList.add('d-none');
-        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
+        closeDeleteModal(transmorpherIdentifier);
     }
 
     window.openModal = function (transmorpherIdentifier) {
@@ -342,4 +352,68 @@ if (!window.transmorpherScriptLoaded) {
 
         return Math.floor(seconds) + ' seconds ago';
     };
+
+    window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
+        let modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
+        modal.classList.remove('d-none');
+        modal.querySelector('.badge-error').onclick = function () {
+            closeUploadConfirmModal(transmorpherIdentifier);
+            callback();
+        }
+    }
+
+    window.closeUploadConfirmModal = function (transmorpherIdentifier) {
+        document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.add('d-none');
+        document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
+        document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview`)?.remove();
+    }
+
+    window.reserveUploadSlot = function (transmorpherIdentifier, done) {
+        // Reserve an upload slot at the Transmorpher media server.
+        fetch(motifs[transmorpherIdentifier].routes.uploadToken, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
+            },
+            body: JSON.stringify({
+                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey,
+            }),
+        }).then(response => {
+            return response.json();
+        }).then(getUploadTokenResult => {
+            if (!getUploadTokenResult.success) {
+                done(getUploadTokenResult);
+            }
+
+            let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
+            dropzone.options.uploadToken = getUploadTokenResult.upload_token
+            // Set the dropzone target to the media server upload url, which needs a valid upload token.
+            dropzone.options.url = motifs[transmorpherIdentifier].webUploadUrl + getUploadTokenResult.upload_token;
+
+            done()
+        });
+    }
+
+    window.getUploadingState = function (transmorpherIdentifier) {
+        return fetch(motifs[transmorpherIdentifier].routes.uploadingState, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            return response.json();
+        }).then(uploadingStateResponse => {
+            return uploadingStateResponse.upload_in_process;
+        });
+    }
+
+    window.partial = function (func, transmorpherIdentifier /*, 0..n args */) {
+        let args = Array.prototype.slice.call(arguments, 1);
+
+        return function() {
+            let allArguments = args.concat(Array.prototype.slice.call(arguments));
+            return func.apply(this, allArguments);
+        };
+    }
 }

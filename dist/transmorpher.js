@@ -28,7 +28,7 @@ if (!window.transmorpherScriptLoaded) {
       }
 
       // Poll for status updates.
-      fetch(motifs[transmorpherIdentifier].routes.stateUpdate, {
+      fetch(motifs[transmorpherIdentifier].routes.processingState, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +143,16 @@ if (!window.transmorpherScriptLoaded) {
       });
     });
   };
-  window.setVersion = function (transmorpherIdentifier, version, modal) {
+  window.setVersion = function (transmorpherIdentifier, version) {
+    getUploadingState(transmorpherIdentifier).then(function (uploadingStateResponse) {
+      if (uploadingStateResponse) {
+        openUploadConfirmModal(transmorpherIdentifier, partial(makeSetVersionCall, version));
+      } else {
+        makeSetVersionCall(transmorpherIdentifier, version);
+      }
+    });
+  };
+  window.makeSetVersionCall = function (transmorpherIdentifier, version) {
     fetch(motifs[transmorpherIdentifier].routes.setVersion, {
       method: 'POST',
       headers: {
@@ -173,7 +182,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.closeModal = function (transmorpherIdentifier) {
     document.querySelector("#modal-".concat(transmorpherIdentifier)).classList.add('d-none');
-    document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
+    closeDeleteModal(transmorpherIdentifier);
   };
   window.openModal = function (transmorpherIdentifier) {
     document.querySelector("#modal-".concat(transmorpherIdentifier)).classList.remove('d-none');
@@ -330,6 +339,63 @@ if (!window.transmorpherScriptLoaded) {
     }
     if (seconds < 10) return 'just now';
     return Math.floor(seconds) + ' seconds ago';
+  };
+  window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
+    var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
+    modal.classList.remove('d-none');
+    modal.querySelector('.badge-error').onclick = function () {
+      closeUploadConfirmModal(transmorpherIdentifier);
+      callback();
+    };
+  };
+  window.closeUploadConfirmModal = function (transmorpherIdentifier) {
+    var _document$querySelect;
+    document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.add('d-none');
+    document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
+    (_document$querySelect = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview"))) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+  };
+  window.reserveUploadSlot = function (transmorpherIdentifier, done) {
+    // Reserve an upload slot at the Transmorpher media server.
+    fetch(motifs[transmorpherIdentifier].routes.uploadToken, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+      },
+      body: JSON.stringify({
+        transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (getUploadTokenResult) {
+      if (!getUploadTokenResult.success) {
+        done(getUploadTokenResult);
+      }
+      var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
+      dropzone.options.uploadToken = getUploadTokenResult.upload_token;
+      // Set the dropzone target to the media server upload url, which needs a valid upload token.
+      dropzone.options.url = motifs[transmorpherIdentifier].webUploadUrl + getUploadTokenResult.upload_token;
+      done();
+    });
+  };
+  window.getUploadingState = function (transmorpherIdentifier) {
+    return fetch(motifs[transmorpherIdentifier].routes.uploadingState, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(function (response) {
+      return response.json();
+    }).then(function (uploadingStateResponse) {
+      return uploadingStateResponse.upload_in_process;
+    });
+  };
+  window.partial = function (func, transmorpherIdentifier /*, 0..n args */) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return function () {
+      var allArguments = args.concat(Array.prototype.slice.call(arguments));
+      return func.apply(this, allArguments);
+    };
   };
 }
 
