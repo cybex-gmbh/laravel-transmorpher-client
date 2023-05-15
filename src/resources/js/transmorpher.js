@@ -30,7 +30,7 @@ if (!window.transmorpherScriptLoaded) {
                 if (pollingInformation.state === 'success') {
                     // Processing has finished, the timer can be cleared.
                     clearInterval(window[statusPollingVariable]);
-                    setStateDisplays(transmorpherIdentifier, 'success');
+                    displayState(transmorpherIdentifier, 'success');
 
                     // Display the newly processed video and update links, also hide the placeholder image.
                     updateVideoDisplay(transmorpherIdentifier, pollingInformation.url)
@@ -38,7 +38,7 @@ if (!window.transmorpherScriptLoaded) {
                 } else if (pollingInformation.state !== 'processing') {
                     // There was either an error or the upload slot was overwritten by another upload.
                     clearInterval(window[statusPollingVariable]);
-                    setStateDisplays(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
+                    displayState(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
                 }
             })
         }, 5000); // Poll every 5 seconds
@@ -54,30 +54,30 @@ if (!window.transmorpherScriptLoaded) {
         }).then(response => {
             return response.json();
         }).then(uploadResult => {
-            handleDropzoneResult(uploadResult, transmorpherIdentifier, uploadToken);
+            displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
         });
     }
 
-    window.handleDropzoneResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
+    window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
         if (uploadResult.success) {
             document.querySelector(`#dz-${transmorpherIdentifier}`).classList.remove('dz-started');
 
             if (motifs[transmorpherIdentifier].isImage) {
                 // It's an image dropzone, indicate success.
-                setStateDisplays(transmorpherIdentifier, 'success');
+                displayState(transmorpherIdentifier, 'success');
             } else {
                 // It's a video dropzone, indicate that it is now processing and start polling for updates.
-                setStateDisplays(transmorpherIdentifier, 'processing');
+                displayState(transmorpherIdentifier, 'processing');
                 startPolling(transmorpherIdentifier, uploadToken)
             }
         } else {
             // There was an error.
-            setStateDisplays(transmorpherIdentifier, 'error', uploadResult.clientMessage);
+            displayState(transmorpherIdentifier, 'error', uploadResult.clientMessage);
         }
     }
 
     window.updateVersionInformation = function (transmorpherIdentifier) {
-        let modal = document.querySelector(`#modal-${transmorpherIdentifier}`);
+        let modal = document.querySelector(`#modal-mi-${transmorpherIdentifier}`);
         let versionList = modal.querySelector('.version-list > ul');
         // Clear the list of versions.
         versionList.replaceChildren();
@@ -160,21 +160,21 @@ if (!window.transmorpherScriptLoaded) {
                     startPolling(transmorpherIdentifier, setVersionResult.upload_token);
                 }
 
-                setStateDisplays(transmorpherIdentifier, motifs[transmorpherIdentifier].isImage ? 'success' : 'processing');
+                displayState(transmorpherIdentifier, motifs[transmorpherIdentifier].isImage ? 'success' : 'processing');
             } else {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
-                setModalStateDisplay(transmorpherIdentifier, 'error', setVersionResult.clientMessage);
+                displayModalState(transmorpherIdentifier, 'error', setVersionResult.clientMessage);
             }
         });
     }
 
-    window.closeModal = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-${transmorpherIdentifier}`).classList.add('d-none');
+    window.closeMoreInformationModal = function (transmorpherIdentifier) {
+        document.querySelector(`#modal-mi-${transmorpherIdentifier}`).classList.add('d-none');
         closeDeleteModal(transmorpherIdentifier);
     }
 
-    window.openModal = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-${transmorpherIdentifier}`).classList.remove('d-none');
+    window.openMoreInformationModal = function (transmorpherIdentifier) {
+        document.querySelector(`#modal-mi-${transmorpherIdentifier}`).classList.remove('d-none');
 
         // Update version information when the modal is opened.
         updateVersionInformation(transmorpherIdentifier);
@@ -190,8 +190,8 @@ if (!window.transmorpherScriptLoaded) {
         }).then(deleteResult => {
             if (deleteResult.success) {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
-                setModalStateDisplay(transmorpherIdentifier, 'success')
-                setCardBorderDisplay(transmorpherIdentifier, 'processing')
+                displayModalState(transmorpherIdentifier, 'success')
+                displayCardBorderState(transmorpherIdentifier, 'processing')
                 updateVersionInformation(transmorpherIdentifier);
                 updateImageDisplay(transmorpherIdentifier, null, null, null, true);
 
@@ -199,7 +199,7 @@ if (!window.transmorpherScriptLoaded) {
                 document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge').classList.add('d-hidden');
             } else {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
-                setModalStateDisplay(transmorpherIdentifier, 'error', deleteResult.clientMessage);
+                displayModalState(transmorpherIdentifier, 'error', deleteResult.clientMessage);
             }
 
             // Hide delete modal.
@@ -242,26 +242,26 @@ if (!window.transmorpherScriptLoaded) {
         document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
     }
 
-    window.setStateDisplays = function (transmorpherIdentifier, state, message = null) {
-        setDropzoneStateDisplay(transmorpherIdentifier, state, message);
-        setModalStateDisplay(transmorpherIdentifier, state, message);
+    window.displayState = function (transmorpherIdentifier, state, message = null) {
+        displayDropzoneState(transmorpherIdentifier, state, message);
+        displayModalState(transmorpherIdentifier, state, message);
     }
 
-    window.setDropzoneStateDisplay = function (transmorpherIdentifier, state, message = null) {
+    window.displayDropzoneState = function (transmorpherIdentifier, state, message = null) {
         let stateInfo = document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge');
 
-        setCardBorderDisplay(transmorpherIdentifier, state)
-        setStateInfoDisplay(stateInfo, state);
+        displayCardBorderState(transmorpherIdentifier, state)
+        displayStateInformation(stateInfo, state);
 
         if (message) {
-            setDropzoneErrorMessage(transmorpherIdentifier, message);
+            displayDropzoneErrorMessage(transmorpherIdentifier, message);
         } else {
             resetModalErrorMessageDisplay(transmorpherIdentifier, message);
         }
     }
 
-    window.setModalStateDisplay = function (transmorpherIdentifier, state, message = null) {
-        setStateInfoDisplay(document.querySelector(`#modal-${transmorpherIdentifier} .card-header > span`), state);
+    window.displayModalState = function (transmorpherIdentifier, state, message = null) {
+        displayStateInformation(document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-header > span`), state);
 
         if (message) {
             setModalErrorMessage(transmorpherIdentifier, message);
@@ -270,19 +270,19 @@ if (!window.transmorpherScriptLoaded) {
         }
     }
 
-    window.setStateInfoDisplay = function (stateInfoElement, state) {
+    window.displayStateInformation = function (stateInfoElement, state) {
         stateInfoElement.className = '';
         stateInfoElement.classList.add('badge', `badge-${state}`);
         stateInfoElement.textContent = state[0].toUpperCase() + state.slice(1);
     }
 
-    window.setCardBorderDisplay = function (transmorpherIdentifier, state) {
+    window.displayCardBorderState = function (transmorpherIdentifier, state) {
         let card = document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card');
         card.className = '';
         card.classList.add('card', `border-${state}`);
     }
 
-    window.setDropzoneErrorMessage = function (transmorpherIdentifier, message) {
+    window.displayDropzoneErrorMessage = function (transmorpherIdentifier, message) {
         let form = document.querySelector('#dz-' + transmorpherIdentifier);
 
         // Add preview element, which also displays errors, when it is not present yet.
@@ -303,11 +303,11 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.setModalErrorMessage = function (transmorpherIdentifier, message) {
-        document.querySelector(`#modal-${transmorpherIdentifier} .delete-and-error > span`).textContent = message;
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .delete-and-error > span`).textContent = message;
     }
 
     window.resetModalErrorMessageDisplay = function (transmorpherIdentifier, message) {
-        document.querySelector(`#modal-${transmorpherIdentifier} .delete-and-error > span`).textContent = '';
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .delete-and-error > span`).textContent = '';
         document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
 
         let previewElement = null;

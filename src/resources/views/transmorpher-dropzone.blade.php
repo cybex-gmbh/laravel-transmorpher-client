@@ -17,7 +17,7 @@
                     <a target="_blank" href="{{ $motif->getUrl() }}"><img src="{{ mix('icons/magnifying-glass.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon"></a>
                 @endif
                 <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="More information" class="icon"
-                     onclick="openModal('{{ $motif->getIdentifier() }}')">
+                     onclick="openMoreInformationModal('{{ $motif->getIdentifier() }}')">
             </div>
         </div>
         <div class="card-body">
@@ -46,14 +46,14 @@
         </div>
     </div>
 
-    <div id="modal-{{ $motif->getIdentifier() }}" class="modal d-none">
+    <div id="modal-mi-{{ $motif->getIdentifier() }}" class="modal d-none">
         <div class="card">
             <div class="card-header">
                 {{ $differentiator }}
                 <span class="badge @if($isProcessing) badge-processing @else d-hidden @endif">
                     Processing
                 </span>
-                <button class="btn-close" onclick="closeModal('{{ $motif->getIdentifier() }}')">⨉</button>
+                <button class="btn-close" onclick="closeMoreInformationModal('{{ $motif->getIdentifier() }}')">⨉</button>
             </div>
             <div class="card-body">
                 <div class="version-information">
