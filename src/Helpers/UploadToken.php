@@ -30,7 +30,7 @@ class UploadToken
     {
         return response()->json($transmorpherMedia->getTransmorpher()->handleUploadResponse(
             $request->input('response'),
-            $transmorpherUpload)
-        );
+            $transmorpherUpload
+        ));
     }
 }
