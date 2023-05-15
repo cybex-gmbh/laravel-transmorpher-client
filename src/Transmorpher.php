@@ -405,7 +405,9 @@ abstract class Transmorpher
      */
     protected function validateIdentifier(): void
     {
-        if (Str::contains($this->getIdentifier(), ['/', '\\', '.', ':'])) {
+        // Only allow lower/uppercase characters, numbers, underscores and dashes.
+        // The first character can't be a dash.
+        if (!preg_match('/^[\w][\w\-]*$/', $this->getIdentifier())) {
             throw new InvalidIdentifierException($this->model, $this->differentiator);
         }
     }
