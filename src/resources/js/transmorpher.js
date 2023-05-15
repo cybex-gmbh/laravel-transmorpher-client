@@ -45,11 +45,11 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
-        fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse, {
+        fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + `/${uploadToken}`, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
             }, body: JSON.stringify({
-                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey, upload_token: uploadToken, response: response, http_code: file.xhr?.status ?? response?.http_code
+                response: response
             })
         }).then(response => {
             return response.json();

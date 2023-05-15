@@ -53,7 +53,7 @@ class TransmorpherServiceProvider extends ServiceProvider
         Route::post(config('transmorpher.api.callback_route'), Callback::class)->name('transmorpherCallback');
         Route::middleware('web')->group(function () {
             Route::post('transmorpher/{transmorpherMedia}/token', [UploadToken::class, 'getUploadToken'])->name('transmorpherUploadToken');
-            Route::post('transmorpher/{transmorpherMedia}/handleUploadResponse', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
+            Route::post('transmorpher/handleUploadResponse/{transmorpherMedia}/{transmorpherUpload}', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
             Route::post('transmorpher/{transmorpherMedia}/processingState', [StateUpdate::class, 'getProcessingState'])->name('transmorpherProcessingState');
             Route::get('transmorpher/{transmorpherMedia}/getVersions', [VersionManagement::class, 'getVersions'])->name('transmorpherGetVersions');
             Route::post('transmorpher/{transmorpherMedia}/setVersion', [VersionManagement::class, 'setVersion'])->name('transmorpherSetVersion');

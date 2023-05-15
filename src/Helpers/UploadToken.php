@@ -5,6 +5,7 @@ namespace Transmorpher\Helpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Transmorpher\Models\TransmorpherMedia;
+use Transmorpher\Models\TransmorpherUpload;
 
 class UploadToken
 {
@@ -19,16 +20,17 @@ class UploadToken
     }
 
     /**
-     * @param Request $request
+     * @param Request  $request
      * @param TransmorpherMedia $transmorpherMedia
+     * @param TransmorpherUpload $transmorpherUpload
+     *
      * @return JsonResponse
      */
-    public function handleUploadResponse(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
+    public function handleUploadResponse(Request $request, TransmorpherMedia $transmorpherMedia, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
         return response()->json($transmorpherMedia->getTransmorpher()->handleUploadResponse(
             $request->input('response'),
-            $transmorpherMedia->TransmorpherUploads()->whereToken($request->input('upload_token'))->first(),
-            $request->input('http_code'))
-        );
+            $transmorpherUpload
+        ));
     }
 }
