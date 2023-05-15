@@ -170,7 +170,7 @@
             getUploadingState('{{ $motif->getIdentifier() }}')
                 .then(uploadingStateResponse => {
                     if (uploadingStateResponse) {
-                        openUploadConfirmModal('{{ $motif->getIdentifier() }}', partial(reserveUploadSlot, done));
+                        openUploadConfirmModal('{{ $motif->getIdentifier() }}', createCallbackWithArguments(reserveUploadSlot, '{{ $motif->getIdentifier() }}', done));
                     } else {
                         reserveUploadSlot('{{ $motif->getIdentifier() }}', done);
                     }

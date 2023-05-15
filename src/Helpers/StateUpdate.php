@@ -21,11 +21,11 @@ class StateUpdate
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
         if ($request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
-            $response = 'Canceled by a new upload.';
+            $message = 'Canceled by a new upload.';
             $state = State::ERROR;
         }
 
-        return response()->json(['response' => $response ?? $latestUpload->message, 'state' => $state ?? $latestUpload->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestUpload->updated_at)]);
+        return response()->json(['clientMessage' => $message ?? $latestUpload->message, 'state' => $state ?? $latestUpload->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestUpload->updated_at)]);
     }
 
     /**
@@ -39,6 +39,6 @@ class StateUpdate
     {
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
-        return response()->json(['upload_in_process' => $latestUpload->state == State::INITIALIZING || $latestUpload->state == State::PROCESSING]);
+        return response()->json(['upload_in_process' => $latestUpload?->state == State::INITIALIZING || $latestUpload?->state == State::PROCESSING]);
     }
 }

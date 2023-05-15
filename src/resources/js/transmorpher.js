@@ -38,7 +38,7 @@ if (!window.transmorpherScriptLoaded) {
                 } else if (pollingInformation.state !== 'processing') {
                     // There was either an error or the upload slot was overwritten by another upload.
                     clearInterval(window[statusPollingVariable]);
-                    setStateDisplays(transmorpherIdentifier, 'error', pollingInformation.response);
+                    setStateDisplays(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
                 }
             })
         }, 5000); // Poll every 5 seconds
@@ -49,7 +49,7 @@ if (!window.transmorpherScriptLoaded) {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
             }, body: JSON.stringify({
-                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey, upload_token: uploadToken, response: response, http_code: file.xhr?.status
+                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey, upload_token: uploadToken, response: response, http_code: file.xhr?.status ?? response?.http_code
             })
         }).then(response => {
             return response.json();
@@ -72,7 +72,7 @@ if (!window.transmorpherScriptLoaded) {
             }
         } else {
             // There was an error.
-            setStateDisplays(transmorpherIdentifier, 'error', uploadResult.response);
+            setStateDisplays(transmorpherIdentifier, 'error', uploadResult.clientMessage);
         }
     }
 
@@ -133,7 +133,7 @@ if (!window.transmorpherScriptLoaded) {
     window.setVersion = function (transmorpherIdentifier, version) {
         getUploadingState(transmorpherIdentifier).then(uploadingStateResponse => {
             if (uploadingStateResponse) {
-                openUploadConfirmModal(transmorpherIdentifier, partial(makeSetVersionCall, version));
+                openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(makeSetVersionCall, transmorpherIdentifier, version));
             } else {
                 makeSetVersionCall(transmorpherIdentifier, version);
             }
@@ -163,7 +163,7 @@ if (!window.transmorpherScriptLoaded) {
                 setStateDisplays(transmorpherIdentifier, motifs[transmorpherIdentifier].isImage ? 'success' : 'processing');
             } else {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
-                setModalStateDisplay(transmorpherIdentifier, 'error', setVersionResult.response);
+                setModalStateDisplay(transmorpherIdentifier, 'error', setVersionResult.clientMessage);
             }
         });
     }
@@ -199,7 +199,7 @@ if (!window.transmorpherScriptLoaded) {
                 document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge').classList.add('d-hidden');
             } else {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
-                setModalStateDisplay(transmorpherIdentifier, 'error', deleteResult.response);
+                setModalStateDisplay(transmorpherIdentifier, 'error', deleteResult.clientMessage);
             }
 
             // Hide delete modal.
@@ -408,7 +408,7 @@ if (!window.transmorpherScriptLoaded) {
         });
     }
 
-    window.partial = function (func, transmorpherIdentifier /*, 0..n args */) {
+    window.createCallbackWithArguments = function (func /*, 0..n args */) {
         let args = Array.prototype.slice.call(arguments, 1);
 
         return function() {

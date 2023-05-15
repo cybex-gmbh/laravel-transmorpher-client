@@ -2,8 +2,11 @@
 
 namespace Transmorpher;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
+use Transmorpher\Enums\State;
+use Transmorpher\Models\TransmorpherUpload;
 
 class ImageTransmorpher extends Transmorpher
 {
@@ -12,6 +15,9 @@ class ImageTransmorpher extends Transmorpher
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
+     * @param MediaType $type
+     *
+     * @throws Exceptions\InvalidIdentifierException
      */
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator, protected MediaType $type = MediaType::IMAGE)
     {
@@ -42,5 +48,25 @@ class ImageTransmorpher extends Transmorpher
     public function getDerivative(array $transformations = []): string
     {
         return Http::get($this->getUrl($transformations))->body();
+    }
+
+    /**
+     * @return Response
+     */
+    protected function sendReserveUploadSlotRequest(): Response
+    {
+        return $this->configureApiRequest()->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
+    }
+
+    /**
+     * @param array $clientResponse
+     * @param TransmorpherUpload $upload
+     *
+     * @return void
+     */
+    protected function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    {
+        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
+        $upload->update(['state' => State::SUCCESS, 'message' => $clientResponse['response']]);
     }
 }
