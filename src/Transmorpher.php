@@ -230,7 +230,7 @@ abstract class Transmorpher
     }
 
     /**
-     * Get the web api url for uploads.
+     * Get the web api URL for uploads.
      *
      * @param string|null $uploadToken
      * @return string
