@@ -58,18 +58,14 @@ if (!window.transmorpherScriptLoaded) {
   };
 
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
-    var _file$xhr$status, _file$xhr;
-    fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse, {
+    fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + "/".concat(uploadToken), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
       },
       body: JSON.stringify({
-        transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey,
-        upload_token: uploadToken,
-        response: response,
-        http_code: (_file$xhr$status = (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status) !== null && _file$xhr$status !== void 0 ? _file$xhr$status : response === null || response === void 0 ? void 0 : response.http_code
+        response: response
       })
     }).then(function (response) {
       return response.json();
