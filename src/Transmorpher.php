@@ -37,11 +37,12 @@ abstract class Transmorpher
      *
      * @return array
      */
-    public function prepareUpload(): array
+    public function reserveUploadSlot(): array
     {
         $request = $this->configureApiRequest();
-        $upload  = $this->transmorpherMedia->TransmorpherUploads()->create(['state'   => State::INITIALIZING,
-                                                                            'message' => 'Sending request.'
+        $upload  = $this->transmorpherMedia->TransmorpherUploads()->create([
+            'state'   => State::INITIALIZING,
+            'message' => 'Sending request.',
         ]);
 
         try {
@@ -329,7 +330,7 @@ abstract class Transmorpher
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
-        $tokenResponse = $this->prepareUpload();
+        $tokenResponse = $this->reserveUploadSlot();
         $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
