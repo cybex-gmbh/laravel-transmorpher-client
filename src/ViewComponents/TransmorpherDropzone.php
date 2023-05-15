@@ -31,7 +31,7 @@ class TransmorpherDropzone extends Component
 
         $this->stateUpdateRoute = route('transmorpherStateUpdate', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);
-        $this->handleUploadResponseRoute = route('transmorpherHandleUploadResponse', $this->transmorpherMediaKey);
+        $this->handleUploadResponseRoute = route('transmorpherHandleUploadResponse', [$this->transmorpherMediaKey, '']);
     }
 
     /**

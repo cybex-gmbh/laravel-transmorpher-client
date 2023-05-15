@@ -54,4 +54,9 @@ class TransmorpherUpload extends Model
     {
         return $this->belongsTo(TransmorpherMedia::class);
     }
+
+    public function getRouteKeyName()
+    {
+        return 'token';
+    }
 }
