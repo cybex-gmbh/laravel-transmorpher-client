@@ -12,8 +12,8 @@ class InvalidIdentifierException extends Exception
     {
         parent::__construct(
             sprintf(
-                'Invalid identifier for model "%s" and differentiator "%s". Please make sure your morph alias and differentiator don\'t contain any special characters besides underscores or hyphens.',
-                $model::class,
+                'Invalid identifier for morph alias "%s" and differentiator "%s". Please make sure your morph alias and differentiator don\'t contain any special characters besides underscores or hyphens.',
+                $model->getMorphClass(),
                 $differentiator
             ), $code, $previous);
     }
