@@ -14,21 +14,9 @@ class VideoTransmorpher extends Transmorpher
      * @param HasTransmorpherMediaInterface $model
      * @param string                        $differentiator
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator, protected MediaType $type = MediaType::VIDEO)
     {
-        $this->createTransmorpherMedia(MediaType::VIDEO);
-    }
-
-    /**
-     * Upload a video to the Transmorpher.
-     *
-     * @param resource $fileHandle
-     *
-     * @return array The Transmorpher response.
-     */
-    public function upload($fileHandle): array
-    {
-        return $this->uploadMedia($fileHandle, MediaType::VIDEO);
+        $this->createTransmorpherMedia();
     }
 
     public function getMp4Url(): string
@@ -44,35 +32,5 @@ class VideoTransmorpher extends Transmorpher
     public function getDashUrl(): string
     {
         return sprintf('%sdash/video.mpd', $this->getUrl());
-    }
-
-    /**
-     * Prepare an upload to the Transmorpher media server by requesting an upload token.
-     *
-     * @return array
-     */
-    public function prepareUpload(): array
-    {
-        return $this->prepareMediaUpload(MediaType::VIDEO);
-    }
-
-    /**
-     * Get the route for receiving an upload token.
-     *
-     * @return string
-     */
-    public function getUploadTokenRoute(): string
-    {
-        return route('transmorpherVideoToken');
-    }
-
-    /**
-     * Get the max file size for uploads with dropzone.
-     *
-     * @return int
-     */
-    public function getMaxFileSize(): int
-    {
-        return config('transmorpher.dropzone_upload.video_max_file_size');
     }
 }

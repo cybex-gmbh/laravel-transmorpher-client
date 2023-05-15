@@ -35,19 +35,18 @@ abstract class Transmorpher
     /**
      * Prepare an upload to the Transmorpher media server by requesting an upload token.
      *
-     * @param MediaType $type
-     *
      * @return array
      */
-    public function prepareMediaUpload(MediaType $type): array
+    public function reserveUploadSlot(): array
     {
         $request = $this->configureApiRequest();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING,
-            'message' => 'Sending request.'
+        $upload  = $this->transmorpherMedia->TransmorpherUploads()->create([
+            'state'   => State::INITIALIZING,
+            'message' => 'Sending request.',
         ]);
 
         try {
-            if ($type === MediaType::IMAGE) {
+            if ($this->type === MediaType::IMAGE) {
                 $response = $request->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
             } else {
                 $response = $request->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
@@ -251,7 +250,7 @@ abstract class Transmorpher
     }
 
     /**
-     * Get the web api url for uploads.
+     * Get the web api URL for uploads.
      *
      * @param string|null $uploadToken
      * @return string
@@ -295,6 +294,16 @@ abstract class Transmorpher
     }
 
     /**
+     * Get the max file size for uploads with dropzone.
+     *
+     * @return int
+     */
+    public function getMaxFileSize(): int
+    {
+        return config(sprintf('transmorpher.dropzone_upload.%s.max_file_size', $this->type->value));
+    }
+
+    /**
      * Configure an HTTP-Request with the Laravel Sanctum Token.
      *
      * @return PendingRequest The configured request.
@@ -308,17 +317,15 @@ abstract class Transmorpher
     }
 
     /**
-     * @param MediaType $type
-     *
      * @return void
      * @throws InvalidIdentifierException
      */
-    protected function createTransmorpherMedia(MediaType $type)
+    protected function createTransmorpherMedia()
     {
         $this->validateIdentifier();
 
         $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
-            ['differentiator' => $this->differentiator, 'type' => $type],
+            ['differentiator' => $this->differentiator, 'type' => $this->type],
             ['is_ready' => 0]
         );
     }
@@ -335,17 +342,16 @@ abstract class Transmorpher
      * Upload media to the Transmorpher.
      *
      * @param resource $fileHandle
-     * @param MediaType $type
      *
      * @return array The Transmorpher response.
      */
-    protected function uploadMedia($fileHandle, MediaType $type): array
+    protected function upload($fileHandle): array
     {
         if (!is_resource($fileHandle)) {
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
-        $tokenResponse = $this->prepareUpload();
+        $tokenResponse = $this->reserveUploadSlot();
         $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
@@ -357,7 +363,7 @@ abstract class Transmorpher
         try {
             $response = $request
                 ->attach('file', $fileHandle)
-                ->post($this->getS2sApiUrl(sprintf('%s/upload/%s', $type->value, $tokenResponse['upload_token'])));
+                ->post($this->getS2sApiUrl(sprintf('%s/upload/%s', $this->type->value, $tokenResponse['upload_token'])));
 
             $body = json_decode($response->body(), true);
         } catch (Exception $exception) {

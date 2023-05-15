@@ -61,7 +61,7 @@ TRANSMORPHER_S2S_API_BASE_URL=http://example/api
 TRANSMORPHER_S2S_CALLBACK_BASE_URL=http://example
 ```
 
-For cases in which a medium doesn't have an upload yet, you can specify a URL to a placeholder image which will be used.
+A placeholder image can be displayed for media without uploads.
 
 ```dotenv
 TRANSMORPHER_WEB_PLACEHOLDER_URL=http://example.com/placeholder.jpg

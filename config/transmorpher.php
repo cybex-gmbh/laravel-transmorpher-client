@@ -24,7 +24,11 @@ return [
 
     'dropzone_upload' => [
         'chunk_size' => 1 * 1024 * 1024,
-        'image_max_file_size' => 100,
-        'video_max_file_size' => 4000,
+        'image' => [
+            'max_file_size' => 100
+        ],
+        'video' => [
+            'max_file_size' => 4000
+        ],
     ]
 ];

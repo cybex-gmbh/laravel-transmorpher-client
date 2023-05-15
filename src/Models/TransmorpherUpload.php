@@ -39,7 +39,7 @@ class TransmorpherUpload extends Model
     {
         static::saved(function (TransmorpherUpload $transmorpherUpload) {
             // Only update the corresponding TransmorpherMedia model if this is the latest upload.
-            if ($transmorpherUpload->getKey() === TransmorpherUpload::whereTransmorpherMediaId($transmorpherUpload->TransmorpherMedia->getKey())->latest()->first()->getKey()) {
+            if ($transmorpherUpload->is($transmorpherUpload->TransmorpherMedia->TransmorpherUploads()->latest()->first())) {
                 $transmorpherUpload->TransmorpherMedia()->update(['latest_upload_state' => $transmorpherUpload->state, 'latest_upload_token' => $transmorpherUpload->token]);
             }
         });
