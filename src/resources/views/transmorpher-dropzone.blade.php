@@ -6,7 +6,8 @@
     <div class="card @if(!$isReady) border-processing @endif">
         <div class="card-header">
             <div>
-                <img src="{{ mix(sprintf('icons/%s.svg', $motif->getTransmorpherMedia()->type->value), 'vendor/transmorpher') }}" alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
+                <img src="{{ mix(sprintf('icons/%s.svg', $motif->getTransmorpherMedia()->type->value), 'vendor/transmorpher') }}"
+                     alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
                 {{ $differentiator }}
             </div>
             <span class="badge @if($isProcessing) badge-processing @else d-hidden @endif">
@@ -129,7 +130,8 @@
             delete: '{{ $deleteRoute }}',
             getOriginal: '{{ $getOriginalRoute }}',
             uploadToken: '{{ $uploadTokenRoute }}',
-            uploadingState: '{{ $uploadingStateRoute }}'
+            uploadingState: '{{ $uploadingStateRoute }}',
+            setUploadingState: '{{ $setUploadingStateRoute }}'
         },
         webUploadUrl: '{{ $motif->getWebUploadUrl() }}',
         isImage: '{{ $isImage }}'
@@ -152,12 +154,22 @@
         paramName: 'file',
         uploadToken: null,
         createImageThumbnails: false,
+        autoProcessQueue: false,
         init: function () {
             // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
             this.on('addedfile', function () {
                 if (this.files[1] != null) {
                     this.removeFile(this.files[0]);
                 }
+            });
+
+            // Gets fired when upload is starting.
+            this.on('processing', function () {
+                fetch(motifs['{{$motif->getIdentifier()}}'].routes.setUploadingState + `/${this.options.uploadToken}`, {
+                    method: 'POST', headers: {
+                        'Content-Type': 'application/json', 'X-CSRF-Token': motifs['{{$motif->getIdentifier()}}'].csrfToken,
+                    },
+                });
             });
         },
         accept: function (file, done) {

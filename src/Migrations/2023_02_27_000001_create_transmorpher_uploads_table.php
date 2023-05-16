@@ -17,7 +17,7 @@ return new class extends Migration
     {
         Schema::create('transmorpher_uploads', function (Blueprint $table) {
             $table->id();
-            $table->enum('state', ['initializing', 'processing', 'error', 'success', 'deleted']);
+            $table->enum('state', ['deleted', 'error', 'initializing', 'processing', 'success', 'uploading']);
             $table->string('message');
             $table->string('token')->unique()->nullable();
             $table->foreignId('transmorpher_media_id')->constrained();

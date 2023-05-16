@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Transmorpher\Enums\State;
 use Transmorpher\Models\TransmorpherMedia;
+use Transmorpher\Models\TransmorpherUpload;
 
 class StateUpdate
 {
@@ -40,5 +41,12 @@ class StateUpdate
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
         return response()->json(['upload_in_process' => $latestUpload?->state == State::INITIALIZING || $latestUpload?->state == State::PROCESSING]);
+    }
+
+    public function setUploadingState(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
+    {
+        $transmorpherUpload->update(['state' => State::UPLOADING, 'message' => 'Upload has started.']);
+
+        return response()->json(['state' => $transmorpherUpload->state]);
     }
 }

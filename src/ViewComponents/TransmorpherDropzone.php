@@ -25,6 +25,7 @@ class TransmorpherDropzone extends Component
     public string $deleteRoute;
     public string $getOriginalRoute;
     public string $uploadingStateRoute;
+    public string $setUploadingStateRoute;
 
     public function __construct(public Transmorpher $motif)
     {
@@ -43,6 +44,7 @@ class TransmorpherDropzone extends Component
         $this->deleteRoute = route('transmorpherDelete', $this->transmorpherMediaKey);
         $this->getOriginalRoute = route('transmorpherGetOriginal', [$this->transmorpherMediaKey, '']);
         $this->uploadingStateRoute = route('transmorpherUploadingState', $this->transmorpherMediaKey);
+        $this->setUploadingStateRoute = route('transmorpherSetUploadingState', '');
     }
 
     /**

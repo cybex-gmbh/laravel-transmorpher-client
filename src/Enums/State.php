@@ -4,9 +4,10 @@ namespace Transmorpher\Enums;
 
 enum State: string
 {
+    case DELETED = 'deleted';
+    case ERROR = 'error';
     case INITIALIZING = 'initializing';
     case PROCESSING = 'processing';
-    case ERROR = 'error';
     case SUCCESS = 'success';
-    case DELETED = 'deleted';
+    case UPLOADING = 'uploading';
 }
