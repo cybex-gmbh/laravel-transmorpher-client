@@ -2,7 +2,6 @@
 
 namespace Transmorpher;
 
-use Exception;
 use Illuminate\Http\Client\Response;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
@@ -49,6 +48,17 @@ class VideoTransmorpher extends Transmorpher
     }
 
     /**
+     * @param array $clientResponse
+     * @param TransmorpherUpload $upload
+     *
+     * @return void
+     */
+    public function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    {
+        $upload->update(['token' => $clientResponse['upload_token'], 'state' => State::PROCESSING, 'message' => $clientResponse['response']]);
+    }
+
+    /**
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response
@@ -57,16 +67,5 @@ class VideoTransmorpher extends Transmorpher
             'identifier' => $this->getIdentifier(),
             'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
         ]);
-    }
-
-    /**
-     * @param array $clientResponse
-     * @param TransmorpherUpload $upload
-     *
-     * @return void
-     */
-    protected function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
-    {
-        $upload->update(['token' => $clientResponse['upload_token'], 'state' => State::PROCESSING, 'message' => $clientResponse['response']]);
     }
 }

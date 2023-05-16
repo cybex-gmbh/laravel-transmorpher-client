@@ -20,17 +20,13 @@ class UploadToken
     }
 
     /**
-     * @param Request  $request
-     * @param TransmorpherMedia $transmorpherMedia
+     * @param Request $request
      * @param TransmorpherUpload $transmorpherUpload
      *
      * @return JsonResponse
      */
-    public function handleUploadResponse(Request $request, TransmorpherMedia $transmorpherMedia, TransmorpherUpload $transmorpherUpload): JsonResponse
+    public function handleUploadResponse(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
-        return response()->json($transmorpherMedia->getTransmorpher()->handleUploadResponse(
-            $request->input('response'),
-            $transmorpherUpload
-        ));
+        return response()->json($transmorpherUpload->complete($request->input('response'), $request->input('http_code')));
     }
 }

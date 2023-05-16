@@ -51,22 +51,22 @@ class ImageTransmorpher extends Transmorpher
     }
 
     /**
-     * @return Response
-     */
-    protected function sendReserveUploadSlotRequest(): Response
-    {
-        return $this->configureApiRequest()->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
-    }
-
-    /**
      * @param array $clientResponse
      * @param TransmorpherUpload $upload
      *
      * @return void
      */
-    protected function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
     {
         $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
         $upload->update(['state' => State::SUCCESS, 'message' => $clientResponse['response']]);
+    }
+
+    /**
+     * @return Response
+     */
+    protected function sendReserveUploadSlotRequest(): Response
+    {
+        return $this->configureApiRequest()->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
     }
 }

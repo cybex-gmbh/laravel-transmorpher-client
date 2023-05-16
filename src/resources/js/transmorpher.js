@@ -49,7 +49,9 @@ if (!window.transmorpherScriptLoaded) {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
             }, body: JSON.stringify({
-                response: response
+                // When the token retrieval failed, file doesn't contain the http code.
+                // It is instead passed in the response of the token retrieval request.
+                response: response, http_code: file.xhr?.status ?? response?.http_code
             })
         }).then(response => {
             return response.json();

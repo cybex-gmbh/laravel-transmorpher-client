@@ -72,7 +72,7 @@ abstract class Transmorpher
         $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
-            return $this->handleUploadResponse($tokenResponse, $upload);
+            return $upload->complete($tokenResponse);
         }
 
         try {
@@ -80,12 +80,12 @@ abstract class Transmorpher
                 ->attach('file', $fileHandle)
                 ->post($this->getS2sApiUrl(sprintf('%s/upload/%s', $this->type->value, $tokenResponse['upload_token'])));
 
-            $clientResponse = $this->getClientResponse($response);
+            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        return $this->handleUploadResponse($clientResponse, $upload);
+        return $upload->complete($clientResponse);
     }
 
     /**
@@ -95,14 +95,14 @@ abstract class Transmorpher
      */
     public function reserveUploadSlot(): array
     {
-        $upload  = $this->transmorpherMedia->TransmorpherUploads()->create([
-            'state'   => State::INITIALIZING,
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create([
+            'state' => State::INITIALIZING,
             'message' => 'Sending request.',
         ]);
 
         try {
             $response = $this->sendReserveUploadSlotRequest();
-            $clientResponse = $this->getClientResponse($response);
+            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
             $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
@@ -138,7 +138,7 @@ abstract class Transmorpher
 
         try {
             $response = $this->configureApiRequest()->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
-            $clientResponse = $this->getClientResponse($response);
+            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
             $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
@@ -212,7 +212,7 @@ abstract class Transmorpher
             $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
                 'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
             ]);
-            $clientResponse = $this->getClientResponse($response);
+            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
@@ -222,41 +222,32 @@ abstract class Transmorpher
             $clientResponse['clientMessage'] = 'Selected version is no longer available';
         }
 
-        return $this->handleUploadResponse($clientResponse, $upload);
+        return $upload->complete($clientResponse);
     }
 
+    /**
+     * @return TransmorpherMedia
+     */
     public function getTransmorpherMedia(): TransmorpherMedia
     {
         return $this->transmorpherMedia;
     }
 
     /**
-     * Updates database fields for TransmorpherMedia and TransmorpherUpload for a response.
-     *
      * @param array $response The server response as an array.
-     * @param TransmorpherUpload $upload The TransmorpherUpload entry for the corresponding api request.
-     *
+     * @param int $httpCode
      * @return array The response body.
      */
-    public function handleUploadResponse(array $response, TransmorpherUpload $upload, int $code = null): array
+    public function getClientResponse(array $response, int $httpCode): array
     {
-        // Check whether this method was called from javascript.
-        // If not, the client response is already determined and this step can be skipped.
-        if ($code) {
-            $response = ($response['success'] ?? false) ? $response : ClientResponse::tryFrom($code)?->getResponse($response);
+        $clientResponse = ($response['success'] ?? false) ? $response : ClientResponse::tryFrom($httpCode)?->getResponse($response);
 
-            if (is_null($response)) {
-                $response = ClientResponse::getDefaultResponse($response, $code);
-            }
+        // tryFrom will return null if the code is not defined in the enum.
+        if (is_null($clientResponse)) {
+            $clientResponse = ClientResponse::getDefaultResponse($response, $httpCode);
         }
 
-        if ($response['success']) {
-            $this->updateModelsAfterSuccessfulUpload($response, $upload);
-        } else {
-            $upload->update(['state' => State::ERROR, 'message' => $response['serverResponse']]);
-        }
-
-        return $response;
+        return $clientResponse;
     }
 
     /**
@@ -401,23 +392,5 @@ abstract class Transmorpher
         if (!preg_match('/^[\w][\w\-]*$/', $this->getIdentifier())) {
             throw new InvalidIdentifierException($this->model, $this->differentiator);
         }
-    }
-
-    /**
-     * @param Response $response
-     *
-     * @return array
-     */
-    protected function getClientResponse(Response $response): array
-    {
-        $responseBody = json_decode($response->body(), true);
-        $clientResponse = ($responseBody['success'] ?? false) ? $responseBody : ClientResponse::tryFrom($response->status())?->getResponse($responseBody);
-
-        // tryFrom will return null if the code is not defined in the enum.
-        if (is_null($clientResponse)) {
-            $clientResponse = ClientResponse::getDefaultResponse($responseBody, $response->status());
-        }
-
-        return $clientResponse;
     }
 }

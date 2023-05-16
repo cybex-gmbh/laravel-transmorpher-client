@@ -2,10 +2,10 @@
 
 namespace Transmorpher\Models;
 
-use Transmorpher\Enums\State;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Transmorpher\Enums\State;
 
 class TransmorpherUpload extends Model
 {
@@ -58,5 +58,23 @@ class TransmorpherUpload extends Model
     public function getRouteKeyName()
     {
         return 'token';
+    }
+
+    public function complete(array $response, int $httpCode = null): array
+    {
+        $transmorpher = $this->TransmorpherMedia->getTransmorpher();
+
+        // This step can be skipped if the client response was already determined.
+        if ($httpCode) {
+            $response = $transmorpher->getClientResponse($response, $httpCode);
+        }
+
+        if ($response['success']) {
+            $transmorpher->updateModelsAfterSuccessfulUpload($response, $this);
+        } else {
+            $this->update(['state' => State::ERROR, 'message' => $response['serverResponse']]);
+        }
+
+        return $response;
     }
 }
