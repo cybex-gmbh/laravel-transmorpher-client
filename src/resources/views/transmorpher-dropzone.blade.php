@@ -154,7 +154,6 @@
         paramName: 'file',
         uploadToken: null,
         createImageThumbnails: false,
-        autoProcessQueue: false,
         init: function () {
             // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
             this.on('addedfile', function () {
