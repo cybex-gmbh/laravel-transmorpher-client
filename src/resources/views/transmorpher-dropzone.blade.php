@@ -134,7 +134,6 @@
             delete: '{{ $deleteRoute }}',
             getOriginal: '{{ $getOriginalRoute }}',
             uploadToken: '{{ $uploadTokenRoute }}',
-            uploadingState: '{{ $uploadingStateRoute }}',
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },
         webUploadUrl: '{{ $motif->getWebUploadUrl() }}',
