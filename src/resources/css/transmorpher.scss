@@ -132,6 +132,7 @@
     width: fit-content;
     margin: 20px auto 15%;
   }
+
   > .card:first-child {
     width: 500px;
     margin: 5% auto 0;
@@ -190,6 +191,53 @@
 .icon {
   height: 20px;
   width: 20px;
+}
+
+.error-display {
+  position: relative;
+
+  &:hover .error-information {
+    visibility: visible;
+  }
+}
+
+.error-icon {
+  animation: color-change 1s infinite;
+
+  @keyframes color-change {
+    0% {
+      stroke: $error;
+    }
+    50% {
+      stroke: black;
+    }
+    100% {
+      stroke: $error;
+    }
+  }
+}
+
+.error-information {
+  margin-left: -100px;
+  width: 200px;
+  top: 150%;
+  left: 50%;
+  position: absolute;
+  visibility: hidden;
+  color: $error;
+  padding: 5px;
+  text-align: center;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+  }
 }
 
 .button {

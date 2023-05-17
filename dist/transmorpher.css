@@ -437,6 +437,50 @@
   width: 20px;
 }
 
+.error-display {
+  position: relative;
+}
+.error-display:hover .error-information {
+  visibility: visible;
+}
+
+.error-icon {
+  animation: color-change 1s infinite;
+}
+@keyframes color-change {
+  0% {
+    stroke: red;
+  }
+  50% {
+    stroke: black;
+  }
+  100% {
+    stroke: red;
+  }
+}
+
+.error-information {
+  margin-left: -100px;
+  width: 200px;
+  top: 150%;
+  left: 50%;
+  position: absolute;
+  visibility: hidden;
+  color: red;
+  padding: 5px;
+  text-align: center;
+}
+.error-information::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
 .button, .version-list button {
   padding: 3px 15px;
   border: 0;
