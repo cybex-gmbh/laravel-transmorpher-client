@@ -34,6 +34,7 @@ class StateUpdate
             'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getThumbnailUrl(), $latestUpload->updated_at),
             'fullsizeUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getUrl(), $latestUpload->updated_at),
             'latestUploadToken' => $transmorpherMedia->latest_upload_token,
+            'lastUpdated' => $latestUpload->updated_at
         ]);
     }
 

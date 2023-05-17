@@ -26,6 +26,7 @@ class TransmorpherDropzone extends Component
     public string $deleteRoute;
     public string $getOriginalRoute;
     public string $setUploadingStateRoute;
+    public mixed $lastUpdated;
 
     public function __construct(public Transmorpher $motif)
     {
@@ -36,6 +37,7 @@ class TransmorpherDropzone extends Component
         $this->differentiator = $motif->getTransmorpherMedia()->differentiator;
         $this->transmorpherMediaKey = $motif->getTransmorpherMedia()->getKey();
         $this->latestUploadToken = $motif->getTransmorpherMedia()->latest_upload_token;
+        $this->lastUpdated = $motif->getTransmorpherMedia()->updated_at->timestamp;
 
         $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);

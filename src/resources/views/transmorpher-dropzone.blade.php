@@ -62,6 +62,8 @@
             </div>
             <div class="card-body">
                 <div class="version-information">
+                    <p class="@if(!$isProcessing) d-none @endif">Processing started <span class="processing-age"></span></p>
+                    <p class="@if(!$isUploading) d-none @endif">Upload started <span class="upload-age"></span></p>
                     <p>Current version: <span class="current-version"></span></p>
                     <p class="age">uploaded <span class="current-version-age"></span></p>
                     @if(!$isImage)
@@ -143,6 +145,7 @@
     // Start polling if the video is still processing or an upload is in process.
     if (('{{ !$isImage }}' && '{{ $isProcessing }}') || '{{ $isUploading }}') {
         startPolling('{{ $motif->getIdentifier() }}', '{{ $latestUploadToken }}');
+        setAgeElement(document.querySelector('#modal-mi-{{ $motif->getIdentifier() }} .{{ $isProcessing ? 'processing' : 'upload' }}-age'), timeAgo(new Date('{{ $lastUpdated }}' * 1000)));
     }
 
     new Dropzone("#dz-{{$motif->getIdentifier()}}", {

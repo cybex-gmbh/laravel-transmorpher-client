@@ -29,13 +29,13 @@ if (!window.transmorpherScriptLoaded) {
 
       // Poll for status updates.
       getState(transmorpherIdentifier, uploadToken).then(function (pollingInformation) {
-        console.log(pollingInformation.state);
         switch (pollingInformation.state) {
           case 'success':
             {
               // Processing has finished, the timer can be cleared.
               clearInterval(window[statusPollingVariable]);
               displayState(transmorpherIdentifier, 'success');
+              resetAgeElements(transmorpherIdentifier);
 
               // Display the newly processed media and update links, also hide the placeholder image.
               updateMediaDisplay(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
@@ -52,22 +52,33 @@ if (!window.transmorpherScriptLoaded) {
                 startPolling(transmorpherIdentifier, pollingInformation.latestUploadToken);
               }
               displayState(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
+              resetAgeElements(transmorpherIdentifier);
             }
             break;
           case 'uploading':
             {
-              displayState(transmorpherIdentifier, 'uploading');
+              displayState(transmorpherIdentifier, 'uploading', null, false);
+              setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .upload-age")), timeAgo(Date.parse(pollingInformation.lastUpdated)));
             }
             break;
           case 'processing':
             {
-              displayState(transmorpherIdentifier, 'processing');
+              displayState(transmorpherIdentifier, 'processing', null, false);
+              setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .processing-age")), timeAgo(Date.parse(pollingInformation.lastUpdated)));
             }
         }
       });
     }, 5000); // Poll every 5 seconds
   };
 
+  window.setAgeElement = function (ageElement, timeAgo) {
+    ageElement.textContent = timeAgo;
+    ageElement.closest('p').classList.remove('d-none');
+  };
+  window.resetAgeElements = function (transmorpherIdentifier) {
+    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .upload-age")).closest('p').classList.add('d-none');
+    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .processing-age")).closest('p').classList.add('d-none');
+  };
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
     var _file$xhr$status, _file$xhr;
     fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + "/".concat(uploadToken), {
@@ -89,6 +100,7 @@ if (!window.transmorpherScriptLoaded) {
     });
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
+    resetAgeElements(transmorpherIdentifier);
     if (uploadResult.success) {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
       if (motifs[transmorpherIdentifier].isImage) {
@@ -223,6 +235,7 @@ if (!window.transmorpherScriptLoaded) {
         displayCardBorderState(transmorpherIdentifier, 'processing');
         updateVersionInformation(transmorpherIdentifier);
         displayPlaceholder(transmorpherIdentifier);
+        resetAgeElements(transmorpherIdentifier);
 
         // Hide processing display after deletion.
         document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge').classList.add('d-hidden');
