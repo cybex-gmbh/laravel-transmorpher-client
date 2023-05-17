@@ -54,20 +54,23 @@ if (!window.transmorpherScriptLoaded) {
   };
 
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
-    fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + "/".concat(uploadToken), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
-      },
-      body: JSON.stringify({
-        response: response
-      })
-    }).then(function (response) {
-      return response.json();
-    }).then(function (data) {
-      handleDropzoneResult(data, transmorpherIdentifier, uploadToken);
-    });
+    if (uploadToken) {
+      fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + "/".concat(uploadToken), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+        },
+        body: JSON.stringify({
+          response: response
+        })
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        handleDropzoneResult(data, transmorpherIdentifier, uploadToken);
+      });
+    }
+    handleDropzoneResult(response, transmorpherIdentifier, uploadToken);
   };
   window.handleDropzoneResult = function (data, transmorpherIdentifier, uploadToken) {
     var form = document.querySelector('#' + transmorpherIdentifier);
