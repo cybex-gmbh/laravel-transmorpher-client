@@ -69,19 +69,23 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
-        fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + `/${uploadToken}`, {
-            method: 'POST', headers: {
-                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
-            }, body: JSON.stringify({
-                // When the token retrieval failed, file doesn't contain the http code.
-                // It is instead passed in the response of the token retrieval request.
-                response: response, http_code: file.xhr?.status ?? response?.http_code
-            })
-        }).then(response => {
-            return response.json();
-        }).then(uploadResult => {
-            displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
-        });
+        if (uploadToken) {
+            fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + `/${uploadToken}`, {
+                method: 'POST', headers: {
+                    'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
+                }, body: JSON.stringify({
+                    // When the token retrieval failed, file doesn't contain the http code.
+                    // It is instead passed in the response of the token retrieval request.
+                    response: response, http_code: file.xhr?.status ?? response?.http_code
+                })
+            }).then(response => {
+                return response.json();
+            }).then(uploadResult => {
+                displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
+            });
+        }
+
+        displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
     }
 
     window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
