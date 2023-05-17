@@ -186,7 +186,7 @@ if (!window.transmorpherScriptLoaded) {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         updateVersionInformation(transmorpherIdentifier);
         if (motifs[transmorpherIdentifier].isImage) {
-          updateImageDisplay(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version);
+          updateMediaDisplay(transmorpherIdentifier, getImageThumbnailUrl(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version), getFullsizeUrl(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version));
         } else {
           startPolling(transmorpherIdentifier, setVersionResult.upload_token);
         }
@@ -268,7 +268,7 @@ if (!window.transmorpherScriptLoaded) {
     imgElement.src = imgElement.dataset.placeholderUrl;
     imgElement.classList.remove('d-none');
   };
-  window.getImageUrl = function (transmorpherIdentifier, path, transformations, version) {
+  window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
     return imgElement.dataset.deliveryUrl + "/".concat(path, "/").concat(transformations, "?v=").concat(version);
   };

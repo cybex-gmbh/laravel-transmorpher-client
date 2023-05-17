@@ -204,7 +204,7 @@
             if ('{{ $isImage }}') {
                 // Set the newly uploaded image as display image.
                 updateImageDisplay('{{$motif->getIdentifier()}}',
-                    getImageUrl('{{$motif->getIdentifier()}}', response.public_path, '{{ $motif->getTransformations(['height' => 150]) }}', response.version),
+                    getImageThumbnailUrl('{{$motif->getIdentifier()}}', response.public_path, '{{ $motif->getTransformations(['height' => 150]) }}', response.version),
                     getFullsizeUrl('{{$motif->getIdentifier()}}', response.public_path, response.version));
             }
 

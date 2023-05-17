@@ -19,7 +19,6 @@ if (!window.transmorpherScriptLoaded) {
 
             // Poll for status updates.
             getState(transmorpherIdentifier, uploadToken).then(pollingInformation => {
-                console.log(pollingInformation.state);
                 switch (pollingInformation.state) {
                     case 'success': {
                         // Processing has finished, the timer can be cleared.
@@ -174,7 +173,11 @@ if (!window.transmorpherScriptLoaded) {
                 updateVersionInformation(transmorpherIdentifier);
 
                 if (motifs[transmorpherIdentifier].isImage) {
-                    updateImageDisplay(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version);
+                    updateMediaDisplay(
+                        transmorpherIdentifier,
+                        getImageThumbnailUrl(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version),
+                        getFullsizeUrl(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version)
+                    );
                 } else {
                     startPolling(transmorpherIdentifier, setVersionResult.upload_token);
                 }
@@ -267,7 +270,7 @@ if (!window.transmorpherScriptLoaded) {
         imgElement.classList.remove('d-none');
     }
 
-    window.getImageUrl = function (transmorpherIdentifier, path, transformations, version) {
+    window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
 
         return imgElement.dataset.deliveryUrl + `/${path}/${transformations}?v=${version}`;
