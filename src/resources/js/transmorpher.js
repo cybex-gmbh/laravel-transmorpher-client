@@ -85,7 +85,7 @@ if (!window.transmorpherScriptLoaded) {
             });
         }
 
-        displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
+        displayUploadResult(response, transmorpherIdentifier, uploadToken);
     }
 
     window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {

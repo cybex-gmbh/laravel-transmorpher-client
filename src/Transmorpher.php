@@ -4,16 +4,13 @@ namespace Transmorpher;
 
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Transmorpher\Enums\ClientResponse;
 use Transmorpher\Enums\State;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
-use Transmorpher\Models\TransmorpherUpload;
 
 abstract class Transmorpher
 {
@@ -110,21 +107,11 @@ abstract class Transmorpher
 
         if ($clientResponse['success']) {
             $upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
-
-            return [
-                'success' => $clientResponse['success'],
-                'upload_token' => $clientResponse['upload_token'],
-            ];
         }
 
         // Upload will get updated later if upload token retrieval was not successful.
 
-        return [
-            'success' => $clientResponse['success'],
-            'message' => $clientResponse['clientMessage'],
-            'upload_token' => $upload->token,
-            'http_code' => $clientResponse['httpCode'],
-        ];
+        return $clientResponse;
     }
 
     /**
