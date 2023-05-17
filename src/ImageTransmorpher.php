@@ -63,6 +63,14 @@ class ImageTransmorpher extends Transmorpher
     }
 
     /**
+     * @return string
+     */
+    public function getThumbnailUrl(): string
+    {
+        return $this->getUrl(['height' => 150]);
+    }
+
+    /**
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response

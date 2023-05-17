@@ -75,6 +75,8 @@ class TransmorpherUpload extends Model
             $this->update(['state' => State::ERROR, 'message' => $response['serverResponse']]);
         }
 
+        $response['latestUploadToken'] = $this->TransmorpherMedia->latest_upload_token;
+
         return $response;
     }
 }

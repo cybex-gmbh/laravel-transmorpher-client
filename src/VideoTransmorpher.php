@@ -59,6 +59,14 @@ class VideoTransmorpher extends Transmorpher
     }
 
     /**
+     * @return string
+     */
+    public function getThumbnailUrl(): string
+    {
+        return $this->getMp4Url();
+    }
+
+    /**
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response

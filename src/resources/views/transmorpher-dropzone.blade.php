@@ -10,8 +10,12 @@
                      alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
                 {{ $differentiator }}
             </div>
-            <span class="badge @if($isProcessing) badge-processing @else d-hidden @endif">
-                Processing
+            <span class="badge @if($isProcessing) badge-processing @elseif($isUploading) badge-uploading @else d-hidden @endif">
+                @if($isProcessing)
+                    Processing
+                @elseif($isUploading)
+                    Uploading
+                @endif
             </span>
             <div class="details">
                 @if ($isImage)
@@ -123,7 +127,7 @@
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         csrfToken: document.querySelector('#csrf > input[name="_token"]').value,
         routes: {
-            processingState: '{{ $processingStateRoute }}',
+            state: '{{ $stateRoute }}',
             handleUploadResponse: '{{ $handleUploadResponseRoute }}',
             getVersions: '{{ $getVersionsRoute }}',
             setVersion: '{{ $setVersionRoute }}',
@@ -137,9 +141,8 @@
         isImage: '{{ $isImage }}'
     }
 
-    // Start polling if the video is still processing.
-    // Also set status display for the more information modal.
-    if ('{{ !$isImage }}' && '{{ $isProcessing }}') {
+    // Start polling if the video is still processing or an upload is in process.
+    if (('{{ !$isImage }}' && '{{ $isProcessing }}') || '{{ $isUploading }}') {
         startPolling('{{ $motif->getIdentifier() }}', '{{ $latestUploadToken }}');
     }
 
@@ -169,6 +172,11 @@
                         'Content-Type': 'application/json', 'X-CSRF-Token': motifs['{{$motif->getIdentifier()}}'].csrfToken,
                     },
                 });
+
+                // Clear any potential timer to prevent running two at the same time.
+                clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+                displayState('{{$motif->getIdentifier()}}', 'uploading', null, false);
+                startPolling('{{$motif->getIdentifier()}}', this.options.uploadToken);
             });
         },
         accept: function (file, done) {
@@ -178,9 +186,9 @@
                 errorElement.remove();
             }
 
-            getUploadingState('{{ $motif->getIdentifier() }}')
+            getState('{{ $motif->getIdentifier() }}')
                 .then(uploadingStateResponse => {
-                    if (uploadingStateResponse) {
+                    if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
                         openUploadConfirmModal('{{ $motif->getIdentifier() }}', createCallbackWithArguments(reserveUploadSlot, '{{ $motif->getIdentifier() }}', done));
                     } else {
                         reserveUploadSlot('{{ $motif->getIdentifier() }}', done);
@@ -193,8 +201,13 @@
 
             // Clear the old timer.
             clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
-            // Set the newly uploaded image as display image.
-            updateImageDisplay('{{$motif->getIdentifier()}}', response.public_path, '{{ $motif->getTransformations(['height' => 150]) }}', response.version)
+
+            if ('{{ $isImage }}') {
+                // Set the newly uploaded image as display image.
+                updateImageDisplay('{{$motif->getIdentifier()}}',
+                    getImageUrl('{{$motif->getIdentifier()}}', response.public_path, '{{ $motif->getTransformations(['height' => 150]) }}', response.version),
+                    getFullsizeUrl('{{$motif->getIdentifier()}}', response.public_path, response.version));
+            }
 
             handleUploadResponse(
                 file,

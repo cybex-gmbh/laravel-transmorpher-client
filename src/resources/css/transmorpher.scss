@@ -88,6 +88,12 @@
   background-color: $error;
 }
 
+.badge-uploading {
+  background-color: $uploading;
+
+  @extend .loading-indicator
+}
+
 .border-success {
   border-color: $success;
 }
@@ -98,6 +104,10 @@
 
 .border-processing {
   border-color: $warning;
+}
+
+.border-uploading {
+  border-color: $uploading;
 }
 
 .d-hidden {

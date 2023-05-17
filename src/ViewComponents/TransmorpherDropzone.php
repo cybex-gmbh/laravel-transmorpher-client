@@ -12,12 +12,13 @@ class TransmorpherDropzone extends Component
 {
     public bool $isImage;
     public bool $isProcessing;
+    public bool $isUploading;
     public bool $isReady;
     public string $differentiator;
     public $transmorpherMediaKey;
     public ?string $latestUploadToken;
 
-    public string $processingStateRoute;
+    public string $stateRoute;
     public string $uploadTokenRoute;
     public string $handleUploadResponseRoute;
     public string $getVersionsRoute;
@@ -31,12 +32,13 @@ class TransmorpherDropzone extends Component
     {
         $this->isImage = $motif->getTransmorpherMedia()->type === MediaType::IMAGE;
         $this->isProcessing = $motif->getTransmorpherMedia()->latest_upload_state === State::PROCESSING;
+        $this->isUploading = $motif->getTransmorpherMedia()->latest_upload_state === State::UPLOADING;
         $this->isReady = $motif->getTransmorpherMedia()->is_ready;
         $this->differentiator = $motif->getTransmorpherMedia()->differentiator;
         $this->transmorpherMediaKey = $motif->getTransmorpherMedia()->getKey();
         $this->latestUploadToken = $motif->getTransmorpherMedia()->latest_upload_token;
 
-        $this->processingStateRoute = route('transmorpherProcessingState', $this->transmorpherMediaKey);
+        $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);
         $this->handleUploadResponseRoute = route('transmorpherHandleUploadResponse', '');
         $this->getVersionsRoute = route('transmorpherGetVersions', $this->transmorpherMediaKey);

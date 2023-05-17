@@ -17,30 +17,24 @@ class StateUpdate
      * @param TransmorpherMedia $transmorpherMedia
      * @return JsonResponse
      */
-    public function getProcessingState(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
+    public function getState(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
-        if ($request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
+
+        // If no upload token was provided, return information for latest upload.
+        if ($request->input('upload_token') && $request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
             $message = 'Canceled by a new upload.';
             $state = State::ERROR;
         }
 
-        return response()->json(['clientMessage' => $message ?? $latestUpload->message, 'state' => $state ?? $latestUpload->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestUpload->updated_at)]);
-    }
-
-    /**
-     * Return whether the latest upload is currently uploading or processing.
-     *
-     * @param Request $request
-     * @param TransmorpherMedia $transmorpherMedia
-     * @return JsonResponse
-     */
-    public function getUploadingState(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
-    {
-        $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
-
-        return response()->json(['upload_in_process' => $latestUpload?->state == State::INITIALIZING || $latestUpload?->state == State::PROCESSING]);
+        return response()->json([
+            'clientMessage' => $message ?? $latestUpload->message,
+            'state' => $state ?? $latestUpload->state,
+            'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getThumbnailUrl(), $latestUpload->updated_at),
+            'fullsizeUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getUrl(), $latestUpload->updated_at),
+            'latestUploadToken' => $transmorpherMedia->latest_upload_token,
+        ]);
     }
 
     public function setUploadingState(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse

@@ -341,6 +341,10 @@
   background-color: red;
 }
 
+.badge-uploading {
+  background-color: #68dec6;
+}
+
 .border-success {
   border-color: green;
 }
@@ -351,6 +355,10 @@
 
 .border-processing {
   border-color: orange;
+}
+
+.border-uploading {
+  border-color: #68dec6;
 }
 
 .d-hidden {
@@ -451,12 +459,12 @@
   white-space: nowrap;
 }
 
-.loading-indicator, .badge-processing {
+.loading-indicator, .badge-processing, .badge-uploading {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.loading-indicator:after, .badge-processing:after {
+.loading-indicator:after, .badge-processing:after, .badge-uploading:after {
   content: " ";
   display: inline-block;
   width: 15px;
