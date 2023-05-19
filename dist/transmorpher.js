@@ -300,29 +300,30 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var reset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
-    displayDropzoneState(transmorpherIdentifier, state, message, reset);
-    displayModalState(transmorpherIdentifier, state, message, reset);
+    var resetError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    displayDropzoneState(transmorpherIdentifier, state, message, resetError);
+    displayModalState(transmorpherIdentifier, state, message, resetError);
   };
   window.displayDropzoneState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var reset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var resetError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
     var stateInfo = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge');
     displayCardBorderState(transmorpherIdentifier, state);
     displayStateInformation(stateInfo, state);
     if (message) {
       displayDropzoneErrorMessage(transmorpherIdentifier, message);
-    } else if (reset) {
+    } else if (resetError) {
+      console.log('hi');
       resetModalErrorMessageDisplay(transmorpherIdentifier, message);
     }
   };
   window.displayModalState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var reset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var resetError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
     displayStateInformation(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-header > span")), state);
     if (message) {
       setModalErrorMessage(transmorpherIdentifier, message);
-    } else if (reset) {
+    } else if (resetError) {
       resetModalErrorMessageDisplay(transmorpherIdentifier, message);
     }
   };
@@ -347,7 +348,9 @@ if (!window.transmorpherScriptLoaded) {
     errorMessage.replaceChildren();
     errorMessage.append(message);
     errorMessage.style.display = 'block';
-    form.querySelector('.dz-preview').classList.add('dz-error');
+    var previewElement = form.querySelector('.dz-preview');
+    previewElement.classList.add('dz-error');
+    previewElement.style.display = 'block';
 
     // Remove visual clutter.
     form.querySelector('.dz-default').style.display = 'none';
@@ -357,7 +360,7 @@ if (!window.transmorpherScriptLoaded) {
   window.setModalErrorMessage = function (transmorpherIdentifier, message) {
     document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .delete-and-error > span")).textContent = message;
   };
-  window.resetModalErrorMessageDisplay = function (transmorpherIdentifier, message) {
+  window.resetModalErrorMessageDisplay = function (transmorpherIdentifier) {
     document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .delete-and-error > span")).textContent = '';
     document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
     var previewElement = null;

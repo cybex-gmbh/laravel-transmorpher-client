@@ -311,12 +311,12 @@ if (!window.transmorpherScriptLoaded) {
         document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
     }
 
-    window.displayState = function (transmorpherIdentifier, state, message = null, reset = true) {
-        displayDropzoneState(transmorpherIdentifier, state, message, reset);
-        displayModalState(transmorpherIdentifier, state, message, reset);
+    window.displayState = function (transmorpherIdentifier, state, message = null, resetError = true) {
+        displayDropzoneState(transmorpherIdentifier, state, message, resetError);
+        displayModalState(transmorpherIdentifier, state, message, resetError);
     }
 
-    window.displayDropzoneState = function (transmorpherIdentifier, state, message = null, reset = true) {
+    window.displayDropzoneState = function (transmorpherIdentifier, state, message = null, resetError = true) {
         let stateInfo = document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge');
 
         displayCardBorderState(transmorpherIdentifier, state)
@@ -324,17 +324,18 @@ if (!window.transmorpherScriptLoaded) {
 
         if (message) {
             displayDropzoneErrorMessage(transmorpherIdentifier, message);
-        } else if (reset) {
+        } else if (resetError) {
+            console.log('hi');
             resetModalErrorMessageDisplay(transmorpherIdentifier, message);
         }
     }
 
-    window.displayModalState = function (transmorpherIdentifier, state, message = null, reset = true) {
+    window.displayModalState = function (transmorpherIdentifier, state, message = null, resetError = true) {
         displayStateInformation(document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-header > span`), state);
 
         if (message) {
             setModalErrorMessage(transmorpherIdentifier, message);
-        } else if (reset) {
+        } else if (resetError) {
             resetModalErrorMessageDisplay(transmorpherIdentifier, message);
         }
     }
@@ -363,7 +364,10 @@ if (!window.transmorpherScriptLoaded) {
         errorMessage.replaceChildren();
         errorMessage.append(message);
         errorMessage.style.display = 'block';
-        form.querySelector('.dz-preview').classList.add('dz-error');
+
+        let previewElement = form.querySelector('.dz-preview');
+        previewElement.classList.add('dz-error');
+        previewElement.style.display = 'block';
 
         // Remove visual clutter.
         form.querySelector('.dz-default').style.display = 'none';
@@ -375,7 +379,7 @@ if (!window.transmorpherScriptLoaded) {
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .delete-and-error > span`).textContent = message;
     }
 
-    window.resetModalErrorMessageDisplay = function (transmorpherIdentifier, message) {
+    window.resetModalErrorMessageDisplay = function (transmorpherIdentifier) {
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .delete-and-error > span`).textContent = '';
         document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
 
