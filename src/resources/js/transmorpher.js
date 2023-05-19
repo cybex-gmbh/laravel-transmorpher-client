@@ -325,7 +325,6 @@ if (!window.transmorpherScriptLoaded) {
         if (message) {
             displayDropzoneErrorMessage(transmorpherIdentifier, message);
         } else if (resetError) {
-            console.log('hi');
             resetModalErrorMessageDisplay(transmorpherIdentifier, message);
         }
     }
