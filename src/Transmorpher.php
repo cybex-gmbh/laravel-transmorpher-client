@@ -107,9 +107,9 @@ abstract class Transmorpher
 
         if ($clientResponse['success']) {
             $upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
+        } else {
+            $upload->update(['state' => State::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
-
-        // Upload will get updated later if upload token retrieval was not successful.
 
         return $clientResponse;
     }
