@@ -72,6 +72,8 @@ abstract class Transmorpher
             ];
         }
 
+        $upload->update(['state' => State::ERROR, 'message' => $message ?? $body['message']]);
+
         return [
             'success' => $success,
             'response' => $message ?? $body['message'],
