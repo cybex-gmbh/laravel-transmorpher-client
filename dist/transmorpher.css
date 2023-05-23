@@ -290,11 +290,16 @@
 .dropzone .dz-preview.dz-image-preview {
   background: transparent;
 }
-.dropzone .dz-image > img {
+.dropzone .dz-image {
+  position: relative;
+}
+.dropzone .dz-image img {
   max-height: 200px;
+  cursor: zoom-in;
 }
 
 .card {
+  min-width: 300px;
   display: flex;
   flex-direction: column;
   border: 1px solid #ced2d8;
@@ -390,7 +395,7 @@
   margin: 5% auto 0;
 }
 
-.video-transmorpher, .image-transmorpher > img {
+.video-transmorpher, .image-transmorpher > img:first-of-type {
   height: 150px;
 }
 
@@ -435,6 +440,15 @@
 .icon {
   height: 20px;
   width: 20px;
+}
+.icon.enlarge-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  filter: drop-shadow(0px 0px 1px #000);
+  margin: 5px;
+  height: 30px;
+  width: 30px;
 }
 
 .error-display {

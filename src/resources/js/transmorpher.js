@@ -154,7 +154,7 @@ if (!window.transmorpherScriptLoaded) {
                 if (motifs[transmorpherIdentifier].isImage) {
                     linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + `/${version}`;
                     linkToOriginalImage.target = '_blank';
-                    linkToOriginalImage.append(modal.previousElementSibling.querySelector('.details > a > img').cloneNode());
+                    linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
                 }
 
                 versionData.textContent = `${version}: ${timeAgo(new Date(versions[version] * 1000))}`;
@@ -261,7 +261,7 @@ if (!window.transmorpherScriptLoaded) {
     window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
         imgElement.src = thumbnailUrl
-        imgElement.closest('.card').querySelector('.details > a').href = fullsizeUrl;
+        imgElement.closest('.full-size-link').href = fullsizeUrl;
     }
 
 
@@ -281,7 +281,7 @@ if (!window.transmorpherScriptLoaded) {
 
         if (motifs[transmorpherIdentifier].isImage) {
             imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
-            imgElement.closest('.card').querySelector('.details > a').href = imgElement.dataset.placeholderUrl;
+            imgElement.closest('.full-size-link').href = imgElement.dataset.placeholderUrl;
         } else {
             imgElement = document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`);
             document.querySelector(`#dz-${transmorpherIdentifier} > video.video-transmorpher`).classList.add('d-none');

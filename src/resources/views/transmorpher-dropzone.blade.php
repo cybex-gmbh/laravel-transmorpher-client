@@ -18,16 +18,6 @@
                 @endif
             </span>
             <div class="details">
-                <div class="error-display">
-                    <svg class="icon error-icon" viewBox="0 0 24 24" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 16H12.01M12 8V12M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"/>
-                    </svg>
-                    <div class="card error-information">hallöchen</div>
-                </div>
-                @if ($isImage)
-                    <a target="_blank" href="{{ $motif->getUrl() }}"><img src="{{ mix('icons/magnifying-glass.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon"></a>
-                @endif
                 <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="More information" class="icon"
                      onclick="openMoreInformationModal('{{ $motif->getIdentifier() }}')">
             </div>
@@ -35,12 +25,16 @@
         <div class="card-body">
             <form method="POST" class="dropzone" id="dz-{{ $motif->getIdentifier() }}">
                 @if ($isImage)
-                    <div class="dz-image image-transmorpher">
-                        <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
-                             data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                             src="{{$motif->getUrl(['height' => 150])}}"
-                             alt="{{ $differentiator }}"/>
-                    </div>
+                    <a class="full-size-link" target="_blank" href="{{ $motif->getUrl() }}">
+                        <div class="dz-image image-transmorpher">
+                            <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
+                                 data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                                 src="{{ $motif->getUrl(['height' => 150]) }}"
+                                 alt="{{ $differentiator }}"/>
+                            <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon enlarge-icon">
+                        </div>
+                    </a>
+
                 @else
                     <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
                         <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
@@ -52,7 +46,7 @@
                     <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
                          src="{{ !$isReady ? $motif->getUrl() : '' }}"
                          alt="{{ $differentiator }}"
-                         class="video-transmorpher @if($isReady) d-none @endif"/>
+                         class="dz-image video-transmorpher @if($isReady) d-none @endif"/>
                 @endif
             </form>
         </div>

@@ -99,8 +99,9 @@ if (!window.transmorpherScriptLoaded) {
       }).then(function (uploadResult) {
         displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
       });
+    } else {
+      displayUploadResult(response, transmorpherIdentifier, uploadToken);
     }
-    displayUploadResult(response, transmorpherIdentifier, uploadToken);
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
     resetAgeElements(transmorpherIdentifier);
@@ -162,7 +163,7 @@ if (!window.transmorpherScriptLoaded) {
         if (motifs[transmorpherIdentifier].isImage) {
           linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + "/".concat(version);
           linkToOriginalImage.target = '_blank';
-          linkToOriginalImage.append(modal.previousElementSibling.querySelector('.details > a > img').cloneNode());
+          linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
         }
         versionData.textContent = "".concat(version, ": ").concat(timeAgo(new Date(versions[version] * 1000)));
         setVersionButton.textContent = 'restore';
@@ -261,7 +262,7 @@ if (!window.transmorpherScriptLoaded) {
   window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
     imgElement.src = thumbnailUrl;
-    imgElement.closest('.card').querySelector('.details > a').href = fullsizeUrl;
+    imgElement.closest('.full-size-link').href = fullsizeUrl;
   };
   window.updateVideoDisplay = function (transmorpherIdentifier, url) {
     var videoElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher"));
@@ -276,7 +277,7 @@ if (!window.transmorpherScriptLoaded) {
     var imgElement;
     if (motifs[transmorpherIdentifier].isImage) {
       imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-      imgElement.closest('.card').querySelector('.details > a').href = imgElement.dataset.placeholderUrl;
+      imgElement.closest('.full-size-link').href = imgElement.dataset.placeholderUrl;
     } else {
       imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher"));
       document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher")).classList.add('d-none');

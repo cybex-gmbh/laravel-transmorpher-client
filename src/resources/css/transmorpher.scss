@@ -30,12 +30,18 @@
     background: transparent;
   }
 
-  .dz-image > img {
-    max-height: 200px;
+  .dz-image {
+    position: relative;
+
+    & img {
+      max-height: 200px;
+      cursor: zoom-in;
+    }
   }
 }
 
 .card {
+  min-width: 300px;
   display: flex;
   flex-direction: column;
   border: 1px solid $cardBorder;
@@ -139,7 +145,7 @@
   }
 }
 
-.video-transmorpher, .image-transmorpher > img {
+.video-transmorpher, .image-transmorpher > img:first-of-type {
   height: 150px;
 }
 
@@ -191,6 +197,16 @@
 .icon {
   height: 20px;
   width: 20px;
+
+  &.enlarge-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    filter: drop-shadow(0px 0px 1px #000);
+    margin: 5px;
+    height: 30px;
+    width: 30px;
+  }
 }
 
 .error-display {
