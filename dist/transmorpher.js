@@ -265,7 +265,7 @@ if (!window.transmorpherScriptLoaded) {
     imgElement.closest('.full-size-link').href = fullsizeUrl;
   };
   window.updateVideoDisplay = function (transmorpherIdentifier, url) {
-    var videoElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher"));
+    var videoElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " video.video-transmorpher"));
     videoElement.src = url;
     videoElement.querySelector('a').href = url;
     videoElement.classList.remove('d-none');
@@ -339,21 +339,13 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayDropzoneErrorMessage = function (transmorpherIdentifier, message) {
     var form = document.querySelector('#dz-' + transmorpherIdentifier);
-
-    // Add preview element, which also displays errors, when it is not present yet.
-    if (!form.querySelector('.dz-preview')) {
-      form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;
-    }
-    var errorMessage = form.querySelector('.dz-error-message');
-    errorMessage.replaceChildren();
-    errorMessage.append(message);
-    errorMessage.style.display = 'block';
-    var previewElement = form.querySelector('.dz-preview');
-    previewElement.classList.add('dz-error');
-    previewElement.style.display = 'block';
+    var errorDisplay = form.querySelector('.error-display');
+    errorDisplay.classList.remove('d-none');
+    errorDisplay.querySelector('.error-message').textContent = message;
+    form.querySelector('.dz-default').style.display = 'block';
 
     // Remove visual clutter.
-    form.querySelector('.dz-default').style.display = 'none';
+    form.querySelector('.dz-preview').style.display = 'none';
     form.querySelector('.dz-progress').style.display = 'none';
     form.querySelector('.dz-details').style.display = 'none';
   };
@@ -461,6 +453,9 @@ if (!window.transmorpherScriptLoaded) {
       var allArguments = args.concat(Array.prototype.slice.call(arguments));
       return func.apply(this, allArguments);
     };
+  };
+  window.closeErrorMessage = function (closeButton) {
+    closeButton.closest('.error-display').classList.add('d-none');
   };
 }
 

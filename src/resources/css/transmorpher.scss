@@ -16,13 +16,25 @@
     background-color: $darkgreySemiTransparent;
     border: 1px dashed black;
     border-radius: 5px;
-    margin-top: 5px;
+    margin-top: 15px;
     padding: 1rem;
+    margin-bottom: 0;
 
     .dz-button {
       background: none;
       border: none;
       padding: 0;
+    }
+  }
+
+  .dz-preview {
+    width: 100%;
+    min-height: 0;
+    height: 58px;
+    margin: 15px 0 0;
+
+    .dz-image, .dz-details, .dz-success-mark, .dz-error-mark {
+      display: none;
     }
   }
 
@@ -70,13 +82,20 @@
   }
 
   .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     flex: 1 1 auto;
-    padding: 1.25rem;
+    padding: 0 1.25rem 1.25rem;
+
+    .badge {
+      margin: 5px;
+    }
   }
 }
 
 .badge {
-  padding: 3px 10px;
+  padding: 1px 10px;
   border-radius: 5px;
 }
 
@@ -210,50 +229,34 @@
 }
 
 .error-display {
-  position: relative;
-
-  &:hover .error-information {
-    visibility: visible;
-  }
-}
-
-.error-icon {
-  animation: color-change 1s infinite;
-
-  @keyframes color-change {
-    0% {
-      stroke: $error;
-    }
-    50% {
-      stroke: black;
-    }
-    100% {
-      stroke: $error;
-    }
-  }
-}
-
-.error-information {
-  margin-left: -100px;
-  width: 200px;
-  top: 150%;
-  left: 50%;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
   position: absolute;
-  visibility: hidden;
-  color: $error;
   padding: 5px;
-  text-align: center;
+  background-color: $errorBackground;
+  border: 1px solid $error;
+  border-radius: .15rem;
+  box-shadow: 0 1px 1px 0 rgb(60, 75, 100), 0 2px 1px -1px rgb(60, 75, 100), 0 1px 3px 0 rgb(60, 75, 100);
 
-  &::after {
-    content: "";
+  .btn-close {
     position: absolute;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent black transparent;
+    margin: 0 3px;
+    font-size: .8rem;
+    top: 0;
+    right: 0;
+    font-weight: bold;
   }
+}
+
+.media-preview {
+  position: relative;
+  width: 100%;
+}
+
+.media-display {
+  display: flex;
+  justify-content: center;
 }
 
 .button {

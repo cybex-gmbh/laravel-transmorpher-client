@@ -10,44 +10,51 @@
                      alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
                 {{ $differentiator }}
             </div>
-            <span class="badge @if($isProcessing) badge-processing @elseif($isUploading) badge-uploading @else d-hidden @endif">
-                @if($isProcessing)
-                    Processing
-                @elseif($isUploading)
-                    Uploading
-                @endif
-            </span>
             <div class="details">
                 <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="More information" class="icon"
                      onclick="openMoreInformationModal('{{ $motif->getIdentifier() }}')">
             </div>
         </div>
         <div class="card-body">
+             <span class="badge @if($isProcessing) badge-processing @elseif($isUploading) badge-uploading @else d-hidden @endif">
+                @if($isProcessing)
+                     Processing
+                 @else
+                     Uploading
+                 @endif
+            </span>
             <form method="POST" class="dropzone" id="dz-{{ $motif->getIdentifier() }}">
-                @if ($isImage)
-                    <a class="full-size-link" target="_blank" href="{{ $motif->getUrl() }}">
-                        <div class="dz-image image-transmorpher">
-                            <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
-                                 data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                                 src="{{ $motif->getUrl(['height' => 150]) }}"
-                                 alt="{{ $differentiator }}"/>
-                            <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon enlarge-icon">
-                        </div>
-                    </a>
-
-                @else
-                    <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
-                        <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
-                        <p style="padding: 5px;">
-                            Your browser doesn't support HTML video. Here is a
-                            <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
-                        </p>
-                    </video>
-                    <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                         src="{{ !$isReady ? $motif->getUrl() : '' }}"
-                         alt="{{ $differentiator }}"
-                         class="dz-image video-transmorpher @if($isReady) d-none @endif"/>
-                @endif
+                <div class="media-preview">
+                    <div class="error-display d-none">
+                        <span class="error-message"></span>
+                        <button type="button" class="btn-close" onclick="closeErrorMessage(this)">⨉</button>
+                    </div>
+                    <div class="media-display">
+                        @if ($isImage)
+                            <a class="full-size-link" target="_blank" href="{{ $motif->getUrl() }}">
+                                <div class="dz-image image-transmorpher">
+                                    <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
+                                         data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                                         src="{{ $motif->getUrl(['height' => 150]) }}"
+                                         alt="{{ $differentiator }}"/>
+                                    <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon enlarge-icon">
+                                </div>
+                            </a>
+                        @else
+                            <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
+                                <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
+                                <p style="padding: 5px;">
+                                    Your browser doesn't support HTML video. Here is a
+                                    <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
+                                </p>
+                            </video>
+                            <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                                 src="{{ !$isReady ? $motif->getUrl() : '' }}"
+                                 alt="{{ $differentiator }}"
+                                 class="dz-image video-transmorpher @if($isReady) d-none @endif"/>
+                        @endif
+                    </div>
+                </div>
             </form>
         </div>
     </div>
