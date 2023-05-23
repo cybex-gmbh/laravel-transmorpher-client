@@ -83,9 +83,9 @@ if (!window.transmorpherScriptLoaded) {
             }).then(uploadResult => {
                 displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
             });
+        } else {
+            displayUploadResult(response, transmorpherIdentifier, uploadToken);
         }
-
-        displayUploadResult(response, transmorpherIdentifier, uploadToken);
     }
 
     window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
