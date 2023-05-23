@@ -7,8 +7,8 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Transmorpher\Enums\ClientResponse;
-use Transmorpher\Enums\State;
 use Transmorpher\Enums\Transformation;
+use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
 
@@ -93,7 +93,7 @@ abstract class Transmorpher
     public function reserveUploadSlot(): array
     {
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create([
-            'state' => State::INITIALIZING,
+            'state' => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
 
@@ -102,13 +102,13 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
         if ($clientResponse['success']) {
             $upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
         } else {
-            $upload->update(['state' => State::ERROR, 'message' => $clientResponse['serverResponse']]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
 
         return $clientResponse;
@@ -121,25 +121,25 @@ abstract class Transmorpher
      */
     public function delete(): array
     {
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending delete request.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending delete request.']);
 
         try {
             $response = $this->configureApiRequest()->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
             $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
         if ($clientResponse['success']) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
-            $upload->update(['state' => State::DELETED, 'message' => $clientResponse['response']]);
+            $upload->update(['state' => UploadState::DELETED, 'message' => $clientResponse['response']]);
         } else {
             if ($clientResponse['httpCode'] === 404) {
                 $clientResponse ['clientMessage'] = 'Media is already deleted.';
             }
 
-            $upload->update(['state' => State::ERROR, 'message' => $clientResponse['serverResponse']]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
 
         return $clientResponse;
@@ -193,7 +193,7 @@ abstract class Transmorpher
      */
     public function setVersion(int $versionNumber): array
     {
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending request to restore version.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
             $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [

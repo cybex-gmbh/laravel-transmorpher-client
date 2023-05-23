@@ -5,7 +5,7 @@ namespace Transmorpher\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Transmorpher\Enums\State;
+use Transmorpher\Enums\UploadState;
 
 class TransmorpherUpload extends Model
 {
@@ -29,7 +29,7 @@ class TransmorpherUpload extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'state' => State::class,
+        'state' => UploadState::class,
     ];
 
     /**
@@ -72,7 +72,7 @@ class TransmorpherUpload extends Model
         if ($response['success']) {
             $transmorpher->updateModelsAfterSuccessfulUpload($response, $this);
         } else {
-            $this->update(['state' => State::ERROR, 'message' => $response['serverResponse']]);
+            $this->update(['state' => UploadState::ERROR, 'message' => $response['serverResponse']]);
         }
 
         $response['latestUploadToken'] = $this->TransmorpherMedia->latest_upload_token;
