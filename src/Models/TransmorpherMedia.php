@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
+use Transmorpher\Enums\UploadState;
 use Transmorpher\Transmorpher;
 
 class TransmorpherMedia extends Model
@@ -37,7 +37,7 @@ class TransmorpherMedia extends Model
      */
     protected $casts = [
         'type' => MediaType::class,
-        'latest_upload_state' => State::class,
+        'latest_upload_state' => UploadState::class,
     ];
 
     /**

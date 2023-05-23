@@ -2,7 +2,7 @@
 
 namespace Transmorpher\Enums;
 
-enum State: string
+enum UploadState: string
 {
     case DELETED = 'deleted';
     case ERROR = 'error';

@@ -5,7 +5,7 @@ namespace Transmorpher\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
-use Transmorpher\Enums\State;
+use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherUpload;
 
 class Callback
@@ -27,9 +27,9 @@ class Callback
         $upload = TransmorpherUpload::whereToken($body['upload_token'])->first();
         if ($body['success']) {
             $upload->TransmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path']]);
-            $upload->update(['state' => State::SUCCESS, 'message' => $body['response']]);
+            $upload->update(['state' => UploadState::SUCCESS, 'message' => $body['response']]);
         } else {
-            $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $body['response']]);
         }
 
         return response()->noContent(200);
