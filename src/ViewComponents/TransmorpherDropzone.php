@@ -5,7 +5,7 @@ namespace Transmorpher\ViewComponents;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
+use Transmorpher\Enums\UploadState;
 use Transmorpher\Transmorpher;
 
 class TransmorpherDropzone extends Component
@@ -23,7 +23,7 @@ class TransmorpherDropzone extends Component
     public function __construct(public Transmorpher $motif)
     {
         $this->isImage = $motif->getTransmorpherMedia()->type === MediaType::IMAGE;
-        $this->isProcessing = $motif->getTransmorpherMedia()->latest_upload_state === State::PROCESSING;
+        $this->isProcessing = $motif->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
         $this->isReady = $motif->getTransmorpherMedia()->is_ready;
         $this->differentiator = $motif->getTransmorpherMedia()->differentiator;
         $this->transmorpherMediaKey = $motif->getTransmorpherMedia()->getKey();

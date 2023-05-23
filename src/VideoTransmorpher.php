@@ -2,9 +2,7 @@
 
 namespace Transmorpher;
 
-use Exception;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
 
 class VideoTransmorpher extends Transmorpher
 {

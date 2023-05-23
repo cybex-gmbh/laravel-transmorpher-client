@@ -4,7 +4,7 @@ namespace Transmorpher\Helpers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Transmorpher\Enums\State;
+use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherMedia;
 
 class StateUpdate
@@ -22,7 +22,7 @@ class StateUpdate
 
         if ($request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
             $response = 'Canceled by a new upload.';
-            $state = State::ERROR;
+            $state = UploadState::ERROR;
         }
 
         return response()->json(['response' => $response ?? $latestUpload->message, 'state' => $state ?? $latestUpload->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestUpload->updated_at)]);

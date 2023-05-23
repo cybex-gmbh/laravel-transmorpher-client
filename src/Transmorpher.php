@@ -5,11 +5,10 @@ namespace Transmorpher;
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
 use Transmorpher\Enums\Transformation;
+use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
@@ -41,7 +40,7 @@ abstract class Transmorpher
     {
         $request = $this->configureApiRequest();
         $upload  = $this->transmorpherMedia->TransmorpherUploads()->create([
-            'state'   => State::INITIALIZING,
+            'state'   => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
 
@@ -58,7 +57,7 @@ abstract class Transmorpher
             $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
             $message = 'Could not connect to server.';
-            $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
         $success = $body['success'] ?? false;
@@ -72,7 +71,7 @@ abstract class Transmorpher
             ];
         }
 
-        $upload->update(['state' => State::ERROR, 'message' => $message ?? $body['message']]);
+        $upload->update(['state' => UploadState::ERROR, 'message' => $message ?? $body['message']]);
 
         return [
             'success' => $success,
@@ -89,13 +88,13 @@ abstract class Transmorpher
     public function delete(): array
     {
         $request = $this->configureApiRequest();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending delete request.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending delete request.']);
 
         try {
             $response = $request->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
             $body = json_decode($response->body(), true);
         } catch (Exception $exception) {
-            $upload->update(['state' => State::ERROR, 'message' => $exception->getMessage()]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
 
             return [
                 'success' => false,
@@ -105,9 +104,9 @@ abstract class Transmorpher
 
         if ($body['success']) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
-            $upload->update(['state' => State::DELETED, 'message' => $body['response']]);
+            $upload->update(['state' => UploadState::DELETED, 'message' => $body['response']]);
         } else {
-            $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $body['response']]);
         }
 
         return $body;
@@ -154,7 +153,7 @@ abstract class Transmorpher
     public function setVersion(int $versionNumber): array
     {
         $request = $this->configureApiRequest();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => State::INITIALIZING, 'message' => 'Sending request to restore version.']);
+        $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
             $response = $request->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
@@ -198,12 +197,12 @@ abstract class Transmorpher
         if ($body['success']) {
             if ($this->transmorpherMedia->type === MediaType::IMAGE) {
                 $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $body['public_path']]);
-                $upload->update(['state' => State::SUCCESS, 'message' => $body['response']]);
+                $upload->update(['state' => UploadState::SUCCESS, 'message' => $body['response']]);
             } else {
-                $upload->update(['token' => $body['upload_token'], 'state' => State::PROCESSING, 'message' => $body['response']]);
+                $upload->update(['token' => $body['upload_token'], 'state' => UploadState::PROCESSING, 'message' => $body['response']]);
             }
         } else {
-            $upload->update(['state' => State::ERROR, 'message' => $body['response']]);
+            $upload->update(['state' => UploadState::ERROR, 'message' => $body['response']]);
         }
 
         return $body;
