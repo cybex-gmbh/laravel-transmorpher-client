@@ -3,7 +3,7 @@
 
 <div>
     <span id="csrf" class="d-hidden">@csrf</span>
-    <div class="card @if(!$isReady) border-processing @endif">
+    <div class="card @if(!$isReady || $isProcessing) border-processing @endif">
         <div class="card-header">
             <div>
                 <img src="{{ mix(sprintf('icons/%s.svg', $motif->getTransmorpherMedia()->type->value), 'vendor/transmorpher') }}"
