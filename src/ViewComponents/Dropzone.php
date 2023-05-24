@@ -8,7 +8,7 @@ use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Transmorpher;
 
-class TransmorpherDropzone extends Component
+class Dropzone extends Component
 {
     public bool $isImage;
     public bool $isProcessing;
@@ -56,6 +56,6 @@ class TransmorpherDropzone extends Component
      */
     public function render(): string|View
     {
-        return view('transmorpher::transmorpher-dropzone');
+        return view('transmorpher::dropzone');
     }
 }
