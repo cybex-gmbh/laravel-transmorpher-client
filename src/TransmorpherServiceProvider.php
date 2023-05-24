@@ -2,13 +2,12 @@
 
 namespace Transmorpher;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
-use Transmorpher\ViewComponents\TransmorpherDropzone;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {
@@ -35,7 +34,7 @@ class TransmorpherServiceProvider extends ServiceProvider
         $this->registerRoutes();
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'transmorpher');
 
-        Blade::component('transmorpher-dropzone', TransmorpherDropzone::class);
+        Blade::componentNamespace('Transmorpher\\ViewComponents', 'transmorpher');
     }
 
     /**
