@@ -14,7 +14,7 @@ class Dropzone extends Component
     public bool $isProcessing;
     public bool $isReady;
     public string $differentiator;
-    public $transmorpherMediaKey;
+    public string|int $transmorpherMediaKey;
     public ?string $latestUploadToken;
     public string $stateUpdateRoute;
     public string $uploadTokenRoute;
