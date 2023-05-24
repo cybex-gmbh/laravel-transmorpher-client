@@ -7,13 +7,15 @@ use Transmorpher\Enums\MediaType;
 
 class ImageTransmorpher extends Transmorpher
 {
+    protected MediaType $type = MediaType::IMAGE;
+
     /**
      * Create a new ImageTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator, protected MediaType $type = MediaType::IMAGE)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
         $this->createTransmorpherMedia();
     }
