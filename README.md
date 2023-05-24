@@ -176,7 +176,7 @@ To use the dropzone component in a template, you can simply include it like this
 
 ```html
 
-<x-transmorpher-dropzone :motif="$yourModel->imageFrontView()"></x-transmorpher-dropzone>
+<x-transmorpher::dropzone :motif="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
 Depending on whether you pass an ImageTransmorpher or a VideoTransmorpher, the component will function as your upload form for images or videos.
@@ -187,7 +187,7 @@ If you want a more dynamic approach, to display a dropzone for each available im
 
 ```html
 @foreach($yourModel->images() as $imageMotif)
-    <x-transmorpher-dropzone :motif="$imageMotif"></x-transmorpher-dropzone>
+    <x-transmorpher::dropzone :motif="$imageMotif"></x-transmorpher::dropzone>
 @endforeach
 ```
 
