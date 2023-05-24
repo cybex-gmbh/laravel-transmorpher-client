@@ -20,15 +20,15 @@ class TransmorpherServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
-            ], 'transmorpher.config');
+            ], ['transmorpher', 'transmorpher.config']);
 
             $this->publishes([
                 __DIR__ . '/../dist' => public_path('vendor/transmorpher'),
-            ], 'transmorpher.assets');
+            ], ['transmorpher', 'transmorpher.assets']);
 
             $this->publishes([
                 __DIR__ . '/resources/views' => resource_path('views/vendor/transmorpher'),
-            ], 'transmorpher.views');
+            ], ['transmorpher', 'transmorpher.views']);
         }
 
         $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
