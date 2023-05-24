@@ -7,13 +7,14 @@ if (!window.transmorpherScriptLoaded) {
 
     window.startPolling = function (transmorpherIdentifier, uploadToken) {
         let statusPollingVariable = `statusPolling${transmorpherIdentifier}`
-        let startTime = new Date().getTime();
+        let expirationTime = new Date();
+        expirationTime.setDate(expirationTime.getDate() + 1);
 
         // Set a timer to start polling for new information on the status of the processing video.
         // Has to be stored in a global variable, to be able to clear the timer when a new video is dropped in the dropzone.
         window[statusPollingVariable] = setInterval(function () {
             // Clear timer after 24 hours.
-            if (new Date().getTime() - startTime > (1 * 60 * 60 * 24 * 1000)) {
+            if (new Date().getTime > expirationTime) {
                 clearInterval(window[statusPollingVariable]);
             }
 
