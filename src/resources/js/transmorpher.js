@@ -182,7 +182,7 @@ if (!window.transmorpherScriptLoaded) {
     window.makeSetVersionCall = function (transmorpherIdentifier, version) {
         fetch(motifs[transmorpherIdentifier].routes.setVersion, {
             method: 'POST', headers: {
-                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+                'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             }, body: JSON.stringify({
                 version: version,
             })
@@ -226,7 +226,7 @@ if (!window.transmorpherScriptLoaded) {
     window.deleteTransmorpherMedia = function (transmorpherIdentifier) {
         fetch(motifs[transmorpherIdentifier].routes.delete, {
             method: 'POST', headers: {
-                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+                'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             },
         }).then(response => {
             return response.json();
@@ -443,7 +443,7 @@ if (!window.transmorpherScriptLoaded) {
         // Reserve an upload slot at the Transmorpher media server.
         fetch(motifs[transmorpherIdentifier].routes.uploadToken, {
             method: 'POST', headers: {
-                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
+                'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             }, body: JSON.stringify({
                 transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey,
             }),
@@ -466,7 +466,7 @@ if (!window.transmorpherScriptLoaded) {
     window.getState = function (transmorpherIdentifier, uploadToken = null) {
         return fetch(motifs[transmorpherIdentifier].routes.state, {
             method: 'POST', headers: {
-                'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
+                'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             }, body: JSON.stringify({
                 upload_token: uploadToken,
             }),

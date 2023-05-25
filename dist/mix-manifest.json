@@ -1,9 +1,11 @@
 {
-    "/transmorpher.js": "/transmorpher.js?id=2b258a5787c8eb118be581290eafd873",
+    "/transmorpher.js": "/transmorpher.js?id=70e7bb17aa82433ffb5aa71b57881827",
     "/transmorpher.css": "/transmorpher.css?id=de76811ee09c404f66a82504bca3ce21",
-    "/icons/enlargen.svg": "/icons/enlargen.svg?id=9f560ce3f022646dbb826a066715a343",
+    "/icons/delete.svg": "/icons/delete.svg?id=f98bf086213ce3042743a5d3b6418bed",
+    "/icons/enlargen.svg": "/icons/enlargen.svg?id=54ad17aadba6d56ee013ab4be4b492f8",
     "/icons/error.svg": "/icons/error.svg?id=d94c0319ef2329a13bfd502f1503805e",
     "/icons/image.svg": "/icons/image.svg?id=52512916914b0c4e0491d9e35113bdde",
     "/icons/more-info.svg": "/icons/more-info.svg?id=0448953d328abef9d84b0ae8ec4b4210",
+    "/icons/restore.svg": "/icons/restore.svg?id=eeab87e16ac0fe68e1b7d655076a8d8c",
     "/icons/video.svg": "/icons/video.svg?id=55cf2f8035dcd9f44b457051ca877546"
 }

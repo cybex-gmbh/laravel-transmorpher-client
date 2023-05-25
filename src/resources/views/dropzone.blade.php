@@ -177,7 +177,7 @@
             this.on('processing', function () {
                 fetch(motifs['{{$motif->getIdentifier()}}'].routes.setUploadingState + `/${this.options.uploadToken}`, {
                     method: 'POST', headers: {
-                        'Content-Type': 'application/json', 'X-CSRF-Token': motifs['{{$motif->getIdentifier()}}'].csrfToken,
+                        'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
                     },
                 });
 

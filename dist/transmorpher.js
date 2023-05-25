@@ -20,7 +20,7 @@ if (!window.transmorpherScriptLoaded) {
     var expirationTime = new Date();
     expirationTime.setDate(expirationTime.getDate() + 1);
 
-    // Set a timer to start polling for new information on the status of the processing video.
+    // Set a timer to start polling for new information on the status of the processing video or an upload.
     // Has to be stored in a global variable, to be able to clear the timer when a new video is dropped in the dropzone.
     window[statusPollingVariable] = setInterval(function () {
       // Clear timer after 24 hours.
@@ -191,7 +191,7 @@ if (!window.transmorpherScriptLoaded) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+        'X-XSRF-TOKEN': getCsrfToken()
       },
       body: JSON.stringify({
         version: version
@@ -229,7 +229,7 @@ if (!window.transmorpherScriptLoaded) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+        'X-XSRF-TOKEN': getCsrfToken()
       }
     }).then(function (response) {
       return response.json();
@@ -415,7 +415,7 @@ if (!window.transmorpherScriptLoaded) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+        'X-XSRF-TOKEN': getCsrfToken()
       },
       body: JSON.stringify({
         transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey
@@ -439,7 +439,7 @@ if (!window.transmorpherScriptLoaded) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken
+        'X-XSRF-TOKEN': getCsrfToken()
       },
       body: JSON.stringify({
         upload_token: uploadToken
