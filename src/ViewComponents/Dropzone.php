@@ -10,13 +10,15 @@ use Transmorpher\Transmorpher;
 
 class Dropzone extends Component
 {
-    public bool $isImage;
+    public MediaType $mediaType;
     public bool $isProcessing;
     public bool $isUploading;
     public bool $isReady;
     public string $differentiator;
     public string|int $transmorpherMediaKey;
     public ?string $latestUploadToken;
+    public int $lastUpdated;
+    public array $mediaTypes;
 
     public string $stateRoute;
     public string $uploadTokenRoute;
@@ -26,11 +28,10 @@ class Dropzone extends Component
     public string $deleteRoute;
     public string $getOriginalRoute;
     public string $setUploadingStateRoute;
-    public mixed $lastUpdated;
 
     public function __construct(public Transmorpher $motif)
     {
-        $this->isImage = $motif->getTransmorpherMedia()->type === MediaType::IMAGE;
+        $this->mediaType = $motif->getTransmorpherMedia()->type;
         $this->isProcessing = $motif->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
         $this->isUploading = $motif->getTransmorpherMedia()->latest_upload_state === UploadState::UPLOADING;
         $this->isReady = $motif->getTransmorpherMedia()->is_ready;
@@ -38,6 +39,7 @@ class Dropzone extends Component
         $this->transmorpherMediaKey = $motif->getTransmorpherMedia()->getKey();
         $this->latestUploadToken = $motif->getTransmorpherMedia()->latest_upload_token;
         $this->lastUpdated = $motif->getTransmorpherMedia()->updated_at->timestamp;
+        $this->mediaTypes = array_column(MediaType::cases(), 'value', 'name');
 
         $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);

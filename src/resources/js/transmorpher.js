@@ -3,7 +3,11 @@ import Dropzone from 'dropzone';
 if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
+    window.mediaTypes = [];
     window.motifs = [];
+
+    const IMAGE = 'IMAGE';
+    const VIDEO = 'VIDEO';
 
     window.startPolling = function (transmorpherIdentifier, uploadToken) {
         let statusPollingVariable = `statusPolling${transmorpherIdentifier}`
@@ -54,6 +58,7 @@ if (!window.transmorpherScriptLoaded) {
                         displayState(transmorpherIdentifier, 'processing', null, false);
                         setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .processing-age`), timeAgo(Date.parse(pollingInformation.lastUpdated)));
                     }
+                        break;
                 }
             })
         }, 5000); // Poll every 5 seconds
@@ -95,13 +100,19 @@ if (!window.transmorpherScriptLoaded) {
         if (uploadResult.success) {
             document.querySelector(`#dz-${transmorpherIdentifier}`).classList.remove('dz-started');
 
-            if (motifs[transmorpherIdentifier].isImage) {
-                // It's an image dropzone, indicate success.
-                displayState(transmorpherIdentifier, 'success');
-            } else {
-                // It's a video dropzone, indicate that it is now processing and start polling for updates.
-                displayState(transmorpherIdentifier, 'processing');
-                startPolling(transmorpherIdentifier, uploadToken)
+            switch (motifs[transmorpherIdentifier].mediaType) {
+                case mediaTypes[IMAGE]:
+                    // Set the newly uploaded image as display image.
+                    updateImageDisplay(transmorpherIdentifier,
+                        getImageThumbnailUrl(transmorpherIdentifier, uploadResult.public_path, 'h-150', uploadResult.version),
+                        getFullsizeUrl(transmorpherIdentifier, uploadResult.public_path, uploadResult.version)
+                    );
+                    displayState(transmorpherIdentifier, 'success');
+                    break;
+                case mediaTypes[VIDEO]:
+                    displayState(transmorpherIdentifier, 'processing');
+                    startPolling(transmorpherIdentifier, uploadToken)
+                    break;
             }
         } else {
             // There was an error.
@@ -134,9 +145,11 @@ if (!window.transmorpherScriptLoaded) {
             modal.querySelector('.current-version').textContent = versionInformation.currentVersion || 'none';
             modal.querySelector('.current-version-age').textContent = timeAgo(new Date((versions[versionInformation.currentVersion]) * 1000)) || 'never';
 
-            if (!motifs[transmorpherIdentifier].isImage) {
-                modal.querySelector('.processed-version').textContent = versionInformation.currentlyProcessedVersion || 'none';
-                modal.querySelector('.processed-version-age').textContent = timeAgo(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000)) || 'never';
+            switch (motifs[transmorpherIdentifier].mediaType) {
+                case mediaTypes[VIDEO]:
+                    modal.querySelector('.processed-version').textContent = versionInformation.currentlyProcessedVersion || 'none';
+                    modal.querySelector('.processed-version-age').textContent = timeAgo(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000)) || 'never';
+                    break;
             }
 
             // Add elements to display each version.
@@ -152,10 +165,12 @@ if (!window.transmorpherScriptLoaded) {
                 let versionData = document.createElement('span');
                 let linkToOriginalImage = document.createElement('a');
 
-                if (motifs[transmorpherIdentifier].isImage) {
-                    linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + `/${version}`;
-                    linkToOriginalImage.target = '_blank';
-                    linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
+                switch (motifs[transmorpherIdentifier].mediaType) {
+                    case mediaTypes[IMAGE]:
+                        linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + `/${version}`;
+                        linkToOriginalImage.target = '_blank';
+                        linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
+                        break;
                 }
 
                 versionData.textContent = `${version}: ${timeAgo(new Date(versions[version] * 1000))}`;
@@ -193,17 +208,23 @@ if (!window.transmorpherScriptLoaded) {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
                 updateVersionInformation(transmorpherIdentifier);
 
-                if (motifs[transmorpherIdentifier].isImage) {
-                    updateMediaDisplay(
-                        transmorpherIdentifier,
-                        getImageThumbnailUrl(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version),
-                        getFullsizeUrl(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version)
-                    );
-                } else {
-                    startPolling(transmorpherIdentifier, setVersionResult.upload_token);
+                let state;
+                switch (motifs[transmorpherIdentifier].mediaType) {
+                    case mediaTypes[IMAGE]:
+                        updateMediaDisplay(
+                            transmorpherIdentifier,
+                            getImageThumbnailUrl(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version),
+                            getFullsizeUrl(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version)
+                        );
+                        state = 'success';
+                        break;
+                    case mediaTypes[VIDEO]:
+                        startPolling(transmorpherIdentifier, setVersionResult.upload_token);
+                        state = 'processing';
+                        break;
                 }
 
-                displayState(transmorpherIdentifier, motifs[transmorpherIdentifier].isImage ? 'success' : 'processing');
+                displayState(transmorpherIdentifier, state);
             } else {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
                 displayModalState(transmorpherIdentifier, 'error', setVersionResult.clientMessage);
@@ -244,17 +265,17 @@ if (!window.transmorpherScriptLoaded) {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
                 displayModalState(transmorpherIdentifier, 'error', deleteResult.clientMessage);
             }
-
-            // Hide delete modal.
-            document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
         })
     }
 
     window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
-        if (motifs[transmorpherIdentifier].isImage) {
-            updateImageDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl)
-        } else {
-            updateVideoDisplay(transmorpherIdentifier, thumbnailUrl)
+        switch (motifs[transmorpherIdentifier].mediaType) {
+            case mediaTypes[IMAGE]:
+                updateImageDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
+                break;
+            case mediaTypes[VIDEO]:
+                updateVideoDisplay(transmorpherIdentifier, thumbnailUrl);
+                break;
         }
     }
 
@@ -285,13 +306,16 @@ if (!window.transmorpherScriptLoaded) {
     window.displayPlaceholder = function (transmorpherIdentifier) {
         let imgElements;
 
-        if (motifs[transmorpherIdentifier].isImage) {
-            imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
-            imgElements.forEach(image => image.closest('.full-size-link').href = image.dataset.placeholderUrl);
-        } else {
-            imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`);
-            document.querySelectorAll(`#component-${transmorpherIdentifier} > video.video-transmorpher`)
-                .forEach(video => video.classList.add('d-none'));
+        switch (motifs[transmorpherIdentifier].mediaType) {
+            case mediaTypes[IMAGE]:
+                imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
+                imgElements.forEach(image => image.closest('.full-size-link').href = image.dataset.placeholderUrl);
+                break;
+            case mediaTypes[VIDEO]:
+                imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`);
+                document.querySelectorAll(`#component-${transmorpherIdentifier} > video.video-transmorpher`)
+                    .forEach(video => video.classList.add('d-none'));
+                break;
         }
 
         imgElements.forEach(image => {
@@ -497,7 +521,7 @@ if (!window.transmorpherScriptLoaded) {
         );
     }
 
-    window.addConfirmEventListeners = function(button, callback, buttonAction, duration) {
+    window.addConfirmEventListeners = function (button, callback, buttonAction, duration) {
         let pressedOnce = false;
         let defaultText = buttonAction[0].toUpperCase() + buttonAction.slice(1);
 

@@ -5,8 +5,8 @@
     <div class="card @if(!$isReady || $isProcessing) border-processing @endif">
         <div class="card-header">
             <div>
-                <img src="{{ mix(sprintf('icons/%s.svg', $motif->getTransmorpherMedia()->type->value), 'vendor/transmorpher') }}"
-                     alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
+                <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
+                     alt="{{ $mediaType->value }}" class="icon">
                 {{ $differentiator }}
             </div>
             <div class="details">
@@ -29,29 +29,7 @@
                         <button type="button" class="btn-close" onclick="closeErrorMessage(this)">⨉</button>
                     </div>
                     <div class="media-display">
-                        @if ($isImage)
-                            <a class="full-size-link" target="_blank" href="{{ $motif->getUrl() }}">
-                                <div class="dz-image image-transmorpher">
-                                    <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
-                                         data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                                         src="{{ $motif->getUrl(['height' => 150]) }}"
-                                         alt="{{ $differentiator }}"/>
-                                    <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon enlarge-icon">
-                                </div>
-                            </a>
-                        @else
-                            <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
-                                <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
-                                <p style="padding: 5px;">
-                                    Your browser doesn't support HTML video. Here is a
-                                    <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
-                                </p>
-                            </video>
-                            <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                                 src="{{ !$isReady ? $motif->getUrl() : '' }}"
-                                 alt="{{ $differentiator }}"
-                                 class="dz-image video-transmorpher @if($isReady) d-none @endif"/>
-                        @endif
+                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                     </div>
                 </div>
             </form>
@@ -75,8 +53,8 @@
                 <div class="card-side">
                     <div class="motif-info">
                         <div class="motif-name">
-                            <img src="{{ mix(sprintf('icons/%s.svg', $motif->getTransmorpherMedia()->type->value), 'vendor/transmorpher') }}"
-                                 alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
+                            <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
+                                 alt="{{ $mediaType->value }}" class="icon">
                             {{ $differentiator }}
                         </div>
                         <p class="@if(!$isProcessing) d-none @endif">Processing started <span class="processing-age"></span></p>
@@ -85,37 +63,17 @@
                     <div class="version-information">
                         <p>Current version: <span class="current-version"></span></p>
                         <p class="age">uploaded <span class="current-version-age"></span></p>
-                        @if(!$isImage)
-                            <hr>
-                            <p>Currently processed version: <span class="processed-version"></span></p>
-                            <p class="age">uploaded <span class="processed-version-age"></span></p>
-                        @endif
+                        @switch($mediaType)
+                            @case(\Transmorpher\Enums\MediaType::VIDEO)
+                                <hr>
+                                <p>Currently processed version: <span class="processed-version"></span></p>
+                                <p class="age">uploaded <span class="processed-version-age"></span></p>
+                                @break
+                        @endswitch
                     </div>
                     <div class="media-display">
                         <span>Current media:</span>
-                        @if ($isImage)
-                            <a class="full-size-link" target="_blank" href="{{ $motif->getUrl() }}">
-                                <div class="dz-image image-transmorpher">
-                                    <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
-                                         data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                                         src="{{ $motif->getUrl(['height' => 150]) }}"
-                                         alt="{{ $differentiator }}"/>
-                                    <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon enlarge-icon">
-                                </div>
-                            </a>
-                        @else
-                            <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
-                                <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
-                                <p style="padding: 5px;">
-                                    Your browser doesn't support HTML video. Here is a
-                                    <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
-                                </p>
-                            </video>
-                            <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
-                                 src="{{ !$isReady ? $motif->getUrl() : '' }}"
-                                 alt="{{ $differentiator }}"
-                                 class="dz-image video-transmorpher @if($isReady) d-none @endif"/>
-                        @endif
+                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                     </div>
                     <button type=button class="button button-hold hold-delete">
                         <span>Delete</span>
@@ -139,11 +97,14 @@
 <div id="modal-uc-{{ $motif->getIdentifier() }}" class="modal d-none">
     <div class="card">
         <div class="card-header">
-            @if($isImage)
-                There is currently an upload in process, do you want to overwrite it?
-            @else
-                A video is currently uploading or processing, do you want to overwrite it?
-            @endif
+            @switch($mediaType)
+                @case(\Transmorpher\Enums\MediaType::IMAGE)
+                    There is currently an upload in process, do you want to overwrite it?
+                    @break
+                @case(\Transmorpher\Enums\MediaType::VIDEO)
+                    A video is currently uploading or processing, do you want to overwrite it?
+                    @break
+            @endswitch
         </div>
         <div class="card-body">
             <button class="button" onclick="closeUploadConfirmModal('{{ $motif->getIdentifier() }}')">
@@ -155,11 +116,11 @@
         </div>
     </div>
 </div>
-</div>
 
 <script type="text/javascript">
     Dropzone.autoDiscover = false;
 
+    mediaTypes = {!! json_encode($mediaTypes) !!};
     motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
@@ -173,7 +134,7 @@
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },
         webUploadUrl: '{{ $motif->getWebUploadUrl() }}',
-        isImage: '{{ $isImage }}'
+        mediaType: '{{ $mediaType->value }}'
     }
 
     addConfirmEventListeners(
@@ -185,7 +146,7 @@
 
 
     // Start polling if the video is still processing or an upload is in process.
-    if (('{{ !$isImage }}' && '{{ $isProcessing }}') || '{{ $isUploading }}') {
+    if (('{{ $isProcessing }}') || '{{ $isUploading }}') {
         startPolling('{{ $motif->getIdentifier() }}', '{{ $latestUploadToken }}');
         setAgeElement(document.querySelector('#modal-mi-{{ $motif->getIdentifier() }} .{{ $isProcessing ? 'processing' : 'upload' }}-age'), timeAgo(new Date('{{ $lastUpdated }}' * 1000)));
     }
@@ -245,13 +206,6 @@
 
             // Clear the old timer.
             clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
-
-            if ('{{ $isImage }}') {
-                // Set the newly uploaded image as display image.
-                updateImageDisplay('{{$motif->getIdentifier()}}',
-                    getImageThumbnailUrl('{{$motif->getIdentifier()}}', response.public_path, '{{ $motif->getTransformations(['height' => 150]) }}', response.version),
-                    getFullsizeUrl('{{$motif->getIdentifier()}}', response.public_path, response.version));
-            }
 
             handleUploadResponse(
                 file,
