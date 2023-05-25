@@ -1,7 +1,6 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<span id="csrf" class="d-hidden">@csrf</span>
 <div class="card @if(!$isReady) border-processing @endif">
     <div class="card-header">
         {{$differentiator}}
@@ -13,7 +12,6 @@
     </div>
     <div class="card-body">
         <form method="POST" class="dropzone" id="{{ $motif->getIdentifier() }}">
-            @csrf
             @if ($isImage)
                 <div class="dz-image image-transmorpher">
                     <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
@@ -44,7 +42,6 @@
 
     motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
-        csrfToken: document.querySelector('#csrf > input[name="_token"]').value,
         routes: {
             stateUpdate: '{{ $stateUpdateRoute }}',
             handleUploadResponse: '{{ $handleUploadResponseRoute }}'
@@ -86,7 +83,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': motifs['{{ $motif->getIdentifier() }}'].csrfToken,
+                    'X-XSRF-TOKEN': getCsrfToken(),
                 },
                 body: JSON.stringify({
                     transmorpher_media_key: {{ $transmorpherMediaKey }},

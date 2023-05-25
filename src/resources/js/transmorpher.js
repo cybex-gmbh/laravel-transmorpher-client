@@ -21,7 +21,7 @@ if (!window.transmorpherScriptLoaded) {
             // Poll for status updates.
             fetch(motifs[transmorpherIdentifier].routes.stateUpdate, {
                 method: 'POST', headers: {
-                    'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
+                    'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                 }, body: JSON.stringify({
                     upload_token: uploadToken,
                 }),
@@ -45,7 +45,7 @@ if (!window.transmorpherScriptLoaded) {
         if (uploadToken) {
             fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + `/${uploadToken}`, {
                 method: 'POST', headers: {
-                    'Content-Type': 'application/json', 'X-CSRF-Token': motifs[transmorpherIdentifier].csrfToken,
+                    'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                 }, body: JSON.stringify({
                     response: response
                 })
@@ -107,5 +107,14 @@ if (!window.transmorpherScriptLoaded) {
         form.querySelector('.dz-default').style.display = 'none';
         form.querySelector('.dz-progress').style.display = 'none';
         form.querySelector('.dz-details').style.display = 'none';
+    }
+
+    window.getCsrfToken = function () {
+        // Cookie is encoded in base64 and '=' will be URL encoded, therefore we need to decode it.
+        return decodeURIComponent(document.cookie
+            .split("; ")
+            .find(cookie => cookie.startsWith("XSRF-TOKEN="))
+            ?.split("=")[1]
+        );
     }
 }
