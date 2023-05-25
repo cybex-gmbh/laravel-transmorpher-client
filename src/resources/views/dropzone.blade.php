@@ -2,7 +2,6 @@
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
 <div>
-    <span id="csrf" class="d-hidden">@csrf</span>
     <div class="card @if(!$isReady || $isProcessing) border-processing @endif">
         <div class="card-header">
             <div>
@@ -135,7 +134,6 @@
 
     motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
-        csrfToken: document.querySelector('#csrf > input[name="_token"]').value,
         routes: {
             state: '{{ $stateRoute }}',
             handleUploadResponse: '{{ $handleUploadResponseRoute }}',

@@ -5,4 +5,3 @@ mix.setPublicPath('dist')
     .sass('src/resources/css/transmorpher.scss', 'dist')
     .copyDirectory('src/resources/css/icons', 'dist/icons')
     .version();
-

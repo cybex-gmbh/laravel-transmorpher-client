@@ -9,16 +9,15 @@ use Transmorpher\Models\TransmorpherUpload;
 
 class VideoTransmorpher extends Transmorpher
 {
+    protected MediaType $type = MediaType::VIDEO;
+
     /**
      * Create a new VideoTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
-     * @param MediaType $type
-     *
-     * @throws Exceptions\InvalidIdentifierException
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator, protected MediaType $type = MediaType::VIDEO)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
         $this->createTransmorpherMedia();
     }
