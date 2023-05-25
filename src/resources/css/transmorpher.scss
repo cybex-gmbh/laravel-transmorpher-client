@@ -2,6 +2,7 @@
 @import 'variables';
 
 .dropzone {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,8 +10,8 @@
   border: 2px solid #0000004C;
   border-radius: 0;
   padding: 20px;
-  background-image: linear-gradient(135deg, $lightgrey 25%, $grey 0, $grey 50%, $lightgrey 0, $lightgrey 75%, $grey 0, $grey);
-  background-size: 40px 40px;
+
+  @extend .transparency-indicator;
 
   .dz-message {
     background-color: $darkgreySemiTransparent;
@@ -36,19 +37,36 @@
     .dz-image, .dz-details, .dz-success-mark, .dz-error-mark {
       display: none;
     }
+
+    .dz-progress {
+      z-index: 1
+    }
   }
 
   .dz-preview.dz-image-preview {
     background: transparent;
   }
+}
 
-  .dz-image {
-    position: relative;
+.transparency-indicator {
+  background-image: linear-gradient(135deg, $lightgrey 25%, $grey 0, $grey 50%, $lightgrey 0, $lightgrey 75%, $grey 0, $grey);
+  background-size: 40px 40px;
+}
 
-    & img {
-      max-height: 200px;
-      cursor: zoom-in;
-    }
+.box-shadow {
+  box-shadow: 0 1px 1px 0 rgba(60, 75, 100, .14), 0 2px 1px -1px rgba(60, 75, 100, .12), 0 1px 3px 0 rgba(60, 75, 100, .2);
+}
+
+.box-shadow-inset {
+  box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, .14), inset 0 2px 1px -1px rgba(60, 75, 100, .12), inset 0 1px 3px 0 rgba(60, 75, 100, .2);
+}
+
+.dropzone .dz-image, .dz-image {
+  position: relative;
+
+  & img {
+    max-height: 200px;
+    cursor: zoom-in;
   }
 }
 
@@ -60,7 +78,8 @@
   border-radius: .25em;
   background-color: $darkgrey;
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 1px 0 rgba(60, 75, 100, .14), 0 2px 1px -1px rgba(60, 75, 100, .12), 0 1px 3px 0 rgba(60, 75, 100, .2);
+
+  @extend .box-shadow;
 
   .card-header {
     display: flex;
@@ -145,23 +164,13 @@
 
 .modal {
   position: fixed;
-  z-index: 999;
+  z-index: 10;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(2px);
-
-  > .card {
-    width: fit-content;
-    margin: 20px auto 15%;
-  }
-
-  > .card:first-child {
-    width: 500px;
-    margin: 5% auto 0;
-  }
 }
 
 .video-transmorpher, .image-transmorpher > img:first-of-type {
@@ -176,13 +185,16 @@
 }
 
 .version-list {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  max-height: 100%;
   padding: 10px;
-  margin: 20px 0;
   border: 1px solid $cardBorder;
-  box-shadow: 0 1px 1px 0 rgba(60, 75, 100, .14), 0 2px 1px -1px rgba(60, 75, 100, .12), 0 1px 3px 0 rgba(60, 75, 100, .2);
   border-radius: 5px;
-  max-height: 300px;
   overflow: auto;
+
+  @extend .box-shadow-inset;
 
   hr {
     margin: 0 0 10px;
@@ -265,7 +277,7 @@
   border-radius: 0.25rem;
 
   &:hover {
-    filter: brightness(.85);
+    filter: brightness(.95);
   }
 }
 
@@ -313,4 +325,102 @@
   line-height: .5;
   font-size: small;
   color: #4b5a6a;
+}
+
+.more-information-modal {
+  justify-content: center;
+  align-items: center;
+
+  .card {
+    width: 95%;
+    height: 95%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    //background-color: orange;
+
+    .card-header {
+      .error-message {
+        color: $error;
+      }
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: row;
+      //background-color: blue;
+      padding: 1rem;
+
+      .card-side {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 25%;
+        border-right: 1px solid black;
+        padding-right: 1rem;
+        //background-color: red;
+
+        .motif-info {
+          display: flex;
+          justify-content: space-between;
+          border-bottom: 1px solid black;
+          padding-right: 10px;
+
+          .motif-name {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+          }
+        }
+
+        .media-display {
+          margin-top: auto;
+          margin-bottom: 5px;
+          flex-direction: column;
+          align-items: center;
+          padding: 1rem;
+
+          @extend .transparency-indicator, .box-shadow-inset;
+        }
+
+        .button {
+          align-self: center;
+        }
+      }
+
+      .card-main {
+        position: relative;
+        padding: .5rem;
+        width: 75%;
+        height: 100%
+      }
+    }
+  }
+}
+
+.d-flex {
+  display: flex;
+}
+
+.button-hold {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: 1.5s;
+
+  &:active, &.active {
+    background-position: left;
+  }
+
+  img {
+    pointer-events: none;
+  }
+}
+
+.hold-delete {
+  background: linear-gradient(to left, $error 50%, darken($error, 10%) 50%) right/200%;
+}
+
+.hold-restore {
+  background: linear-gradient(to left, $restoreButton 50%, darken($restoreButton, 10%) 50%) right/200%;
 }

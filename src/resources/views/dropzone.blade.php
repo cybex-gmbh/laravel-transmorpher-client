@@ -1,7 +1,7 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<div>
+<div id="component-{{ $motif->getIdentifier() }}">
     <div class="card @if(!$isReady || $isProcessing) border-processing @endif">
         <div class="card-header">
             <div>
@@ -58,75 +58,103 @@
         </div>
     </div>
 
-    <div id="modal-mi-{{ $motif->getIdentifier() }}" class="modal d-none">
+    <div id="modal-mi-{{ $motif->getIdentifier() }}" class="modal more-information-modal d-none">
         <div class="card">
             <div class="card-header">
-                {{ $differentiator }}
-                <span class="badge @if($isProcessing) badge-processing @else d-hidden @endif">
-                    Processing
+                <span class="badge @if($isProcessing) badge-processing @elseif($isUploading) badge-uploading @else d-hidden @endif">
+                    @if($isProcessing)
+                        Processing
+                    @else
+                        Uploading
+                    @endif
                 </span>
+                <span class="error-message"></span>
                 <button class="btn-close" onclick="closeMoreInformationModal('{{ $motif->getIdentifier() }}')">⨉</button>
             </div>
             <div class="card-body">
-                <div class="version-information">
-                    <p class="@if(!$isProcessing) d-none @endif">Processing started <span class="processing-age"></span></p>
-                    <p class="@if(!$isUploading) d-none @endif">Upload started <span class="upload-age"></span></p>
-                    <p>Current version: <span class="current-version"></span></p>
-                    <p class="age">uploaded <span class="current-version-age"></span></p>
-                    @if(!$isImage)
-                        <hr>
-                        <p>Currently processed version: <span class="processed-version"></span></p>
-                        <p class="age">uploaded <span class="processed-version-age"></span></p>
-                    @endif
+                <div class="card-side">
+                    <div class="motif-info">
+                        <div class="motif-name">
+                            <img src="{{ mix(sprintf('icons/%s.svg', $motif->getTransmorpherMedia()->type->value), 'vendor/transmorpher') }}"
+                                 alt="{{ $motif->getTransmorpherMedia()->type->value }}" class="icon">
+                            {{ $differentiator }}
+                        </div>
+                        <p class="@if(!$isProcessing) d-none @endif">Processing started <span class="processing-age"></span></p>
+                        <p class="@if(!$isUploading) d-none @endif">Upload started <span class="upload-age"></span></p>
+                    </div>
+                    <div class="version-information">
+                        <p>Current version: <span class="current-version"></span></p>
+                        <p class="age">uploaded <span class="current-version-age"></span></p>
+                        @if(!$isImage)
+                            <hr>
+                            <p>Currently processed version: <span class="processed-version"></span></p>
+                            <p class="age">uploaded <span class="processed-version-age"></span></p>
+                        @endif
+                    </div>
+                    <div class="media-display">
+                        <span>Current media:</span>
+                        @if ($isImage)
+                            <a class="full-size-link" target="_blank" href="{{ $motif->getUrl() }}">
+                                <div class="dz-image image-transmorpher">
+                                    <img data-delivery-url="{{ $motif->getDeliveryUrl() }}"
+                                         data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                                         src="{{ $motif->getUrl(['height' => 150]) }}"
+                                         alt="{{ $differentiator }}"/>
+                                    <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon enlarge-icon">
+                                </div>
+                            </a>
+                        @else
+                            <video preload="metadata" controls class="video-transmorpher @if(!$isReady) d-none @endif">
+                                <source src="{{ $isReady ? $motif->getMp4Url() : '' }}" type="video/mp4">
+                                <p style="padding: 5px;">
+                                    Your browser doesn't support HTML video. Here is a
+                                    <a href="{{ $isReady ? $motif->getMp4Url() : '' }}">link to the video</a> instead.
+                                </p>
+                            </video>
+                            <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
+                                 src="{{ !$isReady ? $motif->getUrl() : '' }}"
+                                 alt="{{ $differentiator }}"
+                                 class="dz-image video-transmorpher @if($isReady) d-none @endif"/>
+                        @endif
+                    </div>
+                    <button type=button class="button button-hold hold-delete">
+                        <span>Delete</span>
+                        <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="Delete" class="icon">
+                    </button>
+                </div>
+                <div class="card-main">
                     <div class="version-list">
-                        <p>Version overview:</p>
-                        <hr>
+                        <button class="button button-hold hold-restore">
+                            <span>Restore</span>
+                            <img src="{{ mix('icons/restore.svg', 'vendor/transmorpher') }}" alt="Restore" class="icon">
+                        </button>
                         <ul></ul>
                     </div>
                 </div>
-                <div class="delete-and-error">
-                    <button class="button badge-error" onclick="showDeleteModal('{{ $motif->getIdentifier() }}')">
-                        Delete
-                    </button>
-                    <span class="error-message"></span>
-                </div>
-            </div>
-        </div>
-
-        <div id="delete-{{ $motif->getIdentifier() }}" class="card d-none">
-            <div class="card-header">
-                Are you sure you want to delete all versions of {{ $differentiator }}?
-            </div>
-            <div class="card-body">
-                <button class="button" onclick="closeDeleteModal('{{ $motif->getIdentifier() }}')">
-                    Cancel
-                </button>
-                <button class="button badge-error" onclick="deleteTransmorpherMedia('{{ $motif->getIdentifier() }}')">
-                    Delete
-                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="modal-uc-{{ $motif->getIdentifier() }}" class="modal d-none">
-        <div class="card">
-            <div class="card-header">
-                @if($isImage)
-                    There is currently an upload in process, do you want to overwrite it?
-                @else
-                    A video is currently uploading or processing, do you want to overwrite it?
-                @endif
-            </div>
-            <div class="card-body">
-                <button class="button" onclick="closeUploadConfirmModal('{{ $motif->getIdentifier() }}')">
-                    Cancel
-                </button>
-                <button class="button badge-error">
-                    Overwrite
-                </button>
-            </div>
+<div id="modal-uc-{{ $motif->getIdentifier() }}" class="modal d-none">
+    <div class="card">
+        <div class="card-header">
+            @if($isImage)
+                There is currently an upload in process, do you want to overwrite it?
+            @else
+                A video is currently uploading or processing, do you want to overwrite it?
+            @endif
+        </div>
+        <div class="card-body">
+            <button class="button" onclick="closeUploadConfirmModal('{{ $motif->getIdentifier() }}')">
+                Cancel
+            </button>
+            <button class="button badge-error">
+                Overwrite
+            </button>
         </div>
     </div>
+</div>
 </div>
 
 <script type="text/javascript">
@@ -147,6 +175,14 @@
         webUploadUrl: '{{ $motif->getWebUploadUrl() }}',
         isImage: '{{ $isImage }}'
     }
+
+    addConfirmEventListeners(
+        document.querySelector(`#modal-mi-{{ $motif->getIdentifier() }} .hold-delete`),
+        createCallbackWithArguments(deleteTransmorpherMedia, '{{ $motif->getIdentifier() }}'),
+        'delete',
+        1500
+    );
+
 
     // Start polling if the video is still processing or an upload is in process.
     if (('{{ !$isImage }}' && '{{ $isProcessing }}') || '{{ $isUploading }}') {

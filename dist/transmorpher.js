@@ -215,11 +215,10 @@ if (!window.transmorpherScriptLoaded) {
     });
   };
   window.closeMoreInformationModal = function (transmorpherIdentifier) {
-    document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.add('d-none');
-    closeDeleteModal(transmorpherIdentifier);
+    document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.remove('d-flex');
   };
   window.openMoreInformationModal = function (transmorpherIdentifier) {
-    document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.remove('d-none');
+    document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.add('d-flex');
 
     // Update version information when the modal is opened.
     updateVersionInformation(transmorpherIdentifier);
@@ -261,30 +260,42 @@ if (!window.transmorpherScriptLoaded) {
     }
   };
   window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
-    var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    imgElement.src = thumbnailUrl;
-    imgElement.closest('.full-size-link').href = fullsizeUrl;
+    var imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
+    imgElements.forEach(function (image) {
+      image.src = thumbnailUrl;
+      image.closest('.full-size-link').href = fullsizeUrl;
+    });
   };
   window.updateVideoDisplay = function (transmorpherIdentifier, url) {
-    var videoElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " video.video-transmorpher"));
-    videoElement.src = url;
-    videoElement.querySelector('a').href = url;
-    videoElement.classList.remove('d-none');
+    var videoElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " video.video-transmorpher"));
+    videoElements.forEach(function (video) {
+      video.src = url;
+      video.querySelector('a').href = url;
+      video.classList.remove('d-none');
+    });
 
-    // Hide placeholder image.
-    document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher")).classList.add('d-none');
+    // Hide placeholder images.
+    document.querySelectorAll("#component-".concat(transmorpherIdentifier, " img.video-transmorpher")).forEach(function (placeholder) {
+      return placeholder.classList.add('d-none');
+    });
   };
   window.displayPlaceholder = function (transmorpherIdentifier) {
-    var imgElement;
+    var imgElements;
     if (motifs[transmorpherIdentifier].isImage) {
-      imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-      imgElement.closest('.full-size-link').href = imgElement.dataset.placeholderUrl;
+      imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
+      imgElements.forEach(function (image) {
+        return image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+      });
     } else {
-      imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " > img.video-transmorpher"));
-      document.querySelector("#dz-".concat(transmorpherIdentifier, " > video.video-transmorpher")).classList.add('d-none');
+      imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " img.video-transmorpher"));
+      document.querySelectorAll("#component-".concat(transmorpherIdentifier, " > video.video-transmorpher")).forEach(function (video) {
+        return video.classList.add('d-none');
+      });
     }
-    imgElement.src = imgElement.dataset.placeholderUrl;
-    imgElement.classList.remove('d-none');
+    imgElements.forEach(function (image) {
+      image.src = image.dataset.placeholderUrl;
+      image.classList.remove('d-none');
+    });
   };
   window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
@@ -293,12 +304,6 @@ if (!window.transmorpherScriptLoaded) {
   window.getFullsizeUrl = function (transmorpherIdentifier, path, version) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
     return imgElement.dataset.deliveryUrl + "/".concat(path, "?v=").concat(version);
-  };
-  window.showDeleteModal = function (transmorpherIdentifier) {
-    document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.remove('d-none');
-  };
-  window.closeDeleteModal = function (transmorpherIdentifier) {
-    document.querySelector("#delete-".concat(transmorpherIdentifier)).classList.add('d-none');
   };
   window.displayState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -351,10 +356,10 @@ if (!window.transmorpherScriptLoaded) {
     form.querySelector('.dz-details').style.display = 'none';
   };
   window.setModalErrorMessage = function (transmorpherIdentifier, message) {
-    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .delete-and-error > span")).textContent = message;
+    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = message;
   };
   window.resetModalErrorMessageDisplay = function (transmorpherIdentifier) {
-    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .delete-and-error > span")).textContent = '';
+    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = '';
     document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
     var previewElement = null;
     if (previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview"))) {
@@ -464,6 +469,34 @@ if (!window.transmorpherScriptLoaded) {
     return decodeURIComponent((_document$cookie$spli = document.cookie.split("; ").find(function (cookie) {
       return cookie.startsWith("XSRF-TOKEN=");
     })) === null || _document$cookie$spli === void 0 ? void 0 : _document$cookie$spli.split("=")[1]);
+  };
+  window.addConfirmEventListeners = function (button, callback, buttonAction, duration) {
+    var pressedOnce = false;
+    var defaultText = buttonAction[0].toUpperCase() + buttonAction.slice(1);
+    button.addEventListener('pointerdown', function (event) {
+      if (event.pointerType === 'touch') {
+        if (pressedOnce) {
+          callback();
+          button.querySelector('span').textContent = defaultText;
+        } else {
+          button.querySelector('span').textContent = "Press again to ".concat(buttonAction);
+          pressedOnce = true;
+          setTimeout(function () {
+            pressedOnce = false;
+            button.querySelector('span').textContent = defaultText;
+          }, 1000);
+        }
+      } else {
+        button.querySelector('span').textContent = "Hold to ".concat(buttonAction);
+        button.timeout = setTimeout(callback, duration, button);
+      }
+    });
+    button.addEventListener('pointerup', function (event) {
+      if (event.pointerType === 'mouse') {
+        button.querySelector('span').textContent = defaultText;
+        clearTimeout(button.timeout);
+      }
+    });
   };
 }
 

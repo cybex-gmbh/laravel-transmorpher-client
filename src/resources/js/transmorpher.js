@@ -212,12 +212,11 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.closeMoreInformationModal = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-mi-${transmorpherIdentifier}`).classList.add('d-none');
-        closeDeleteModal(transmorpherIdentifier);
+        document.querySelector(`#modal-mi-${transmorpherIdentifier}`).classList.remove('d-flex');
     }
 
     window.openMoreInformationModal = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-mi-${transmorpherIdentifier}`).classList.remove('d-none');
+        document.querySelector(`#modal-mi-${transmorpherIdentifier}`).classList.add('d-flex');
 
         // Update version information when the modal is opened.
         updateVersionInformation(transmorpherIdentifier);
@@ -260,36 +259,45 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
-        let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
-        imgElement.src = thumbnailUrl
-        imgElement.closest('.full-size-link').href = fullsizeUrl;
+        let imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
+
+        imgElements.forEach(image => {
+            image.src = thumbnailUrl
+            image.closest('.full-size-link').href = fullsizeUrl;
+        });
     }
 
 
     window.updateVideoDisplay = function (transmorpherIdentifier, url) {
-        let videoElement = document.querySelector(`#dz-${transmorpherIdentifier} video.video-transmorpher`);
+        let videoElements = document.querySelectorAll(`#component-${transmorpherIdentifier} video.video-transmorpher`);
 
-        videoElement.src = url;
-        videoElement.querySelector('a').href = url;
-        videoElement.classList.remove('d-none');
+        videoElements.forEach(video => {
+            video.src = url;
+            video.querySelector('a').href = url;
+            video.classList.remove('d-none');
+        })
 
-        // Hide placeholder image.
-        document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`).classList.add('d-none');
+        // Hide placeholder images.
+        document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`)
+            .forEach(placeholder => placeholder.classList.add('d-none'));
     }
 
     window.displayPlaceholder = function (transmorpherIdentifier) {
-        let imgElement;
+        let imgElements;
 
         if (motifs[transmorpherIdentifier].isImage) {
-            imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
-            imgElement.closest('.full-size-link').href = imgElement.dataset.placeholderUrl;
+            imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
+            imgElements.forEach(image => image.closest('.full-size-link').href = image.dataset.placeholderUrl);
         } else {
-            imgElement = document.querySelector(`#dz-${transmorpherIdentifier} > img.video-transmorpher`);
-            document.querySelector(`#dz-${transmorpherIdentifier} > video.video-transmorpher`).classList.add('d-none');
+            imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`);
+            document.querySelectorAll(`#component-${transmorpherIdentifier} > video.video-transmorpher`)
+                .forEach(video => video.classList.add('d-none'));
         }
 
-        imgElement.src = imgElement.dataset.placeholderUrl;
-        imgElement.classList.remove('d-none');
+        imgElements.forEach(image => {
+            image.src = image.dataset.placeholderUrl;
+            image.classList.remove('d-none');
+        })
     }
 
     window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
@@ -302,14 +310,6 @@ if (!window.transmorpherScriptLoaded) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`);
 
         return imgElement.dataset.deliveryUrl + `/${path}?v=${version}`;
-    }
-
-    window.showDeleteModal = function (transmorpherIdentifier) {
-        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.remove('d-none');
-    }
-
-    window.closeDeleteModal = function (transmorpherIdentifier) {
-        document.querySelector(`#delete-${transmorpherIdentifier}`).classList.add('d-none');
     }
 
     window.displayState = function (transmorpherIdentifier, state, message = null, resetError = true) {
@@ -367,11 +367,11 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.setModalErrorMessage = function (transmorpherIdentifier, message) {
-        document.querySelector(`#modal-mi-${transmorpherIdentifier} .delete-and-error > span`).textContent = message;
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .error-message`).textContent = message;
     }
 
     window.resetModalErrorMessageDisplay = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-mi-${transmorpherIdentifier} .delete-and-error > span`).textContent = '';
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .error-message`).textContent = '';
         document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
 
         let previewElement = null;
@@ -495,5 +495,36 @@ if (!window.transmorpherScriptLoaded) {
             .find(cookie => cookie.startsWith("XSRF-TOKEN="))
             ?.split("=")[1]
         );
+    }
+
+    window.addConfirmEventListeners = function(button, callback, buttonAction, duration) {
+        let pressedOnce = false;
+        let defaultText = buttonAction[0].toUpperCase() + buttonAction.slice(1);
+
+        button.addEventListener('pointerdown', event => {
+            if (event.pointerType === 'touch') {
+                if (pressedOnce) {
+                    callback()
+                    button.querySelector('span').textContent = defaultText;
+                } else {
+                    button.querySelector('span').textContent = `Press again to ${buttonAction}`
+                    pressedOnce = true;
+                    setTimeout(() => {
+                        pressedOnce = false;
+                        button.querySelector('span').textContent = defaultText;
+                    }, 1000);
+                }
+            } else {
+                button.querySelector('span').textContent = `Hold to ${buttonAction}`
+                button.timeout = setTimeout(callback, duration, button);
+            }
+        });
+
+        button.addEventListener('pointerup', event => {
+            if (event.pointerType === 'mouse') {
+                button.querySelector('span').textContent = defaultText
+                clearTimeout(button.timeout);
+            }
+        });
     }
 }
