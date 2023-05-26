@@ -167,7 +167,7 @@ if (!window.transmorpherScriptLoaded) {
 
                 switch (motifs[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
-                        linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + `/${version}`;
+                        linkToOriginalImage.href = `${motifs[transmorpherIdentifier].routes.getOriginal}/${version}`;
                         linkToOriginalImage.target = '_blank';
                         linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
                         break;
@@ -327,13 +327,13 @@ if (!window.transmorpherScriptLoaded) {
     window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
 
-        return imgElement.dataset.deliveryUrl + `/${path}/${transformations}?v=${version}`;
+        return `${imgElement.dataset.deliveryUrl}/${path}/${transformations}?v=${version}`;
     }
 
     window.getFullsizeUrl = function (transmorpherIdentifier, path, version) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`);
 
-        return imgElement.dataset.deliveryUrl + `/${path}?v=${version}`;
+        return `${imgElement.dataset.deliveryUrl}/${path}?v=${version}`;
     }
 
     window.displayState = function (transmorpherIdentifier, state, message = null, resetError = true) {
@@ -367,7 +367,7 @@ if (!window.transmorpherScriptLoaded) {
     window.displayStateInformation = function (stateInfoElement, state) {
         stateInfoElement.className = '';
         stateInfoElement.classList.add('badge', `badge-${state}`);
-        stateInfoElement.textContent = state[0].toUpperCase() + state.slice(1);
+        stateInfoElement.textContent = `${state[0].toUpperCase()}${state.slice(1)}`;
     }
 
     window.displayCardBorderState = function (transmorpherIdentifier, state) {
@@ -377,7 +377,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.displayDropzoneErrorMessage = function (transmorpherIdentifier, message) {
-        let form = document.querySelector('#dz-' + transmorpherIdentifier);
+        let form = document.querySelector(`#dz-${transmorpherIdentifier}`);
         let errorDisplay = form.querySelector('.error-display');
 
         errorDisplay.classList.remove('d-none');
@@ -413,32 +413,32 @@ if (!window.transmorpherScriptLoaded) {
 
         let interval = Math.floor(seconds / 31536000);
         if (interval > 1) {
-            return interval + ' years ago';
+            return `${interval} years ago`;
         }
 
         interval = Math.floor(seconds / 2592000);
         if (interval > 1) {
-            return interval + ' months ago';
+            return `${interval} months ago`;
         }
 
         interval = Math.floor(seconds / 86400);
         if (interval > 1) {
-            return interval + ' days ago';
+            return `${interval} days ago`;
         }
 
         interval = Math.floor(seconds / 3600);
         if (interval > 1) {
-            return interval + ' hours ago';
+            return `${interval} hours ago`;
         }
 
         interval = Math.floor(seconds / 60);
         if (interval > 1) {
-            return interval + ' minutes ago';
+            return `${interval} minutes ago`;
         }
 
         if (seconds < 10) return 'just now';
 
-        return Math.floor(seconds) + ' seconds ago';
+        return `${Math.floor(seconds)} seconds ago`;
     };
 
     window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
@@ -481,7 +481,7 @@ if (!window.transmorpherScriptLoaded) {
             let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
             dropzone.options.uploadToken = getUploadTokenResult.upload_token
             // Set the dropzone target to the media server upload url, which needs a valid upload token.
-            dropzone.options.url = motifs[transmorpherIdentifier].webUploadUrl + getUploadTokenResult.upload_token;
+            dropzone.options.url = `${motifs[transmorpherIdentifier].webUploadUrl}${getUploadTokenResult.upload_token}`;
 
             done()
         });
@@ -523,7 +523,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.addConfirmEventListeners = function (button, callback, buttonAction, duration) {
         let pressedOnce = false;
-        let defaultText = buttonAction[0].toUpperCase() + buttonAction.slice(1);
+        let defaultText = `${buttonAction[0].toUpperCase()}${buttonAction.slice(1)}`;
 
         button.addEventListener('pointerdown', event => {
             if (event.pointerType === 'touch') {

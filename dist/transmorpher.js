@@ -87,7 +87,7 @@ if (!window.transmorpherScriptLoaded) {
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
     if (uploadToken) {
       var _file$xhr$status, _file$xhr;
-      fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + "/".concat(uploadToken), {
+      fetch("".concat(motifs[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +172,7 @@ if (!window.transmorpherScriptLoaded) {
         var linkToOriginalImage = document.createElement('a');
         switch (motifs[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-            linkToOriginalImage.href = motifs[transmorpherIdentifier].routes.getOriginal + "/".concat(version);
+            linkToOriginalImage.href = "".concat(motifs[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
             linkToOriginalImage.target = '_blank';
             linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
             break;
@@ -319,11 +319,11 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    return imgElement.dataset.deliveryUrl + "/".concat(path, "/").concat(transformations, "?v=").concat(version);
+    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "/").concat(transformations, "?v=").concat(version);
   };
   window.getFullsizeUrl = function (transmorpherIdentifier, path, version) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    return imgElement.dataset.deliveryUrl + "/".concat(path, "?v=").concat(version);
+    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "?v=").concat(version);
   };
   window.displayState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -356,7 +356,7 @@ if (!window.transmorpherScriptLoaded) {
   window.displayStateInformation = function (stateInfoElement, state) {
     stateInfoElement.className = '';
     stateInfoElement.classList.add('badge', "badge-".concat(state));
-    stateInfoElement.textContent = state[0].toUpperCase() + state.slice(1);
+    stateInfoElement.textContent = "".concat(state[0].toUpperCase()).concat(state.slice(1));
   };
   window.displayCardBorderState = function (transmorpherIdentifier, state) {
     var card = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card');
@@ -364,7 +364,7 @@ if (!window.transmorpherScriptLoaded) {
     card.classList.add('card', "border-".concat(state));
   };
   window.displayDropzoneErrorMessage = function (transmorpherIdentifier, message) {
-    var form = document.querySelector('#dz-' + transmorpherIdentifier);
+    var form = document.querySelector("#dz-".concat(transmorpherIdentifier));
     var errorDisplay = form.querySelector('.error-display');
     errorDisplay.classList.remove('d-none');
     errorDisplay.querySelector('.error-message').textContent = message;
@@ -393,26 +393,26 @@ if (!window.transmorpherScriptLoaded) {
     var seconds = Math.floor((new Date() - date) / 1000);
     var interval = Math.floor(seconds / 31536000);
     if (interval > 1) {
-      return interval + ' years ago';
+      return "".concat(interval, " years ago");
     }
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
-      return interval + ' months ago';
+      return "".concat(interval, " months ago");
     }
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
-      return interval + ' days ago';
+      return "".concat(interval, " days ago");
     }
     interval = Math.floor(seconds / 3600);
     if (interval > 1) {
-      return interval + ' hours ago';
+      return "".concat(interval, " hours ago");
     }
     interval = Math.floor(seconds / 60);
     if (interval > 1) {
-      return interval + ' minutes ago';
+      return "".concat(interval, " minutes ago");
     }
     if (seconds < 10) return 'just now';
-    return Math.floor(seconds) + ' seconds ago';
+    return "".concat(Math.floor(seconds), " seconds ago");
   };
   window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
     var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
@@ -454,7 +454,7 @@ if (!window.transmorpherScriptLoaded) {
       var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
       dropzone.options.uploadToken = getUploadTokenResult.upload_token;
       // Set the dropzone target to the media server upload url, which needs a valid upload token.
-      dropzone.options.url = motifs[transmorpherIdentifier].webUploadUrl + getUploadTokenResult.upload_token;
+      dropzone.options.url = "".concat(motifs[transmorpherIdentifier].webUploadUrl).concat(getUploadTokenResult.upload_token);
       done();
     });
   };
@@ -492,7 +492,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.addConfirmEventListeners = function (button, callback, buttonAction, duration) {
     var pressedOnce = false;
-    var defaultText = buttonAction[0].toUpperCase() + buttonAction.slice(1);
+    var defaultText = "".concat(buttonAction[0].toUpperCase()).concat(buttonAction.slice(1));
     button.addEventListener('pointerdown', function (event) {
       if (event.pointerType === 'touch') {
         if (pressedOnce) {

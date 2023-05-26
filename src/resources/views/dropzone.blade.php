@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
 <div id="component-{{ $motif->getIdentifier() }}">
-    <div class="card @if(!$isReady || $isProcessing) border-processing @endif">
+    <div @class(['card', 'border-processing' => !$isReady || $isProcessing])>
         <div class="card-header">
             <div>
                 <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="card-body">
-             <span class="badge @if($isProcessing) badge-processing @elseif($isUploading) badge-uploading @else d-hidden @endif">
+             <span @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-hidden' => !$isProcessing && !$isUploading])>
                 @if($isProcessing)
                      Processing
                  @else
@@ -39,7 +39,7 @@
     <div id="modal-mi-{{ $motif->getIdentifier() }}" class="modal more-information-modal d-none">
         <div class="card">
             <div class="card-header">
-                <span class="badge @if($isProcessing) badge-processing @elseif($isUploading) badge-uploading @else d-hidden @endif">
+                <span @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-hidden' => !$isProcessing && !$isUploading])>
                     @if($isProcessing)
                         Processing
                     @else
@@ -57,8 +57,8 @@
                                  alt="{{ $mediaType->value }}" class="icon">
                             {{ $differentiator }}
                         </div>
-                        <p class="@if(!$isProcessing) d-none @endif">Processing started <span class="processing-age"></span></p>
-                        <p class="@if(!$isUploading) d-none @endif">Upload started <span class="upload-age"></span></p>
+                        <p @class(['d-none' => !$isProcessing])>Processing started <span class="processing-age"></span></p>
+                        <p @class(['d-none' => !$isUploading])">Upload started <span class="upload-age"></span></p>
                     </div>
                     <div class="version-information">
                         <p>Current version: <span class="current-version"></span></p>
@@ -138,7 +138,7 @@
     }
 
     addConfirmEventListeners(
-        document.querySelector(`#modal-mi-{{ $motif->getIdentifier() }} .hold-delete`),
+        document.querySelector('#modal-mi-{{ $motif->getIdentifier() }} .hold-delete'),
         createCallbackWithArguments(deleteTransmorpherMedia, '{{ $motif->getIdentifier() }}'),
         'delete',
         1500
@@ -151,7 +151,7 @@
         setAgeElement(document.querySelector('#modal-mi-{{ $motif->getIdentifier() }} .{{ $isProcessing ? 'processing' : 'upload' }}-age'), timeAgo(new Date('{{ $lastUpdated }}' * 1000)));
     }
 
-    new Dropzone("#dz-{{$motif->getIdentifier()}}", {
+    new Dropzone('#dz-{{ $motif->getIdentifier() }}', {
         url: '{{ $motif->getWebUploadUrl() }}',
         chunking: true,
         chunkSize: {{ $motif->getChunkSize() }},
@@ -172,14 +172,14 @@
 
             // Gets fired when upload is starting.
             this.on('processing', function () {
-                fetch(motifs['{{$motif->getIdentifier()}}'].routes.setUploadingState + `/${this.options.uploadToken}`, {
+                fetch(`${motifs['{{$motif->getIdentifier()}}'].routes.setUploadingState}/${this.options.uploadToken}`, {
                     method: 'POST', headers: {
                         'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
                     },
                 });
 
                 // Clear any potential timer to prevent running two at the same time.
-                clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+                clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
                 displayState('{{$motif->getIdentifier()}}', 'uploading', null, false);
                 startPolling('{{$motif->getIdentifier()}}', this.options.uploadToken);
             });
