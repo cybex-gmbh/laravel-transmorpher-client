@@ -43,7 +43,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
         if (uploadToken) {
-            fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + `/${uploadToken}`, {
+            fetch(`${motifs[transmorpherIdentifier].routes.handleUploadResponse}/${uploadToken}`, {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                 }, body: JSON.stringify({
@@ -60,7 +60,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.handleDropzoneResult = function (data, transmorpherIdentifier, uploadToken) {
-        let form = document.querySelector('#' + transmorpherIdentifier);
+        let form = document.querySelector(`#${transmorpherIdentifier}`);
 
         if (data.success) {
             form.classList.remove('dz-started');
@@ -79,7 +79,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.setStatusDisplay = function (transmorpherIdentifier, state) {
-        let form = document.querySelector('#' + transmorpherIdentifier);
+        let form = document.querySelector(`#${transmorpherIdentifier}`);
         let card = form.closest('.card');
         let cardHeader = card.querySelector('.badge');
 
@@ -91,7 +91,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.displayError = function (message, transmorpherIdentifier) {
-        let form = document.querySelector('#' + transmorpherIdentifier);
+        let form = document.querySelector(`#${transmorpherIdentifier}`);
         // Add preview element, which also displays errors, when it is not present yet.
         if (!form.querySelector('.dz-preview')) {
             form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;

@@ -97,7 +97,7 @@
 
                 this.options.uploadToken = data.upload_token
                 // Set the dropzone target to the media server upload url, which needs a valid upload token.
-                this.options.url = '{{ $motif->getWebUploadUrl() }}' + data.upload_token;
+                this.options.url = `{{ $motif->getWebUploadUrl() }}${data.upload_token}`;
                 done()
             });
         },
@@ -106,12 +106,12 @@
             this.element.querySelector('.dz-preview').remove();
 
             // Clear the old timer.
-            clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+            clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
 
             // Set the newly uploaded image as display image.
             if ('{{ $isImage }}') {
                 imgElement = this.element.querySelector('div.dz-image.image-transmorpher > img');
-                imgElement.src = imgElement.dataset.deliveryUrl + '/' + response.public_path + '/' + '{{ $motif->getTransformations(['height' => 150]) }}' + '?v=' + response.version;
+                imgElement.src = `${imgElement.dataset.deliveryUrl}/${response.public_path}/{{ $motif->getTransformations(['height' => 150]) }}?v=${response.version}`;
             }
 
             handleUploadResponse(
@@ -123,7 +123,7 @@
         },
         error: function (file, response) {
             // Clear the old timer.
-            clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+            clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
 
             handleUploadResponse(
                 file,

@@ -56,7 +56,7 @@ if (!window.transmorpherScriptLoaded) {
 
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
     if (uploadToken) {
-      fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + "/".concat(uploadToken), {
+      fetch("".concat(motifs[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ if (!window.transmorpherScriptLoaded) {
     handleDropzoneResult(response, transmorpherIdentifier, uploadToken);
   };
   window.handleDropzoneResult = function (data, transmorpherIdentifier, uploadToken) {
-    var form = document.querySelector('#' + transmorpherIdentifier);
+    var form = document.querySelector("#".concat(transmorpherIdentifier));
     if (data.success) {
       form.classList.remove('dz-started');
       if (!form.querySelector('div.dz-image.image-transmorpher > img')) {
@@ -90,7 +90,7 @@ if (!window.transmorpherScriptLoaded) {
     }
   };
   window.setStatusDisplay = function (transmorpherIdentifier, state) {
-    var form = document.querySelector('#' + transmorpherIdentifier);
+    var form = document.querySelector("#".concat(transmorpherIdentifier));
     var card = form.closest('.card');
     var cardHeader = card.querySelector('.badge');
     card.className = '';
@@ -100,7 +100,7 @@ if (!window.transmorpherScriptLoaded) {
     cardHeader.textContent = state;
   };
   window.displayError = function (message, transmorpherIdentifier) {
-    var form = document.querySelector('#' + transmorpherIdentifier);
+    var form = document.querySelector("#".concat(transmorpherIdentifier));
     // Add preview element, which also displays errors, when it is not present yet.
     if (!form.querySelector('.dz-preview')) {
       form.innerHTML = form.innerHTML + form.dropzone.options.previewTemplate;
