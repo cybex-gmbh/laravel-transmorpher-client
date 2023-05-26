@@ -76,7 +76,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
         if (uploadToken) {
-            fetch(motifs[transmorpherIdentifier].routes.handleUploadResponse + `/${uploadToken}`, {
+            fetch(`${motifs[transmorpherIdentifier].routes.handleUploadResponse}/${uploadToken}`, {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                 }, body: JSON.stringify({

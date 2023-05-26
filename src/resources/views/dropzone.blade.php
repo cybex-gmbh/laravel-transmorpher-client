@@ -205,7 +205,7 @@
             this.element.querySelector('.dz-preview')?.remove();
 
             // Clear the old timer.
-            clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+            clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
 
             handleUploadResponse(
                 file,
@@ -216,7 +216,7 @@
         },
         error: function (file, response) {
             // Clear the old timer.
-            clearInterval(window['statusPolling' + '{{ $motif->getIdentifier() }}']);
+            clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
 
             handleUploadResponse(
                 file,
