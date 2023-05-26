@@ -1,10 +1,10 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<div class="card @if(!$isReady) border-processing @endif">
+<div @class(['card', 'border-processing' => !$isReady])>
     <div class="card-header">
         {{$differentiator}}
-        <span class="badge @if($isProcessing) badge-processing @else d-none @endif">
+        <span @class(['badge', 'badge-processing' => $isProcessing, 'd-none' => !$isProcessing])>
             @if($isProcessing)
                 Processing
             @endif
