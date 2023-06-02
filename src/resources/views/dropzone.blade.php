@@ -82,11 +82,11 @@
                 </div>
                 <div class="card-main">
                     <div class="version-list">
-                        <button class="button button-hold hold-restore">
-                            <span>Restore</span>
-                            <img src="{{ mix('icons/restore.svg', 'vendor/transmorpher') }}" alt="Restore" class="icon">
-                        </button>
-                        <ul></ul>
+                        <ul>
+                            <li class="version-entry d-none">
+                                <x-transmorpher::version-card :motif="$motif"></x-transmorpher::version-card>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -130,6 +130,7 @@
             setVersion: '{{ $setVersionRoute }}',
             delete: '{{ $deleteRoute }}',
             getOriginal: '{{ $getOriginalRoute }}',
+            getOriginalDerivative: '{{ $getOriginalDerivativeRoute }}',
             uploadToken: '{{ $uploadTokenRoute }}',
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },

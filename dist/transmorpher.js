@@ -137,6 +137,9 @@ if (!window.transmorpherScriptLoaded) {
   window.updateVersionInformation = function (transmorpherIdentifier) {
     var modal = document.querySelector("#modal-mi-".concat(transmorpherIdentifier));
     var versionList = modal.querySelector('.version-list > ul');
+    var defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true);
+    defaultVersionEntry.classList.remove('d-none');
+
     // Clear the list of versions.
     versionList.replaceChildren();
 
@@ -158,32 +161,23 @@ if (!window.transmorpherScriptLoaded) {
           modal.querySelector('.processed-version-age').textContent = timeAgo(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)) || 'never';
           break;
       }
-
-      // Add elements to display each version.
-      Object.keys(versions).reverse().forEach(function (version) {
+      Object.keys(versions).sort(function (a, b) {
+        return versions[b] - versions[a];
+      }).forEach(function (version) {
         // Don't show the currently processed or current version.
         if (version == versionInformation.currentlyProcessedVersion || version == versionInformation.currentVersion) {
           return;
         }
-        var versionEntry = document.createElement('li');
-        var controls = document.createElement('div');
-        var setVersionButton = document.createElement('button');
-        var versionData = document.createElement('span');
-        var linkToOriginalImage = document.createElement('a');
+        var versionEntry = defaultVersionEntry.cloneNode(true);
+        var versionAge = versionEntry.querySelector('.version-age');
         switch (motifs[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-            linkToOriginalImage.href = "".concat(motifs[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
-            linkToOriginalImage.target = '_blank';
-            linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
+            versionEntry.querySelector('a').href = "".concat(motifs[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
+            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(motifs[transmorpherIdentifier].routes.getOriginalDerivative, "/").concat(version, "/h-150");
             break;
         }
-        versionData.textContent = "".concat(version, ": ").concat(timeAgo(new Date(versions[version] * 1000)));
-        setVersionButton.textContent = 'restore';
-        setVersionButton.onclick = function () {
-          return setVersion(transmorpherIdentifier, version, modal);
-        };
-        controls.append(linkToOriginalImage, setVersionButton);
-        versionEntry.append(versionData, controls);
+        addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 'restore', 1500);
+        versionAge.textContent = timeAgo(new Date(versions[version] * 1000));
         versionList.append(versionEntry);
       });
     });
@@ -490,16 +484,16 @@ if (!window.transmorpherScriptLoaded) {
       return cookie.startsWith("XSRF-TOKEN=");
     })) === null || _document$cookie$spli === void 0 ? void 0 : _document$cookie$spli.split("=")[1]);
   };
-  window.addConfirmEventListeners = function (button, callback, buttonAction, duration) {
+  window.addConfirmEventListeners = function (button, callback, buttonText, duration) {
     var pressedOnce = false;
-    var defaultText = "".concat(buttonAction[0].toUpperCase()).concat(buttonAction.slice(1));
+    var defaultText = "".concat(buttonText[0].toUpperCase()).concat(buttonText.slice(1));
     button.addEventListener('pointerdown', function (event) {
       if (event.pointerType === 'touch') {
         if (pressedOnce) {
           callback();
           button.querySelector('span').textContent = defaultText;
         } else {
-          button.querySelector('span').textContent = "Press again to ".concat(buttonAction);
+          button.querySelector('span').textContent = "Press again to ".concat(buttonText);
           pressedOnce = true;
           setTimeout(function () {
             pressedOnce = false;
@@ -507,7 +501,7 @@ if (!window.transmorpherScriptLoaded) {
           }, 1000);
         }
       } else {
-        button.querySelector('span').textContent = "Hold to ".concat(buttonAction);
+        button.querySelector('span').textContent = "Hold to ".concat(buttonText);
         button.timeout = setTimeout(callback, duration, button);
       }
     });

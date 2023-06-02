@@ -185,6 +185,7 @@
 }
 
 .version-list {
+  height: 100%;
   position: absolute;
   top: 0;
   width: 100%;
@@ -208,19 +209,24 @@
 
   ul {
     display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .card-header {
+    justify-content: center;
+  }
+
+  .transparency-indicator {
+    padding: 1rem;
+  }
+
+  .version-entry .card .card-body {
+    display: flex;
     flex-direction: column;
-    gap: 10px;
 
-    li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      div {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
+    .hold-restore {
+      margin: 1rem
     }
   }
 }

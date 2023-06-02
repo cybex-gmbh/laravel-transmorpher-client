@@ -2,8 +2,11 @@
 
 namespace Transmorpher\Helpers;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Transmorpher\Models\TransmorpherMedia;
 
 class VersionManagement
@@ -42,10 +45,27 @@ class VersionManagement
      * @param Request $request
      * @param TransmorpherMedia $transmorpherMedia
      * @param int $version
+     *
+     * @return Application|ResponseFactory|Response
      */
-    public function getOriginal(Request $request, TransmorpherMedia $transmorpherMedia, int $version)
+    public function getOriginal(Request $request, TransmorpherMedia $transmorpherMedia, int $version): Response|Application|ResponseFactory
     {
         $response = $transmorpherMedia->getTransmorpher()->getOriginal($version);
+
+        return response($response['binary'], 200, ['Content-Type' => $response['mimetype']]);
+    }
+
+    /**
+     * @param Request $request
+     * @param TransmorpherMedia $transmorpherMedia
+     * @param int $version
+     * @param string $transformations
+     *
+     * @return Application|ResponseFactory|Response
+     */
+    public function getOriginalDerivative(Request $request, TransmorpherMedia $transmorpherMedia, int $version, string $transformations): Response|Application|ResponseFactory
+    {
+        $response = $transmorpherMedia->getTransmorpher()->getOriginalDerivative($version, $transformations);
 
         return response($response['binary'], 200, ['Content-Type' => $response['mimetype']]);
     }

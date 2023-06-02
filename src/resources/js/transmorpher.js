@@ -129,6 +129,9 @@ if (!window.transmorpherScriptLoaded) {
     window.updateVersionInformation = function (transmorpherIdentifier) {
         let modal = document.querySelector(`#modal-mi-${transmorpherIdentifier}`);
         let versionList = modal.querySelector('.version-list > ul');
+        let defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true);
+        defaultVersionEntry.classList.remove('d-none');
+
         // Clear the list of versions.
         versionList.replaceChildren();
 
@@ -152,33 +155,25 @@ if (!window.transmorpherScriptLoaded) {
                     break;
             }
 
-            // Add elements to display each version.
-            Object.keys(versions).reverse().forEach(version => {
+            Object.keys(versions).sort((a, b) => versions[b] - versions[a]).forEach(version => {
                 // Don't show the currently processed or current version.
                 if (version == versionInformation.currentlyProcessedVersion || version == versionInformation.currentVersion) {
                     return;
                 }
 
-                let versionEntry = document.createElement('li');
-                let controls = document.createElement('div');
-                let setVersionButton = document.createElement('button');
-                let versionData = document.createElement('span');
-                let linkToOriginalImage = document.createElement('a');
+                let versionEntry = defaultVersionEntry.cloneNode(true);
+                let versionAge = versionEntry.querySelector('.version-age');
 
                 switch (motifs[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
-                        linkToOriginalImage.href = `${motifs[transmorpherIdentifier].routes.getOriginal}/${version}`;
-                        linkToOriginalImage.target = '_blank';
-                        linkToOriginalImage.append(modal.previousElementSibling.querySelector('.full-size-link').cloneNode());
+                        versionEntry.querySelector('a').href = `${motifs[transmorpherIdentifier].routes.getOriginal}/${version}`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/h-150`;
                         break;
                 }
 
-                versionData.textContent = `${version}: ${timeAgo(new Date(versions[version] * 1000))}`;
-                setVersionButton.textContent = 'restore';
-                setVersionButton.onclick = () => setVersion(transmorpherIdentifier, version, modal);
+                addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 'restore', 1500);
+                versionAge.textContent = timeAgo(new Date(versions[version] * 1000));
 
-                controls.append(linkToOriginalImage, setVersionButton)
-                versionEntry.append(versionData, controls)
                 versionList.append(versionEntry);
             })
         })
@@ -521,9 +516,9 @@ if (!window.transmorpherScriptLoaded) {
         );
     }
 
-    window.addConfirmEventListeners = function (button, callback, buttonAction, duration) {
+    window.addConfirmEventListeners = function (button, callback, buttonText, duration) {
         let pressedOnce = false;
-        let defaultText = `${buttonAction[0].toUpperCase()}${buttonAction.slice(1)}`;
+        let defaultText = `${buttonText[0].toUpperCase()}${buttonText.slice(1)}`;
 
         button.addEventListener('pointerdown', event => {
             if (event.pointerType === 'touch') {
@@ -531,7 +526,7 @@ if (!window.transmorpherScriptLoaded) {
                     callback()
                     button.querySelector('span').textContent = defaultText;
                 } else {
-                    button.querySelector('span').textContent = `Press again to ${buttonAction}`
+                    button.querySelector('span').textContent = `Press again to ${buttonText}`
                     pressedOnce = true;
                     setTimeout(() => {
                         pressedOnce = false;
@@ -539,7 +534,7 @@ if (!window.transmorpherScriptLoaded) {
                     }, 1000);
                 }
             } else {
-                button.querySelector('span').textContent = `Hold to ${buttonAction}`
+                button.querySelector('span').textContent = `Hold to ${buttonText}`
                 button.timeout = setTimeout(callback, duration, button);
             }
         });

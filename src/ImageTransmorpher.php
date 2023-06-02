@@ -41,6 +41,19 @@ class ImageTransmorpher extends Transmorpher
     }
 
     /**
+     * @param int $versionNumber
+     * @param string $transformations
+     *
+     * @return array
+     */
+    public function getOriginalDerivative(int $versionNumber, string $transformations): array
+    {
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/derivative/%s/version/%s/%s', $this->getIdentifier(), $versionNumber, $transformations)));
+
+        return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
+    }
+
+    /**
      * Retrieve a derivative image with optional transformations.
      *
      * @param array $transformations An array of transformations.
