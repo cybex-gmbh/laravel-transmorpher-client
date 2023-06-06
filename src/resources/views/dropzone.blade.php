@@ -28,9 +28,7 @@
                         <span class="error-message"></span>
                         <button type="button" class="btn-close" onclick="closeErrorMessage(this)">⨉</button>
                     </div>
-                    <div class="media-display">
-                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
-                    </div>
+                    <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                 </div>
             </form>
         </div>
@@ -71,10 +69,7 @@
                                 @break
                         @endswitch
                     </div>
-                    <div class="media-display">
-                        <span>Current media:</span>
-                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
-                    </div>
+                    <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                     <button type=button class="button button-hold hold-delete">
                         <span>Delete</span>
                         <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="Delete" class="icon">

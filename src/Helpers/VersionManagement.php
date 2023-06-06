@@ -63,7 +63,7 @@ class VersionManagement
      *
      * @return Application|ResponseFactory|Response
      */
-    public function getOriginalDerivative(Request $request, TransmorpherMedia $transmorpherMedia, int $version, string $transformations): Response|Application|ResponseFactory
+    public function getOriginalDerivative(Request $request, TransmorpherMedia $transmorpherMedia, int $version, string $transformations = ''): Response|Application|ResponseFactory
     {
         $response = $transmorpherMedia->getTransmorpher()->getOriginalDerivative($version, $transformations);
 

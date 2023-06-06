@@ -269,16 +269,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 150px;
   border: 2px solid rgba(0, 0, 0, 0.2980392157);
   border-radius: 0;
-  padding: 20px;
+  padding: 1rem;
 }
 .dropzone .dz-message {
   background-color: rgba(235, 237, 239, 0.5);
   border: 1px dashed black;
-  border-radius: 5px;
-  margin-top: 15px;
+  border-radius: 0.3rem;
+  margin-top: 1rem;
   padding: 1rem;
   margin-bottom: 0;
 }
@@ -291,7 +290,7 @@
   width: 100%;
   min-height: 0;
   height: 58px;
-  margin: 15px 0 0;
+  margin: 1rem 0 0;
 }
 .dropzone .dz-preview .dz-image, .dropzone .dz-preview .dz-details, .dropzone .dz-preview .dz-success-mark, .dropzone .dz-preview .dz-error-mark {
   display: none;
@@ -305,7 +304,7 @@
 
 .transparency-indicator, .more-information-modal .card .card-body .card-side .media-display, .dropzone {
   background-image: linear-gradient(135deg, #ebedef 25%, #d8dbe0 0, #d8dbe0 50%, #ebedef 0, #ebedef 75%, #d8dbe0 0, #d8dbe0);
-  background-size: 40px 40px;
+  background-size: 2rem 2rem;
 }
 
 .box-shadow, .card {
@@ -316,12 +315,22 @@
   box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, 0.14), inset 0 2px 1px -1px rgba(60, 75, 100, 0.12), inset 0 1px 3px 0 rgba(60, 75, 100, 0.2);
 }
 
-.dropzone .dz-image, .dz-image {
+.video-transmorpher, .image-transmorpher {
+  display: flex;
+  justify-content: center;
+  height: 100%;
   position: relative;
 }
-.dropzone .dz-image img, .dz-image img {
-  max-height: 200px;
+.video-transmorpher img:first-of-type, .image-transmorpher img:first-of-type {
+  height: 100%;
+}
+
+.dropzone.dz-clickable *:not(.video-transmorpher), .full-size-link {
   cursor: zoom-in;
+}
+
+.full-size-link {
+  width: 100%;
 }
 
 .card {
@@ -343,11 +352,11 @@
 .card .card-header > div {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 0.2rem;
 }
 .card .card-header .details {
   display: flex;
-  gap: 5px;
+  gap: 0.3rem;
 }
 .card .card-body {
   display: flex;
@@ -357,12 +366,12 @@
   padding: 0 1.25rem 1.25rem;
 }
 .card .card-body .badge {
-  margin: 5px;
+  margin: 0.3rem;
 }
 
 .badge {
-  padding: 1px 10px;
-  border-radius: 5px;
+  padding: 1px 0.6rem;
+  border-radius: 0.3rem;
 }
 
 .badge-processing {
@@ -417,14 +426,10 @@
           backdrop-filter: blur(2px);
 }
 
-.video-transmorpher, .image-transmorpher > img:first-of-type {
-  height: 150px;
-}
-
 .version-information hr {
   height: 1px;
   background-color: #9B9B9B;
-  margin: 10px 0;
+  margin: 0.6rem 0;
   border: none;
 }
 
@@ -434,13 +439,13 @@
   top: 0;
   width: 100%;
   max-height: 100%;
-  padding: 10px;
+  padding: 0.6rem;
   border: 1px solid #ced2d8;
-  border-radius: 5px;
+  border-radius: 0.3rem;
   overflow: auto;
 }
 .version-list hr {
-  margin: 0 0 10px;
+  margin: 0 0 0.6rem;
 }
 .version-list button {
   background-color: #7ee67e;
@@ -453,12 +458,15 @@
 .version-list .card-header {
   justify-content: center;
 }
-.version-list .transparency-indicator, .version-list .more-information-modal .card .card-body .card-side .media-display, .more-information-modal .card .card-body .card-side .version-list .media-display, .version-list .dropzone {
-  padding: 1rem;
+.version-list .version-entry {
+  max-width: 300px;
 }
 .version-list .version-entry .card .card-body {
   display: flex;
   flex-direction: column;
+}
+.version-list .version-entry .card .card-body .media-preview {
+  padding: 1rem 1rem 56.25%;
 }
 .version-list .version-entry .card .card-body .hold-restore {
   margin: 1rem;
@@ -483,7 +491,7 @@
   height: 100%;
   z-index: 1;
   position: absolute;
-  padding: 5px;
+  padding: 0.3rem;
   background-color: rgba(255, 0, 0, 0.7294117647);
   border: 1px solid red;
   border-radius: 0.15rem;
@@ -491,7 +499,7 @@
 }
 .error-display .btn-close {
   position: absolute;
-  margin: 0 3px;
+  margin: 0 0.2rem;
   font-size: 0.8rem;
   top: 0;
   right: 0;
@@ -500,16 +508,22 @@
 
 .media-preview {
   position: relative;
+  padding-bottom: 56.25%;
   width: 100%;
 }
 
 .media-display {
   display: flex;
   justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 .button, .version-list button {
-  padding: 3px 15px;
+  padding: 0.2rem 1rem;
   border: 0;
   border-radius: 0.25rem;
 }
@@ -524,8 +538,8 @@
 }
 .delete-and-error span {
   color: red;
-  margin-left: 10px;
-  padding-bottom: 10px;
+  margin-left: 0.6rem;
+  padding-bottom: 0.6rem;
   overflow: auto;
   white-space: nowrap;
 }
@@ -533,13 +547,13 @@
 .loading-indicator, .badge-processing, .badge-uploading {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.6rem;
 }
 .loading-indicator:after, .badge-processing:after, .badge-uploading:after {
   content: " ";
   display: inline-block;
-  width: 15px;
-  height: 15px;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
   border: 2px solid;
   border-color: #000 transparent #000 transparent;
@@ -591,22 +605,26 @@
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid black;
-  padding-right: 10px;
+  padding-right: 0.6rem;
 }
 .more-information-modal .card .card-body .card-side .motif-info .motif-name {
   display: flex;
-  gap: 5px;
+  gap: 0.3rem;
   align-items: center;
 }
 .more-information-modal .card .card-body .card-side .media-display {
-  margin-top: auto;
-  margin-bottom: 5px;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
+  width: auto;
+  height: auto;
+  position: relative;
 }
 .more-information-modal .card .card-body .card-side .button, .more-information-modal .card .card-body .card-side .version-list button, .version-list .more-information-modal .card .card-body .card-side button {
   align-self: center;
+}
+.more-information-modal .card .card-body .media-display {
+  margin-top: auto;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
 }
 .more-information-modal .card .card-body .card-main {
   position: relative;
@@ -622,7 +640,7 @@
 .button-hold {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3rem;
   transition: 1.5s;
 }
 .button-hold:active, .button-hold.active {
@@ -633,6 +651,7 @@
 }
 
 .hold-delete {
+  margin-top: 1rem;
   background: linear-gradient(to left, red 50%, #cc0000 50%) right/200%;
 }
 

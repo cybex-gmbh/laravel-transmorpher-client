@@ -6,18 +6,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 150px;
   border: 2px solid #0000004C;
   border-radius: 0;
-  padding: 20px;
+  padding: 1rem;
 
   @extend .transparency-indicator;
 
   .dz-message {
     background-color: $darkgreySemiTransparent;
     border: 1px dashed black;
-    border-radius: 5px;
-    margin-top: 15px;
+    border-radius: .3rem;
+    margin-top: 1rem;
     padding: 1rem;
     margin-bottom: 0;
 
@@ -32,7 +31,7 @@
     width: 100%;
     min-height: 0;
     height: 58px;
-    margin: 15px 0 0;
+    margin: 1rem 0 0;
 
     .dz-image, .dz-details, .dz-success-mark, .dz-error-mark {
       display: none;
@@ -50,7 +49,7 @@
 
 .transparency-indicator {
   background-image: linear-gradient(135deg, $lightgrey 25%, $grey 0, $grey 50%, $lightgrey 0, $lightgrey 75%, $grey 0, $grey);
-  background-size: 40px 40px;
+  background-size: 2rem 2rem;
 }
 
 .box-shadow {
@@ -61,13 +60,23 @@
   box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, .14), inset 0 2px 1px -1px rgba(60, 75, 100, .12), inset 0 1px 3px 0 rgba(60, 75, 100, .2);
 }
 
-.dropzone .dz-image, .dz-image {
+.video-transmorpher, .image-transmorpher {
+  display: flex;
+  justify-content: center;
+  height: 100%;
   position: relative;
 
-  & img {
-    max-height: 200px;
-    cursor: zoom-in;
+  & img:first-of-type {
+    height: 100%;
   }
+}
+
+.dropzone.dz-clickable *:not(.video-transmorpher), .full-size-link {
+  cursor: zoom-in;
+}
+
+.full-size-link {
+  width: 100%;
 }
 
 .card {
@@ -91,12 +100,12 @@
     > div {
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: .2rem;
     }
 
     .details {
       display: flex;
-      gap: 5px;
+      gap: .3rem;
     }
   }
 
@@ -108,14 +117,14 @@
     padding: 0 1.25rem 1.25rem;
 
     .badge {
-      margin: 5px;
+      margin: .3rem;
     }
   }
 }
 
 .badge {
-  padding: 1px 10px;
-  border-radius: 5px;
+  padding: 1px .6rem;
+  border-radius: .3rem;
 }
 
 .badge-processing {
@@ -173,14 +182,10 @@
   backdrop-filter: blur(2px);
 }
 
-.video-transmorpher, .image-transmorpher > img:first-of-type {
-  height: 150px;
-}
-
 .version-information hr {
   height: 1px;
   background-color: #9B9B9B;
-  margin: 10px 0;
+  margin: .6rem 0;
   border: none
 }
 
@@ -190,15 +195,15 @@
   top: 0;
   width: 100%;
   max-height: 100%;
-  padding: 10px;
+  padding: .6rem;
   border: 1px solid $cardBorder;
-  border-radius: 5px;
+  border-radius: .3rem;
   overflow: auto;
 
   @extend .box-shadow-inset;
 
   hr {
-    margin: 0 0 10px;
+    margin: 0 0 .6rem;
   }
 
   button {
@@ -217,16 +222,20 @@
     justify-content: center;
   }
 
-  .transparency-indicator {
-    padding: 1rem;
-  }
+  .version-entry {
+    max-width: 300px;
 
-  .version-entry .card .card-body {
-    display: flex;
-    flex-direction: column;
+    .card .card-body {
+      display: flex;
+      flex-direction: column;
 
-    .hold-restore {
-      margin: 1rem
+      .media-preview {
+        padding: 1rem 1rem 56.25%;
+      }
+
+      .hold-restore {
+        margin: 1rem
+      }
     }
   }
 }
@@ -251,7 +260,7 @@
   height: 100%;
   z-index: 1;
   position: absolute;
-  padding: 5px;
+  padding: .3rem;
   background-color: $errorBackground;
   border: 1px solid $error;
   border-radius: .15rem;
@@ -259,7 +268,7 @@
 
   .btn-close {
     position: absolute;
-    margin: 0 3px;
+    margin: 0 .2rem;
     font-size: .8rem;
     top: 0;
     right: 0;
@@ -269,16 +278,22 @@
 
 .media-preview {
   position: relative;
+  padding-bottom: 56.25%;
   width: 100%;
 }
 
 .media-display {
   display: flex;
   justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 .button {
-  padding: 3px 15px;
+  padding: .2rem 1rem;
   border: 0;
   border-radius: 0.25rem;
 
@@ -294,8 +309,8 @@
 
   span {
     color: $error;
-    margin-left: 10px;
-    padding-bottom: 10px;
+    margin-left: .6rem;
+    padding-bottom: .6rem;
     overflow: auto;
     white-space: nowrap;
   }
@@ -304,13 +319,13 @@
 .loading-indicator {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: .6rem;
 
   &:after {
     content: " ";
     display: inline-block;
-    width: 15px;
-    height: 15px;
+    width: 1rem;
+    height: 1rem;
     border-radius: 50%;
     border: 2px solid;
     border-color: #000 transparent #000 transparent;
@@ -364,34 +379,38 @@
         width: 25%;
         border-right: 1px solid black;
         padding-right: 1rem;
-        //background-color: red;
 
         .motif-info {
           display: flex;
           justify-content: space-between;
           border-bottom: 1px solid black;
-          padding-right: 10px;
+          padding-right: .6rem;
 
           .motif-name {
             display: flex;
-            gap: 5px;
+            gap: .3rem;
             align-items: center;
           }
         }
 
         .media-display {
-          margin-top: auto;
-          margin-bottom: 5px;
-          flex-direction: column;
-          align-items: center;
-          padding: 1rem;
+          width: auto;
+          height: auto;
+          position: relative;
 
-          @extend .transparency-indicator, .box-shadow-inset;
+          @extend .transparency-indicator, .box-shadow-inset,
         }
 
         .button {
           align-self: center;
         }
+      }
+
+      .media-display {
+        margin-top: auto;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
       }
 
       .card-main {
@@ -411,7 +430,7 @@
 .button-hold {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: .3rem;
   transition: 1.5s;
 
   &:active, &.active {
@@ -424,6 +443,7 @@
 }
 
 .hold-delete {
+  margin-top: 1rem;
   background: linear-gradient(to left, $error 50%, darken($error, 10%) 50%) right/200%;
 }
 

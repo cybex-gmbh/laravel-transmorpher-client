@@ -3,12 +3,8 @@
         <span class="version-age"></span>
     </div>
     <div class="card-body">
-        <div class="transparency-indicator">
-            <div class="media-preview">
-                <div class="media-display">
-                    <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
-                </div>
-            </div>
+        <div class="media-preview transparency-indicator">
+            <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
         </div>
         <button class="button button-hold hold-restore">
             <span>Restore</span>
