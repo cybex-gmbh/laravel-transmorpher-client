@@ -112,6 +112,7 @@ if (!window.transmorpherScriptLoaded) {
     resetAgeElements(transmorpherIdentifier);
     if (uploadResult.success) {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
+      updateVersionInformation(transmorpherIdentifier);
       switch (motifs[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           // Set the newly uploaded image as display image.
@@ -138,10 +139,11 @@ if (!window.transmorpherScriptLoaded) {
     var modal = document.querySelector("#modal-mi-".concat(transmorpherIdentifier));
     var versionList = modal.querySelector('.version-list > ul');
     var defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true);
-    defaultVersionEntry.classList.remove('d-none');
 
     // Clear the list of versions.
     versionList.replaceChildren();
+    // We will always need a entry to be able to clone it, even when everything is deleted.
+    versionList.append(defaultVersionEntry);
 
     // Get all versions for this media.
     fetch(motifs[transmorpherIdentifier].routes.getVersions, {
@@ -176,9 +178,10 @@ if (!window.transmorpherScriptLoaded) {
             versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(motifs[transmorpherIdentifier].routes.getOriginalDerivative, "/").concat(version, "/h-150");
             break;
         }
-        addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 'restore', 1500);
+        addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
         versionAge.textContent = timeAgo(new Date(versions[version] * 1000));
         versionList.append(versionEntry);
+        versionEntry.classList.remove('d-none');
       });
     });
   };
@@ -410,7 +413,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
     var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
-    modal.classList.remove('d-none');
+    modal.classList.add('d-flex');
     modal.querySelector('.badge-error').onclick = function () {
       closeUploadConfirmModal(transmorpherIdentifier);
       callback();
@@ -418,7 +421,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.closeUploadConfirmModal = function (transmorpherIdentifier) {
     var _document$querySelect;
-    document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.add('d-none');
+    document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
     document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
     (_document$querySelect = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview"))) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
     getState(transmorpherIdentifier).then(function (stateResponse) {
@@ -484,30 +487,30 @@ if (!window.transmorpherScriptLoaded) {
       return cookie.startsWith("XSRF-TOKEN=");
     })) === null || _document$cookie$spli === void 0 ? void 0 : _document$cookie$spli.split("=")[1]);
   };
-  window.addConfirmEventListeners = function (button, callback, buttonText, duration) {
+  window.addConfirmEventListeners = function (button, callback, duration) {
     var pressedOnce = false;
-    var defaultText = "".concat(buttonText[0].toUpperCase()).concat(buttonText.slice(1));
+    var buttonText = button.textContent;
     button.addEventListener('pointerdown', function (event) {
       if (event.pointerType === 'touch') {
         if (pressedOnce) {
           callback();
-          button.querySelector('span').textContent = defaultText;
+          button.querySelector('span').textContent = buttonText;
         } else {
-          button.querySelector('span').textContent = "Press again to ".concat(buttonText);
+          button.querySelector('span').textContent = 'Press again to confirm';
           pressedOnce = true;
           setTimeout(function () {
             pressedOnce = false;
-            button.querySelector('span').textContent = defaultText;
+            button.querySelector('span').textContent = buttonText;
           }, 1000);
         }
       } else {
-        button.querySelector('span').textContent = "Hold to ".concat(buttonText);
+        button.querySelector('span').textContent = 'Hold to confirm';
         button.timeout = setTimeout(callback, duration, button);
       }
     });
     button.addEventListener('pointerup', function (event) {
       if (event.pointerType === 'mouse') {
-        button.querySelector('span').textContent = defaultText;
+        button.querySelector('span').textContent = buttonText;
         clearTimeout(button.timeout);
       }
     });

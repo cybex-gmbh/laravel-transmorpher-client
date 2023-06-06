@@ -71,7 +71,7 @@
   }
 }
 
-.dropzone.dz-clickable *:not(.video-transmorpher), .full-size-link {
+.dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *), .full-size-link {
   cursor: zoom-in;
 }
 
@@ -182,11 +182,19 @@
   backdrop-filter: blur(2px);
 }
 
-.version-information hr {
-  height: 1px;
-  background-color: #9B9B9B;
-  margin: .6rem 0;
-  border: none
+.uc-modal {
+  justify-content: center;
+  align-items: center;
+
+  .card {
+    width: fit-content;
+  }
+}
+
+.version-information {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
 }
 
 .version-list {
@@ -216,6 +224,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+
+    @media screen and (max-width: 767px) {
+      justify-content: center;
+    }
   }
 
   .card-header {
@@ -273,6 +285,7 @@
     top: 0;
     right: 0;
     font-weight: bold;
+    cursor: pointer;
   }
 }
 
@@ -358,7 +371,6 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    //background-color: orange;
 
     .card-header {
       .error-message {
@@ -369,7 +381,6 @@
     .card-body {
       display: flex;
       flex-direction: row;
-      //background-color: blue;
       padding: 1rem;
 
       .card-side {
@@ -385,6 +396,7 @@
           justify-content: space-between;
           border-bottom: 1px solid black;
           padding-right: .6rem;
+          margin-bottom: 1rem;
 
           .motif-name {
             display: flex;
@@ -418,6 +430,27 @@
         padding: .5rem;
         width: 75%;
         height: 100%
+      }
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .card {
+      .card-body {
+        flex-direction: column;
+
+
+        .card-side {
+          width: 100%;
+          border-right: none;
+          padding-right: 0;
+        }
+
+        .card-main {
+          margin-top: 2rem;
+          width: 100%;
+          padding: 0;
+        }
       }
     }
   }

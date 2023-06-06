@@ -59,13 +59,16 @@
                         <p @class(['d-none' => !$isUploading])">Upload started <span class="upload-age"></span></p>
                     </div>
                     <div class="version-information">
-                        <p>Current version: <span class="current-version"></span></p>
-                        <p class="age">uploaded <span class="current-version-age"></span></p>
+                        <div>
+                            <p>Current version: <span class="current-version"></span></p>
+                            <p class="age">uploaded <span class="current-version-age"></span></p>
+                        </div>
                         @switch($mediaType)
                             @case(\Transmorpher\Enums\MediaType::VIDEO)
-                                <hr>
-                                <p>Currently processed version: <span class="processed-version"></span></p>
-                                <p class="age">uploaded <span class="processed-version-age"></span></p>
+                                <div>
+                                    <p>Currently processed version: <span class="processed-version"></span></p>
+                                    <p class="age">uploaded <span class="processed-version-age"></span></p>
+                                </div>
                                 @break
                         @endswitch
                     </div>
@@ -89,7 +92,7 @@
     </div>
 </div>
 
-<div id="modal-uc-{{ $motif->getIdentifier() }}" class="modal d-none">
+<div id="modal-uc-{{ $motif->getIdentifier() }}" class="modal uc-modal d-none">
     <div class="card">
         <div class="card-header">
             @switch($mediaType)
@@ -136,7 +139,6 @@
     addConfirmEventListeners(
         document.querySelector('#modal-mi-{{ $motif->getIdentifier() }} .hold-delete'),
         createCallbackWithArguments(deleteTransmorpherMedia, '{{ $motif->getIdentifier() }}'),
-        'delete',
         1500
     );
 

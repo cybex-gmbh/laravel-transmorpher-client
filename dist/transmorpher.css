@@ -325,7 +325,7 @@
   height: 100%;
 }
 
-.dropzone.dz-clickable *:not(.video-transmorpher), .full-size-link {
+.dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *), .full-size-link {
   cursor: zoom-in;
 }
 
@@ -426,11 +426,19 @@
           backdrop-filter: blur(2px);
 }
 
-.version-information hr {
-  height: 1px;
-  background-color: #9B9B9B;
-  margin: 0.6rem 0;
-  border: none;
+.uc-modal {
+  justify-content: center;
+  align-items: center;
+}
+.uc-modal .card {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.version-information {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .version-list {
@@ -454,6 +462,11 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+@media screen and (max-width: 767px) {
+  .version-list ul {
+    justify-content: center;
+  }
 }
 .version-list .card-header {
   justify-content: center;
@@ -504,6 +517,7 @@
   top: 0;
   right: 0;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .media-preview {
@@ -606,6 +620,7 @@
   justify-content: space-between;
   border-bottom: 1px solid black;
   padding-right: 0.6rem;
+  margin-bottom: 1rem;
 }
 .more-information-modal .card .card-body .card-side .motif-info .motif-name {
   display: flex;
@@ -631,6 +646,21 @@
   padding: 0.5rem;
   width: 75%;
   height: 100%;
+}
+@media screen and (max-width: 767px) {
+  .more-information-modal .card .card-body {
+    flex-direction: column;
+  }
+  .more-information-modal .card .card-body .card-side {
+    width: 100%;
+    border-right: none;
+    padding-right: 0;
+  }
+  .more-information-modal .card .card-body .card-main {
+    margin-top: 2rem;
+    width: 100%;
+    padding: 0;
+  }
 }
 
 .d-flex {

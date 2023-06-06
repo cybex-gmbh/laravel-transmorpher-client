@@ -99,6 +99,7 @@ if (!window.transmorpherScriptLoaded) {
 
         if (uploadResult.success) {
             document.querySelector(`#dz-${transmorpherIdentifier}`).classList.remove('dz-started');
+            updateVersionInformation(transmorpherIdentifier);
 
             switch (motifs[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
@@ -130,10 +131,12 @@ if (!window.transmorpherScriptLoaded) {
         let modal = document.querySelector(`#modal-mi-${transmorpherIdentifier}`);
         let versionList = modal.querySelector('.version-list > ul');
         let defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true);
-        defaultVersionEntry.classList.remove('d-none');
 
         // Clear the list of versions.
         versionList.replaceChildren();
+
+        // We will always need a entry to be able to clone it, even when everything is deleted.
+        versionList.append(defaultVersionEntry);
 
         // Get all versions for this media.
         fetch(motifs[transmorpherIdentifier].routes.getVersions, {
@@ -171,10 +174,11 @@ if (!window.transmorpherScriptLoaded) {
                         break;
                 }
 
-                addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 'restore', 1500);
+                addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
                 versionAge.textContent = timeAgo(new Date(versions[version] * 1000));
 
                 versionList.append(versionEntry);
+                versionEntry.classList.remove('d-none');
             })
         })
     }
@@ -438,7 +442,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
         let modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
-        modal.classList.remove('d-none');
+        modal.classList.add('d-flex');
         modal.querySelector('.badge-error').onclick = function () {
             closeUploadConfirmModal(transmorpherIdentifier);
             callback();
@@ -446,7 +450,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.closeUploadConfirmModal = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.add('d-none');
+        document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.remove('d-flex');
         document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
         document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview`)?.remove();
 
@@ -516,32 +520,32 @@ if (!window.transmorpherScriptLoaded) {
         );
     }
 
-    window.addConfirmEventListeners = function (button, callback, buttonText, duration) {
+    window.addConfirmEventListeners = function (button, callback, duration) {
         let pressedOnce = false;
-        let defaultText = `${buttonText[0].toUpperCase()}${buttonText.slice(1)}`;
+        let buttonText = button.textContent;
 
         button.addEventListener('pointerdown', event => {
             if (event.pointerType === 'touch') {
                 if (pressedOnce) {
                     callback()
-                    button.querySelector('span').textContent = defaultText;
+                    button.querySelector('span').textContent = buttonText;
                 } else {
-                    button.querySelector('span').textContent = `Press again to ${buttonText}`
+                    button.querySelector('span').textContent = 'Press again to confirm';
                     pressedOnce = true;
                     setTimeout(() => {
                         pressedOnce = false;
-                        button.querySelector('span').textContent = defaultText;
+                        button.querySelector('span').textContent = buttonText;
                     }, 1000);
                 }
             } else {
-                button.querySelector('span').textContent = `Hold to ${buttonText}`
+                button.querySelector('span').textContent = 'Hold to confirm';
                 button.timeout = setTimeout(callback, duration, button);
             }
         });
 
         button.addEventListener('pointerup', event => {
             if (event.pointerType === 'mouse') {
-                button.querySelector('span').textContent = defaultText
+                button.querySelector('span').textContent = buttonText
                 clearTimeout(button.timeout);
             }
         });
