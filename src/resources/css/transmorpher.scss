@@ -315,20 +315,6 @@
   }
 }
 
-.delete-and-error {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  span {
-    color: $error;
-    margin-left: .6rem;
-    padding-bottom: .6rem;
-    overflow: auto;
-    white-space: nowrap;
-  }
-}
-
 .loading-indicator {
   display: flex;
   align-items: center;
