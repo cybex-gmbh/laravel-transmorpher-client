@@ -32,7 +32,7 @@ class StateUpdate
             'clientMessage' => $message ?? $latestUpload?->message,
             'state' => $state ?? $latestUpload?->state,
             'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getThumbnailUrl(), $latestUpload?->updated_at),
-            'fullsizeUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getUrl(), $latestUpload?->updated_at),
+            'publicPath' => $transmorpherMedia->public_path,
             'latestUploadToken' => $transmorpherMedia->latest_upload_token,
             'lastUpdated' => $latestUpload?->updated_at
         ]);

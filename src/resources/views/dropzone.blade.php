@@ -72,7 +72,9 @@
                                 @break
                         @endswitch
                     </div>
-                    <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
+                    <div class="media-preview">
+                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
+                    </div>
                     <button type=button class="button button-hold hold-delete">
                         <span>Delete</span>
                         <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="Delete" class="icon">
@@ -119,6 +121,7 @@
     Dropzone.autoDiscover = false;
 
     mediaTypes = {!! json_encode($mediaTypes) !!};
+    transformations = {!! json_encode($srcSetTransformations) !!}
     motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {

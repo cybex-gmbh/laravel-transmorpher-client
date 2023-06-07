@@ -302,7 +302,7 @@
   background: transparent;
 }
 
-.transparency-indicator, .more-information-modal .card .card-body .card-side .media-display, .dropzone {
+.transparency-indicator, .more-information-modal .card .card-body .card-side .media-preview, .dropzone {
   background-image: linear-gradient(135deg, #ebedef 25%, #d8dbe0 0, #d8dbe0 50%, #ebedef 0, #ebedef 75%, #d8dbe0 0, #d8dbe0);
   background-size: 2rem 2rem;
 }
@@ -311,7 +311,7 @@
   box-shadow: 0 1px 1px 0 rgba(60, 75, 100, 0.14), 0 2px 1px -1px rgba(60, 75, 100, 0.12), 0 1px 3px 0 rgba(60, 75, 100, 0.2);
 }
 
-.box-shadow-inset, .more-information-modal .card .card-body .card-side .media-display, .version-list {
+.box-shadow-inset, .more-information-modal .card .card-body .card-side .media-preview, .version-list {
   box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, 0.14), inset 0 2px 1px -1px rgba(60, 75, 100, 0.12), inset 0 1px 3px 0 rgba(60, 75, 100, 0.2);
 }
 
@@ -331,6 +331,7 @@
 
 .full-size-link {
   width: 100%;
+  height: 100%;
 }
 
 .card {
@@ -463,7 +464,7 @@
   flex-wrap: wrap;
   gap: 1rem;
 }
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 935px) {
   .version-list ul {
     justify-content: center;
   }
@@ -545,19 +546,6 @@
   filter: brightness(0.95);
 }
 
-.delete-and-error {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.delete-and-error span {
-  color: red;
-  margin-left: 0.6rem;
-  padding-bottom: 0.6rem;
-  overflow: auto;
-  white-space: nowrap;
-}
-
 .loading-indicator, .badge-processing, .badge-uploading {
   display: flex;
   align-items: center;
@@ -627,16 +615,18 @@
   gap: 0.3rem;
   align-items: center;
 }
-.more-information-modal .card .card-body .card-side .media-display {
-  width: auto;
-  height: auto;
-  position: relative;
+.more-information-modal .card .card-body .card-side .media-preview {
+  margin-top: auto;
+}
+@media screen and (max-width: 935px) {
+  .more-information-modal .card .card-body .card-side .media-preview {
+    margin-top: 2rem;
+  }
 }
 .more-information-modal .card .card-body .card-side .button, .more-information-modal .card .card-body .card-side .version-list button, .version-list .more-information-modal .card .card-body .card-side button {
   align-self: center;
 }
 .more-information-modal .card .card-body .media-display {
-  margin-top: auto;
   flex-direction: column;
   align-items: center;
   padding: 1rem;
@@ -647,7 +637,7 @@
   width: 75%;
   height: 100%;
 }
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 935px) {
   .more-information-modal .card .card-body {
     flex-direction: column;
   }

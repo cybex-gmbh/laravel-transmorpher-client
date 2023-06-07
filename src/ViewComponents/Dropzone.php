@@ -5,6 +5,7 @@ namespace Transmorpher\ViewComponents;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 use Transmorpher\Enums\MediaType;
+use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Transmorpher;
 
@@ -19,6 +20,8 @@ class Dropzone extends Component
     public ?string $latestUploadToken;
     public int $lastUpdated;
     public array $mediaTypes;
+    public array $srcSetTransformations;
+
 
     public string $stateRoute;
     public string $uploadTokenRoute;
@@ -41,6 +44,12 @@ class Dropzone extends Component
         $this->latestUploadToken = $motif->getTransmorpherMedia()->latest_upload_token;
         $this->lastUpdated = $motif->getTransmorpherMedia()->updated_at->timestamp;
         $this->mediaTypes = array_column(MediaType::cases(), 'value', 'name');
+        $this->srcSetTransformations = [
+            '150w' => Transformation::WIDTH->getUrlRepresentation(150),
+            '300w' => Transformation::WIDTH->getUrlRepresentation(300),
+            '600w' => Transformation::WIDTH->getUrlRepresentation(600),
+            '900w' => Transformation::WIDTH->getUrlRepresentation(900),
+        ];
 
         $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);

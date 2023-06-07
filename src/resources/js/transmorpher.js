@@ -4,6 +4,7 @@ if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
     window.mediaTypes = [];
+    window.transformations = [];
     window.motifs = [];
 
     const IMAGE = 'IMAGE';
@@ -32,7 +33,7 @@ if (!window.transmorpherScriptLoaded) {
                         resetAgeElements(transmorpherIdentifier);
 
                         // Display the newly processed media and update links, also hide the placeholder image.
-                        updateMediaDisplay(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
+                        updateMediaDisplay(transmorpherIdentifier, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
                         updateVersionInformation(transmorpherIdentifier);
                     }
                         break;
@@ -105,8 +106,8 @@ if (!window.transmorpherScriptLoaded) {
                 case mediaTypes[IMAGE]:
                     // Set the newly uploaded image as display image.
                     updateImageDisplay(transmorpherIdentifier,
-                        getImageThumbnailUrl(transmorpherIdentifier, uploadResult.public_path, 'h-150', uploadResult.version),
-                        getFullsizeUrl(transmorpherIdentifier, uploadResult.public_path, uploadResult.version)
+                        uploadResult.public_path,
+                        uploadResult.version
                     );
                     displayState(transmorpherIdentifier, 'success');
                     break;
@@ -170,7 +171,8 @@ if (!window.transmorpherScriptLoaded) {
                 switch (motifs[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
                         versionEntry.querySelector('a').href = `${motifs[transmorpherIdentifier].routes.getOriginal}/${version}`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/h-150`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150 150w`;
                         break;
                 }
 
@@ -212,8 +214,8 @@ if (!window.transmorpherScriptLoaded) {
                     case mediaTypes[IMAGE]:
                         updateMediaDisplay(
                             transmorpherIdentifier,
-                            getImageThumbnailUrl(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version),
-                            getFullsizeUrl(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version)
+                            setVersionResult.public_path,
+                            setVersionResult.version
                         );
                         state = 'success';
                         break;
@@ -267,24 +269,35 @@ if (!window.transmorpherScriptLoaded) {
         })
     }
 
-    window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
+    window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller, videoUrl = null) {
         switch (motifs[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
-                updateImageDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
+                updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
                 break;
             case mediaTypes[VIDEO]:
-                updateVideoDisplay(transmorpherIdentifier, thumbnailUrl);
+                updateVideoDisplay(transmorpherIdentifier, videoUrl);
                 break;
         }
     }
 
-    window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
+    window.updateImageDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
         let imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
 
         imgElements.forEach(image => {
-            image.src = thumbnailUrl
-            image.closest('.full-size-link').href = fullsizeUrl;
+            image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
+            image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
+            image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
         });
+    }
+
+    window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
+        let srcStrings = []
+
+        Object.keys(transformations).forEach(key => {
+            srcStrings.push(`${getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations[key], cacheKiller)} ${key}`);
+        })
+
+        return srcStrings.join(', ');
     }
 
 
@@ -323,16 +336,16 @@ if (!window.transmorpherScriptLoaded) {
         })
     }
 
-    window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
+    window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, cacheKiller) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
 
-        return `${imgElement.dataset.deliveryUrl}/${path}/${transformations}?v=${version}`;
+        return `${imgElement.dataset.deliveryUrl}/${path}/${transformations}?c=${cacheKiller}`;
     }
 
-    window.getFullsizeUrl = function (transmorpherIdentifier, path, version) {
+    window.getFullsizeUrl = function (transmorpherIdentifier, path, cacheKiller) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`);
 
-        return `${imgElement.dataset.deliveryUrl}/${path}?v=${version}`;
+        return `${imgElement.dataset.deliveryUrl}/${path}?c=${cacheKiller}`;
     }
 
     window.displayState = function (transmorpherIdentifier, state, message = null, resetError = true) {

@@ -15,6 +15,7 @@ if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
   window.mediaTypes = [];
+  window.transformations = [];
   window.motifs = [];
   var IMAGE = 'IMAGE';
   var VIDEO = 'VIDEO';
@@ -42,7 +43,7 @@ if (!window.transmorpherScriptLoaded) {
               resetAgeElements(transmorpherIdentifier);
 
               // Display the newly processed media and update links, also hide the placeholder image.
-              updateMediaDisplay(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
+              updateMediaDisplay(transmorpherIdentifier, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
               updateVersionInformation(transmorpherIdentifier);
             }
             break;
@@ -116,7 +117,7 @@ if (!window.transmorpherScriptLoaded) {
       switch (motifs[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           // Set the newly uploaded image as display image.
-          updateImageDisplay(transmorpherIdentifier, getImageThumbnailUrl(transmorpherIdentifier, uploadResult.public_path, 'h-150', uploadResult.version), getFullsizeUrl(transmorpherIdentifier, uploadResult.public_path, uploadResult.version));
+          updateImageDisplay(transmorpherIdentifier, uploadResult.public_path, uploadResult.version);
           displayState(transmorpherIdentifier, 'success');
           break;
         case mediaTypes[VIDEO]:
@@ -142,6 +143,7 @@ if (!window.transmorpherScriptLoaded) {
 
     // Clear the list of versions.
     versionList.replaceChildren();
+
     // We will always need a entry to be able to clone it, even when everything is deleted.
     versionList.append(defaultVersionEntry);
 
@@ -175,7 +177,8 @@ if (!window.transmorpherScriptLoaded) {
         switch (motifs[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
             versionEntry.querySelector('a').href = "".concat(motifs[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
-            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(motifs[transmorpherIdentifier].routes.getOriginalDerivative, "/").concat(version, "/h-150");
+            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(motifs[transmorpherIdentifier].routes.getOriginalDerivative, "/").concat(version, "/w-150");
+            versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(motifs[transmorpherIdentifier].routes.getOriginalDerivative, "/").concat(version, "/w-150 150w");
             break;
         }
         addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
@@ -213,7 +216,7 @@ if (!window.transmorpherScriptLoaded) {
         var state;
         switch (motifs[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-            updateMediaDisplay(transmorpherIdentifier, getImageThumbnailUrl(transmorpherIdentifier, setVersionResult.public_path, 'h-150', setVersionResult.version), getFullsizeUrl(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version));
+            updateMediaDisplay(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version);
             state = 'success';
             break;
           case mediaTypes[VIDEO]:
@@ -263,22 +266,31 @@ if (!window.transmorpherScriptLoaded) {
       }
     });
   };
-  window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
+  window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
+    var videoUrl = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
     switch (motifs[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
-        updateImageDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
+        updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
         break;
       case mediaTypes[VIDEO]:
-        updateVideoDisplay(transmorpherIdentifier, thumbnailUrl);
+        updateVideoDisplay(transmorpherIdentifier, videoUrl);
         break;
     }
   };
-  window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
+  window.updateImageDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
     var imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
     imgElements.forEach(function (image) {
-      image.src = thumbnailUrl;
-      image.closest('.full-size-link').href = fullsizeUrl;
+      image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
+      image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
+      image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
     });
+  };
+  window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
+    var srcStrings = [];
+    Object.keys(transformations).forEach(function (key) {
+      srcStrings.push("".concat(getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations[key], cacheKiller), " ").concat(key));
+    });
+    return srcStrings.join(', ');
   };
   window.updateVideoDisplay = function (transmorpherIdentifier, url) {
     var videoElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " video.video-transmorpher"));
@@ -314,13 +326,13 @@ if (!window.transmorpherScriptLoaded) {
       image.classList.remove('d-none');
     });
   };
-  window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, version) {
+  window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, cacheKiller) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "/").concat(transformations, "?v=").concat(version);
+    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "/").concat(transformations, "?c=").concat(cacheKiller);
   };
-  window.getFullsizeUrl = function (transmorpherIdentifier, path, version) {
+  window.getFullsizeUrl = function (transmorpherIdentifier, path, cacheKiller) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "?v=").concat(version);
+    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "?c=").concat(cacheKiller);
   };
   window.displayState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
