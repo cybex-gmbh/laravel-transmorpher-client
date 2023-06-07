@@ -40,9 +40,8 @@ abstract class Transmorpher
 
     /**
      * @return void
-     * @throws InvalidIdentifierException
      */
-    protected function createTransmorpherMedia()
+    protected function createTransmorpherMedia(): void
     {
         $this->validateIdentifier();
 
@@ -230,11 +229,7 @@ abstract class Transmorpher
         $clientResponse = ($response['success'] ?? false) ? $response : ClientResponse::tryFrom($httpCode)?->getResponse($response);
 
         // tryFrom will return null if the code is not defined in the enum.
-        if (is_null($clientResponse)) {
-            $clientResponse = ClientResponse::getDefaultResponse($response, $httpCode);
-        }
-
-        return $clientResponse;
+        return $clientResponse ?? ClientResponse::getDefaultResponse($response, $httpCode);
     }
 
     /**

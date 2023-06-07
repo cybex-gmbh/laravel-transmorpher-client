@@ -11,7 +11,7 @@ enum ClientResponse: int
     case VALIDATION_ERROR = 422;
 
     /**
-     * Get the class name of the corresponding Transmorpher class.
+     * Get the response for a specific case.
      *
      * @param array $body
      *

@@ -17,9 +17,6 @@ class ImageTransmorpher extends Transmorpher
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
-     * @param MediaType $type
-     *
-     * @throws Exceptions\InvalidIdentifierException
      */
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
