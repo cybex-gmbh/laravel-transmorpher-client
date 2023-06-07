@@ -118,10 +118,8 @@
 </div>
 
 <script type="text/javascript">
-    Dropzone.autoDiscover = false;
-
     mediaTypes = {!! json_encode($mediaTypes) !!};
-    transformations = {!! json_encode($srcSetTransformations) !!}
+    transformations = {!! json_encode($srcSetTransformations) !!};
     motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
@@ -136,95 +134,15 @@
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },
         webUploadUrl: '{{ $motif->getWebUploadUrl() }}',
-        mediaType: '{{ $mediaType->value }}'
-    }
-
-    addConfirmEventListeners(
-        document.querySelector('#modal-mi-{{ $motif->getIdentifier() }} .hold-delete'),
-        createCallbackWithArguments(deleteTransmorpherMedia, '{{ $motif->getIdentifier() }}'),
-        1500
-    );
-
-
-    // Start polling if the video is still processing or an upload is in process.
-    if (('{{ $isProcessing }}') || '{{ $isUploading }}') {
-        startPolling('{{ $motif->getIdentifier() }}', '{{ $latestUploadToken }}');
-        setAgeElement(document.querySelector('#modal-mi-{{ $motif->getIdentifier() }} .{{ $isProcessing ? 'processing' : 'upload' }}-age'), timeAgo(new Date('{{ $lastUpdated }}' * 1000)));
-    }
-
-    new Dropzone('#dz-{{ $motif->getIdentifier() }}', {
-        url: '{{ $motif->getWebUploadUrl() }}',
-        chunking: true,
+        mediaType: '{{ $mediaType->value }}',
         chunkSize: {{ $motif->getChunkSize() }},
         maxFilesize: {{ $motif->getMaxFileSize() }},
         maxThumbnailFilesize: {{ $motif->getMaxFileSize() }},
-        timeout: 60000,
-        uploadMultiple: false,
-        paramName: 'file',
-        uploadToken: null,
-        createImageThumbnails: false,
-        init: function () {
-            // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
-            this.on('addedfile', function () {
-                if (this.files[1] != null) {
-                    this.removeFile(this.files[0]);
-                }
-            });
+        isProcessing: {{ json_encode($isProcessing) }},
+        isUploading: {{ json_encode($isUploading) }},
+        lastUpdated: '{{ $lastUpdated }}',
+        latestUploadToken: '{{ $latestUploadToken }}',
+    }
 
-            // Gets fired when upload is starting.
-            this.on('processing', function () {
-                fetch(`${motifs['{{$motif->getIdentifier()}}'].routes.setUploadingState}/${this.options.uploadToken}`, {
-                    method: 'POST', headers: {
-                        'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
-                    },
-                });
-
-                // Clear any potential timer to prevent running two at the same time.
-                clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
-                displayState('{{$motif->getIdentifier()}}', 'uploading', null, false);
-                startPolling('{{$motif->getIdentifier()}}', this.options.uploadToken);
-            });
-        },
-        accept: function (file, done) {
-            // Remove previous elements to maintain a clean overlay.
-            this.element.querySelector('.dz-default').style.display = 'none';
-            if (errorElement = this.element.querySelector('.dz-error')) {
-                errorElement.remove();
-            }
-
-            getState('{{ $motif->getIdentifier() }}')
-                .then(uploadingStateResponse => {
-                    if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                        openUploadConfirmModal('{{ $motif->getIdentifier() }}', createCallbackWithArguments(reserveUploadSlot, '{{ $motif->getIdentifier() }}', done));
-                    } else {
-                        reserveUploadSlot('{{ $motif->getIdentifier() }}', done);
-                    }
-                })
-        },
-        success: function (file, response) {
-            this.element.querySelector('.dz-default').style.display = 'block';
-            this.element.querySelector('.dz-preview')?.remove();
-
-            // Clear the old timer.
-            clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
-
-            handleUploadResponse(
-                file,
-                response,
-                '{{ $motif->getIdentifier() }}',
-                this.options.uploadToken
-            );
-        },
-        error: function (file, response) {
-            // Clear the old timer.
-            clearInterval(window['statusPolling{{ $motif->getIdentifier() }}']);
-
-            handleUploadResponse(
-                file,
-                response,
-                '{{ $motif->getIdentifier() }}',
-                this.options.uploadToken
-            );
-        },
-    });
+    setupComponent('{{ $motif->getIdentifier() }}');
 </script>

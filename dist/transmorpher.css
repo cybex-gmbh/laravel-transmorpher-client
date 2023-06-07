@@ -325,7 +325,7 @@
   height: 100%;
 }
 
-.dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *), .full-size-link {
+.dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *), .full-size-link {
   cursor: zoom-in;
 }
 

@@ -3,12 +3,114 @@ import Dropzone from 'dropzone';
 if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
-    window.mediaTypes = [];
-    window.transformations = [];
+    window.mediaTypes = {};
+    window.transformations = {};
     window.motifs = [];
 
     const IMAGE = 'IMAGE';
     const VIDEO = 'VIDEO';
+
+    window.setupComponent = function (transmorpherIdentifier) {
+        Dropzone.autoDiscover = false;
+        const motif = motifs[transmorpherIdentifier];
+
+        addConfirmEventListeners(
+            document.querySelector(`#modal-mi-${transmorpherIdentifier} .hold-delete`),
+            createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier),
+            1500
+        );
+
+        // Start polling if the video is still processing or an upload is in process.
+        if (motif.isProcessing || motif.isUploading) {
+            startPolling(transmorpherIdentifier, motif.latestUploadToken);
+            setAgeElement(
+                document.querySelector(`#modal-mi-${transmorpherIdentifier} .${motif.isProcessing ? 'processing' : 'upload'}-age`),
+                timeAgo(new Date(motif.lastUpdated * 1000)));
+        }
+
+        new Dropzone(`#dz-${transmorpherIdentifier}`, {
+            url: motif.webUploadUrl,
+            chunking: true,
+            chunkSize: motif.chunkSize,
+            maxFilesize: motif.maxFilesize,
+            maxThumbnailFilesize: motif.maxThumbnailFilesize,
+            timeout: 60000,
+            uploadMultiple: false,
+            paramName: 'file',
+            uploadToken: null,
+            createImageThumbnails: false,
+            init: function () {
+                // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
+                this.on('addedfile', function () {
+                    if (this.files[1] != null) {
+                        this.removeFile(this.files[0]);
+                    }
+                });
+
+                // Gets fired when upload is starting.
+                this.on('processing', function () {
+                    fetch(`${motif.routes.setUploadingState}/${this.options.uploadToken}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-XSRF-TOKEN': getCsrfToken()
+                        },
+                    });
+
+                    // Clear any potential timer to prevent running two at the same time.
+                    clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+                    displayState(transmorpherIdentifier, 'uploading', null, false);
+                    startPolling(transmorpherIdentifier, this.options.uploadToken);
+                });
+            },
+            accept: function (file, done) {
+                // Remove previous elements to maintain a clean overlay.
+                this.element.querySelector('.dz-default').style.display = 'none';
+
+                let errorElement;
+                if (errorElement = this.element.querySelector('.dz-error')) {
+                    errorElement.remove();
+                }
+
+                getState(transmorpherIdentifier)
+                    .then(uploadingStateResponse => {
+                        if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
+                            openUploadConfirmModal(
+                                transmorpherIdentifier,
+                                createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, done)
+                            );
+                        } else {
+                            reserveUploadSlot(transmorpherIdentifier, done);
+                        }
+                    })
+            },
+            success: function (file, response) {
+                this.element.querySelector('.dz-default').style.display = 'block';
+                this.element.querySelector('.dz-preview')?.remove();
+
+                // Clear the old timer.
+                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+
+                handleUploadResponse(
+                    file,
+                    response,
+                    transmorpherIdentifier,
+                    this.options.uploadToken
+                );
+            },
+            error: function (file, response) {
+                // Clear the old timer.
+                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+
+                handleUploadResponse(
+                    file,
+                    response,
+                    transmorpherIdentifier,
+                    this.options.uploadToken
+                );
+            },
+        });
+    }
 
     window.startPolling = function (transmorpherIdentifier, uploadToken) {
         let statusPollingVariable = `statusPolling${transmorpherIdentifier}`

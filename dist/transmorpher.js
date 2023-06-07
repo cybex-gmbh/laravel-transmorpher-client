@@ -14,11 +14,87 @@ __webpack_require__.r(__webpack_exports__);
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
-  window.mediaTypes = [];
-  window.transformations = [];
+  window.mediaTypes = {};
+  window.transformations = {};
   window.motifs = [];
   var IMAGE = 'IMAGE';
   var VIDEO = 'VIDEO';
+  window.setupComponent = function (transmorpherIdentifier) {
+    dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
+    var motif = motifs[transmorpherIdentifier];
+    addConfirmEventListeners(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .hold-delete")), createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier), 1500);
+
+    // Start polling if the video is still processing or an upload is in process.
+    if (motif.isProcessing || motif.isUploading) {
+      startPolling(transmorpherIdentifier, motif.latestUploadToken);
+      setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .").concat(motif.isProcessing ? 'processing' : 'upload', "-age")), timeAgo(new Date(motif.lastUpdated * 1000)));
+    }
+    new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
+      url: motif.webUploadUrl,
+      chunking: true,
+      chunkSize: motif.chunkSize,
+      maxFilesize: motif.maxFilesize,
+      maxThumbnailFilesize: motif.maxThumbnailFilesize,
+      timeout: 60000,
+      uploadMultiple: false,
+      paramName: 'file',
+      uploadToken: null,
+      createImageThumbnails: false,
+      init: function init() {
+        // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
+        this.on('addedfile', function () {
+          if (this.files[1] != null) {
+            this.removeFile(this.files[0]);
+          }
+        });
+
+        // Gets fired when upload is starting.
+        this.on('processing', function () {
+          fetch("".concat(motif.routes.setUploadingState, "/").concat(this.options.uploadToken), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-XSRF-TOKEN': getCsrfToken()
+            }
+          });
+
+          // Clear any potential timer to prevent running two at the same time.
+          clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
+          displayState(transmorpherIdentifier, 'uploading', null, false);
+          startPolling(transmorpherIdentifier, this.options.uploadToken);
+        });
+      },
+      accept: function accept(file, done) {
+        // Remove previous elements to maintain a clean overlay.
+        this.element.querySelector('.dz-default').style.display = 'none';
+        var errorElement;
+        if (errorElement = this.element.querySelector('.dz-error')) {
+          errorElement.remove();
+        }
+        getState(transmorpherIdentifier).then(function (uploadingStateResponse) {
+          if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
+            openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, done));
+          } else {
+            reserveUploadSlot(transmorpherIdentifier, done);
+          }
+        });
+      },
+      success: function success(file, response) {
+        var _this$element$querySe;
+        this.element.querySelector('.dz-default').style.display = 'block';
+        (_this$element$querySe = this.element.querySelector('.dz-preview')) === null || _this$element$querySe === void 0 ? void 0 : _this$element$querySe.remove();
+
+        // Clear the old timer.
+        clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
+        handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
+      },
+      error: function error(file, response) {
+        // Clear the old timer.
+        clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
+        handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
+      }
+    });
+  };
   window.startPolling = function (transmorpherIdentifier, uploadToken) {
     var statusPollingVariable = "statusPolling".concat(transmorpherIdentifier);
     var expirationTime = new Date();
