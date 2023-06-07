@@ -392,13 +392,14 @@ if (!window.transmorpherScriptLoaded) {
         break;
       case mediaTypes[VIDEO]:
         imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " img.video-transmorpher"));
-        document.querySelectorAll("#component-".concat(transmorpherIdentifier, " > video.video-transmorpher")).forEach(function (video) {
+        document.querySelectorAll("#component-".concat(transmorpherIdentifier, " video.video-transmorpher")).forEach(function (video) {
           return video.classList.add('d-none');
         });
         break;
     }
     imgElements.forEach(function (image) {
       image.src = image.dataset.placeholderUrl;
+      image.srcset = '';
       image.classList.remove('d-none');
     });
   };

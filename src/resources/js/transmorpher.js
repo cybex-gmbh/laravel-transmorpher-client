@@ -426,13 +426,14 @@ if (!window.transmorpherScriptLoaded) {
                 break;
             case mediaTypes[VIDEO]:
                 imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`);
-                document.querySelectorAll(`#component-${transmorpherIdentifier} > video.video-transmorpher`)
+                document.querySelectorAll(`#component-${transmorpherIdentifier} video.video-transmorpher`)
                     .forEach(video => video.classList.add('d-none'));
                 break;
         }
 
         imgElements.forEach(image => {
             image.src = image.dataset.placeholderUrl;
+            image.srcset = '';
             image.classList.remove('d-none');
         })
     }
