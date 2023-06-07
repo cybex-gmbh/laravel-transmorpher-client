@@ -402,7 +402,6 @@ if (!window.transmorpherScriptLoaded) {
         return srcStrings.join(', ');
     }
 
-
     window.updateVideoDisplay = function (transmorpherIdentifier, url) {
         let videoElements = document.querySelectorAll(`#component-${transmorpherIdentifier} video.video-transmorpher`);
 
