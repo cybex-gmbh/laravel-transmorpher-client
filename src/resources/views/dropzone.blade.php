@@ -26,7 +26,7 @@
                 <div class="media-preview">
                     <div class="error-display d-none">
                         <span class="error-message"></span>
-                        <button type="button" class="btn-close" onclick="closeErrorMessage(this)">⨉</button>
+                        <button type="button" class="btn-close" onclick="closeErrorMessage(this, '{{ $motif->getIdentifier() }}')">⨉</button>
                     </div>
                     <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                 </div>

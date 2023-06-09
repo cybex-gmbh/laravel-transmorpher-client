@@ -466,11 +466,6 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.resetModalErrorMessageDisplay = function (transmorpherIdentifier) {
     document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = '';
-    document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
-    var previewElement = null;
-    if (previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview"))) {
-      previewElement.style.display = 'none';
-    }
   };
   window.timeAgo = function (date) {
     if (isNaN(date)) {
@@ -566,8 +561,15 @@ if (!window.transmorpherScriptLoaded) {
       return func.apply(this, allArguments);
     };
   };
-  window.closeErrorMessage = function (closeButton) {
+  window.closeErrorMessage = function (closeButton, transmorpherIdentifier) {
+    var _document$querySelect2, _closeButton$closest$;
     closeButton.closest('.error-display').classList.add('d-none');
+
+    // Reset error messages.
+    resetModalErrorMessageDisplay(transmorpherIdentifier);
+    (_document$querySelect2 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-header .badge.badge-error"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-hidden');
+    (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 ? void 0 : _closeButton$closest$.classList.add('d-hidden');
+    closeButton.closest('.card').classList.remove('border-error');
   };
   window.getCsrfToken = function () {
     var _document$cookie$spli;

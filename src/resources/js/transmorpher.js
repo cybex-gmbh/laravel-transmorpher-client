@@ -510,12 +510,6 @@ if (!window.transmorpherScriptLoaded) {
 
     window.resetModalErrorMessageDisplay = function (transmorpherIdentifier) {
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .error-message`).textContent = '';
-        document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
-
-        let previewElement = null;
-        if (previewElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview`)) {
-            previewElement.style.display = 'none'
-        }
     }
 
     window.timeAgo = function (date) {
@@ -622,8 +616,14 @@ if (!window.transmorpherScriptLoaded) {
         };
     }
 
-    window.closeErrorMessage = function (closeButton) {
+    window.closeErrorMessage = function (closeButton, transmorpherIdentifier) {
         closeButton.closest('.error-display').classList.add('d-none');
+
+        // Reset errors.
+        resetModalErrorMessageDisplay(transmorpherIdentifier);
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-header .badge.badge-error`)?.classList.add('d-hidden');
+        closeButton.closest('.card').querySelector('.badge.badge-error')?.classList.add('d-hidden');
+        closeButton.closest('.card').classList.remove('border-error');
     }
 
     window.getCsrfToken = function () {
