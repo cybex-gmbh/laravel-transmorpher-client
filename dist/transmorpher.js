@@ -565,7 +565,7 @@ if (!window.transmorpherScriptLoaded) {
     var _document$querySelect2, _closeButton$closest$;
     closeButton.closest('.error-display').classList.add('d-none');
 
-    // Reset error messages.
+    // Reset errors.
     resetModalErrorMessageDisplay(transmorpherIdentifier);
     (_document$querySelect2 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-header .badge.badge-error"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-hidden');
     (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 ? void 0 : _closeButton$closest$.classList.add('d-hidden');
