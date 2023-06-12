@@ -378,7 +378,6 @@
 .badge-processing {
   background-color: orange;
 }
-
 .badge-success {
   background-color: green;
 }
@@ -390,7 +389,6 @@
 .badge-uploading {
   background-color: #68dec6;
 }
-
 .border-success {
   border-color: green;
 }
@@ -422,7 +420,7 @@
   top: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.4);
   -webkit-backdrop-filter: blur(2px);
           backdrop-filter: blur(2px);
 }
@@ -436,10 +434,8 @@
   width: fit-content;
 }
 
-.version-information {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+.current-version-age {
+  text-align: center;
 }
 
 .version-list {
@@ -482,7 +478,7 @@
 .version-list .version-entry .card .card-body .media-preview {
   padding: 1rem 1rem 56.25%;
 }
-.version-list .version-entry .card .card-body .hold-restore {
+.version-list .version-entry .card .card-body .confirm-restore {
   margin: 1rem;
 }
 
@@ -545,12 +541,12 @@
   filter: brightness(0.95);
 }
 
-.loading-indicator, .badge-processing, .badge-uploading {
+.loading-indicator, .badge-processing > span:first-of-type, .badge-uploading > span:first-of-type {
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
-.loading-indicator:after, .badge-processing:after, .badge-uploading:after {
+.loading-indicator:after, .badge-processing > span:first-of-type:after, .badge-uploading > span:first-of-type:after {
   content: " ";
   display: inline-block;
   width: 1rem;
@@ -567,12 +563,6 @@
   100% {
     transform: rotate(360deg);
   }
-}
-
-.age {
-  line-height: 0.5;
-  font-size: small;
-  color: #4b5a6a;
 }
 
 .more-information-modal {
@@ -599,28 +589,19 @@
   flex-direction: column;
   height: 100%;
   width: 25%;
-  border-right: 1px solid black;
   padding-right: 1rem;
 }
-.more-information-modal .card .card-body .card-side .motif-info {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid black;
-  padding-right: 0.6rem;
+.more-information-modal .card .card-body .card-side .badge {
+  text-align: center;
   margin-bottom: 1rem;
 }
-.more-information-modal .card .card-body .card-side .motif-info .motif-name {
+.more-information-modal .card .card-body .card-side .badge span {
+  justify-content: center;
+}
+.more-information-modal .card .card-body .card-side .motif-name {
   display: flex;
   gap: 0.3rem;
   align-items: center;
-}
-.more-information-modal .card .card-body .card-side .media-preview {
-  margin-top: auto;
-}
-@media screen and (max-width: 935px) {
-  .more-information-modal .card .card-body .card-side .media-preview {
-    margin-top: 2rem;
-  }
 }
 .more-information-modal .card .card-body .card-side .button, .more-information-modal .card .card-body .card-side .version-list button, .version-list .more-information-modal .card .card-body .card-side button {
   align-self: center;
@@ -656,24 +637,20 @@
   display: flex;
 }
 
-.button-hold {
+.button-confirm {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  transition: 1.5s;
 }
-.button-hold:active, .button-hold.active {
-  background-position: left;
-}
-.button-hold img {
+.button-confirm img {
   pointer-events: none;
 }
 
-.hold-delete {
+.confirm-delete {
   margin-top: 1rem;
-  background: linear-gradient(to left, red 50%, #cc0000 50%) right/200%;
+  background-color: red;
 }
 
-.hold-restore {
-  background: linear-gradient(to left, #7ee67e 50%, #53de53 50%) right/200%;
+.confirm-restore {
+  background-color: #7ee67e;
 }

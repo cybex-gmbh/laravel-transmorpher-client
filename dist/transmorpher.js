@@ -22,12 +22,12 @@ if (!window.transmorpherScriptLoaded) {
   window.setupComponent = function (transmorpherIdentifier) {
     dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
     var motif = motifs[transmorpherIdentifier];
-    addConfirmEventListeners(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .hold-delete")), createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier), 1500);
+    addConfirmEventListeners(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier), 1500);
 
     // Start polling if the video is still processing or an upload is in process.
     if (motif.isProcessing || motif.isUploading) {
       startPolling(transmorpherIdentifier, motif.latestUploadToken);
-      setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .").concat(motif.isProcessing ? 'processing' : 'upload', "-age")), timeAgo(new Date(motif.lastUpdated * 1000)));
+      setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .").concat(motif.isProcessing ? 'processing' : 'upload', "-age")), getDateForDisplay(new Date(motif.lastUpdated * 1000)));
     }
     new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
       url: motif.webUploadUrl,
@@ -139,13 +139,13 @@ if (!window.transmorpherScriptLoaded) {
           case 'uploading':
             {
               displayState(transmorpherIdentifier, 'uploading', null, false);
-              setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .upload-age")), timeAgo(Date.parse(pollingInformation.lastUpdated)));
+              setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .upload-age")), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
             }
             break;
           case 'processing':
             {
               displayState(transmorpherIdentifier, 'processing', null, false);
-              setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .processing-age")), timeAgo(Date.parse(pollingInformation.lastUpdated)));
+              setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .processing-age")), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
             }
             break;
         }
@@ -153,8 +153,8 @@ if (!window.transmorpherScriptLoaded) {
     }, 5000); // Poll every 5 seconds
   };
 
-  window.setAgeElement = function (ageElement, timeAgo) {
-    ageElement.textContent = timeAgo;
+  window.setAgeElement = function (ageElement, dateTime) {
+    ageElement.textContent = dateTime;
     ageElement.closest('p').classList.remove('d-none');
   };
   window.resetAgeElements = function (transmorpherIdentifier) {
@@ -189,6 +189,7 @@ if (!window.transmorpherScriptLoaded) {
     resetAgeElements(transmorpherIdentifier);
     if (uploadResult.success) {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
+      document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
       updateVersionInformation(transmorpherIdentifier);
       switch (motifs[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
@@ -233,14 +234,16 @@ if (!window.transmorpherScriptLoaded) {
       return response.json();
     }).then(function (versionInformation) {
       var versions = versionInformation.success ? versionInformation.versions : [];
-      modal.querySelector('.current-version').textContent = versionInformation.currentVersion || 'none';
-      modal.querySelector('.current-version-age').textContent = timeAgo(new Date(versions[versionInformation.currentVersion] * 1000)) || 'never';
+      var versionAge;
       switch (motifs[transmorpherIdentifier].mediaType) {
+        case mediaTypes[IMAGE]:
+          versionAge = getDateForDisplay(new Date(versions[versionInformation.currentVersion] * 1000));
+          break;
         case mediaTypes[VIDEO]:
-          modal.querySelector('.processed-version').textContent = versionInformation.currentlyProcessedVersion || 'none';
-          modal.querySelector('.processed-version-age').textContent = timeAgo(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)) || 'never';
+          versionAge = getDateForDisplay(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
           break;
       }
+      modal.querySelector('.current-version-age').textContent = versionAge;
       Object.keys(versions).sort(function (a, b) {
         return versions[b] - versions[a];
       }).forEach(function (version) {
@@ -258,7 +261,7 @@ if (!window.transmorpherScriptLoaded) {
             break;
         }
         addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
-        versionAge.textContent = timeAgo(new Date(versions[version] * 1000));
+        versionAge.textContent = getDateForDisplay(new Date(versions[version] * 1000));
         versionList.append(versionEntry);
         versionEntry.classList.remove('d-none');
       });
@@ -333,9 +336,8 @@ if (!window.transmorpherScriptLoaded) {
         updateVersionInformation(transmorpherIdentifier);
         displayPlaceholder(transmorpherIdentifier);
         resetAgeElements(transmorpherIdentifier);
-
-        // Hide processing display after deletion.
         document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge').classList.add('d-hidden');
+        document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
       } else {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         displayModalState(transmorpherIdentifier, 'error', deleteResult.clientMessage);
@@ -432,7 +434,7 @@ if (!window.transmorpherScriptLoaded) {
   window.displayModalState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     var resetError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
-    displayStateInformation(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-header > span")), state);
+    displayStateInformation(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge")), state);
     if (message) {
       setModalErrorMessage(transmorpherIdentifier, message);
     } else if (resetError) {
@@ -442,7 +444,7 @@ if (!window.transmorpherScriptLoaded) {
   window.displayStateInformation = function (stateInfoElement, state) {
     stateInfoElement.className = '';
     stateInfoElement.classList.add('badge', "badge-".concat(state));
-    stateInfoElement.textContent = "".concat(state[0].toUpperCase()).concat(state.slice(1));
+    stateInfoElement.querySelector('span:first-of-type').textContent = "".concat(state[0].toUpperCase()).concat(state.slice(1));
   };
   window.displayCardBorderState = function (transmorpherIdentifier, state) {
     var card = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card');
@@ -467,33 +469,11 @@ if (!window.transmorpherScriptLoaded) {
   window.resetModalErrorMessageDisplay = function (transmorpherIdentifier) {
     document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = '';
   };
-  window.timeAgo = function (date) {
+  window.getDateForDisplay = function (date) {
     if (isNaN(date)) {
-      return false;
+      return '';
     }
-    var seconds = Math.floor((new Date() - date) / 1000);
-    var interval = Math.floor(seconds / 31536000);
-    if (interval > 1) {
-      return "".concat(interval, " years ago");
-    }
-    interval = Math.floor(seconds / 2592000);
-    if (interval > 1) {
-      return "".concat(interval, " months ago");
-    }
-    interval = Math.floor(seconds / 86400);
-    if (interval > 1) {
-      return "".concat(interval, " days ago");
-    }
-    interval = Math.floor(seconds / 3600);
-    if (interval > 1) {
-      return "".concat(interval, " hours ago");
-    }
-    interval = Math.floor(seconds / 60);
-    if (interval > 1) {
-      return "".concat(interval, " minutes ago");
-    }
-    if (seconds < 10) return 'just now';
-    return "".concat(Math.floor(seconds), " seconds ago");
+    return date.toLocaleString();
   };
   window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
     var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
@@ -567,7 +547,7 @@ if (!window.transmorpherScriptLoaded) {
 
     // Reset errors.
     resetModalErrorMessageDisplay(transmorpherIdentifier);
-    (_document$querySelect2 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-header .badge.badge-error"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-hidden');
+    (_document$querySelect2 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-none');
     (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 ? void 0 : _closeButton$closest$.classList.add('d-hidden');
     closeButton.closest('.card').classList.remove('border-error');
   };
@@ -578,31 +558,23 @@ if (!window.transmorpherScriptLoaded) {
       return cookie.startsWith("XSRF-TOKEN=");
     })) === null || _document$cookie$spli === void 0 ? void 0 : _document$cookie$spli.split("=")[1]);
   };
-  window.addConfirmEventListeners = function (button, callback, duration) {
+  window.addConfirmEventListeners = function (button, callback) {
     var pressedOnce = false;
     var buttonText = button.textContent;
+    var timeOut;
     button.addEventListener('pointerdown', function (event) {
-      if (event.pointerType === 'touch') {
-        if (pressedOnce) {
-          callback();
-          button.querySelector('span').textContent = buttonText;
-        } else {
-          button.querySelector('span').textContent = 'Press again to confirm';
-          pressedOnce = true;
-          setTimeout(function () {
-            pressedOnce = false;
-            button.querySelector('span').textContent = buttonText;
-          }, 1000);
-        }
-      } else {
-        button.querySelector('span').textContent = 'Hold to confirm';
-        button.timeout = setTimeout(callback, duration, button);
-      }
-    });
-    button.addEventListener('pointerup', function (event) {
-      if (event.pointerType === 'mouse') {
+      if (pressedOnce) {
+        callback();
         button.querySelector('span').textContent = buttonText;
-        clearTimeout(button.timeout);
+        pressedOnce = false;
+        clearTimeout(timeOut);
+      } else {
+        button.querySelector('span').textContent = 'Press again to confirm';
+        pressedOnce = true;
+        timeOut = setTimeout(function () {
+          pressedOnce = false;
+          button.querySelector('span').textContent = buttonText;
+        }, 3000);
       }
     });
   };

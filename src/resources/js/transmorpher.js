@@ -15,7 +15,7 @@ if (!window.transmorpherScriptLoaded) {
         const motif = motifs[transmorpherIdentifier];
 
         addConfirmEventListeners(
-            document.querySelector(`#modal-mi-${transmorpherIdentifier} .hold-delete`),
+            document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
             createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier),
             1500
         );
@@ -25,7 +25,8 @@ if (!window.transmorpherScriptLoaded) {
             startPolling(transmorpherIdentifier, motif.latestUploadToken);
             setAgeElement(
                 document.querySelector(`#modal-mi-${transmorpherIdentifier} .${motif.isProcessing ? 'processing' : 'upload'}-age`),
-                timeAgo(new Date(motif.lastUpdated * 1000)));
+                getDateForDisplay(new Date(motif.lastUpdated * 1000))
+            );
         }
 
         new Dropzone(`#dz-${transmorpherIdentifier}`, {
@@ -154,12 +155,12 @@ if (!window.transmorpherScriptLoaded) {
                         break;
                     case 'uploading': {
                         displayState(transmorpherIdentifier, 'uploading', null, false);
-                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .upload-age`), timeAgo(Date.parse(pollingInformation.lastUpdated)));
+                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .upload-age`), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
                     }
                         break;
                     case 'processing': {
                         displayState(transmorpherIdentifier, 'processing', null, false);
-                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .processing-age`), timeAgo(Date.parse(pollingInformation.lastUpdated)));
+                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .processing-age`), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
                     }
                         break;
                 }
@@ -167,8 +168,8 @@ if (!window.transmorpherScriptLoaded) {
         }, 5000); // Poll every 5 seconds
     }
 
-    window.setAgeElement = function (ageElement, timeAgo) {
-        ageElement.textContent = timeAgo;
+    window.setAgeElement = function (ageElement, dateTime) {
+        ageElement.textContent = dateTime;
         ageElement.closest('p').classList.remove('d-none');
     }
 
@@ -202,6 +203,7 @@ if (!window.transmorpherScriptLoaded) {
 
         if (uploadResult.success) {
             document.querySelector(`#dz-${transmorpherIdentifier}`).classList.remove('dz-started');
+            document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.remove('d-hidden');
             updateVersionInformation(transmorpherIdentifier);
 
             switch (motifs[transmorpherIdentifier].mediaType) {
@@ -251,15 +253,17 @@ if (!window.transmorpherScriptLoaded) {
         }).then(versionInformation => {
             let versions = versionInformation.success ? versionInformation.versions : [];
 
-            modal.querySelector('.current-version').textContent = versionInformation.currentVersion || 'none';
-            modal.querySelector('.current-version-age').textContent = timeAgo(new Date((versions[versionInformation.currentVersion]) * 1000)) || 'never';
-
+            let versionAge;
             switch (motifs[transmorpherIdentifier].mediaType) {
+                case mediaTypes[IMAGE]:
+                    versionAge = getDateForDisplay(new Date((versions[versionInformation.currentVersion]) * 1000));
+                    break;
                 case mediaTypes[VIDEO]:
-                    modal.querySelector('.processed-version').textContent = versionInformation.currentlyProcessedVersion || 'none';
-                    modal.querySelector('.processed-version-age').textContent = timeAgo(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000)) || 'never';
+                    versionAge = getDateForDisplay(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000));
                     break;
             }
+
+            modal.querySelector('.current-version-age').textContent = versionAge;
 
             Object.keys(versions).sort((a, b) => versions[b] - versions[a]).forEach(version => {
                 // Don't show the currently processed or current version.
@@ -279,7 +283,7 @@ if (!window.transmorpherScriptLoaded) {
                 }
 
                 addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
-                versionAge.textContent = timeAgo(new Date(versions[version] * 1000));
+                versionAge.textContent = getDateForDisplay(new Date(versions[version] * 1000));
 
                 versionList.append(versionEntry);
                 versionEntry.classList.remove('d-none');
@@ -362,8 +366,8 @@ if (!window.transmorpherScriptLoaded) {
                 displayPlaceholder(transmorpherIdentifier);
                 resetAgeElements(transmorpherIdentifier);
 
-                // Hide processing display after deletion.
                 document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge').classList.add('d-hidden');
+                document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.add('d-hidden');
             } else {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
                 displayModalState(transmorpherIdentifier, 'error', deleteResult.clientMessage);
@@ -469,7 +473,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.displayModalState = function (transmorpherIdentifier, state, message = null, resetError = true) {
-        displayStateInformation(document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-header > span`), state);
+        displayStateInformation(document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .badge`), state);
 
         if (message) {
             setModalErrorMessage(transmorpherIdentifier, message);
@@ -481,7 +485,7 @@ if (!window.transmorpherScriptLoaded) {
     window.displayStateInformation = function (stateInfoElement, state) {
         stateInfoElement.className = '';
         stateInfoElement.classList.add('badge', `badge-${state}`);
-        stateInfoElement.textContent = `${state[0].toUpperCase()}${state.slice(1)}`;
+        stateInfoElement.querySelector('span:first-of-type').textContent = `${state[0].toUpperCase()}${state.slice(1)}`;
     }
 
     window.displayCardBorderState = function (transmorpherIdentifier, state) {
@@ -512,42 +516,13 @@ if (!window.transmorpherScriptLoaded) {
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .error-message`).textContent = '';
     }
 
-    window.timeAgo = function (date) {
+    window.getDateForDisplay = function (date) {
         if (isNaN(date)) {
-            return false;
+            return '';
         }
 
-        const seconds = Math.floor((new Date() - date) / 1000);
-
-        let interval = Math.floor(seconds / 31536000);
-        if (interval > 1) {
-            return `${interval} years ago`;
-        }
-
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {
-            return `${interval} months ago`;
-        }
-
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {
-            return `${interval} days ago`;
-        }
-
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {
-            return `${interval} hours ago`;
-        }
-
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {
-            return `${interval} minutes ago`;
-        }
-
-        if (seconds < 10) return 'just now';
-
-        return `${Math.floor(seconds)} seconds ago`;
-    };
+        return date.toLocaleString();
+    }
 
     window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
         let modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
@@ -621,7 +596,7 @@ if (!window.transmorpherScriptLoaded) {
 
         // Reset errors.
         resetModalErrorMessageDisplay(transmorpherIdentifier);
-        document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-header .badge.badge-error`)?.classList.add('d-hidden');
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .badge.badge-error`)?.classList.add('d-none');
         closeButton.closest('.card').querySelector('.badge.badge-error')?.classList.add('d-hidden');
         closeButton.closest('.card').classList.remove('border-error');
     }
@@ -635,33 +610,24 @@ if (!window.transmorpherScriptLoaded) {
         );
     }
 
-    window.addConfirmEventListeners = function (button, callback, duration) {
+    window.addConfirmEventListeners = function (button, callback) {
         let pressedOnce = false;
         let buttonText = button.textContent;
+        let timeOut;
 
         button.addEventListener('pointerdown', event => {
-            if (event.pointerType === 'touch') {
-                if (pressedOnce) {
-                    callback()
-                    button.querySelector('span').textContent = buttonText;
-                } else {
-                    button.querySelector('span').textContent = 'Press again to confirm';
-                    pressedOnce = true;
-                    setTimeout(() => {
-                        pressedOnce = false;
-                        button.querySelector('span').textContent = buttonText;
-                    }, 1000);
-                }
+            if (pressedOnce) {
+                callback()
+                button.querySelector('span').textContent = buttonText;
+                pressedOnce = false;
+                clearTimeout(timeOut);
             } else {
-                button.querySelector('span').textContent = 'Hold to confirm';
-                button.timeout = setTimeout(callback, duration, button);
-            }
-        });
-
-        button.addEventListener('pointerup', event => {
-            if (event.pointerType === 'mouse') {
-                button.querySelector('span').textContent = buttonText
-                clearTimeout(button.timeout);
+                button.querySelector('span').textContent = 'Press again to confirm';
+                pressedOnce = true;
+                timeOut = setTimeout(() => {
+                    pressedOnce = false;
+                    button.querySelector('span').textContent = buttonText;
+                }, 3000);
             }
         });
     }

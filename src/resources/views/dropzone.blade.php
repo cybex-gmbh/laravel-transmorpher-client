@@ -15,13 +15,15 @@
             </div>
         </div>
         <div class="card-body">
-             <span @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-hidden' => !$isProcessing && !$isUploading])>
-                @if($isProcessing)
-                     Processing
-                 @else
-                     Uploading
-                 @endif
-            </span>
+            <div @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-hidden' => !$isProcessing && !$isUploading])>
+                <span>
+                    @if($isProcessing)
+                        Processing
+                    @else
+                        Uploading
+                    @endif
+                </span>
+            </div>
             <form method="POST" class="dropzone" id="dz-{{ $motif->getIdentifier() }}">
                 <div class="media-preview">
                     <div class="error-display d-none">
@@ -37,45 +39,34 @@
     <div id="modal-mi-{{ $motif->getIdentifier() }}" class="modal more-information-modal d-none">
         <div class="card">
             <div class="card-header">
-                <span @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-hidden' => !$isProcessing && !$isUploading])>
-                    @if($isProcessing)
-                        Processing
-                    @else
-                        Uploading
-                    @endif
-                </span>
-                <span class="error-message"></span>
+                <div class="motif-name">
+                    <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
+                         alt="{{ $mediaType->value }}" class="icon">
+                    {{ $differentiator }}
+                </div>
                 <button class="btn-close" onclick="closeMoreInformationModal('{{ $motif->getIdentifier() }}')">⨉</button>
             </div>
             <div class="card-body">
                 <div class="card-side">
-                    <div class="motif-info">
-                        <div class="motif-name">
-                            <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
-                                 alt="{{ $mediaType->value }}" class="icon">
-                            {{ $differentiator }}
+                    <div @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-none' => !$isProcessing && !$isUploading])>
+                        <span>
+                            @if($isProcessing)
+                                Processing
+                            @else
+                                Uploading
+                            @endif
+                        </span>
+                        <div class="motif-info">
+                            <p @class(['d-none' => !$isProcessing])>Processing started <span class="processing-age"></span></p>
+                            <p @class(['d-none' => !$isUploading])">Upload started <span class="upload-age"></span></p>
                         </div>
-                        <p @class(['d-none' => !$isProcessing])>Processing started <span class="processing-age"></span></p>
-                        <p @class(['d-none' => !$isUploading])">Upload started <span class="upload-age"></span></p>
+                        <span class="error-message"></span>
                     </div>
-                    <div class="version-information">
-                        <div>
-                            <p>Current version: <span class="current-version"></span></p>
-                            <p class="age">uploaded <span class="current-version-age"></span></p>
-                        </div>
-                        @switch($mediaType)
-                            @case(\Transmorpher\Enums\MediaType::VIDEO)
-                                <div>
-                                    <p>Currently processed version: <span class="processed-version"></span></p>
-                                    <p class="age">uploaded <span class="processed-version-age"></span></p>
-                                </div>
-                                @break
-                        @endswitch
-                    </div>
+                    <span class="current-version-age"></span>
                     <div class="media-preview">
                         <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                     </div>
-                    <button type=button class="button button-hold hold-delete">
+                    <button type=button @class(['button', 'button-confirm', 'confirm-delete', 'd-hidden' => !$isReady && !$isProcessing])>
                         <span>Delete</span>
                         <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="Delete" class="icon">
                     </button>

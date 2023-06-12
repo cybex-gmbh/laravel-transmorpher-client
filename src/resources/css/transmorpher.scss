@@ -131,7 +131,9 @@
 .badge-processing {
   background-color: $processing;
 
-  @extend .loading-indicator
+  & > span:first-of-type {
+    @extend .loading-indicator
+  }
 }
 
 .badge-success {
@@ -145,7 +147,9 @@
 .badge-uploading {
   background-color: $uploading;
 
-  @extend .loading-indicator
+  & > span:first-of-type {
+    @extend .loading-indicator
+  }
 }
 
 .border-success {
@@ -179,7 +183,7 @@
   top: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
 }
 
@@ -192,10 +196,8 @@
   }
 }
 
-.version-information {
-  display: flex;
-  flex-direction: column;
-  gap: .6rem;
+.current-version-age {
+  text-align: center;
 }
 
 .version-list {
@@ -246,7 +248,7 @@
         padding: 1rem 1rem 56.25%;
       }
 
-      .hold-restore {
+      .confirm-restore {
         margin: 1rem
       }
     }
@@ -341,12 +343,6 @@
   }
 }
 
-.age {
-  line-height: .5;
-  font-size: small;
-  color: #4b5a6a;
-}
-
 .more-information-modal {
   justify-content: center;
   align-items: center;
@@ -374,31 +370,25 @@
         flex-direction: column;
         height: 100%;
         width: 25%;
-        border-right: 1px solid black;
         padding-right: 1rem;
 
-        .motif-info {
-          display: flex;
-          justify-content: space-between;
-          border-bottom: 1px solid black;
-          padding-right: .6rem;
+        .badge {
+          text-align: center;
           margin-bottom: 1rem;
 
-          .motif-name {
-            display: flex;
-            gap: .3rem;
-            align-items: center;
+          & span {
+            justify-content: center;
           }
         }
 
+        .motif-name {
+            display: flex;
+            gap: .3rem;
+            align-items: center;
+        }
+
         .media-preview {
-          margin-top: auto;
-
           @extend .transparency-indicator, .box-shadow-inset;
-
-          @media screen and (max-width: 935px) {
-            margin-top: 2rem;
-          }
         }
 
         .button {
@@ -447,26 +437,21 @@
   display: flex;
 }
 
-.button-hold {
+.button-confirm {
   display: flex;
   align-items: center;
   gap: .3rem;
-  transition: 1.5s;
-
-  &:active, &.active {
-    background-position: left;
-  }
 
   img {
     pointer-events: none;
   }
 }
 
-.hold-delete {
+.confirm-delete {
   margin-top: 1rem;
-  background: linear-gradient(to left, $error 50%, darken($error, 10%) 50%) right/200%;
+  background-color: $error;
 }
 
-.hold-restore {
-  background: linear-gradient(to left, $restoreButton 50%, darken($restoreButton, 10%) 50%) right/200%;
+.confirm-restore {
+  background-color: $restoreButton;
 }
