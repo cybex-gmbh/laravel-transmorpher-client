@@ -279,6 +279,9 @@ if (!window.transmorpherScriptLoaded) {
                         versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150`;
                         versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150 150w`;
                         break;
+                    case mediaTypes[VIDEO]:
+                        // Don't show video for now, will use thumbnails later.
+                        versionEntry.querySelector('.media-display').remove();
                 }
 
                 addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
