@@ -281,7 +281,7 @@ if (!window.transmorpherScriptLoaded) {
                         break;
                     case mediaTypes[VIDEO]:
                         // Don't show video for now, will use thumbnails later.
-                        versionEntry.querySelector('.media-display').closest('.media-preview').remove();
+                        versionEntry.querySelector('.media-preview').remove();
                 }
 
                 addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
