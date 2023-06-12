@@ -501,10 +501,14 @@
   z-index: 1;
   position: absolute;
   padding: 0.3rem;
-  background-color: rgba(255, 0, 0, 0.7294117647);
+  background-color: red;
   border: 1px solid red;
   border-radius: 0.15rem;
   box-shadow: 0 1px 1px 0 rgb(60, 75, 100), 0 2px 1px -1px rgb(60, 75, 100), 0 1px 3px 0 rgb(60, 75, 100);
+}
+.error-display .error-message {
+  color: white;
+  text-shadow: 1px 1px 2px black;
 }
 .error-display .btn-close {
   position: absolute;
