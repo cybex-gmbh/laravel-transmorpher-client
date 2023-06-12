@@ -27,7 +27,7 @@ if (!window.transmorpherScriptLoaded) {
     // Start polling if the video is still processing or an upload is in process.
     if (motif.isProcessing || motif.isUploading) {
       startPolling(transmorpherIdentifier, motif.latestUploadToken);
-      setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .").concat(motif.isProcessing ? 'processing' : 'upload', "-age")), getDateForDisplay(new Date(motif.lastUpdated * 1000)));
+      setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), getDateForDisplay(new Date(motif.lastUpdated * 1000)));
     }
     new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
       url: motif.webUploadUrl,

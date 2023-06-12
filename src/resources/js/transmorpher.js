@@ -24,7 +24,7 @@ if (!window.transmorpherScriptLoaded) {
         if (motif.isProcessing || motif.isUploading) {
             startPolling(transmorpherIdentifier, motif.latestUploadToken);
             setAgeElement(
-                document.querySelector(`#modal-mi-${transmorpherIdentifier} .${motif.isProcessing ? 'processing' : 'upload'}-age`),
+                document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
                 getDateForDisplay(new Date(motif.lastUpdated * 1000))
             );
         }
