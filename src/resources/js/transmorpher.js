@@ -133,7 +133,7 @@ if (!window.transmorpherScriptLoaded) {
                         // Processing has finished, the timer can be cleared.
                         clearInterval(window[statusPollingVariable]);
                         displayState(transmorpherIdentifier, 'success');
-                        resetAgeElements(transmorpherIdentifier);
+                        resetAgeElement(transmorpherIdentifier);
 
                         // Display the newly processed media and update links, also hide the placeholder image.
                         updateMediaDisplay(transmorpherIdentifier, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
@@ -150,17 +150,17 @@ if (!window.transmorpherScriptLoaded) {
                         }
 
                         displayState(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
-                        resetAgeElements(transmorpherIdentifier);
+                        resetAgeElement(transmorpherIdentifier);
                     }
                         break;
                     case 'uploading': {
                         displayState(transmorpherIdentifier, 'uploading', null, false);
-                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .upload-age`), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
+                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
                     }
                         break;
                     case 'processing': {
                         displayState(transmorpherIdentifier, 'processing', null, false);
-                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .processing-age`), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
+                        setAgeElement(document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`), getDateForDisplay(new Date(pollingInformation.lastUpdated)));
                     }
                         break;
                 }
@@ -173,9 +173,8 @@ if (!window.transmorpherScriptLoaded) {
         ageElement.closest('p').classList.remove('d-none');
     }
 
-    window.resetAgeElements = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-mi-${transmorpherIdentifier} .upload-age`).closest('p').classList.add('d-none')
-        document.querySelector(`#modal-mi-${transmorpherIdentifier} .processing-age`).closest('p').classList.add('d-none')
+    window.resetAgeElement = function (transmorpherIdentifier) {
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`).closest('p').classList.add('d-none')
     }
 
     window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
@@ -199,7 +198,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
-        resetAgeElements(transmorpherIdentifier);
+        resetAgeElement(transmorpherIdentifier);
 
         if (uploadResult.success) {
             document.querySelector(`#dz-${transmorpherIdentifier}`).classList.remove('dz-started');
@@ -364,7 +363,7 @@ if (!window.transmorpherScriptLoaded) {
                 displayCardBorderState(transmorpherIdentifier, 'processing')
                 updateVersionInformation(transmorpherIdentifier);
                 displayPlaceholder(transmorpherIdentifier);
-                resetAgeElements(transmorpherIdentifier);
+                resetAgeElement(transmorpherIdentifier);
 
                 document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge').classList.add('d-hidden');
                 document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.add('d-hidden');

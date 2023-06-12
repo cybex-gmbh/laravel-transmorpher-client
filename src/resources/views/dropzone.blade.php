@@ -57,8 +57,7 @@
                             @endif
                         </span>
                         <div class="motif-info">
-                            <p @class(['d-none' => !$isProcessing])>Processing started <span class="processing-age"></span></p>
-                            <p @class(['d-none' => !$isUploading])">Upload started <span class="upload-age"></span></p>
+                            <p @class(['d-none' => !$isProcessing || !$isUploading])>started <span class="age"></span></p>
                         </div>
                         <span class="error-message"></span>
                     </div>
