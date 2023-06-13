@@ -41,13 +41,6 @@ if (!window.transmorpherScriptLoaded) {
       uploadToken: null,
       createImageThumbnails: false,
       init: function init() {
-        // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
-        this.on('addedfile', function () {
-          if (this.files[1] != null) {
-            this.removeFile(this.files[0]);
-          }
-        });
-
         // Gets fired when upload is starting.
         this.on('processing', function () {
           fetch("".concat(motif.routes.setUploadingState, "/").concat(this.options.uploadToken), {
@@ -79,18 +72,26 @@ if (!window.transmorpherScriptLoaded) {
           }
         });
       },
+      // Update database when upload was canceled manually.
+      canceled: function canceled(file) {
+        var _file$xhr;
+        fetch("".concat(motifs[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(this.options.uploadToken), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-XSRF-TOKEN': getCsrfToken()
+          },
+          body: JSON.stringify({
+            response: this.options.dictUploadCanceled,
+            http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
+          })
+        });
+      },
       success: function success(file, response) {
-        var _this$element$querySe;
         this.element.querySelector('.dz-default').style.display = 'block';
-        (_this$element$querySe = this.element.querySelector('.dz-preview')) === null || _this$element$querySe === void 0 ? void 0 : _this$element$querySe.remove();
-
-        // Clear the old timer.
-        clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
       },
       error: function error(file, response) {
-        // Clear the old timer.
-        clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
       }
     });
@@ -161,8 +162,12 @@ if (!window.transmorpherScriptLoaded) {
     document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")).closest('p').classList.add('d-none');
   };
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
+    var _document$querySelect;
+    // Clear the old timer.
+    clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
+    (_document$querySelect = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
     if (uploadToken) {
-      var _file$xhr$status, _file$xhr;
+      var _file$xhr$status, _file$xhr2;
       fetch("".concat(motifs[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
         method: 'POST',
         headers: {
@@ -173,7 +178,7 @@ if (!window.transmorpherScriptLoaded) {
           // When the token retrieval failed, file doesn't contain the http code.
           // It is instead passed in the response of the token retrieval request.
           response: response,
-          http_code: (_file$xhr$status = (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status) !== null && _file$xhr$status !== void 0 ? _file$xhr$status : response === null || response === void 0 ? void 0 : response.http_code
+          http_code: (_file$xhr$status = (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status) !== null && _file$xhr$status !== void 0 ? _file$xhr$status : response === null || response === void 0 ? void 0 : response.http_code
         })
       }).then(function (response) {
         return response.json();
@@ -208,6 +213,7 @@ if (!window.transmorpherScriptLoaded) {
 
       // Start polling for updates when the upload was aborted due to another upload.
       if (uploadResult.httpCode === 404) {
+        clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         startPolling(transmorpherIdentifier, uploadResult.latestUploadToken);
         displayState(transmorpherIdentifier, 'uploading');
       }
@@ -463,11 +469,6 @@ if (!window.transmorpherScriptLoaded) {
     errorDisplay.classList.remove('d-none');
     errorDisplay.querySelector('.error-message').textContent = message;
     form.querySelector('.dz-default').style.display = 'block';
-
-    // Remove visual clutter.
-    form.querySelector('.dz-preview').style.display = 'none';
-    form.querySelector('.dz-progress').style.display = 'none';
-    form.querySelector('.dz-details').style.display = 'none';
   };
   window.setModalErrorMessage = function (transmorpherIdentifier, message) {
     document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = message;
@@ -483,17 +484,27 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
     var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
+    var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
+    var previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
     modal.classList.add('d-flex');
+    previewElement ? previewElement.style.display = 'none' : null;
     modal.querySelector('.badge-error').onclick = function () {
-      closeUploadConfirmModal(transmorpherIdentifier);
+      if (dropzone.files[1] != null) {
+        dropzone.removeFile(dropzone.files[0]);
+      }
+      previewElement ? previewElement.style.display = 'block' : null;
+      document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
       callback();
     };
   };
   window.closeUploadConfirmModal = function (transmorpherIdentifier) {
-    var _document$querySelect;
+    var _document$querySelect2;
     document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
-    document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
-    (_document$querySelect = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview"))) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+    (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.remove();
+    if (document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview:not(.dz-processing)"))) {
+      document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview")).remove();
+      document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
+    }
     getState(transmorpherIdentifier).then(function (stateResponse) {
       // Clear any potential timer to prevent running two at the same time.
       clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
@@ -548,12 +559,12 @@ if (!window.transmorpherScriptLoaded) {
     };
   };
   window.closeErrorMessage = function (closeButton, transmorpherIdentifier) {
-    var _document$querySelect2, _closeButton$closest$;
+    var _document$querySelect3, _closeButton$closest$;
     closeButton.closest('.error-display').classList.add('d-none');
 
     // Reset errors.
     resetModalErrorMessageDisplay(transmorpherIdentifier);
-    (_document$querySelect2 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-none');
+    (_document$querySelect3 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.classList.add('d-none');
     (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 ? void 0 : _closeButton$closest$.classList.add('d-hidden');
     closeButton.closest('.card').classList.remove('border-error');
   };

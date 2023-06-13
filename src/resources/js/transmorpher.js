@@ -41,13 +41,6 @@ if (!window.transmorpherScriptLoaded) {
             uploadToken: null,
             createImageThumbnails: false,
             init: function () {
-                // Remove all other files when a new file is dropped in. Only 1 simultaneous upload is allowed.
-                this.on('addedfile', function () {
-                    if (this.files[1] != null) {
-                        this.removeFile(this.files[0]);
-                    }
-                });
-
                 // Gets fired when upload is starting.
                 this.on('processing', function () {
                     fetch(`${motif.routes.setUploadingState}/${this.options.uploadToken}`, {
@@ -85,12 +78,18 @@ if (!window.transmorpherScriptLoaded) {
                         }
                     })
             },
+            // Update database when upload was canceled manually.
+            canceled: function (file) {
+                fetch(`${motifs[transmorpherIdentifier].routes.handleUploadResponse}/${this.options.uploadToken}`, {
+                    method: 'POST', headers: {
+                        'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
+                    }, body: JSON.stringify({
+                        response: this.options.dictUploadCanceled, http_code: file.xhr?.status
+                    })
+                })
+            },
             success: function (file, response) {
                 this.element.querySelector('.dz-default').style.display = 'block';
-                this.element.querySelector('.dz-preview')?.remove();
-
-                // Clear the old timer.
-                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
 
                 handleUploadResponse(
                     file,
@@ -100,9 +99,6 @@ if (!window.transmorpherScriptLoaded) {
                 );
             },
             error: function (file, response) {
-                // Clear the old timer.
-                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
-
                 handleUploadResponse(
                     file,
                     response,
@@ -178,6 +174,10 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
+        // Clear the old timer.
+        clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+        document.querySelector(`#dz-${transmorpherIdentifier}`).querySelector('.dz-preview')?.remove();
+
         if (uploadToken) {
             fetch(`${motifs[transmorpherIdentifier].routes.handleUploadResponse}/${uploadToken}`, {
                 method: 'POST', headers: {
@@ -225,6 +225,7 @@ if (!window.transmorpherScriptLoaded) {
 
             // Start polling for updates when the upload was aborted due to another upload.
             if (uploadResult.httpCode === 404) {
+                clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
                 startPolling(transmorpherIdentifier, uploadResult.latestUploadToken);
                 displayState(transmorpherIdentifier, 'uploading');
             }
@@ -506,11 +507,6 @@ if (!window.transmorpherScriptLoaded) {
         errorDisplay.classList.remove('d-none');
         errorDisplay.querySelector('.error-message').textContent = message
         form.querySelector('.dz-default').style.display = 'block';
-
-        // Remove visual clutter.
-        form.querySelector('.dz-preview').style.display = 'none';
-        form.querySelector('.dz-progress').style.display = 'none';
-        form.querySelector('.dz-details').style.display = 'none';
     }
 
     window.setModalErrorMessage = function (transmorpherIdentifier, message) {
@@ -531,17 +527,30 @@ if (!window.transmorpherScriptLoaded) {
 
     window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
         let modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
+        let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
+        let previewElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`);
+
         modal.classList.add('d-flex');
+        previewElement ? previewElement.style.display = 'none' : null;
+
         modal.querySelector('.badge-error').onclick = function () {
-            closeUploadConfirmModal(transmorpherIdentifier);
+            if (dropzone.files[1] != null) {
+                dropzone.removeFile(dropzone.files[0]);
+            }
+
+            previewElement ? previewElement.style.display = 'block' : null;
+            document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.remove('d-flex');
             callback();
         }
     }
 
     window.closeUploadConfirmModal = function (transmorpherIdentifier) {
         document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.remove('d-flex');
-        document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
-        document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview`)?.remove();
+        document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`)?.remove();
+        if (document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview:not(.dz-processing)`)) {
+            document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview`).remove();
+            document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
+        }
 
         getState(transmorpherIdentifier).then(stateResponse => {
             // Clear any potential timer to prevent running two at the same time.
