@@ -220,8 +220,8 @@ if (!window.transmorpherScriptLoaded) {
                     break;
             }
         } else {
-            // There was an error.
-            displayState(transmorpherIdentifier, 'error', uploadResult.clientMessage);
+            // There was an error. When the file was not accepted, e.g. due to a too large file size, the uploadResult only contains a string.
+            displayState(transmorpherIdentifier, 'error', uploadResult.clientMessage ?? uploadResult);
 
             // Start polling for updates when the upload was aborted due to another upload.
             if (uploadResult.httpCode === 404) {
@@ -229,6 +229,9 @@ if (!window.transmorpherScriptLoaded) {
                 displayState(transmorpherIdentifier, 'uploading');
             }
         }
+
+        // Reset the upload token to prevent issues with further uploads.
+        document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone.options.uploadToken = null;
     }
 
     window.updateVersionInformation = function (transmorpherIdentifier) {
