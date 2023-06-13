@@ -159,13 +159,14 @@ if (!window.transmorpherScriptLoaded) {
     ageElement.closest('p').classList.remove('d-none');
   };
   window.resetAgeElement = function (transmorpherIdentifier) {
-    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")).closest('p').classList.add('d-none');
+    var _document$querySelect, _document$querySelect2;
+    (_document$querySelect = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age"))) === null || _document$querySelect === void 0 ? void 0 : (_document$querySelect2 = _document$querySelect.closest('p')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-none');
   };
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
-    var _document$querySelect;
+    var _document$querySelect3;
     // Clear the old timer.
     clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-    (_document$querySelect = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.remove();
+    (_document$querySelect3 = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.remove();
     if (uploadToken) {
       var _file$xhr$status, _file$xhr2;
       fetch("".concat(motifs[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
@@ -230,7 +231,7 @@ if (!window.transmorpherScriptLoaded) {
     // Clear the list of versions.
     versionList.replaceChildren();
 
-    // We will always need a entry to be able to clone it, even when everything is deleted.
+    // We will always need an entry to be able to clone it, even when everything is deleted.
     versionList.append(defaultVersionEntry);
 
     // Get all versions for this media.
@@ -242,17 +243,37 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (versionInformation) {
+      if (!versionInformation.currentVersion) {
+        displayPlaceholder(transmorpherIdentifier);
+        document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
+        return;
+      }
+      document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
+      getState(transmorpherIdentifier).then(function (stateResponse) {
+        if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
+          // Clear any potential timer to prevent running two at the same time.
+          clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
+          displayState(transmorpherIdentifier, stateResponse.state);
+          startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
+        }
+      });
       var versions = versionInformation.success ? versionInformation.versions : [];
       var versionAge;
       switch (motifs[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentVersion] * 1000));
+          updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion);
           break;
         case mediaTypes[VIDEO]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
+          if (versionInformation.currentlyProcessedVersion) {
+            updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl);
+          }
           break;
       }
-      modal.querySelector('.current-version-age').textContent = versionAge;
+      var currentVersionAgeElement = modal.querySelector('.current-version-age');
+      currentVersionAgeElement.textContent = versionAge;
+      currentVersionAgeElement.classList.remove('d-none');
       Object.keys(versions).sort(function (a, b) {
         return versions[b] - versions[a];
       }).forEach(function (version) {
@@ -347,7 +368,6 @@ if (!window.transmorpherScriptLoaded) {
         displayCardBorderState(transmorpherIdentifier, 'processing');
         updateVersionInformation(transmorpherIdentifier);
         displayPlaceholder(transmorpherIdentifier);
-        resetAgeElement(transmorpherIdentifier);
         document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge').classList.add('d-hidden');
         document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
       } else {
@@ -416,6 +436,7 @@ if (!window.transmorpherScriptLoaded) {
       image.srcset = '';
       image.classList.remove('d-none');
     });
+    document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .current-version-age")).classList.add('d-none');
   };
   window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, cacheKiller) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
@@ -498,9 +519,9 @@ if (!window.transmorpherScriptLoaded) {
     };
   };
   window.closeUploadConfirmModal = function (transmorpherIdentifier) {
-    var _document$querySelect2;
+    var _document$querySelect4;
     document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
-    (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.remove();
+    (_document$querySelect4 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.remove();
     if (document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview:not(.dz-processing)"))) {
       document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview")).remove();
       document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
@@ -559,12 +580,12 @@ if (!window.transmorpherScriptLoaded) {
     };
   };
   window.closeErrorMessage = function (closeButton, transmorpherIdentifier) {
-    var _document$querySelect3, _closeButton$closest$;
+    var _document$querySelect5, _closeButton$closest$;
     closeButton.closest('.error-display').classList.add('d-none');
 
     // Reset errors.
     resetModalErrorMessageDisplay(transmorpherIdentifier);
-    (_document$querySelect3 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.classList.add('d-none');
+    (_document$querySelect5 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect5 === void 0 ? void 0 : _document$querySelect5.classList.add('d-none');
     (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 ? void 0 : _closeButton$closest$.classList.add('d-hidden');
     closeButton.closest('.card').classList.remove('border-error');
   };

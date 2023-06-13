@@ -170,7 +170,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.resetAgeElement = function (transmorpherIdentifier) {
-        document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`).closest('p').classList.add('d-none')
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`)?.closest('p')?.classList.add('d-none')
     }
 
     window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
@@ -243,7 +243,7 @@ if (!window.transmorpherScriptLoaded) {
         // Clear the list of versions.
         versionList.replaceChildren();
 
-        // We will always need a entry to be able to clone it, even when everything is deleted.
+        // We will always need an entry to be able to clone it, even when everything is deleted.
         versionList.append(defaultVersionEntry);
 
         // Get all versions for this media.
@@ -254,19 +254,43 @@ if (!window.transmorpherScriptLoaded) {
         }).then(response => {
             return response.json();
         }).then(versionInformation => {
+            if (!versionInformation.currentVersion) {
+                displayPlaceholder(transmorpherIdentifier);
+                document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.add('d-hidden');
+
+                return;
+            }
+
+            document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.remove('d-hidden');
+            getState(transmorpherIdentifier)
+                .then(stateResponse => {
+                    if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
+                        // Clear any potential timer to prevent running two at the same time.
+                        clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
+                        displayState(transmorpherIdentifier, stateResponse.state);
+                        startPolling(transmorpherIdentifier, stateResponse.latestUploadToken)
+                    }
+                })
+
             let versions = versionInformation.success ? versionInformation.versions : [];
 
             let versionAge;
             switch (motifs[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentVersion]) * 1000));
+                    updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion)
                     break;
                 case mediaTypes[VIDEO]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000));
+                    if (versionInformation.currentlyProcessedVersion) {
+                        updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl);
+                    }
                     break;
             }
 
-            modal.querySelector('.current-version-age').textContent = versionAge;
+            let currentVersionAgeElement = modal.querySelector('.current-version-age');
+            currentVersionAgeElement.textContent = versionAge;
+            currentVersionAgeElement.classList.remove('d-none');
 
             Object.keys(versions).sort((a, b) => versions[b] - versions[a]).forEach(version => {
                 // Don't show the currently processed or current version.
@@ -370,7 +394,6 @@ if (!window.transmorpherScriptLoaded) {
                 displayCardBorderState(transmorpherIdentifier, 'processing')
                 updateVersionInformation(transmorpherIdentifier);
                 displayPlaceholder(transmorpherIdentifier);
-                resetAgeElement(transmorpherIdentifier);
 
                 document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge').classList.add('d-hidden');
                 document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.add('d-hidden');
@@ -446,6 +469,8 @@ if (!window.transmorpherScriptLoaded) {
             image.srcset = '';
             image.classList.remove('d-none');
         })
+
+        document.querySelector(`#modal-mi-${transmorpherIdentifier} .current-version-age`).classList.add('d-none');
     }
 
     window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, cacheKiller) {

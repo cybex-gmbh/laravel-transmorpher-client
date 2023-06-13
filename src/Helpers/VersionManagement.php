@@ -18,7 +18,14 @@ class VersionManagement
      */
     public function getVersions(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json($transmorpherMedia->getTransmorpher()->getVersions());
+        return response()->json(
+            array_merge(
+                $transmorpherMedia->getTransmorpher()->getVersions(), [
+                    'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getThumbnailUrl(), $transmorpherMedia->updated_at),
+                    'publicPath' => $transmorpherMedia->public_path,
+                ]
+            )
+        );
     }
 
     /**
