@@ -379,7 +379,7 @@
   background-color: orange;
 }
 .badge-success {
-  background-color: green;
+  background-color: #01bf01;
 }
 
 .badge-error {
@@ -390,7 +390,7 @@
   background-color: #68dec6;
 }
 .border-success {
-  border-color: green;
+  border-color: #01bf01;
 }
 
 .border-error {
