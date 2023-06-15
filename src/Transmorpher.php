@@ -74,7 +74,7 @@ abstract class Transmorpher
         try {
             $response = $this->configureApiRequest()
                 ->attach('file', $fileHandle)
-                ->post($this->getS2sApiUrl(sprintf('%s/upload/%s', $this->type->value, $tokenResponse['upload_token'])));
+                ->post($this->getS2sApiUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
 
             $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
