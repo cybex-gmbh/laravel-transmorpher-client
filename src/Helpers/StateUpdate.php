@@ -21,7 +21,6 @@ class StateUpdate
     {
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
-
         // If no upload token was provided, return information for latest upload.
         if ($request->input('upload_token') && $request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
             $message = 'Canceled by a new upload.';
