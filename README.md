@@ -203,7 +203,7 @@ If you want a more dynamic approach, to display a dropzone for each available im
 
 ```html
 @foreach($yourModel->images() as $imageMotif)
-<x-transmorpher::dropzone :motif="$imageMotif"></x-transmorpher::dropzone>
+    <x-transmorpher::dropzone :motif="$imageMotif"></x-transmorpher::dropzone>
 @endforeach
 ```
 
