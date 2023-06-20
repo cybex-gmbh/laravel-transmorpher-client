@@ -191,7 +191,6 @@ php artisan vendor:publish --tag=transmorpher.views
 To use the dropzone component in a template, you can simply include it like this:
 
 ```html
-
 <x-transmorpher::dropzone :motif="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
