@@ -56,6 +56,10 @@ if (!window.transmorpherScriptLoaded) {
           displayState(transmorpherIdentifier, 'uploading', null, false);
           startPolling(transmorpherIdentifier, this.options.uploadToken);
         });
+        this.on('sending', function (file, xhr, formData) {
+          // Add identifier to request body.
+          formData.append('identifier', transmorpherIdentifier);
+        });
       },
       accept: function accept(file, done) {
         // Remove previous elements to maintain a clean overlay.
