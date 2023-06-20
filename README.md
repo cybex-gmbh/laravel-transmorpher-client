@@ -85,9 +85,6 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define
 a method for each image or video you want the model to have.
 
-**_NOTE:_** This package uses polymorphic relations. You will have to set a morph alias without any special characters
-(e.g. slashes), as it will be used for passing a unique identifier to the Transmorpher media server.
-
 For images you will have to return an instance of an ImageTransmorpher:
 
 ```php
@@ -111,19 +108,38 @@ public function video(): VideoTransmorpher
 }
 ```
 
+#### Identifier
+
+To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of a motif, a morphable id and a morph alias by default.
+Instead of using the morph alias, you can add the property `transmorpherAlias` to your model, which will then be used for the identifier.
+
+```php
+class YourModel extends Model implements HasTransmorpherMediaInterface
+{
+    use HasTransmorpherMedia
+   
+    protected string $transmorpherAlias = 'yourAlias';
+    
+    ...
+}
+```
+
+**_NOTE:_** As the identifier is used in filenames and URLs, neither the morph alias nor `$transmorpherAlias` may contain special characters (e.g. slashes).
+
 #### Dynamic images & videos
 
-If you need a more dynamic approach to defining images or videos for a model, you can also define an array and use the methods which are provided by the `HasTransmorpherMedia` trait.
+If you need a more dynamic approach to defining images or videos for a model, you can also define an array and use the methods which are provided by the `HasTransmorpherMedia`
+trait.
 
 **_NOTE:_** These property names are not customizable when using the trait.
 
 ```php
-protected $transmorpherImages = [
+protected array $transmorpherImages = [
     'frontView',
     'sideView',
 ];
 
-protected $transmorpherVideos = [];
+protected array $transmorpherVideos = [];
 ```
 
 The trait provides the methods `images()` and `videos()`, which will return a collection with the motifs as key and the corresponding `Transmorpher` class as value.
@@ -187,7 +203,7 @@ If you want a more dynamic approach, to display a dropzone for each available im
 
 ```html
 @foreach($yourModel->images() as $imageMotif)
-    <x-transmorpher::dropzone :motif="$imageMotif"></x-transmorpher::dropzone>
+<x-transmorpher::dropzone :motif="$imageMotif"></x-transmorpher::dropzone>
 @endforeach
 ```
 
