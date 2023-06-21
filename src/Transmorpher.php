@@ -67,7 +67,7 @@ abstract class Transmorpher
         $tokenResponse = $this->reserveUploadSlot();
         $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
-        if (!$tokenResponse['success']) {
+        if ($tokenResponse['state'] === UploadState::ERROR) {
             return $upload->complete($tokenResponse);
         }
 
@@ -101,14 +101,15 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['success']) {
-            $upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
-        } else {
-            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
+        $valuesToUpdate = ['state' => $clientResponse['state'], 'message' => $clientResponse['message']];
+
+        if ($clientResponse['state'] !== UploadState::ERROR->value) {
+            $valuesToUpdate['token'] = $clientResponse['upload_token'];
         }
+
+        $upload->update($valuesToUpdate);
 
         return $clientResponse;
     }
@@ -127,19 +128,17 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['success']) {
+        if ($clientResponse['state'] === UploadState::DELETED->value) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
-            $upload->update(['state' => UploadState::DELETED, 'message' => $clientResponse['response']]);
         } else {
             if ($clientResponse['httpCode'] === 404) {
                 $clientResponse ['clientMessage'] = 'Media is already deleted.';
             }
-
-            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
+
+        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
 
         return $clientResponse;
     }
@@ -226,7 +225,7 @@ abstract class Transmorpher
      */
     public function getClientResponse(array $response, int $httpCode): array
     {
-        $clientResponse = ($response['success'] ?? false) ? $response : ClientResponse::tryFrom($httpCode)?->getResponse($response);
+        $clientResponse = (isset($response['state']) && $response['state'] !== UploadState::ERROR->value) ? $response : ClientResponse::tryFrom($httpCode)?->getResponse($response);
 
         // tryFrom will return null if the code is not defined in the enum.
         return $clientResponse ?? ClientResponse::getDefaultResponse($response, $httpCode);

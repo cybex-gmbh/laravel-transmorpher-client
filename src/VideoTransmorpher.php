@@ -4,7 +4,6 @@ namespace Transmorpher;
 
 use Illuminate\Http\Client\Response;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherUpload;
 
 class VideoTransmorpher extends Transmorpher
@@ -54,7 +53,7 @@ class VideoTransmorpher extends Transmorpher
      */
     public function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
     {
-        $upload->update(['token' => $clientResponse['upload_token'], 'state' => UploadState::PROCESSING, 'message' => $clientResponse['response']]);
+        $upload->update(['token' => $clientResponse['upload_token'], 'state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
     }
 
     /**
