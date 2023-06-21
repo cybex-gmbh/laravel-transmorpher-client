@@ -4,6 +4,7 @@ namespace Transmorpher\Helpers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
@@ -28,7 +29,7 @@ class UploadToken
     public function handleUploadResponse(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
         // Errors directly returned from dropzone are strings.
-        $response = is_array($request->input('response')) ? $request->input('response') : ['success' => false, 'clientMessage' => $request->input('response'), 'serverResponse' => $request->input('response')];
+        $response = is_array($request->input('response')) ? $request->input('response') : ['state' => UploadState::ERROR->value, 'clientMessage' => $request->input('response'), 'message' => $request->input('response')];
 
         return response()->json($transmorpherUpload->complete($response, $request->input('http_code')));
     }

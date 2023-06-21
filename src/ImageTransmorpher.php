@@ -5,7 +5,6 @@ namespace Transmorpher;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherUpload;
 
 class ImageTransmorpher extends Transmorpher
@@ -71,7 +70,7 @@ class ImageTransmorpher extends Transmorpher
     public function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
     {
         $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
-        $upload->update(['state' => UploadState::SUCCESS, 'message' => $clientResponse['response']]);
+        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
     }
 
     /**
