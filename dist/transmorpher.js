@@ -543,7 +543,6 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (getUploadTokenResult) {
-      console.log(getUploadTokenResult);
       if (getUploadTokenResult.state === 'error') {
         done(getUploadTokenResult);
       }
