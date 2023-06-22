@@ -40,6 +40,8 @@ if (!window.transmorpherScriptLoaded) {
       paramName: 'file',
       uploadToken: null,
       createImageThumbnails: false,
+      dictDefaultMessage: 'translate this',
+      dictUploadCanceled: 'this also',
       init: function init() {
         // Gets fired when upload is starting.
         this.on('processing', function () {
