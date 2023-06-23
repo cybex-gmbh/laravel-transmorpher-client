@@ -56,10 +56,11 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 }
 ```
 
-To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define a method for
-each image or video you want the model to have.
+To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define
+a method for each image or video you want the model to have.
 
-**_NOTE:_** This package uses polymorphic relations. You might want to set a morph alias for your class.
+**_NOTE:_** This package uses polymorphic relations. You will have to set a morph alias without any special characters
+(e.g. slashes), as it will be used for passing a unique identifier to the Transmorpher media server.
 
 For images you will have to return an instance of an ImageTransmorpher:
 

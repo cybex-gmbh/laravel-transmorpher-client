@@ -4,9 +4,11 @@ namespace Transmorpher;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
 use Transmorpher\Enums\Transformation;
+use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherProtocol;
 
@@ -232,5 +234,18 @@ abstract class Transmorpher
         }
 
         return implode('+', $transformationParts ?? []);
+    }
+
+    /**
+     * Validate the identifier to make sure it doesn't contain forbidden characters.
+     * @throws InvalidIdentifierException
+     */
+    protected function validateIdentifier(HasTransmorpherMediaInterface $model, string $differentiator): void
+    {
+        if (Str::contains($this->getIdentifier(), ['/', '\\', '.', ':'])) {
+            $this->transmorpherMedia->delete();
+
+            throw new InvalidIdentifierException($model, $differentiator);
+        }
     }
 }
