@@ -17,6 +17,8 @@ class VideoTransmorpher extends Transmorpher
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
         $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::VIDEO]);
+
+        $this->validateIdentifier($model, $differentiator);
     }
 
     /**
