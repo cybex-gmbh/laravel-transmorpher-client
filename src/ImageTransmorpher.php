@@ -3,7 +3,6 @@
 namespace Transmorpher;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\State;
