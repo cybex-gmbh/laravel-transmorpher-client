@@ -3,47 +3,21 @@
 namespace Transmorpher;
 
 use Illuminate\Support\Facades\Http;
-use InvalidArgumentException;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
-use Transmorpher\Exceptions\InvalidIdentifierException;
 
 class ImageTransmorpher extends Transmorpher
 {
+    protected MediaType $type = MediaType::IMAGE;
+
     /**
      * Create a new ImageTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $differentiator
-     * @throws InvalidIdentifierException
      */
     protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
     {
-        $this->transmorpherMedia = $model->TransmorpherMedia()->firstOrCreate(['differentiator' => $differentiator, 'type' => MediaType::IMAGE]);
-
-        $this->validateIdentifier($model, $differentiator);
-    }
-
-    /**
-     * Upload an image to the Transmorpher.
-     *
-     * @param resource $fileHandle
-     *
-     * @return array The Transmorpher response.
-     */
-    public function upload($fileHandle): array
-    {
-        if (!is_resource($fileHandle)) {
-            throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
-        }
-
-        $request = $this->configureApiRequest();
-        $protocolEntry = $this->transmorpherMedia->TransmorpherProtocols()->create(['state' => State::PROCESSING, 'id_token' => $this->getIdToken()]);
-        $response = $request
-            ->attach('image', $fileHandle)
-            ->post($this->getApiUrl('image/upload'), ['identifier' => $this->getIdentifier()]);
-
-        return $this->handleUploadResponse(json_decode($response->body(), true), $protocolEntry);
+        $this->createTransmorpherMedia();
     }
 
     /**
@@ -55,7 +29,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getOriginal(int $versionNumber): string
     {
-        return $this->configureApiRequest()->get($this->getApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)))->body();
+        return $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)))->body();
     }
 
     /**

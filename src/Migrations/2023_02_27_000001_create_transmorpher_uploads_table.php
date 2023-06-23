@@ -15,11 +15,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('transmorpher_protocols', function (Blueprint $table) {
+        Schema::create('transmorpher_uploads', function (Blueprint $table) {
             $table->id();
-            $table->enum('state', ['processing', 'error', 'success', 'deleted']);
-            $table->string('message')->nullable();
-            $table->string('id_token')->unique();
+            $table->enum('state', ['initializing', 'processing', 'error', 'success', 'deleted']);
+            $table->string('message');
+            $table->string('token')->unique()->nullable();
             $table->foreignId('transmorpher_media_id')->constrained();
             $table->timestamps();
         });
