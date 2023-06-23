@@ -2,9 +2,12 @@
 
 namespace Transmorpher;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
+use Transmorpher\Helpers\StateUpdate;
+use Transmorpher\Helpers\UploadToken;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {
@@ -16,11 +19,22 @@ class TransmorpherServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
-            ], 'transmorpher.config');
+            ], ['transmorpher', 'transmorpher.config']);
+
+            $this->publishes([
+                __DIR__ . '/../dist' => public_path('vendor/transmorpher'),
+            ], ['transmorpher', 'transmorpher.assets']);
+
+            $this->publishes([
+                __DIR__ . '/resources/views' => resource_path('views/vendor/transmorpher'),
+            ], ['transmorpher', 'transmorpher.views']);
         }
 
         $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
         $this->registerRoutes();
+        $this->loadViewsFrom(__DIR__ . '/resources/views', 'transmorpher');
+
+        Blade::componentNamespace('Transmorpher\\ViewComponents', 'transmorpher');
     }
 
     /**
@@ -35,5 +49,10 @@ class TransmorpherServiceProvider extends ServiceProvider
     protected function registerRoutes()
     {
         Route::post(config('transmorpher.api.callback_route'), Callback::class)->name('transmorpherCallback');
+        Route::middleware('web')->group(function () {
+            Route::post('transmorpher/{transmorpherMedia}/token', [UploadToken::class, 'getUploadToken'])->name('transmorpherUploadToken');
+            Route::post('transmorpher/handleUploadResponse/{transmorpherMedia}/{transmorpherUpload}', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
+            Route::post('transmorpher/{transmorpherMedia}/stateUpdate', StateUpdate::class)->name('transmorpherStateUpdate');
+        });
     }
 }

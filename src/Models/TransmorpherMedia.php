@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\State;
+use Transmorpher\Enums\UploadState;
+use Transmorpher\Transmorpher;
 
 class TransmorpherMedia extends Model
 {
@@ -25,7 +26,8 @@ class TransmorpherMedia extends Model
         'public_path',
         'type',
         'is_ready',
-        'last_response'
+        'latest_upload_state',
+        'latest_upload_token'
     ];
 
     /**
@@ -35,9 +37,8 @@ class TransmorpherMedia extends Model
      */
     protected $casts = [
         'type' => MediaType::class,
-        'last_response' => State::class,
+        'latest_upload_state' => UploadState::class,
     ];
-
 
     /**
      * Return the parent transmorphable model.
@@ -50,12 +51,17 @@ class TransmorpherMedia extends Model
     }
 
     /**
-     * Return TransmorpherProtocols for this TransmorpherMedia.
+     * Return TransmorpherUploads for this TransmorpherMedia.
      *
      * @return HasMany
      */
-    public function TransmorpherProtocols(): HasMany
+    public function TransmorpherUploads(): HasMany
     {
-        return $this->hasMany(TransmorpherProtocol::class);
+        return $this->hasMany(TransmorpherUpload::class);
+    }
+
+    public function getTransmorpher(): Transmorpher
+    {
+        return $this->type->getTransmorpherClass()::getInstanceFor($this->Transmorphable, $this->differentiator);
     }
 }
