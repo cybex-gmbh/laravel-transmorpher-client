@@ -16,6 +16,7 @@ if (!window.transmorpherScriptLoaded) {
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
   window.mediaTypes = {};
   window.transformations = {};
+  window.translations = {};
   window.motifs = [];
   var IMAGE = 'IMAGE';
   var VIDEO = 'VIDEO';
@@ -40,8 +41,7 @@ if (!window.transmorpherScriptLoaded) {
       paramName: 'file',
       uploadToken: null,
       createImageThumbnails: false,
-      dictDefaultMessage: 'translate this',
-      dictUploadCanceled: 'this also',
+      dictDefaultMessage: translations['drop_files_to_upload'],
       init: function init() {
         // Gets fired when upload is starting.
         this.on('processing', function () {
@@ -479,7 +479,7 @@ if (!window.transmorpherScriptLoaded) {
   window.displayStateInformation = function (stateInfoElement, state) {
     stateInfoElement.className = '';
     stateInfoElement.classList.add('badge', "badge-".concat(state));
-    stateInfoElement.querySelector('span:first-of-type').textContent = "".concat(state[0].toUpperCase()).concat(state.slice(1));
+    stateInfoElement.querySelector('span:first-of-type').textContent = translations[state];
   };
   window.displayCardBorderState = function (transmorpherIdentifier, state) {
     var card = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card');
@@ -609,7 +609,7 @@ if (!window.transmorpherScriptLoaded) {
         pressedOnce = false;
         clearTimeout(timeOut);
       } else {
-        button.querySelector('span').textContent = 'Press again to confirm';
+        button.querySelector('span').textContent = translations['press_again_confirm'];
         pressedOnce = true;
         timeOut = setTimeout(function () {
           pressedOnce = false;

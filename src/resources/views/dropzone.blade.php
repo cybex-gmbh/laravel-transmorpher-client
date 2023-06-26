@@ -18,9 +18,9 @@
             <div @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-hidden' => !$isProcessing && !$isUploading])>
                 <span>
                     @if($isProcessing)
-                        Processing
+                        {{ trans('transmorpher::dropzone.processing') }}
                     @else
-                        Uploading
+                        {{ trans('transmorpher::dropzone.uploading') }}
                     @endif
                 </span>
             </div>
@@ -51,13 +51,13 @@
                     <div @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-none' => !$isProcessing && !$isUploading])>
                         <span>
                             @if($isProcessing)
-                                Processing
+                                {{ trans('transmorpher::dropzone.processing') }}
                             @else
-                                Uploading
+                                {{ trans('transmorpher::dropzone.uploading') }}
                             @endif
                         </span>
                         <div class="motif-info">
-                            <p @class(['d-none' => !$isProcessing || !$isUploading])>started <span class="age"></span></p>
+                            <p @class(['d-none' => !$isProcessing || !$isUploading])>{{ trans('transmorpher::dropzone.started') }} <span class="age"></span></p>
                         </div>
                         <span class="error-message"></span>
                     </div>
@@ -66,7 +66,7 @@
                         <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                     </div>
                     <button type=button @class(['button', 'button-confirm', 'confirm-delete', 'd-hidden' => !$isReady && !$isProcessing])>
-                        <span>Delete</span>
+                        <span>{{ trans('transmorpher::dropzone.delete') }}</span>
                         <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="Delete" class="icon">
                     </button>
                 </div>
@@ -89,19 +89,19 @@
         <div class="card-header">
             @switch($mediaType)
                 @case(\Transmorpher\Enums\MediaType::IMAGE)
-                    There is currently an upload in process, do you want to overwrite it?
+                    {{ trans('transmorpher::dropzone.image_in_process') }}
                     @break
                 @case(\Transmorpher\Enums\MediaType::VIDEO)
-                    A video is currently uploading or processing, do you want to overwrite it?
+                    {{ trans('transmorpher::dropzone.video_in_process') }}
                     @break
             @endswitch
         </div>
         <div class="card-body">
             <button class="button" onclick="closeUploadConfirmModal('{{ $motif->getIdentifier() }}')">
-                Cancel
+                {{ trans('transmorpher::dropzone.cancel') }}
             </button>
             <button class="button badge-error">
-                Overwrite
+                {{ trans('transmorpher::dropzone.overwrite') }}
             </button>
         </div>
     </div>
@@ -110,6 +110,7 @@
 <script type="text/javascript">
     mediaTypes = {!! json_encode($mediaTypes) !!};
     transformations = {!! json_encode($srcSetTransformations) !!};
+    translations = {!! json_encode($translations) !!}
     motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
