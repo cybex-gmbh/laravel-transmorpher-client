@@ -6,11 +6,12 @@
         <div class="card-header">
             <div>
                 <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
-                     alt="{{ $mediaType->value }}" class="icon">
+                     alt="{{ trans('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value]) }}" class="icon">
                 {{ $differentiator }}
             </div>
             <div class="details">
-                <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="More information" class="icon"
+                <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="{{ trans('transmorpher::image-alt-tags.open_more_information_modal') }}"
+                     class="icon"
                      onclick="openMoreInformationModal('{{ $motif->getIdentifier() }}')">
             </div>
         </div>
@@ -41,7 +42,7 @@
             <div class="card-header">
                 <div class="motif-name">
                     <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
-                         alt="{{ $mediaType->value }}" class="icon">
+                         alt="{{ trans('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value]) }}" class="icon">
                     {{ $differentiator }}
                 </div>
                 <button class="btn-close" onclick="closeMoreInformationModal('{{ $motif->getIdentifier() }}')">⨉</button>
@@ -67,7 +68,7 @@
                     </div>
                     <button type=button @class(['button', 'button-confirm', 'confirm-delete', 'd-hidden' => !$isReady && !$isProcessing])>
                         <span>{{ trans('transmorpher::dropzone.delete') }}</span>
-                        <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="Delete" class="icon">
+                        <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="{{ trans('transmorpher::image-alt-tags.icon', ['iconFor' => 'Delete media']) }}" class="icon">
                     </button>
                 </div>
                 <div class="card-main">
@@ -111,7 +112,7 @@
     mediaTypes = {!! json_encode($mediaTypes) !!};
     transformations = {!! json_encode($srcSetTransformations) !!};
     translations = {!! json_encode($translations) !!}
-    motifs['{{ $motif->getIdentifier() }}'] = {
+        motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
             state: '{{ $stateRoute }}',

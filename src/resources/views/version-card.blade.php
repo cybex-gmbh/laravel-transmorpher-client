@@ -8,7 +8,7 @@
         </div>
         <button class="button button-confirm confirm-restore">
             <span>Restore</span>
-            <img src="{{ mix('icons/restore.svg', 'vendor/transmorpher') }}" alt="Restore" class="icon">
+            <img src="{{ mix('icons/restore.svg', 'vendor/transmorpher') }}" alt="{{ trans('transmorpher::image-alt-tags.icon', ['iconFor' => 'Restore version']) }}" class="icon">
         </button>
     </div>
 </div>
