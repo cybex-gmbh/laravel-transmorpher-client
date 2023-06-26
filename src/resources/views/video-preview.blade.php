@@ -8,7 +8,7 @@
     </video>
     <img data-placeholder-url="{{ $motif->getPlaceholderUrl() }}"
          src="{{ !$isReady ? $motif->getUrl() : '' }}"
-         alt="{{ $differentiator }}"
+         alt="{{ trans('transmorpher::image-alt-tags.placeholder_image', ['differentiator' => $differentiator]) }}"
             @class(['dz-image', 'video-transmorpher', 'd-none' => $isReady])
     />
 </div>
