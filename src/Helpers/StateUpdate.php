@@ -4,6 +4,7 @@ namespace Transmorpher\Helpers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Transmorpher\Enums\ClientResponse;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
@@ -23,7 +24,7 @@ class StateUpdate
 
         // If no upload token was provided, return information for latest upload.
         if ($request->input('upload_token') && $request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
-            $message = 'Canceled by a new upload.';
+            $message = trans('transmorpher::errors.upload_canceled_or_no_longer_valid');
             $state = UploadState::ERROR;
         }
 
