@@ -32,7 +32,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getOriginal(int $versionNumber): array
     {
-        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/getOriginal', $this->getIdentifier(), $versionNumber)));
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/original', $this->getIdentifier(), $versionNumber)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
@@ -45,7 +45,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getOriginalDerivative(int $versionNumber, string $transformations): array
     {
-        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/getDerivative/%s', $this->getIdentifier(), $versionNumber, $transformations)));
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/derivative/%s', $this->getIdentifier(), $versionNumber, $transformations)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
