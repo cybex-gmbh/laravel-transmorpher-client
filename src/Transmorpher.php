@@ -203,7 +203,7 @@ abstract class Transmorpher
         }
 
         // HTTP code is only available in the response in case the request was not successful.
-        if (!$clientResponse['success'] && $clientResponse['httpCode'] === 404) {
+        if ($clientResponse['state'] === UploadState::ERROR->value && $clientResponse['httpCode'] === 404) {
             $clientResponse['clientMessage'] = 'Selected version is no longer available';
         }
 
