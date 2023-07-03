@@ -60,6 +60,7 @@ abstract class Transmorpher
      */
     public function upload($fileHandle): array
     {
+        // There is no type hint for resource.
         if (!is_resource($fileHandle)) {
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
