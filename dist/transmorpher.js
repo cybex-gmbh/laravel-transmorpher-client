@@ -82,7 +82,11 @@ if (!window.transmorpherScriptLoaded) {
             'X-XSRF-TOKEN': getCsrfToken()
           },
           body: JSON.stringify({
-            response: this.options.dictUploadCanceled,
+            response: {
+              success: false,
+              clientMessage: this.options.dictUploadCanceled,
+              serverResponse: this.options.dictUploadCanceled
+            },
             http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
           })
         });
