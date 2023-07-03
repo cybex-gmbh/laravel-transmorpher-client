@@ -309,8 +309,8 @@ if (!window.transmorpherScriptLoaded) {
                 switch (motifs[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
                         versionEntry.querySelector('a').href = `${motifs[transmorpherIdentifier].routes.getOriginal}/${version}`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150 150w`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${motifs[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
                         break;
                     case mediaTypes[VIDEO]:
                         // Don't show video for now, will use thumbnails later.
