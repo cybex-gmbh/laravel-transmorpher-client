@@ -41,7 +41,7 @@ if (!window.transmorpherScriptLoaded) {
       uploadToken: null,
       createImageThumbnails: false,
       init: function init() {
-        // Gets fired when upload is starting.
+        // Processing-Event is emitted when the upload starts.
         this.on('processing', function () {
           fetch("".concat(motif.routes.setUploadingState, "/").concat(this.options.uploadToken), {
             method: 'POST',
