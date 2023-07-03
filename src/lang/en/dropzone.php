@@ -7,7 +7,7 @@ return [
     'error' => 'Error',
     'image_in_process' => 'There is currently an upload in process, do you want to overwrite it?',
     'overwrite' => 'Overwrite',
-    'press_again_confirm' => 'Press again to confirm',
+    'press_again_to_confirm' => 'Press again to confirm',
     'processing' => 'Processing',
     'restore' => 'Restore',
     'started' => 'started',

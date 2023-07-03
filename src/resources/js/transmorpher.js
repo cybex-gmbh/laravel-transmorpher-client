@@ -663,7 +663,7 @@ if (!window.transmorpherScriptLoaded) {
                 pressedOnce = false;
                 clearTimeout(timeOut);
             } else {
-                button.querySelector('span').textContent = translations['press_again_confirm'];
+                button.querySelector('span').textContent = translations['press_again_to_confirm'];
                 pressedOnce = true;
                 timeOut = setTimeout(() => {
                     pressedOnce = false;
