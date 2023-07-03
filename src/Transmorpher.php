@@ -11,11 +11,13 @@ use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
+use Transmorpher\Models\TransmorpherUpload;
 
 abstract class Transmorpher
 {
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
+    protected TransmorpherUpload $upload;
 
     /**
      * Get either an existing instance or creates a new one.
@@ -66,10 +68,9 @@ abstract class Transmorpher
         }
 
         $tokenResponse = $this->reserveUploadSlot();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
-            return $upload->complete($tokenResponse);
+            return $this->upload->complete($tokenResponse);
         }
 
         try {
@@ -82,7 +83,7 @@ abstract class Transmorpher
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        return $upload->complete($clientResponse);
+        return $this->upload->complete($clientResponse);
     }
 
     /**
@@ -92,7 +93,7 @@ abstract class Transmorpher
      */
     public function reserveUploadSlot(): array
     {
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create([
+        $this->upload = $this->transmorpherMedia->TransmorpherUploads()->create([
             'state' => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
@@ -102,13 +103,13 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
         } catch (Exception $exception) {
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
+            $this->upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
         if ($clientResponse['success']) {
-            $upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
+            $this->upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
         } else {
-            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
+            $this->upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
 
         return $clientResponse;
