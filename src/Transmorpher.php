@@ -67,7 +67,7 @@ abstract class Transmorpher
         $tokenResponse = $this->reserveUploadSlot();
         $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
-        if ($tokenResponse['state'] === UploadState::ERROR) {
+        if ($tokenResponse['state'] === UploadState::ERROR->value) {
             return $upload->complete($tokenResponse);
         }
 
