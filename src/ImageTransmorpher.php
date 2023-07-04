@@ -83,6 +83,8 @@ class ImageTransmorpher extends Transmorpher
     }
 
     /**
+     * Sends the request to reserve an upload slot to the Transmorpher media server API.
+     *
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response

@@ -87,7 +87,8 @@ abstract class Transmorpher
     }
 
     /**
-     * Prepare an upload to the Transmorpher media server by requesting an upload token.
+     * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
+     * The request itself is in the Image- / VideoTransmorpher class, since the API differs.
      *
      * @return array
      */

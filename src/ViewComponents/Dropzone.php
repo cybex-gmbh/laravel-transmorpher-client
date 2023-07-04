@@ -21,8 +21,6 @@ class Dropzone extends Component
     public int $lastUpdated;
     public array $mediaTypes;
     public array $srcSetTransformations;
-
-
     public string $stateRoute;
     public string $uploadTokenRoute;
     public string $handleUploadResponseRoute;
