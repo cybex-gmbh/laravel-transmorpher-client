@@ -132,6 +132,7 @@
         isUploading: {{ json_encode($isUploading) }},
         lastUpdated: '{{ $lastUpdated }}',
         latestUploadToken: '{{ $latestUploadToken }}',
+        acceptedFileTypes: '{{ $motif->getAcceptedFileTypes() }}'
     }
 
     setupComponent('{{ $motif->getIdentifier() }}');

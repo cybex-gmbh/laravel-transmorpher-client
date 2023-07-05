@@ -31,6 +31,7 @@ if (!window.transmorpherScriptLoaded) {
     }
     new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
       url: motif.webUploadUrl,
+      acceptedFiles: motif.acceptedFileTypes,
       chunking: true,
       chunkSize: motif.chunkSize,
       maxFilesize: motif.maxFilesize,

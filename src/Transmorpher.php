@@ -4,6 +4,7 @@ namespace Transmorpher;
 
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Transmorpher\Enums\ClientResponse;
@@ -11,6 +12,7 @@ use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
+use Transmorpher\Models\TransmorpherUpload;
 
 abstract class Transmorpher
 {
@@ -37,6 +39,31 @@ abstract class Transmorpher
      * @param string $differentiator
      */
     protected abstract function __construct(HasTransmorpherMediaInterface $model, string $differentiator);
+
+    /**
+     * @param array $clientResponse
+     * @param TransmorpherUpload $upload
+     *
+     * @return void
+     */
+    public abstract function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
+
+    /**
+     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public abstract function getAcceptedFileTypes(): string;
+
+    /**
+     * @return string
+     */
+    public abstract function getThumbnailUrl(): string;
+
+    /**
+     * @return Response
+     */
+    protected abstract function sendReserveUploadSlotRequest(): Response;
 
     /**
      * @return void

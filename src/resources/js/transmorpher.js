@@ -31,6 +31,7 @@ if (!window.transmorpherScriptLoaded) {
 
         new Dropzone(`#dz-${transmorpherIdentifier}`, {
             url: motif.webUploadUrl,
+            acceptedFiles: motif.acceptedFileTypes,
             chunking: true,
             chunkSize: motif.chunkSize,
             maxFilesize: motif.maxFilesize,
