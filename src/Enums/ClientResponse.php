@@ -35,7 +35,7 @@ enum ClientResponse: int
             ],
             ClientResponse::NOT_FOUND => [
                 'success' => false,
-                'clientMessage' => trans('transmorpher::errors.upload_canceled_or_no_longer_valid'),
+                'clientMessage' => trans('transmorpher::errors.upload_canceled_or_took_too_long'),
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
