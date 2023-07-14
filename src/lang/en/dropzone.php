@@ -13,5 +13,6 @@ return [
     'started' => 'started',
     'success' => 'Success',
     'uploading' => 'Uploading',
+    'upload_canceled' => 'Upload canceled',
     'video_in_process' => 'A video is currently uploading or processing, do you want to overwrite it?',
 ];
