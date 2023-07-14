@@ -59,7 +59,7 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::post('transmorpher/{transmorpherMedia}/setVersion', [VersionManagement::class, 'setVersion'])->name('transmorpherSetVersion');
             Route::post('transmorpher/{transmorpherMedia}/delete', [VersionManagement::class, 'delete'])->name('transmorpherDelete');
             Route::get('transmorpher/{transmorpherMedia}/getOriginal/{version}', [VersionManagement::class, 'getOriginal'])->name('transmorpherGetOriginal');
-            Route::get('transmorpher/{transmorpherMedia}/getOriginalDerivative/{version}/{transformations?}', [VersionManagement::class, 'getOriginalDerivative'])->name('transmorpherGetOriginalDerivative');
+            Route::get('transmorpher/{transmorpherMedia}/getDerivativeForVersion/{version}/{transformations?}', [VersionManagement::class, 'getDerivativeForVersion'])->name('transmorpherGetDerivativeForVersion');
             Route::post('transmorpher/setUploadingState/{transmorpherUpload}', [StateUpdate::class, 'setUploadingState'])->name('transmorpherSetUploadingState');
         });
     }

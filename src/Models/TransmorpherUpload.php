@@ -64,7 +64,8 @@ class TransmorpherUpload extends Model
     {
         $transmorpher = $this->TransmorpherMedia->getTransmorpher();
 
-        // This step can be skipped if the client response was already determined.
+        // When this method is called from within the backend, the response for the frontend is already determined.
+        // When this method is called from javascript (e.g. failed/successful upload), the server response still has to be checked (and replaced in case of errors).
         if ($httpCode) {
             $response = $transmorpher->getClientResponse($response, $httpCode);
         }

@@ -119,7 +119,7 @@
             setVersion: '{{ $setVersionRoute }}',
             delete: '{{ $deleteRoute }}',
             getOriginal: '{{ $getOriginalRoute }}',
-            getOriginalDerivative: '{{ $getOriginalDerivativeRoute }}',
+            getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
             uploadToken: '{{ $uploadTokenRoute }}',
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },
