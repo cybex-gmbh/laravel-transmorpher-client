@@ -85,9 +85,9 @@ if (!window.transmorpherScriptLoaded) {
                         'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                     }, body: JSON.stringify({
                         response: {
-                            success: false,
+                            state: 'error',
                             clientMessage: this.options.dictUploadCanceled,
-                            serverResponse: this.options.dictUploadCanceled,
+                            message: this.options.dictUploadCanceled,
                         },
                         http_code: file.xhr?.status
                     })

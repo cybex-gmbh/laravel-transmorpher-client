@@ -83,9 +83,9 @@ if (!window.transmorpherScriptLoaded) {
           },
           body: JSON.stringify({
             response: {
-              success: false,
+              state: 'error',
               clientMessage: this.options.dictUploadCanceled,
-              serverResponse: this.options.dictUploadCanceled
+              message: this.options.dictUploadCanceled
             },
             http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
           })
