@@ -43,7 +43,7 @@ class ImageTransmorpher extends Transmorpher
      *
      * @return array
      */
-    public function getOriginalDerivative(int $versionNumber, string $transformations): array
+    public function getDerivativeForVersion(int $versionNumber, string $transformations): array
     {
         $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/derivative/%s/version/%s/%s', $this->getIdentifier(), $versionNumber, $transformations)));
 
@@ -83,6 +83,8 @@ class ImageTransmorpher extends Transmorpher
     }
 
     /**
+     * Sends the request to reserve an upload slot to the Transmorpher media server API.
+     *
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response

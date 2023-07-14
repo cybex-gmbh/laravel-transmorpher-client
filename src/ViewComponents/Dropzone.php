@@ -22,8 +22,6 @@ class Dropzone extends Component
     public array $mediaTypes;
     public array $srcSetTransformations;
     public array $translations;
-
-
     public string $stateRoute;
     public string $uploadTokenRoute;
     public string $handleUploadResponseRoute;
@@ -31,7 +29,7 @@ class Dropzone extends Component
     public string $setVersionRoute;
     public string $deleteRoute;
     public string $getOriginalRoute;
-    public string $getOriginalDerivativeRoute;
+    public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
 
     public function __construct(public Transmorpher $motif)
@@ -60,7 +58,7 @@ class Dropzone extends Component
         $this->setVersionRoute = route('transmorpherSetVersion', $this->transmorpherMediaKey);
         $this->deleteRoute = route('transmorpherDelete', $this->transmorpherMediaKey);
         $this->getOriginalRoute = route('transmorpherGetOriginal', [$this->transmorpherMediaKey, '']);
-        $this->getOriginalDerivativeRoute = route('transmorpherGetOriginalDerivative', [$this->transmorpherMediaKey, '']);
+        $this->getDerivativeForVersionRoute = route('transmorpherGetDerivativeForVersion', [$this->transmorpherMediaKey, '']);
         $this->setUploadingStateRoute = route('transmorpherSetUploadingState', '');
     }
 
