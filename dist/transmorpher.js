@@ -41,7 +41,7 @@ if (!window.transmorpherScriptLoaded) {
       uploadToken: null,
       createImageThumbnails: false,
       init: function init() {
-        // Gets fired when upload is starting.
+        // Processing-Event is emitted when the upload starts.
         this.on('processing', function () {
           fetch("".concat(motif.routes.setUploadingState, "/").concat(this.options.uploadToken), {
             method: 'POST',
@@ -82,7 +82,11 @@ if (!window.transmorpherScriptLoaded) {
             'X-XSRF-TOKEN': getCsrfToken()
           },
           body: JSON.stringify({
-            response: this.options.dictUploadCanceled,
+            response: {
+              success: false,
+              clientMessage: this.options.dictUploadCanceled,
+              serverResponse: this.options.dictUploadCanceled
+            },
             http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
           })
         });
@@ -285,8 +289,8 @@ if (!window.transmorpherScriptLoaded) {
         switch (motifs[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
             versionEntry.querySelector('a').href = "".concat(motifs[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
-            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(motifs[transmorpherIdentifier].routes.getOriginalDerivative, "/").concat(version, "/w-150");
-            versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(motifs[transmorpherIdentifier].routes.getOriginalDerivative, "/").concat(version, "/w-150 150w");
+            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(motifs[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150");
+            versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(motifs[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150 150w");
             break;
           case mediaTypes[VIDEO]:
             // Don't show video for now, will use thumbnails later.

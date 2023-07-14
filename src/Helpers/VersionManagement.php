@@ -70,9 +70,9 @@ class VersionManagement
      *
      * @return Application|ResponseFactory|Response
      */
-    public function getOriginalDerivative(Request $request, TransmorpherMedia $transmorpherMedia, int $version, string $transformations = ''): Response|Application|ResponseFactory
+    public function getDerivativeForVersion(Request $request, TransmorpherMedia $transmorpherMedia, int $version, string $transformations = ''): Response|Application|ResponseFactory
     {
-        $response = $transmorpherMedia->getTransmorpher()->getOriginalDerivative($version, $transformations);
+        $response = $transmorpherMedia->getTransmorpher()->getDerivativeForVersion($version, $transformations);
 
         return response($response['binary'], 200, ['Content-Type' => $response['mimetype']]);
     }

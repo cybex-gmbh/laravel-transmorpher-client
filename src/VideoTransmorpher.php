@@ -65,6 +65,9 @@ class VideoTransmorpher extends Transmorpher
     }
 
     /**
+     * Sends the request to reserve an upload slot to the Transmorpher media server API.
+     * For videos, a callback URL has to be provided.
+     *
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response

@@ -11,11 +11,13 @@ use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
+use Transmorpher\Models\TransmorpherUpload;
 
 abstract class Transmorpher
 {
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
+    protected TransmorpherUpload $upload;
 
     /**
      * Get either an existing instance or creates a new one.
@@ -60,15 +62,15 @@ abstract class Transmorpher
      */
     public function upload($fileHandle): array
     {
+        // There is no type hint for resource.
         if (!is_resource($fileHandle)) {
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
         $tokenResponse = $this->reserveUploadSlot();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         if ($tokenResponse['state'] === UploadState::ERROR->value) {
-            return $upload->complete($tokenResponse);
+            return $this->upload->complete($tokenResponse);
         }
 
         try {
@@ -81,17 +83,18 @@ abstract class Transmorpher
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        return $upload->complete($clientResponse);
+        return $this->upload->complete($clientResponse);
     }
 
     /**
-     * Prepare an upload to the Transmorpher media server by requesting an upload token.
+     * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
+     * The request itself is in the Image- / VideoTransmorpher class, since the API differs.
      *
      * @return array
      */
     public function reserveUploadSlot(): array
     {
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create([
+        $this->upload = $this->transmorpherMedia->TransmorpherUploads()->create([
             'state' => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
@@ -109,7 +112,7 @@ abstract class Transmorpher
             $valuesToUpdate['token'] = $clientResponse['upload_token'];
         }
 
-        $upload->update($valuesToUpdate);
+        $this->upload->update($valuesToUpdate);
 
         return $clientResponse;
     }
@@ -134,7 +137,7 @@ abstract class Transmorpher
             $this->transmorpherMedia->update(['is_ready' => 0]);
         } else {
             if ($clientResponse['httpCode'] === 404) {
-                $clientResponse ['clientMessage'] = 'Media is already deleted.';
+                $clientResponse['clientMessage'] = 'Media is already deleted.';
             }
         }
 
