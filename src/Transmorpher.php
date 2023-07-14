@@ -399,8 +399,8 @@ abstract class Transmorpher
      */
     protected function validateIdentifier(): void
     {
-        // Identifier is used in file paths and URLs, therefore only lower/uppercase characters, numbers, underscores and dashes are allowed.
-        if (!preg_match('/^\w(-?\w+)*$/', $this->getIdentifier())) {
+        // Identifier is used in file paths and URLs, therefore only lower/uppercase characters, numbers, underscores and hyphens are allowed.
+        if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
             throw new InvalidIdentifierException($this->model, $this->differentiator);
         }
     }
