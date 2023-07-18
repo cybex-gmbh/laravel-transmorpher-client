@@ -2,7 +2,7 @@
 
 namespace Transmorpher\Enums;
 
-enum ClientResponse: int
+enum ClientErrorResponse: int
 {
     case NO_CONNECTION = -1;
     case NOT_AUTHENTICATED = 401;
@@ -21,31 +21,31 @@ enum ClientResponse: int
     {
         // Server exception message is in 'message' field.
         return match ($this) {
-            ClientResponse::NO_CONNECTION => [
+            self::NO_CONNECTION => [
                 'success' => false,
                 'clientMessage' => 'Could not connect to server.',
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
-            ClientResponse::NOT_AUTHENTICATED => [
+            self::NOT_AUTHENTICATED => [
                 'success' => false,
                 'clientMessage' => $body['message'],
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
-            ClientResponse::NOT_FOUND => [
+            self::NOT_FOUND => [
                 'success' => false,
                 'clientMessage' => 'Canceled by a new upload or the upload is no longer valid.',
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
-            ClientResponse::SERVER_ERROR => [
+            self::SERVER_ERROR => [
                 'success' => false,
                 'clientMessage' => 'There was an error on the server.',
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
-            ClientResponse::VALIDATION_ERROR => [
+            self::VALIDATION_ERROR => [
                 'success' => false,
                 'clientMessage' => $body['message'],
                 'serverResponse' => $body['message'],
@@ -68,5 +68,15 @@ enum ClientResponse: int
             'serverResponse' => $body['message'],
             'httpCode' => $code,
         ];
+    }
+
+    /**
+     * @param array $body
+     * @param int $code
+     * @return array
+     */
+    public static function get(array $body, int $code): array
+    {
+        return self::tryFrom($code)?->getResponse($body) ?? self::getDefaultResponse($body, $code);
     }
 }

@@ -4,9 +4,10 @@ namespace Transmorpher;
 
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
-use Transmorpher\Enums\ClientResponse;
+use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
@@ -78,9 +79,9 @@ abstract class Transmorpher
                 ->attach('file', $fileHandle)
                 ->post($this->getS2sApiUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
 
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
         return $this->upload->handleStateUpdate($clientResponse);
@@ -101,9 +102,9 @@ abstract class Transmorpher
 
         try {
             $response = $this->sendReserveUploadSlotRequest();
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
             $this->upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
@@ -127,9 +128,9 @@ abstract class Transmorpher
 
         try {
             $response = $this->configureApiRequest()->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
             $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
@@ -201,9 +202,9 @@ abstract class Transmorpher
             $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
                 'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
             ]);
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
         // HTTP code is only available in the response in case the request was not successful.
@@ -229,10 +230,18 @@ abstract class Transmorpher
      */
     public function getClientResponse(array $response, int $httpCode): array
     {
-        $clientResponse = ($response['success'] ?? false) ? $response : ClientResponse::tryFrom($httpCode)?->getResponse($response);
+        return ($response['success'] ?? false) ? $response : ClientErrorResponse::get($response, $httpCode);
+    }
 
-        // tryFrom will return null if the code is not defined in the enum.
-        return $clientResponse ?? ClientResponse::getDefaultResponse($response, $httpCode);
+    /**
+     * Wraps the "getClientResponse"-method to extract the body and http code from a response.
+     *
+     * @param Response $response
+     * @return array
+     */
+    public function getClientResponseFromResponse(Response $response): array
+    {
+        return $this->getClientResponse(json_decode($response->body(), true), $response->status());
     }
 
     /**
