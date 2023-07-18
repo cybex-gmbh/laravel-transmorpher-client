@@ -7,7 +7,7 @@
                  sizes="(max-width: 300px) 150px, (max-width: 600px) 300px, (max-width: 900px) 600px, 900px"
                  src="{{ $motif->getUrl(['width' => 300]) }}"
                  alt="{{ $differentiator }}"/>
-            <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" class="icon enlarge-icon">
+            <img src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="Enlarge image" @class(['icon', 'enlarge-icon', 'd-hidden' => !$isReady])>
         </div>
     </a>
 </div>

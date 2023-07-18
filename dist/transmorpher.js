@@ -397,6 +397,9 @@ if (!window.transmorpherScriptLoaded) {
       image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
       image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
       image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+
+      // Show enlarge icon.
+      image.nextElementSibling.classList.remove('d-hidden');
     });
   };
   window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
@@ -425,7 +428,10 @@ if (!window.transmorpherScriptLoaded) {
       case mediaTypes[IMAGE]:
         imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
         imgElements.forEach(function (image) {
-          return image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+          image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+
+          // Hide enlarge icon.
+          image.nextElementSibling.classList.add('d-hidden');
         });
         break;
       case mediaTypes[VIDEO]:

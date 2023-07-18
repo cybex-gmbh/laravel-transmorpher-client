@@ -427,6 +427,9 @@ if (!window.transmorpherScriptLoaded) {
             image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
             image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
             image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+
+            // Show enlarge icon.
+            image.nextElementSibling.classList.remove('d-hidden');
         });
     }
 
@@ -460,7 +463,12 @@ if (!window.transmorpherScriptLoaded) {
         switch (motifs[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
                 imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
-                imgElements.forEach(image => image.closest('.full-size-link').href = image.dataset.placeholderUrl);
+                imgElements.forEach(image => {
+                    image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+
+                    // Hide enlarge icon.
+                    image.nextElementSibling.classList.add('d-hidden');
+                });
                 break;
             case mediaTypes[VIDEO]:
                 imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`);
