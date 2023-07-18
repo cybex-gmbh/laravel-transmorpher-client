@@ -70,7 +70,7 @@ abstract class Transmorpher
         $tokenResponse = $this->reserveUploadSlot();
 
         if (!$tokenResponse['success']) {
-            return $this->upload->complete($tokenResponse);
+            return $this->upload->handleStateUpdate($tokenResponse);
         }
 
         try {
@@ -83,7 +83,7 @@ abstract class Transmorpher
             $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        return $this->upload->complete($clientResponse);
+        return $this->upload->handleStateUpdate($clientResponse);
     }
 
     /**
@@ -211,7 +211,7 @@ abstract class Transmorpher
             $clientResponse['clientMessage'] = 'Selected version is no longer available';
         }
 
-        return $upload->complete($clientResponse);
+        return $upload->handleStateUpdate($clientResponse);
     }
 
     /**

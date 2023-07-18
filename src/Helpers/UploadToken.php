@@ -27,6 +27,6 @@ class UploadToken
      */
     public function handleUploadResponse(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
-        return response()->json($transmorpherUpload->complete($request->input('response'), $request->input('http_code')));
+        return response()->json($transmorpherUpload->handleStateUpdate($request->input('response'), $request->input('http_code')));
     }
 }
