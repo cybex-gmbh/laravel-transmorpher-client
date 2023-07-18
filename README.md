@@ -110,8 +110,12 @@ public function video(): VideoTransmorpher
 
 #### Identifier
 
-To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of a motif, a morphable id and a morph alias by default.
-Instead of using the morph alias, you can add the property `transmorpherAlias` to your model, which will then be used for the identifier.
+To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of the following:
+ - motif: name for the media in the model
+ - model id
+ - an alias (by default the morph alias is used)
+
+Instead of using the morph alias, you can add the property `$transmorpherAlias` to your model, which will then be used for the identifier.
 
 ```php
 class YourModel extends Model implements HasTransmorpherMediaInterface
@@ -124,7 +128,7 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 }
 ```
 
-**_NOTE:_** As the identifier is used in filenames and URLs, neither the morph alias nor `$transmorpherAlias` may contain special characters (e.g. slashes).
+**_NOTE:_** As the identifier is used in filenames and URLs, your chosen alias may not contain special characters (e.g. slashes).
 
 #### Dynamic images & videos
 
