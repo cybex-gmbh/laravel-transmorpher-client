@@ -108,6 +108,20 @@ public function video(): VideoTransmorpher
 }
 ```
 
+The instance of the corresponding `Transmorpher`-class can then be used to make API calls to the Transmorpher media
+server.
+
+```php
+$imageTransmorpher = $yourModel->imageFrontView();
+
+// Upload an image to the media server.
+$imageTransmorpher->upload($fileHandle);
+
+// Get the public URL of the image for retrieving a derivative.
+// Transformations are optional and will be included in the URL. 
+$imageTransmorpher->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
+```
+
 #### Identifier
 
 To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of the following:
@@ -135,8 +149,6 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 If you need a more dynamic approach to defining images or videos for a model, you can also define an array and use the methods which are provided by the `HasTransmorpherMedia`
 trait.
 
-**_NOTE:_** These property names are not customizable when using the trait.
-
 ```php
 protected array $transmorpherImages = [
     'frontView',
@@ -146,22 +158,8 @@ protected array $transmorpherImages = [
 protected array $transmorpherVideos = [];
 ```
 
-The trait provides the methods `images()` and `videos()`, which will return a collection with the motifs as key and the corresponding `Transmorpher` class as value.
+The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the motifs as key and the corresponding `Transmorpher` class as value.
 This can be used to iterate over all images for a model for example.
-
-The instance of the corresponding `Transmorpher`-class can then be used to make API calls to the Transmorpher media
-server.
-
-```php
-$imageTransmorpher = $yourModel->$imageFrontView();
-
-// Upload an image to the media server.
-$imageTransmorpher->upload($fileHandle);
-
-// Get the public URL of the image for retrieving a derivative.
-// Transformations are optional and will be included in the URL. 
-$imageTransmorpher->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
-```
 
 ## Dropzone Blade component & assets
 
