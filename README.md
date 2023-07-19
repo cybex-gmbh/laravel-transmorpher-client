@@ -9,13 +9,13 @@ The client package provides a Dropzone component, which supports chunked uploads
 To get the latest version, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-$ composer require cybex/laravel-transmorpher-client
+composer require cybex/laravel-transmorpher-client
 ```
 
 To create the tables the package provides, you have to migrate.
 
 ```bash
-$ php artisan migrate
+php artisan migrate
 ```
 
 ## Configuration
@@ -25,7 +25,7 @@ $ php artisan migrate
 If you want to configure certain configuration values used by the package, you can do so by publishing the `transmorpher.php` file to your project directory.
 
 ```bash
-$ php artisan vendor:publish --tag=transmorpher.config
+php artisan vendor:publish --tag=transmorpher.config
 ```
 
 There you can configure values such as the route to which the Transmorpher media server sends information after transcoding a video.
@@ -149,7 +149,7 @@ For using the client package in the frontend you are provided with a convenient 
 your public folder.
 
 ```bash
-$ php artisan vendor:publish --tag=transmorpher.assets
+php artisan vendor:publish --tag=transmorpher.assets
 ```
 
 If you want to make sure you will always have the most recent assets, even when updating the package, you can add this to your `composer.json` file:
@@ -167,7 +167,7 @@ If you want to make sure you will always have the most recent assets, even when 
 If you would like to customize the Dropzone component in any way, you can also publish it to your `resources` directory:
 
 ```bash
-$ php artisan vendor:publish --tag=transmorpher.views
+php artisan vendor:publish --tag=transmorpher.views
 ```
 
 ### Dropzone component usage
@@ -175,7 +175,6 @@ $ php artisan vendor:publish --tag=transmorpher.views
 To use the dropzone component in a template, you can simply include it like this:
 
 ```html
-
 <x-transmorpher::dropzone :motif="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
@@ -195,7 +194,7 @@ If you want a more dynamic approach, to display a dropzone for each available im
 
 For compiling assets you can use the following command in the project root:
 ```bash
-$ npx mix
+npx mix
 ```
 
 ## License
