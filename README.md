@@ -144,7 +144,8 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 
 **_NOTE:_** As the identifier is used in filenames and URLs, your chosen alias may not contain special characters (e.g. slashes).
 
-> **WARNING**
+> **Warning**
+> 
 > The alias is not intended to be ever changed, as you change the identifier and therefore lose the access to your version history.
 > The images of the old identifier will still be accessible from the public, but the client cannot associate them to its model. 
 
