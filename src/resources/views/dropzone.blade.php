@@ -6,11 +6,11 @@
         <div class="card-header">
             <div>
                 <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
-                     alt="{{ trans('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value]) }}" class="icon">
+                     alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value])" class="icon">
                 {{ $differentiator }}
             </div>
             <div class="details">
-                <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="{{ trans('transmorpher::image-alt-tags.open_more_information_modal') }}"
+                <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.open_more_information_modal')"
                      class="icon"
                      onclick="openMoreInformationModal('{{ $motif->getIdentifier() }}')">
             </div>
@@ -19,9 +19,9 @@
             <div @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-hidden' => !$isProcessing && !$isUploading])>
                 <span>
                     @if($isProcessing)
-                        {{ trans('transmorpher::dropzone.processing') }}
+                        @lang('transmorpher::dropzone.processing')
                     @else
-                        {{ trans('transmorpher::dropzone.uploading') }}
+                        @lang('transmorpher::dropzone.uploading')
                     @endif
                 </span>
             </div>
@@ -42,7 +42,7 @@
             <div class="card-header">
                 <div class="motif-name">
                     <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
-                         alt="{{ trans('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value]) }}" class="icon">
+                         alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value])" class="icon">
                     {{ $differentiator }}
                 </div>
                 <button class="btn-close" onclick="closeMoreInformationModal('{{ $motif->getIdentifier() }}')">⨉</button>
@@ -52,13 +52,13 @@
                     <div @class(['badge', 'badge-processing' => $isProcessing, 'badge-uploading' => $isUploading, 'd-none' => !$isProcessing && !$isUploading])>
                         <span>
                             @if($isProcessing)
-                                {{ trans('transmorpher::dropzone.processing') }}
+                                @lang('transmorpher::dropzone.processing')
                             @else
-                                {{ trans('transmorpher::dropzone.uploading') }}
+                                @lang('transmorpher::dropzone.uploading')
                             @endif
                         </span>
                         <div class="motif-info">
-                            <p @class(['d-none' => !$isProcessing || !$isUploading])>{{ trans('transmorpher::dropzone.started') }} <span class="age"></span></p>
+                            <p @class(['d-none' => !$isProcessing || !$isUploading])>@lang('transmorpher::dropzone.started')<span class="age"></span></p>
                         </div>
                         <span class="error-message"></span>
                     </div>
@@ -67,8 +67,8 @@
                         <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
                     </div>
                     <button type=button @class(['button', 'button-confirm', 'confirm-delete', 'd-hidden' => !$isReady && !$isProcessing])>
-                        <span>{{ trans('transmorpher::dropzone.delete') }}</span>
-                        <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="{{ trans('transmorpher::image-alt-tags.icon', ['iconFor' => 'Delete media']) }}" class="icon">
+                        <span>@lang('transmorpher::dropzone.delete')</span>
+                        <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => 'Delete media'])" class="icon">
                     </button>
                 </div>
                 <div class="card-main">
@@ -90,19 +90,19 @@
         <div class="card-header">
             @switch($mediaType)
                 @case(\Transmorpher\Enums\MediaType::IMAGE)
-                    {{ trans('transmorpher::dropzone.image_in_process') }}
+                    @lang('transmorpher::dropzone.image_in_process')
                     @break
                 @case(\Transmorpher\Enums\MediaType::VIDEO)
-                    {{ trans('transmorpher::dropzone.video_in_process') }}
+                    @lang('transmorpher::dropzone.video_in_process')
                     @break
             @endswitch
         </div>
         <div class="card-body">
             <button class="button" onclick="closeUploadConfirmModal('{{ $motif->getIdentifier() }}')">
-                {{ trans('transmorpher::dropzone.cancel') }}
+                @lang('transmorpher::dropzone.cancel')
             </button>
             <button class="button badge-error">
-                {{ trans('transmorpher::dropzone.overwrite') }}
+                @lang('transmorpher::dropzone.overwrite')
             </button>
         </div>
     </div>
