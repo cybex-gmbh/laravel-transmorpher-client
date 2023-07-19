@@ -14,7 +14,7 @@ trait HasTransmorpherMedia
      */
     public static function bootHasTransmorpherMedia()
     {
-        if ((new static())->getTransmorpherAlias() === static::class) {
+        if (static::getModel()->getTransmorpherAlias() === static::class) {
             throw new MissingMorphAliasException(static::class);
         }
     }
