@@ -361,7 +361,7 @@ abstract class Transmorpher
      */
     protected function getS2sApiUrl(string $path = null): string
     {
-        return sprintf('%s/%s', config('transmorpher.api.s2s_url'), $path);
+        return sprintf('%s/v%d/%s', config('transmorpher.api.s2s_url'), config('transmorpher.api.version'), $path);
     }
 
     /**
@@ -373,7 +373,7 @@ abstract class Transmorpher
      */
     protected function getWebApiUrl(string $path = null): string
     {
-        return sprintf('%s/%s', config('transmorpher.api.web_url'), $path);
+        return sprintf('%s/v%d/%s', config('transmorpher.api.web_url'), config('transmorpher.api.version'), $path);
     }
 
     /**

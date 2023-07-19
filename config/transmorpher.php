@@ -4,6 +4,8 @@ return [
     'client_name' => env('TRANSMORPHER_CLIENT_NAME'),
 
     'api' => [
+        // The Transmorpher API version which should be used. For supported versions check the SupportedApiVersion enum.
+        'version' => 1,
         // The API URL used when communicating between servers. Might be useful in situations where for example docker containers communicate with each other.
         's2s_url' => env('TRANSMORPHER_S2S_API_BASE_URL', env('TRANSMORPHER_WEB_API_BASE_URL')),
         // The API URL used when making requests to the Transmorpher media server from the web.

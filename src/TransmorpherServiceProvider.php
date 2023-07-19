@@ -5,6 +5,8 @@ namespace Transmorpher;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Transmorpher\Enums\SupportedApiVersion;
+use Transmorpher\Exceptions\UnsupportedApiVersionException;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
@@ -18,6 +20,10 @@ class TransmorpherServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (!SupportedApiVersion::isSupported()) {
+            throw new UnsupportedApiVersionException();
+        }
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
