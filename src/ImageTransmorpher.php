@@ -2,8 +2,11 @@
 
 namespace Transmorpher;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
+use Transmorpher\Enums\UploadState;
+use Transmorpher\Models\TransmorpherUpload;
 
 class ImageTransmorpher extends Transmorpher
 {
@@ -25,11 +28,26 @@ class ImageTransmorpher extends Transmorpher
      *
      * @param int $versionNumber The version which should be retrieved.
      *
-     * @return string Binary string of the image.
+     * @return array Binary string of the image and its content type.
      */
-    public function getOriginal(int $versionNumber): string
+    public function getOriginal(int $versionNumber): array
     {
-        return $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)))->body();
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)));
+
+        return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
+    }
+
+    /**
+     * @param int $versionNumber
+     * @param string $transformations
+     *
+     * @return array
+     */
+    public function getDerivativeForVersion(int $versionNumber, string $transformations): array
+    {
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/derivative/%s/version/%s/%s', $this->getIdentifier(), $versionNumber, $transformations)));
+
+        return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
 
     /**
@@ -42,5 +60,35 @@ class ImageTransmorpher extends Transmorpher
     public function getDerivative(array $transformations = []): string
     {
         return Http::get($this->getUrl($transformations))->body();
+    }
+
+    /**
+     * @param array $clientResponse
+     * @param TransmorpherUpload $upload
+     *
+     * @return void
+     */
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    {
+        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
+        $upload->update(['state' => UploadState::SUCCESS, 'message' => $clientResponse['response']]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getThumbnailUrl(): string
+    {
+        return $this->getUrl(['height' => 150]);
+    }
+
+    /**
+     * Sends the request to reserve an upload slot to the Transmorpher media server API.
+     *
+     * @return Response
+     */
+    protected function sendReserveUploadSlotRequest(): Response
+    {
+        return $this->configureApiRequest()->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
     }
 }

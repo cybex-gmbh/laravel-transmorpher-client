@@ -2,10 +2,10 @@
 
 namespace Transmorpher\Models;
 
-use Transmorpher\Enums\UploadState;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Transmorpher\Enums\UploadState;
 
 class TransmorpherUpload extends Model
 {
@@ -58,5 +58,26 @@ class TransmorpherUpload extends Model
     public function getRouteKeyName()
     {
         return 'token';
+    }
+
+    public function handleStateUpdate(array $response, int $httpCode = null): array
+    {
+        $transmorpher = $this->TransmorpherMedia->getTransmorpher();
+
+        // When this method is called from within a Transmorpher, the response for the frontend is already determined.
+        // When this method is directly called from a controller (e.g. failed/successful upload), the server response still has to be checked (and replaced in case of errors).
+        if ($httpCode) {
+            $response = $transmorpher->getClientResponse($response, $httpCode);
+        }
+
+        if ($response['success']) {
+            $transmorpher->updateAfterSuccessfulUpload($response, $this);
+        } else {
+            $this->update(['state' => UploadState::ERROR, 'message' => $response['serverResponse']]);
+        }
+
+        $response['latestUploadToken'] = $this->TransmorpherMedia->latest_upload_token;
+
+        return $response;
     }
 }
