@@ -41,7 +41,7 @@ if (!window.transmorpherScriptLoaded) {
             uploadToken: null,
             createImageThumbnails: false,
             init: function () {
-                // Gets fired when upload is starting.
+                // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
                     fetch(`${motif.routes.setUploadingState}/${this.options.uploadToken}`, {
                         method: 'POST',
@@ -84,7 +84,12 @@ if (!window.transmorpherScriptLoaded) {
                     method: 'POST', headers: {
                         'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                     }, body: JSON.stringify({
-                        response: this.options.dictUploadCanceled, http_code: file.xhr?.status
+                        response: {
+                            success: false,
+                            clientMessage: this.options.dictUploadCanceled,
+                            serverResponse: this.options.dictUploadCanceled,
+                        },
+                        http_code: file.xhr?.status
                     })
                 })
             },
@@ -304,8 +309,8 @@ if (!window.transmorpherScriptLoaded) {
                 switch (motifs[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
                         versionEntry.querySelector('a').href = `${motifs[transmorpherIdentifier].routes.getOriginal}/${version}`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${motifs[transmorpherIdentifier].routes.getOriginalDerivative}/${version}/w-150 150w`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${motifs[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
                         break;
                     case mediaTypes[VIDEO]:
                         // Don't show video for now, will use thumbnails later.
@@ -422,6 +427,9 @@ if (!window.transmorpherScriptLoaded) {
             image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
             image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
             image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+
+            // Show enlarge icon.
+            image.nextElementSibling.classList.remove('d-hidden');
         });
     }
 
@@ -455,7 +463,12 @@ if (!window.transmorpherScriptLoaded) {
         switch (motifs[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
                 imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
-                imgElements.forEach(image => image.closest('.full-size-link').href = image.dataset.placeholderUrl);
+                imgElements.forEach(image => {
+                    image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+
+                    // Hide enlarge icon.
+                    image.nextElementSibling.classList.add('d-hidden');
+                });
                 break;
             case mediaTypes[VIDEO]:
                 imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`);

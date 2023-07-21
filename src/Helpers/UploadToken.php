@@ -27,9 +27,6 @@ class UploadToken
      */
     public function handleUploadResponse(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
-        // Errors directly returned from dropzone are strings.
-        $response = is_array($request->input('response')) ? $request->input('response') : ['success' => false, 'clientMessage' => $request->input('response'), 'serverResponse' => $request->input('response')];
-
-        return response()->json($transmorpherUpload->complete($response, $request->input('http_code')));
+        return response()->json($transmorpherUpload->handleStateUpdate($request->input('response'), $request->input('http_code')));
     }
 }
