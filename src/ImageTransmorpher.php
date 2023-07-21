@@ -43,7 +43,7 @@ class ImageTransmorpher extends Transmorpher
      *
      * @return array
      */
-    public function getOriginalDerivative(int $versionNumber, string $transformations): array
+    public function getDerivativeForVersion(int $versionNumber, string $transformations): array
     {
         $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/derivative/%s', $this->getIdentifier(), $versionNumber, $transformations)));
 
@@ -68,7 +68,7 @@ class ImageTransmorpher extends Transmorpher
      *
      * @return void
      */
-    public function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
     {
         $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
         $upload->update(['state' => UploadState::SUCCESS, 'message' => $clientResponse['response']]);
@@ -83,6 +83,8 @@ class ImageTransmorpher extends Transmorpher
     }
 
     /**
+     * Sends the request to reserve an upload slot to the Transmorpher media server API.
+     *
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response
