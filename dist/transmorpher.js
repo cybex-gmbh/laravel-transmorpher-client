@@ -31,7 +31,6 @@ if (!window.transmorpherScriptLoaded) {
     }
     new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
       url: motif.webUploadUrl,
-      acceptedFiles: motif.acceptedFileTypes,
       chunking: true,
       chunkSize: motif.chunkSize,
       maxFilesize: motif.maxFilesize,
@@ -56,10 +55,6 @@ if (!window.transmorpherScriptLoaded) {
           clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
           displayState(transmorpherIdentifier, 'uploading', null, false);
           startPolling(transmorpherIdentifier, this.options.uploadToken);
-        });
-        this.on('sending', function (file, xhr, formData) {
-          // Add identifier to request body.
-          formData.append('identifier', transmorpherIdentifier);
         });
       },
       accept: function accept(file, done) {
@@ -402,6 +397,9 @@ if (!window.transmorpherScriptLoaded) {
       image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
       image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
       image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+
+      // Show enlarge icon.
+      image.nextElementSibling.classList.remove('d-hidden');
     });
   };
   window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
@@ -430,7 +428,10 @@ if (!window.transmorpherScriptLoaded) {
       case mediaTypes[IMAGE]:
         imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
         imgElements.forEach(function (image) {
-          return image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+          image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+
+          // Hide enlarge icon.
+          image.nextElementSibling.classList.add('d-hidden');
         });
         break;
       case mediaTypes[VIDEO]:
