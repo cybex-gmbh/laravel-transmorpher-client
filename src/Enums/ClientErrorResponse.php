@@ -23,7 +23,7 @@ enum ClientErrorResponse: int
         return match ($this) {
             self::NO_CONNECTION => [
                 'success' => false,
-                'clientMessage' => 'Could not connect to server.',
+                'clientMessage' => trans('transmorpher::errors.no_server_connection'),
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
@@ -35,13 +35,13 @@ enum ClientErrorResponse: int
             ],
             self::NOT_FOUND => [
                 'success' => false,
-                'clientMessage' => 'Canceled by a new upload or the upload is no longer valid.',
+                'clientMessage' => trans('transmorpher::errors.upload_canceled_or_took_too_long'),
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
             self::SERVER_ERROR => [
                 'success' => false,
-                'clientMessage' => 'There was an error on the server.',
+                'clientMessage' => trans('transmorpher::errors.server_error'),
                 'serverResponse' => $body['message'],
                 'httpCode' => $this->value,
             ],
@@ -64,7 +64,7 @@ enum ClientErrorResponse: int
     {
         return [
             'success' => false,
-            'clientMessage' => 'An unexpected error occurred.',
+            'clientMessage' => trans('transmorpher::errors.unexpected_error'),
             'serverResponse' => $body['message'],
             'httpCode' => $code,
         ];
