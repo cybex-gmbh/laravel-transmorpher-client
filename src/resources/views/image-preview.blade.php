@@ -7,7 +7,7 @@
                  sizes="(max-width: 300px) 150px, (max-width: 600px) 300px, (max-width: 900px) 600px, 900px"
                  src="{{ $motif->getUrl(['width' => 300]) }}"
                  alt="@lang('transmorpher::image-alt-tags.preview_image', ['differentiator' => $differentiator])"/>
-            <img role="link" src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.show_image_in_full_size')" class="icon enlarge-icon">
+            <img role="link" src="{{ mix('icons/enlargen.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.show_image_in_full_size')" @class(['icon', 'enlarge-icon', 'd-hidden' => !$isReady])>
         </div>
     </a>
 </div>

@@ -16,7 +16,6 @@ if (!window.transmorpherScriptLoaded) {
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
   window.mediaTypes = {};
   window.transformations = {};
-  window.translations = {};
   window.motifs = [];
   var IMAGE = 'IMAGE';
   var VIDEO = 'VIDEO';
@@ -41,7 +40,6 @@ if (!window.transmorpherScriptLoaded) {
       paramName: 'file',
       uploadToken: null,
       createImageThumbnails: false,
-      dictDefaultMessage: translations['drop_files_to_upload'],
       init: function init() {
         // Processing-Event is emitted when the upload starts.
         this.on('processing', function () {
@@ -86,7 +84,7 @@ if (!window.transmorpherScriptLoaded) {
           body: JSON.stringify({
             response: {
               success: false,
-              clientMessage: translations['upload_canceled'],
+              clientMessage: this.options.dictUploadCanceled,
               serverResponse: this.options.dictUploadCanceled
             },
             http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
@@ -399,6 +397,9 @@ if (!window.transmorpherScriptLoaded) {
       image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
       image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
       image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+
+      // Show enlarge icon.
+      image.nextElementSibling.classList.remove('d-hidden');
     });
   };
   window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
@@ -427,7 +428,10 @@ if (!window.transmorpherScriptLoaded) {
       case mediaTypes[IMAGE]:
         imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
         imgElements.forEach(function (image) {
-          return image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+          image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+
+          // Hide enlarge icon.
+          image.nextElementSibling.classList.add('d-hidden');
         });
         break;
       case mediaTypes[VIDEO]:
@@ -483,7 +487,7 @@ if (!window.transmorpherScriptLoaded) {
   window.displayStateInformation = function (stateInfoElement, state) {
     stateInfoElement.className = '';
     stateInfoElement.classList.add('badge', "badge-".concat(state));
-    stateInfoElement.querySelector('span:first-of-type').textContent = translations[state];
+    stateInfoElement.querySelector('span:first-of-type').textContent = "".concat(state[0].toUpperCase()).concat(state.slice(1));
   };
   window.displayCardBorderState = function (transmorpherIdentifier, state) {
     var card = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card');
@@ -613,7 +617,7 @@ if (!window.transmorpherScriptLoaded) {
         pressedOnce = false;
         clearTimeout(timeOut);
       } else {
-        button.querySelector('span').textContent = translations['press_again_to_confirm'];
+        button.querySelector('span').textContent = 'Press again to confirm';
         pressedOnce = true;
         timeOut = setTimeout(function () {
           pressedOnce = false;

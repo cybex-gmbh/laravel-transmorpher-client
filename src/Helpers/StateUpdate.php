@@ -4,7 +4,6 @@ namespace Transmorpher\Helpers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Transmorpher\Enums\ClientResponse;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;

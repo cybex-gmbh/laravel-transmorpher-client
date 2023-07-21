@@ -109,10 +109,10 @@
 </div>
 
 <script type="text/javascript">
-    mediaTypes = {!! json_encode($mediaTypes) !!};
-    transformations = {!! json_encode($srcSetTransformations) !!};
-    translations = {!! json_encode($translations) !!}
-        motifs['{{ $motif->getIdentifier() }}'] = {
+    mediaTypes = @json($mediaTypes);
+    transformations = @json($srcSetTransformations);
+    translations = @json($translations);
+    motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
             state: '{{ $stateRoute }}',
@@ -130,8 +130,8 @@
         chunkSize: {{ $motif->getChunkSize() }},
         maxFilesize: {{ $motif->getMaxFileSize() }},
         maxThumbnailFilesize: {{ $motif->getMaxFileSize() }},
-        isProcessing: {{ json_encode($isProcessing) }},
-        isUploading: {{ json_encode($isUploading) }},
+        isProcessing: @json($isProcessing),
+        isUploading: @json($isUploading),
         lastUpdated: '{{ $lastUpdated }}',
         latestUploadToken: '{{ $latestUploadToken }}',
     }
