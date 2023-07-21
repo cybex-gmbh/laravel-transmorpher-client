@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->string('public_path')->nullable();
             $table->enum('type', ['image', 'video']);
             $table->boolean('is_ready');
-            $table->enum('latest_upload_state', ['initializing', 'processing', 'error', 'success', 'deleted'])->nullable();
+            $table->enum('latest_upload_state', ['deleted', 'error', 'initializing', 'processing', 'success', 'uploading'])->nullable();
             $table->string('latest_upload_token')->unique()->nullable();
             $table->timestamps();
 

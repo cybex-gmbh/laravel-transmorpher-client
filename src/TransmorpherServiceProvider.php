@@ -8,6 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
+use Transmorpher\Helpers\VersionManagement;
+use Transmorpher\ViewComponents\TransmorpherDropzone;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {
@@ -51,8 +53,14 @@ class TransmorpherServiceProvider extends ServiceProvider
         Route::post(config('transmorpher.api.callback_route'), Callback::class)->name('transmorpherCallback');
         Route::middleware('web')->group(function () {
             Route::post('transmorpher/{transmorpherMedia}/token', [UploadToken::class, 'getUploadToken'])->name('transmorpherUploadToken');
-            Route::post('transmorpher/handleUploadResponse/{transmorpherMedia}/{transmorpherUpload}', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');;
-            Route::post('transmorpher/{transmorpherMedia}/stateUpdate', StateUpdate::class)->name('transmorpherStateUpdate');
+            Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
+            Route::post('transmorpher/{transmorpherMedia}/state', [StateUpdate::class, 'getState'])->name('transmorpherState');
+            Route::get('transmorpher/{transmorpherMedia}/getVersions', [VersionManagement::class, 'getVersions'])->name('transmorpherGetVersions');
+            Route::post('transmorpher/{transmorpherMedia}/setVersion', [VersionManagement::class, 'setVersion'])->name('transmorpherSetVersion');
+            Route::post('transmorpher/{transmorpherMedia}/delete', [VersionManagement::class, 'delete'])->name('transmorpherDelete');
+            Route::get('transmorpher/{transmorpherMedia}/getOriginal/{version}', [VersionManagement::class, 'getOriginal'])->name('transmorpherGetOriginal');
+            Route::get('transmorpher/{transmorpherMedia}/getDerivativeForVersion/{version}/{transformations?}', [VersionManagement::class, 'getDerivativeForVersion'])->name('transmorpherGetDerivativeForVersion');
+            Route::post('transmorpher/setUploadingState/{transmorpherUpload}', [StateUpdate::class, 'setUploadingState'])->name('transmorpherSetUploadingState');
         });
     }
 }

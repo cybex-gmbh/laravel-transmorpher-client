@@ -6,25 +6,41 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherMedia;
+use Transmorpher\Models\TransmorpherUpload;
 
 class StateUpdate
 {
     /**
-     * Handle the callback from the Transmorpher.
+     * Get the processing state of the latest upload.
      *
      * @param Request $request
      * @param TransmorpherMedia $transmorpherMedia
      * @return JsonResponse
      */
-    public function __invoke(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
+    public function getState(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
-        if ($request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
-            $response = 'Canceled by a new upload.';
+        // If no upload token was provided, return information for latest upload.
+        if ($request->input('upload_token') && $request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
+            $message = 'Canceled by a new upload.';
             $state = UploadState::ERROR;
         }
 
-        return response()->json(['response' => $response ?? $latestUpload->message, 'state' => $state ?? $latestUpload->state, 'url' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getMp4Url(), $latestUpload->updated_at)]);
+        return response()->json([
+            'clientMessage' => $message ?? $latestUpload?->message,
+            'state' => $state ?? $latestUpload?->state,
+            'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getThumbnailUrl(), $latestUpload?->updated_at),
+            'publicPath' => $transmorpherMedia->public_path,
+            'latestUploadToken' => $transmorpherMedia->latest_upload_token,
+            'lastUpdated' => $latestUpload?->updated_at
+        ]);
+    }
+
+    public function setUploadingState(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
+    {
+        $transmorpherUpload->update(['state' => UploadState::UPLOADING, 'message' => 'Upload has started.']);
+
+        return response()->json(['state' => $transmorpherUpload->state]);
     }
 }
