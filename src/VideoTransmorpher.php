@@ -52,7 +52,7 @@ class VideoTransmorpher extends Transmorpher
      *
      * @return void
      */
-    public function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
     {
         $upload->update(['token' => $clientResponse['upload_token'], 'state' => UploadState::PROCESSING, 'message' => $clientResponse['response']]);
     }
@@ -66,6 +66,9 @@ class VideoTransmorpher extends Transmorpher
     }
 
     /**
+     * Sends the request to reserve an upload slot to the Transmorpher media server API.
+     * For videos, a callback URL has to be provided.
+     *
      * @return Response
      */
     protected function sendReserveUploadSlotRequest(): Response

@@ -60,17 +60,18 @@ class TransmorpherUpload extends Model
         return 'token';
     }
 
-    public function complete(array $response, int $httpCode = null): array
+    public function handleStateUpdate(array $response, int $httpCode = null): array
     {
         $transmorpher = $this->TransmorpherMedia->getTransmorpher();
 
-        // This step can be skipped if the client response was already determined.
+        // When this method is called from within a Transmorpher, the response for the frontend is already determined.
+        // When this method is directly called from a controller (e.g. failed/successful upload), the server response still has to be checked (and replaced in case of errors).
         if ($httpCode) {
             $response = $transmorpher->getClientResponse($response, $httpCode);
         }
 
         if ($response['success']) {
-            $transmorpher->updateModelsAfterSuccessfulUpload($response, $this);
+            $transmorpher->updateAfterSuccessfulUpload($response, $this);
         } else {
             $this->update(['state' => UploadState::ERROR, 'message' => $response['serverResponse']]);
         }

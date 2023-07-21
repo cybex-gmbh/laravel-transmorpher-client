@@ -4,18 +4,21 @@ namespace Transmorpher;
 
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
-use Transmorpher\Enums\ClientResponse;
+use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Models\TransmorpherMedia;
+use Transmorpher\Models\TransmorpherUpload;
 
 abstract class Transmorpher
 {
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
+    protected TransmorpherUpload $upload;
 
     /**
      * Get either an existing instance or creates a new one.
@@ -60,15 +63,15 @@ abstract class Transmorpher
      */
     public function upload($fileHandle): array
     {
+        // There is no type hint for resource.
         if (!is_resource($fileHandle)) {
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
         $tokenResponse = $this->reserveUploadSlot();
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         if (!$tokenResponse['success']) {
-            return $upload->complete($tokenResponse);
+            return $this->upload->handleStateUpdate($tokenResponse);
         }
 
         try {
@@ -76,38 +79,39 @@ abstract class Transmorpher
                 ->attach('file', $fileHandle)
                 ->post($this->getS2sApiUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
 
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        return $upload->complete($clientResponse);
+        return $this->upload->handleStateUpdate($clientResponse);
     }
 
     /**
-     * Prepare an upload to the Transmorpher media server by requesting an upload token.
+     * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
+     * The request itself is in the Image- / VideoTransmorpher class, since the API differs.
      *
      * @return array
      */
     public function reserveUploadSlot(): array
     {
-        $upload = $this->transmorpherMedia->TransmorpherUploads()->create([
+        $this->upload = $this->transmorpherMedia->TransmorpherUploads()->create([
             'state' => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
 
         try {
             $response = $this->sendReserveUploadSlotRequest();
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $this->upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
         if ($clientResponse['success']) {
-            $upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
+            $this->upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
         } else {
-            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
+            $this->upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
 
         return $clientResponse;
@@ -124,9 +128,9 @@ abstract class Transmorpher
 
         try {
             $response = $this->configureApiRequest()->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
             $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
@@ -198,9 +202,9 @@ abstract class Transmorpher
             $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
                 'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
             ]);
-            $clientResponse = $this->getClientResponse(json_decode($response->body(), true), $response->status());
+            $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
-            $clientResponse = ClientResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
         // HTTP code is only available in the response in case the request was not successful.
@@ -208,7 +212,7 @@ abstract class Transmorpher
             $clientResponse['clientMessage'] = 'Selected version is no longer available';
         }
 
-        return $upload->complete($clientResponse);
+        return $upload->handleStateUpdate($clientResponse);
     }
 
     /**
@@ -226,10 +230,18 @@ abstract class Transmorpher
      */
     public function getClientResponse(array $response, int $httpCode): array
     {
-        $clientResponse = ($response['success'] ?? false) ? $response : ClientResponse::tryFrom($httpCode)?->getResponse($response);
+        return ($response['success'] ?? false) ? $response : ClientErrorResponse::get($response, $httpCode);
+    }
 
-        // tryFrom will return null if the code is not defined in the enum.
-        return $clientResponse ?? ClientResponse::getDefaultResponse($response, $httpCode);
+    /**
+     * Wraps the "getClientResponse"-method to extract the body and http code from a response.
+     *
+     * @param Response $response
+     * @return array
+     */
+    public function getClientResponseFromResponse(Response $response): array
+    {
+        return $this->getClientResponse(json_decode($response->body(), true), $response->status());
     }
 
     /**

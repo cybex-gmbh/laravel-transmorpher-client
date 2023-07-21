@@ -108,8 +108,8 @@
 </div>
 
 <script type="text/javascript">
-    mediaTypes = {!! json_encode($mediaTypes) !!};
-    transformations = {!! json_encode($srcSetTransformations) !!};
+    mediaTypes = @json($mediaTypes);
+    transformations = @json($srcSetTransformations);
     motifs['{{ $motif->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
@@ -119,7 +119,7 @@
             setVersion: '{{ $setVersionRoute }}',
             delete: '{{ $deleteRoute }}',
             getOriginal: '{{ $getOriginalRoute }}',
-            getOriginalDerivative: '{{ $getOriginalDerivativeRoute }}',
+            getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
             uploadToken: '{{ $uploadTokenRoute }}',
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },
@@ -128,8 +128,8 @@
         chunkSize: {{ $motif->getChunkSize() }},
         maxFilesize: {{ $motif->getMaxFileSize() }},
         maxThumbnailFilesize: {{ $motif->getMaxFileSize() }},
-        isProcessing: {{ json_encode($isProcessing) }},
-        isUploading: {{ json_encode($isUploading) }},
+        isProcessing: @json($isProcessing),
+        isUploading: @json($isUploading),
         lastUpdated: '{{ $lastUpdated }}',
         latestUploadToken: '{{ $latestUploadToken }}',
     }
