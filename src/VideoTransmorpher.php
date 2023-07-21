@@ -52,7 +52,7 @@ class VideoTransmorpher extends Transmorpher
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
     {
         $upload->update(['token' => $clientResponse['upload_token'], 'state' => UploadState::PROCESSING, 'message' => $clientResponse['response']]);
     }

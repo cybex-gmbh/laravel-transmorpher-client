@@ -47,7 +47,7 @@ abstract class Transmorpher
      *
      * @return void
      */
-    public abstract function updateModelsAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
+    public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
 
     /**
      * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.

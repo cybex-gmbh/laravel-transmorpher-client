@@ -68,7 +68,7 @@ class ImageTransmorpher extends Transmorpher
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
     {
         $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
         $upload->update(['state' => UploadState::SUCCESS, 'message' => $clientResponse['response']]);
