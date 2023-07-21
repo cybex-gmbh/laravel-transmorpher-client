@@ -4,7 +4,6 @@ namespace Transmorpher\Helpers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
@@ -28,6 +27,6 @@ class UploadToken
      */
     public function handleUploadResponse(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
-        return response()->json($transmorpherUpload->complete($request->input('response'), $request->input('http_code')));
+        return response()->json($transmorpherUpload->handleStateUpdate($request->input('response'), $request->input('http_code')));
     }
 }

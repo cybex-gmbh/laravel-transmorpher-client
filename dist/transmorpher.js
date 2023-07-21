@@ -83,9 +83,9 @@ if (!window.transmorpherScriptLoaded) {
           },
           body: JSON.stringify({
             response: {
-              state: 'error',
+              success: false,
               clientMessage: this.options.dictUploadCanceled,
-              message: this.options.dictUploadCanceled
+              serverResponse: this.options.dictUploadCanceled
             },
             http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
           })
@@ -196,7 +196,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
     resetAgeElement(transmorpherIdentifier);
-    if (uploadResult.state !== 'error') {
+    if (uploadResult.success) {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
       document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
       updateVersionInformation(transmorpherIdentifier);
@@ -204,16 +204,17 @@ if (!window.transmorpherScriptLoaded) {
         case mediaTypes[IMAGE]:
           // Set the newly uploaded image as display image.
           updateImageDisplay(transmorpherIdentifier, uploadResult.public_path, uploadResult.version);
+          displayState(transmorpherIdentifier, 'success');
           break;
         case mediaTypes[VIDEO]:
+          displayState(transmorpherIdentifier, 'processing');
           startPolling(transmorpherIdentifier, uploadToken);
           break;
       }
-      displayState(transmorpherIdentifier, uploadResult.state);
     } else {
       var _uploadResult$clientM;
       // There was an error. When the file was not accepted, e.g. due to a too large file size, the uploadResult only contains a string.
-      displayState(transmorpherIdentifier, uploadResult.state, (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult);
+      displayState(transmorpherIdentifier, 'error', (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult);
 
       // Start polling for updates when the upload was aborted due to another upload.
       if (uploadResult.httpCode === 404) {
@@ -260,7 +261,7 @@ if (!window.transmorpherScriptLoaded) {
           startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
         }
       });
-      var versions = versionInformation.state === 'success' ? versionInformation.versions : [];
+      var versions = versionInformation.success ? versionInformation.versions : [];
       var versionAge;
       switch (motifs[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
@@ -325,21 +326,24 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (setVersionResult) {
-      if (setVersionResult.state !== 'error') {
+      if (setVersionResult.success) {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         updateVersionInformation(transmorpherIdentifier);
+        var state;
         switch (motifs[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
             updateMediaDisplay(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version);
+            state = 'success';
             break;
           case mediaTypes[VIDEO]:
             startPolling(transmorpherIdentifier, setVersionResult.upload_token);
+            state = 'processing';
             break;
         }
-        displayState(transmorpherIdentifier, setVersionResult.state);
+        displayState(transmorpherIdentifier, state);
       } else {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-        displayModalState(transmorpherIdentifier, setVersionResult.state, setVersionResult.clientMessage);
+        displayModalState(transmorpherIdentifier, 'error', setVersionResult.clientMessage);
       }
     });
   };
@@ -362,7 +366,7 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (deleteResult) {
-      if (deleteResult.state !== 'error') {
+      if (deleteResult.success) {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         displayModalState(transmorpherIdentifier, 'success');
         displayCardBorderState(transmorpherIdentifier, 'processing');
@@ -372,7 +376,7 @@ if (!window.transmorpherScriptLoaded) {
         document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
       } else {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-        displayModalState(transmorpherIdentifier, deleteResult.state, deleteResult.clientMessage);
+        displayModalState(transmorpherIdentifier, 'error', deleteResult.clientMessage);
       }
     });
   };
@@ -393,6 +397,9 @@ if (!window.transmorpherScriptLoaded) {
       image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
       image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
       image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+
+      // Show enlarge icon.
+      image.nextElementSibling.classList.remove('d-hidden');
     });
   };
   window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
@@ -421,7 +428,10 @@ if (!window.transmorpherScriptLoaded) {
       case mediaTypes[IMAGE]:
         imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
         imgElements.forEach(function (image) {
-          return image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+          image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+
+          // Hide enlarge icon.
+          image.nextElementSibling.classList.add('d-hidden');
         });
         break;
       case mediaTypes[VIDEO]:
@@ -547,7 +557,7 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (getUploadTokenResult) {
-      if (getUploadTokenResult.state === 'error') {
+      if (!getUploadTokenResult.success) {
         done(getUploadTokenResult);
       }
       var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
