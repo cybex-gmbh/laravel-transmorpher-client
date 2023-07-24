@@ -13,6 +13,6 @@ enum SupportedApiVersion: int
      */
     public static function isSupported(): bool
     {
-        return in_array(config('transmorpher.api.version'), array_column(self::cases(), 'value'));
+        return in_array(config('transmorpher.api.version', 1), array_column(self::cases(), 'value'));
     }
 }
