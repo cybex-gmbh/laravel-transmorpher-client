@@ -13,7 +13,7 @@ class UnsupportedApiVersionException extends Exception
         parent::__construct(
             sprintf(
                 'The configured API version "%s" is not supported by this package version. Supported versions: %s',
-                SupportedApiVersion::getConfiguredVersion(),
+                config('transmorpher.api.version'),
                 implode(', ', array_column(SupportedApiVersion::cases(), 'value'))
             ), $code, $previous);
     }

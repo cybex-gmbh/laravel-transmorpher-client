@@ -8,7 +8,6 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Transmorpher\Enums\ClientErrorResponse;
-use Transmorpher\Enums\SupportedApiVersion;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
@@ -362,7 +361,7 @@ abstract class Transmorpher
      */
     protected function getS2sApiUrl(string $path = null): string
     {
-        return sprintf('%s/v%d/%s', config('transmorpher.api.s2s_url'), SupportedApiVersion::getConfiguredVersion(), $path);
+        return sprintf('%s/v%d/%s', config('transmorpher.api.s2s_url'), config('transmorpher.api.version'), $path);
     }
 
     /**
@@ -374,7 +373,7 @@ abstract class Transmorpher
      */
     protected function getWebApiUrl(string $path = null): string
     {
-        return sprintf('%s/v%d/%s', config('transmorpher.api.web_url'), SupportedApiVersion::getConfiguredVersion(), $path);
+        return sprintf('%s/v%d/%s', config('transmorpher.api.web_url'), config('transmorpher.api.version'), $path);
     }
 
     /**

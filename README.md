@@ -67,6 +67,14 @@ A placeholder image can be displayed for media without uploads.
 TRANSMORPHER_WEB_PLACEHOLDER_URL=http://example.com/placeholder.jpg
 ```
 
+You can specify the Transmorpher API version which should be used. Make sure the Transmorpher media server supports the configured version.
+
+For versions supported by the client, check the SupportedApiVersion enum.
+
+```dotenv
+TRANSMORPHER_API_VERSION=
+```
+
 ### Allow models to have images and videos
 
 All Models which should be able to have media, have to implement the `HasTransmorpherMediaInterface` and use
