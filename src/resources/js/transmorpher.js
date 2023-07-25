@@ -42,6 +42,8 @@ if (!window.transmorpherScriptLoaded) {
             uploadToken: null,
             createImageThumbnails: false,
             dictDefaultMessage: translations['drop_files_to_upload'],
+            dictFileTooBig: translations['max_file_size_exceeded'],
+            dictInvalidFileType: translations['invalid_file_type'],
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
