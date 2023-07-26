@@ -229,6 +229,11 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.updateVersionInformation = function (transmorpherIdentifier) {
     var modal = document.querySelector("#modal-mi-".concat(transmorpherIdentifier));
+
+    // Don't update when the modal is closed.
+    if (!modal.classList.contains('d-flex')) {
+      return;
+    }
     var versionList = modal.querySelector('.version-list > ul');
     var defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true);
 
@@ -274,6 +279,13 @@ if (!window.transmorpherScriptLoaded) {
             updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl);
           }
           break;
+      }
+
+      // When this method is called twice simultaneously (e.g. finished upload and opening the modal), the version history might be duplicated.
+      // In this case, clear the version list once more.
+      if (versionList.childElementCount > 1) {
+        versionList.replaceChildren();
+        versionList.append(defaultVersionEntry);
       }
       var currentVersionAgeElement = modal.querySelector('.current-version-age');
       currentVersionAgeElement.textContent = versionAge;
