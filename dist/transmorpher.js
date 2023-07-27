@@ -196,7 +196,8 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
     resetAgeElement(transmorpherIdentifier);
-    if (uploadResult.state !== 'error') {
+    // Check for undefined, which happens in cases where dropzone directly rejects the file e.g. due to max file size.
+    if (uploadResult.state !== undefined && uploadResult.state !== 'error') {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
       document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
       updateVersionInformation(transmorpherIdentifier);
@@ -213,7 +214,7 @@ if (!window.transmorpherScriptLoaded) {
     } else {
       var _uploadResult$clientM;
       // There was an error. When the file was not accepted, e.g. due to a too large file size, the uploadResult only contains a string.
-      displayState(transmorpherIdentifier, uploadResult.state, (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult);
+      displayState(transmorpherIdentifier, 'error', (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult);
 
       // Start polling for updates when the upload was aborted due to another upload.
       if (uploadResult.httpCode === 404) {
