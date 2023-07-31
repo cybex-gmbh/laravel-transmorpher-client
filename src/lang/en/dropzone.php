@@ -12,7 +12,7 @@ return [
     'press_again_to_confirm' => 'Press again to confirm',
     'processing' => 'Processing',
     'restore' => 'Restore',
-    'started' => 'started',
+    'started' => 'Started',
     'success' => 'Success',
     'uploading' => 'Uploading',
     'upload_canceled' => 'Upload canceled',
