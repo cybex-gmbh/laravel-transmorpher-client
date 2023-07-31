@@ -58,7 +58,7 @@
                             @endif
                         </span>
                         <div class="motif-info">
-                            <p @class(['d-none' => !$isProcessing || !$isUploading])>@lang('transmorpher::dropzone.started')<span class="age"></span></p>
+                            <p @class(['d-none' => !$isProcessing || !$isUploading])>@lang('transmorpher::dropzone.started') <span class="age"></span></p>
                         </div>
                         <span class="error-message"></span>
                     </div>
