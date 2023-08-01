@@ -213,7 +213,7 @@ To show derivatives on a webpage, you can use an HTML image tag.
 <img src="{{ $motif->getUrl() }}"></img>
 ```
 
-You also have the possibilty to apply transformations.
+You also have the possibility to apply transformations.
 
 ```html
 <img src="{{ $motif->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
