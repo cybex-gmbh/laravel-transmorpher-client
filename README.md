@@ -192,10 +192,38 @@ If you want a more dynamic approach, to display a dropzone for each available im
 
 ## Development
 
+### Frontend Assets
+For installing frontend dependencies you will have to run:
+```bash
+npm install
+```
+
 For compiling assets you can use the following command in the project root:
 ```bash
 npx mix
 ```
+
+### Transformations
+
+To show derivatives on a webpage, you can use an HTML image tag.
+
+**NOTE**: These examples use Blade syntax and assume you have a valid Transmorpher instance in your template.
+
+```html
+<img src="{{ $motif->getUrl() }}"></img>
+```
+
+You also have the possibilty to apply transformations.
+
+```html
+<img src="{{ $motif->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
+```
+
+List of available transformations:
+- width
+- height
+- format
+- quality
 
 ## License
 
