@@ -3,6 +3,8 @@
 namespace Transmorpher\Enums;
 
 use InvalidArgumentException;
+use Transmorpher\Exceptions\InvalidTransformationValueException;
+use Transmorpher\Exceptions\TransformationNotFoundException;
 
 enum Transformation: string
 {
@@ -21,12 +23,12 @@ enum Transformation: string
         $valid = match ($this) {
             self::WIDTH,
             self::HEIGHT => filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]),
-            self::FORMAT => is_string($value) ? $value : false,
+            self::FORMAT => is_string($value),
             self::QUALITY => filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]])
         };
 
         if (!$valid) {
-            throw new InvalidArgumentException(sprintf('The provided value %s for the %s parameter is not valid.', $value, $this->name));
+            throw new InvalidTransformationValueException($value, $this->name);
         }
 
         return $value;

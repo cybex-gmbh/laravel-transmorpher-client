@@ -11,6 +11,7 @@ use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
+use Transmorpher\Exceptions\TransformationNotFoundException;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
@@ -317,7 +318,7 @@ abstract class Transmorpher
                 'height' => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
                 'format' => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
                 'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
-                default => null
+                default => throw new TransformationNotFoundException($transformation)
             };
         }
 
