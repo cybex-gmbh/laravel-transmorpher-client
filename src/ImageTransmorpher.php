@@ -31,7 +31,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getOriginal(int $versionNumber): array
     {
-        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s', $this->getIdentifier(), $versionNumber)));
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/original', $this->getIdentifier(), $versionNumber)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
@@ -44,7 +44,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getDerivativeForVersion(int $versionNumber, string $transformations): array
     {
-        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/derivative/%s/version/%s/%s', $this->getIdentifier(), $versionNumber, $transformations)));
+        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/derivative/%s', $this->getIdentifier(), $versionNumber, $transformations)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
@@ -67,7 +67,7 @@ class ImageTransmorpher extends Transmorpher
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
     {
         $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
         $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
@@ -79,6 +79,16 @@ class ImageTransmorpher extends Transmorpher
     public function getThumbnailUrl(): string
     {
         return $this->getUrl(['height' => 150]);
+    }
+
+    /**
+     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public function getAcceptedFileTypes(): string
+    {
+        return 'image/*';
     }
 
     /**

@@ -31,6 +31,7 @@ if (!window.transmorpherScriptLoaded) {
     }
     new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
       url: motif.webUploadUrl,
+      acceptedFiles: motif.acceptedFileTypes,
       chunking: true,
       chunkSize: motif.chunkSize,
       maxFilesize: motif.maxFilesize,
@@ -55,6 +56,10 @@ if (!window.transmorpherScriptLoaded) {
           clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
           displayState(transmorpherIdentifier, 'uploading', null, false);
           startPolling(transmorpherIdentifier, this.options.uploadToken);
+        });
+        this.on('sending', function (file, xhr, formData) {
+          // Add identifier to request body.
+          formData.append('identifier', transmorpherIdentifier);
         });
       },
       accept: function accept(file, done) {

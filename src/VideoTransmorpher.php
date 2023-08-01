@@ -51,7 +51,7 @@ class VideoTransmorpher extends Transmorpher
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
     {
         $upload->update(['token' => $clientResponse['upload_token'], 'state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
     }
@@ -62,6 +62,16 @@ class VideoTransmorpher extends Transmorpher
     public function getThumbnailUrl(): string
     {
         return $this->getMp4Url();
+    }
+
+    /**
+     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public function getAcceptedFileTypes(): string
+    {
+        return 'video/*';
     }
 
     /**
