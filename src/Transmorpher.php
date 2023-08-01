@@ -199,7 +199,7 @@ abstract class Transmorpher
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
-            $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
+            $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)), [
                 'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
             ]);
             $clientResponse = $this->getClientResponseFromResponse($response);
