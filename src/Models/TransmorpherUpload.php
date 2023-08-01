@@ -70,10 +70,10 @@ class TransmorpherUpload extends Model
             $response = $transmorpher->getClientResponse($response, $httpCode);
         }
 
-        if ($response['success']) {
+        if ($response['state'] !== UploadState::ERROR->value) {
             $transmorpher->updateAfterSuccessfulUpload($response, $this);
         } else {
-            $this->update(['state' => UploadState::ERROR, 'message' => $response['serverResponse']]);
+            $this->update(['state' => $response['state'], 'message' => $response['message']]);
         }
 
         $response['latestUploadToken'] = $this->TransmorpherMedia->latest_upload_token;

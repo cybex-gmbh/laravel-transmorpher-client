@@ -96,7 +96,7 @@ abstract class Transmorpher
 
         $tokenResponse = $this->reserveUploadSlot();
 
-        if (!$tokenResponse['success']) {
+        if ($tokenResponse['state'] === UploadState::ERROR->value) {
             return $this->upload->handleStateUpdate($tokenResponse);
         }
 
@@ -131,14 +131,15 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $this->upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['success']) {
-            $this->upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
-        } else {
-            $this->upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
+        $valuesToUpdate = ['state' => $clientResponse['state'], 'message' => $clientResponse['message']];
+
+        if ($clientResponse['state'] !== UploadState::ERROR->value) {
+            $valuesToUpdate['token'] = $clientResponse['upload_token'];
         }
+
+        $this->upload->update($valuesToUpdate);
 
         return $clientResponse;
     }
@@ -157,19 +158,17 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['success']) {
+        if ($clientResponse['state'] === UploadState::DELETED->value) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
-            $upload->update(['state' => UploadState::DELETED, 'message' => $clientResponse['response']]);
         } else {
             if ($clientResponse['httpCode'] === 404) {
-                $clientResponse ['clientMessage'] = 'Media is already deleted.';
+                $clientResponse['clientMessage'] = 'Media is already deleted.';
             }
-
-            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
+
+        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
 
         return $clientResponse;
     }
@@ -234,7 +233,7 @@ abstract class Transmorpher
         }
 
         // HTTP code is only available in the response in case the request was not successful.
-        if (!$clientResponse['success'] && $clientResponse['httpCode'] === 404) {
+        if ($clientResponse['state'] === UploadState::ERROR->value && $clientResponse['httpCode'] === 404) {
             $clientResponse['clientMessage'] = 'Selected version is no longer available';
         }
 
@@ -256,7 +255,7 @@ abstract class Transmorpher
      */
     public function getClientResponse(array $response, int $httpCode): array
     {
-        return ($response['success'] ?? false) ? $response : ClientErrorResponse::get($response, $httpCode);
+        return isset($response['state']) && $response['state'] !== UploadState::ERROR->value ? $response : ClientErrorResponse::get($response, $httpCode);
     }
 
     /**
