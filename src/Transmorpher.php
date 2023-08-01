@@ -11,6 +11,7 @@ use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
+use Transmorpher\Exceptions\TransformationNotFoundException;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
@@ -40,6 +41,31 @@ abstract class Transmorpher
      * @param string $differentiator
      */
     protected abstract function __construct(HasTransmorpherMediaInterface $model, string $differentiator);
+
+    /**
+     * @param array $clientResponse
+     * @param TransmorpherUpload $upload
+     *
+     * @return void
+     */
+    public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
+
+    /**
+     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public abstract function getAcceptedFileTypes(): string;
+
+    /**
+     * @return string
+     */
+    public abstract function getThumbnailUrl(): string;
+
+    /**
+     * @return Response
+     */
+    protected abstract function sendReserveUploadSlotRequest(): Response;
 
     /**
      * @return void
@@ -292,7 +318,7 @@ abstract class Transmorpher
                 'height' => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
                 'format' => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
                 'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
-                default => null
+                default => throw new TransformationNotFoundException($transformation)
             };
         }
 
@@ -382,8 +408,8 @@ abstract class Transmorpher
      */
     protected function validateIdentifier(): void
     {
-        // Identifier is used in file paths and URLs, therefore only lower/uppercase characters, numbers, underscores and dashes are allowed.
-        if (!preg_match('/^[\w][\w\-]*$/', $this->getIdentifier())) {
+        // Identifier is used in file paths and URLs, therefore only alphanumeric characters, underscores and hyphens are allowed.
+        if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
             throw new InvalidIdentifierException($this->model, $this->differentiator);
         }
     }

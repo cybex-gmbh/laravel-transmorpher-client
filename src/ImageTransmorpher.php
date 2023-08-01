@@ -68,7 +68,7 @@ class ImageTransmorpher extends Transmorpher
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload)
+    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
     {
         $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
         $upload->update(['state' => UploadState::SUCCESS, 'message' => $clientResponse['response']]);
@@ -80,6 +80,16 @@ class ImageTransmorpher extends Transmorpher
     public function getThumbnailUrl(): string
     {
         return $this->getUrl(['height' => 150]);
+    }
+
+    /**
+     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public function getAcceptedFileTypes(): string
+    {
+        return 'image/*';
     }
 
     /**
