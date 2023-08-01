@@ -31,6 +31,7 @@ if (!window.transmorpherScriptLoaded) {
     }
     new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
       url: motif.webUploadUrl,
+      acceptedFiles: motif.acceptedFileTypes,
       chunking: true,
       chunkSize: motif.chunkSize,
       maxFilesize: motif.maxFilesize,
@@ -55,6 +56,10 @@ if (!window.transmorpherScriptLoaded) {
           clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
           displayState(transmorpherIdentifier, 'uploading', null, false);
           startPolling(transmorpherIdentifier, this.options.uploadToken);
+        });
+        this.on('sending', function (file, xhr, formData) {
+          // Add identifier to request body.
+          formData.append('identifier', transmorpherIdentifier);
         });
       },
       accept: function accept(file, done) {
@@ -83,9 +88,9 @@ if (!window.transmorpherScriptLoaded) {
           },
           body: JSON.stringify({
             response: {
-              success: false,
+              state: 'error',
               clientMessage: this.options.dictUploadCanceled,
-              serverResponse: this.options.dictUploadCanceled
+              message: this.options.dictUploadCanceled
             },
             http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
           })
@@ -163,14 +168,14 @@ if (!window.transmorpherScriptLoaded) {
     ageElement.closest('p').classList.remove('d-none');
   };
   window.resetAgeElement = function (transmorpherIdentifier) {
-    var _document$querySelect, _document$querySelect2;
-    (_document$querySelect = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age"))) === null || _document$querySelect === void 0 ? void 0 : (_document$querySelect2 = _document$querySelect.closest('p')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-none');
+    var _document$querySelect;
+    (_document$querySelect = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age"))) === null || _document$querySelect === void 0 || (_document$querySelect = _document$querySelect.closest('p')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add('d-none');
   };
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
-    var _document$querySelect3;
+    var _document$querySelect2;
     // Clear the old timer.
     clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-    (_document$querySelect3 = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.remove();
+    (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.remove();
     if (uploadToken) {
       var _file$xhr$status, _file$xhr2;
       fetch("".concat(motifs[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
@@ -196,7 +201,8 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
     resetAgeElement(transmorpherIdentifier);
-    if (uploadResult.success) {
+    // Check for undefined, which happens in cases where dropzone directly rejects the file e.g. due to max file size.
+    if (uploadResult.state !== undefined && uploadResult.state !== 'error') {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
       document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
       updateVersionInformation(transmorpherIdentifier);
@@ -204,13 +210,12 @@ if (!window.transmorpherScriptLoaded) {
         case mediaTypes[IMAGE]:
           // Set the newly uploaded image as display image.
           updateImageDisplay(transmorpherIdentifier, uploadResult.public_path, uploadResult.version);
-          displayState(transmorpherIdentifier, 'success');
           break;
         case mediaTypes[VIDEO]:
-          displayState(transmorpherIdentifier, 'processing');
           startPolling(transmorpherIdentifier, uploadToken);
           break;
       }
+      displayState(transmorpherIdentifier, uploadResult.state);
     } else {
       var _uploadResult$clientM;
       // There was an error. When the file was not accepted, e.g. due to a too large file size, the uploadResult only contains a string.
@@ -261,7 +266,7 @@ if (!window.transmorpherScriptLoaded) {
           startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
         }
       });
-      var versions = versionInformation.success ? versionInformation.versions : [];
+      var versions = versionInformation.state === 'success' ? versionInformation.versions : [];
       var versionAge;
       switch (motifs[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
@@ -326,24 +331,21 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (setVersionResult) {
-      if (setVersionResult.success) {
+      if (setVersionResult.state !== 'error') {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         updateVersionInformation(transmorpherIdentifier);
-        var state;
         switch (motifs[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
             updateMediaDisplay(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version);
-            state = 'success';
             break;
           case mediaTypes[VIDEO]:
             startPolling(transmorpherIdentifier, setVersionResult.upload_token);
-            state = 'processing';
             break;
         }
-        displayState(transmorpherIdentifier, state);
+        displayState(transmorpherIdentifier, setVersionResult.state);
       } else {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-        displayModalState(transmorpherIdentifier, 'error', setVersionResult.clientMessage);
+        displayModalState(transmorpherIdentifier, setVersionResult.state, setVersionResult.clientMessage);
       }
     });
   };
@@ -366,7 +368,7 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (deleteResult) {
-      if (deleteResult.success) {
+      if (deleteResult.state !== 'error') {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         displayModalState(transmorpherIdentifier, 'success');
         displayCardBorderState(transmorpherIdentifier, 'processing');
@@ -376,7 +378,7 @@ if (!window.transmorpherScriptLoaded) {
         document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
       } else {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-        displayModalState(transmorpherIdentifier, 'error', deleteResult.clientMessage);
+        displayModalState(transmorpherIdentifier, deleteResult.state, deleteResult.clientMessage);
       }
     });
   };
@@ -529,9 +531,9 @@ if (!window.transmorpherScriptLoaded) {
     };
   };
   window.closeUploadConfirmModal = function (transmorpherIdentifier) {
-    var _document$querySelect4;
+    var _document$querySelect3;
     document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
-    (_document$querySelect4 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.remove();
+    (_document$querySelect3 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.remove();
     if (document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview:not(.dz-processing)"))) {
       document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview")).remove();
       document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
@@ -557,7 +559,7 @@ if (!window.transmorpherScriptLoaded) {
     }).then(function (response) {
       return response.json();
     }).then(function (getUploadTokenResult) {
-      if (!getUploadTokenResult.success) {
+      if (getUploadTokenResult.state === 'error') {
         done(getUploadTokenResult);
       }
       var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
@@ -590,12 +592,12 @@ if (!window.transmorpherScriptLoaded) {
     };
   };
   window.closeErrorMessage = function (closeButton, transmorpherIdentifier) {
-    var _document$querySelect5, _closeButton$closest$;
+    var _document$querySelect4, _closeButton$closest$;
     closeButton.closest('.error-display').classList.add('d-none');
 
     // Reset errors.
     resetModalErrorMessageDisplay(transmorpherIdentifier);
-    (_document$querySelect5 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect5 === void 0 ? void 0 : _document$querySelect5.classList.add('d-none');
+    (_document$querySelect4 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.classList.add('d-none');
     (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 ? void 0 : _closeButton$closest$.classList.add('d-hidden');
     closeButton.closest('.card').classList.remove('border-error');
   };
@@ -738,7 +740,7 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Dropzone": () => (/* binding */ $3ed269f2f0fb224b$export$2e2bcd8739ae039),
+/* harmony export */   Dropzone: () => (/* binding */ $3ed269f2f0fb224b$export$2e2bcd8739ae039),
 /* harmony export */   "default": () => (/* binding */ $3ed269f2f0fb224b$export$2e2bcd8739ae039)
 /* harmony export */ });
 /* harmony import */ var just_extend__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! just-extend */ "./node_modules/just-extend/index.esm.js");
