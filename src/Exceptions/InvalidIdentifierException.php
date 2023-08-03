@@ -12,8 +12,8 @@ class InvalidIdentifierException extends Exception
     {
         parent::__construct(
             sprintf(
-                'Morph alias (%s) and differentiator (%s) must match the pattern /^[\w][\w\-]*$/.',
-                $model->getMorphClass(),
+                'Alias (%s) and differentiator (%s) may only contain alphanumeric characters, underscores and hyphens (regex: /^\w(-?\w)*$/).',
+                $model->getTransmorpherAlias(),
                 $differentiator
             ), $code, $previous);
     }

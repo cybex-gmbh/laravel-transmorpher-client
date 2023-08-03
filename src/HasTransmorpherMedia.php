@@ -10,12 +10,11 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait HasTransmorpherMedia
 {
     /**
-     *
      * @throws MissingMorphAliasException
      */
     public static function bootHasTransmorpherMedia()
     {
-        if ((new static())->getMorphClass() === static::class) {
+        if (static::getModel()->getTransmorpherAlias() === static::class) {
             throw new MissingMorphAliasException(static::class);
         }
     }
@@ -52,5 +51,13 @@ trait HasTransmorpherMedia
         return collect($this->transmorpherVideos)->mapWithKeys(function (string $motif) {
             return [$motif => VideoTransmorpher::getInstanceFor($this, $motif)];
         });
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransmorpherAlias(): string
+    {
+        return $this->transmorpherAlias ?? $this->getMorphClass();
     }
 }
