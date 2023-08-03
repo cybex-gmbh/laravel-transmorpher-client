@@ -93,9 +93,6 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define
 a method for each image or video you want the model to have.
 
-**_NOTE:_** This package uses polymorphic relations. You will have to set a morph alias without any special characters
-(e.g. slashes), as it will be used for passing a unique identifier to the Transmorpher media server.
-
 For images you will have to return an instance of an ImageTransmorpher:
 
 ```php
@@ -119,29 +116,11 @@ public function video(): VideoTransmorpher
 }
 ```
 
-#### Dynamic images & videos
-
-If you need a more dynamic approach to defining images or videos for a model, you can also define an array and use the methods which are provided by the `HasTransmorpherMedia` trait.
-
-**_NOTE:_** These property names are not customizable when using the trait.
-
-```php
-protected $transmorpherImages = [
-    'frontView',
-    'sideView',
-];
-
-protected $transmorpherVideos = [];
-```
-
-The trait provides the methods `images()` and `videos()`, which will return a collection with the motifs as key and the corresponding `Transmorpher` class as value.
-This can be used to iterate over all images for a model for example.
-
 The instance of the corresponding `Transmorpher`-class can then be used to make API calls to the Transmorpher media
 server.
 
 ```php
-$imageTransmorpher = $yourModel->$imageFrontView();
+$imageTransmorpher = $yourModel->imageFrontView();
 
 // Upload an image to the media server.
 $imageTransmorpher->upload($fileHandle);
@@ -150,6 +129,50 @@ $imageTransmorpher->upload($fileHandle);
 // Transformations are optional and will be included in the URL. 
 $imageTransmorpher->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
 ```
+
+#### Identifier
+
+To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of the following:
+ - motif: name for the media in the model
+ - model id
+ - an alias (by default the morph alias is used)
+
+Instead of using the morph alias, you can add the property `$transmorpherAlias` to your model, which will then be used for the identifier.
+
+```php
+class YourModel extends Model implements HasTransmorpherMediaInterface
+{
+    use HasTransmorpherMedia
+   
+    protected string $transmorpherAlias = 'yourAlias';
+    
+    ...
+}
+```
+
+**_NOTE:_** As the identifier is used in filenames and URLs, your chosen alias may not contain special characters (e.g. slashes).
+
+> **Warning**
+> 
+> The alias is not intended to be ever changed, as you change the identifier and therefore lose the access to your version history.
+> The images of the old identifier will still be accessible from the public, but the client cannot associate them to its model. 
+
+#### Dynamic images & videos
+
+If you need a more dynamic approach to defining images or videos for a model, you can also define an array and use the methods which are provided by the `HasTransmorpherMedia`
+trait.
+
+```php
+protected array $transmorpherImages = [
+    'frontView',
+    'sideView',
+];
+
+protected array $transmorpherVideos = [];
+```
+
+The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the motifs as key and the corresponding `Transmorpher` class as value.
+This can be used to iterate over all images for a model for example.
 
 ## Dropzone Blade component & assets
 
@@ -183,7 +206,6 @@ php artisan vendor:publish --tag=transmorpher.views
 To use the dropzone component in a template, you can simply include it like this:
 
 ```html
-
 <x-transmorpher::dropzone :motif="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
