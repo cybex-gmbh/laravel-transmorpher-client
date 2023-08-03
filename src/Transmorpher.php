@@ -11,6 +11,7 @@ use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
+use Transmorpher\Exceptions\TransformationNotFoundException;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
@@ -42,6 +43,31 @@ abstract class Transmorpher
     protected abstract function __construct(HasTransmorpherMediaInterface $model, string $differentiator);
 
     /**
+     * @param array $clientResponse
+     * @param TransmorpherUpload $upload
+     *
+     * @return void
+     */
+    public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
+
+    /**
+     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public abstract function getAcceptedFileTypes(): string;
+
+    /**
+     * @return string
+     */
+    public abstract function getThumbnailUrl(): string;
+
+    /**
+     * @return Response
+     */
+    protected abstract function sendReserveUploadSlotRequest(): Response;
+
+    /**
      * @return void
      */
     protected function createTransmorpherMedia(): void
@@ -70,7 +96,7 @@ abstract class Transmorpher
 
         $tokenResponse = $this->reserveUploadSlot();
 
-        if (!$tokenResponse['success']) {
+        if ($tokenResponse['state'] === UploadState::ERROR->value) {
             return $this->upload->handleStateUpdate($tokenResponse);
         }
 
@@ -105,14 +131,15 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $this->upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['success']) {
-            $this->upload->update(['token' => $clientResponse['upload_token'], 'message' => $clientResponse['response']]);
-        } else {
-            $this->upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
+        $valuesToUpdate = ['state' => $clientResponse['state'], 'message' => $clientResponse['message']];
+
+        if ($clientResponse['state'] !== UploadState::ERROR->value) {
+            $valuesToUpdate['token'] = $clientResponse['upload_token'];
         }
+
+        $this->upload->update($valuesToUpdate);
 
         return $clientResponse;
     }
@@ -131,19 +158,17 @@ abstract class Transmorpher
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-            $upload->update(['state' => UploadState::ERROR, 'message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['success']) {
+        if ($clientResponse['state'] === UploadState::DELETED->value) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
-            $upload->update(['state' => UploadState::DELETED, 'message' => $clientResponse['response']]);
         } else {
             if ($clientResponse['httpCode'] === 404) {
                 $clientResponse['clientMessage'] = trans('transmorpher::errors.media_already_deleted');
             }
-
-            $upload->update(['state' => UploadState::ERROR, 'message' => $clientResponse['serverResponse']]);
         }
+
+        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
 
         return $clientResponse;
     }
@@ -199,7 +224,7 @@ abstract class Transmorpher
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
-            $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s/set', $this->getIdentifier(), $versionNumber)), [
+            $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)), [
                 'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
             ]);
             $clientResponse = $this->getClientResponseFromResponse($response);
@@ -208,7 +233,7 @@ abstract class Transmorpher
         }
 
         // HTTP code is only available in the response in case the request was not successful.
-        if (!$clientResponse['success'] && $clientResponse['httpCode'] === 404) {
+        if ($clientResponse['state'] === UploadState::ERROR->value && $clientResponse['httpCode'] === 404) {
             $clientResponse['clientMessage'] = trans('transmorpher::errors.version_no_longer_available');
         }
 
@@ -230,7 +255,7 @@ abstract class Transmorpher
      */
     public function getClientResponse(array $response, int $httpCode): array
     {
-        return ($response['success'] ?? false) ? $response : ClientErrorResponse::get($response, $httpCode);
+        return isset($response['state']) && $response['state'] !== UploadState::ERROR->value ? $response : ClientErrorResponse::get($response, $httpCode);
     }
 
     /**
@@ -292,7 +317,7 @@ abstract class Transmorpher
                 'height' => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
                 'format' => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
                 'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
-                default => null
+                default => throw new TransformationNotFoundException($transformation)
             };
         }
 
@@ -382,8 +407,8 @@ abstract class Transmorpher
      */
     protected function validateIdentifier(): void
     {
-        // Identifier is used in file paths and URLs, therefore only lower/uppercase characters, numbers, underscores and dashes are allowed.
-        if (!preg_match('/^[\w][\w\-]*$/', $this->getIdentifier())) {
+        // Identifier is used in file paths and URLs, therefore only alphanumeric characters, underscores and hyphens are allowed.
+        if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
             throw new InvalidIdentifierException($this->model, $this->differentiator);
         }
     }

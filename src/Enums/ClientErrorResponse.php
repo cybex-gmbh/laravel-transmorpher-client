@@ -19,39 +19,22 @@ enum ClientErrorResponse: int
      */
     public function getResponse(array $body): array
     {
+        $response = [
+            'state' => UploadState::ERROR->value,
+            'message' => $body['message'],
+            'httpCode' => $this->value,
+        ];
+
         // Server exception message is in 'message' field.
-        return match ($this) {
-            self::NO_CONNECTION => [
-                'success' => false,
-                'clientMessage' => trans('transmorpher::errors.no_server_connection'),
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::NOT_AUTHENTICATED => [
-                'success' => false,
-                'clientMessage' => $body['message'],
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::NOT_FOUND => [
-                'success' => false,
-                'clientMessage' => trans('transmorpher::errors.upload_canceled_or_took_too_long'),
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::SERVER_ERROR => [
-                'success' => false,
-                'clientMessage' => trans('transmorpher::errors.server_error'),
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::VALIDATION_ERROR => [
-                'success' => false,
-                'clientMessage' => $body['message'],
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
+        $response['clientMessage'] = match ($this) {
+            self::NO_CONNECTION => trans('transmorpher::errors.no_server_connection'),
+            self::NOT_FOUND => trans('transmorpher::errors.upload_canceled_or_took_too_long'),
+            self::SERVER_ERROR => trans('transmorpher::errors.server_error'),
+            self::NOT_AUTHENTICATED,
+            self::VALIDATION_ERROR => $body['message'],
         };
+
+        return $response;
     }
 
     /**
@@ -63,9 +46,9 @@ enum ClientErrorResponse: int
     public static function getDefaultResponse(array $body, int $code): array
     {
         return [
-            'success' => false,
+            'state' => UploadState::ERROR->value,
             'clientMessage' => trans('transmorpher::errors.unexpected_error'),
-            'serverResponse' => $body['message'],
+            'message' => $body['message'],
             'httpCode' => $code,
         ];
     }

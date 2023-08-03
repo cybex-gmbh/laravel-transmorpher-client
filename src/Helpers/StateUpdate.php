@@ -24,7 +24,7 @@ class StateUpdate
         // If no upload token was provided, return information for latest upload.
         if ($request->input('upload_token') && $request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
             $message = trans('transmorpher::errors.upload_canceled_or_took_too_long');
-            $state = UploadState::ERROR;
+            $state = UploadState::ERROR->value;
         }
 
         return response()->json([
