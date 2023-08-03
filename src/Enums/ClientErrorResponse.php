@@ -19,39 +19,22 @@ enum ClientErrorResponse: int
      */
     public function getResponse(array $body): array
     {
+        $response = [
+            'state' => UploadState::ERROR->value,
+            'message' => $body['message'],
+            'httpCode' => $this->value,
+        ];
+
         // Server exception message is in 'message' field.
-        return match ($this) {
-            self::NO_CONNECTION => [
-                'success' => false,
-                'clientMessage' => 'Could not connect to server.',
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::NOT_AUTHENTICATED => [
-                'success' => false,
-                'clientMessage' => $body['message'],
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::NOT_FOUND => [
-                'success' => false,
-                'clientMessage' => 'Canceled by a new upload or the upload is no longer valid.',
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::SERVER_ERROR => [
-                'success' => false,
-                'clientMessage' => 'There was an error on the server.',
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
-            self::VALIDATION_ERROR => [
-                'success' => false,
-                'clientMessage' => $body['message'],
-                'serverResponse' => $body['message'],
-                'httpCode' => $this->value,
-            ],
+        $response['clientMessage'] = match ($this) {
+            self::NO_CONNECTION => 'Could not connect to server.',
+            self::NOT_FOUND => 'Canceled by a new upload or the upload is no longer valid.',
+            self::SERVER_ERROR => 'There was an error on the server.',
+            self::NOT_AUTHENTICATED,
+            self::VALIDATION_ERROR => $body['message'],
         };
+
+        return $response;
     }
 
     /**
@@ -63,9 +46,9 @@ enum ClientErrorResponse: int
     public static function getDefaultResponse(array $body, int $code): array
     {
         return [
-            'success' => false,
+            'state' => UploadState::ERROR->value,
             'clientMessage' => 'An unexpected error occurred.',
-            'serverResponse' => $body['message'],
+            'message' => $body['message'],
             'httpCode' => $code,
         ];
     }
