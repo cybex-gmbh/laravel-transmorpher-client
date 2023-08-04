@@ -207,7 +207,7 @@ npx mix
 
 To show derivatives on a webpage, you can use an HTML image tag.
 
-**NOTE**: These examples use Blade syntax and assume you have a valid Transmorpher instance in your template.
+**NOTE**: These examples use Blade syntax and assume you have a valid `Transmorpher`-class instance in your template.
 
 ```html
 <img src="{{ $motif->getUrl() }}"></img>
