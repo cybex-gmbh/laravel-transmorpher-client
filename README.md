@@ -9,13 +9,13 @@ The client package provides a Dropzone component, which supports chunked uploads
 To get the latest version, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-$ composer require cybex/laravel-transmorpher-client
+composer require cybex/laravel-transmorpher-client
 ```
 
 To create the tables the package provides, you have to migrate.
 
 ```bash
-$ php artisan migrate
+php artisan migrate
 ```
 
 ## Configuration
@@ -212,6 +212,41 @@ If you want a more dynamic approach, to display a dropzone for each available im
     <x-transmorpher::dropzone :motif="$imageMotif"></x-transmorpher::dropzone>
 @endforeach
 ```
+
+## Development
+
+### Frontend Assets
+For installing frontend dependencies you will have to run:
+```bash
+npm install
+```
+
+For compiling assets you can use the following command in the project root:
+```bash
+npx mix
+```
+
+### Transformations
+
+To show derivatives on a webpage, you can use an HTML image tag.
+
+**NOTE**: These examples use Blade syntax and assume you have a valid `Transmorpher`-class instance in your template.
+
+```html
+<img src="{{ $motif->getUrl() }}"></img>
+```
+
+You also have the possibility to apply transformations.
+
+```html
+<img src="{{ $motif->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
+```
+
+List of available transformations:
+- width
+- height
+- format
+- quality
 
 ## License
 
