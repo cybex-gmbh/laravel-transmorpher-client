@@ -20,7 +20,7 @@ class TransmorpherServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (!SupportedApiVersion::isSupported()) {
+        if (!SupportedApiVersion::configuredVersionIsSupported()) {
             throw new UnsupportedApiVersionException();
         }
 
