@@ -4,6 +4,7 @@ namespace Transmorpher;
 
 use Illuminate\Http\Client\Response;
 use Transmorpher\Enums\MediaType;
+use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Models\TransmorpherUpload;
 
 class VideoTransmorpher extends Transmorpher
@@ -82,7 +83,7 @@ class VideoTransmorpher extends Transmorpher
      */
     protected function sendReserveUploadSlotRequest(): Response
     {
-        return $this->configureApiRequest()->post($this->getS2sApiUrl('video/reserveUploadSlot'), [
+        return $this->configureApiRequest()->post(TransmorpherApi::S2S->getUrl('video/reserveUploadSlot'), [
             'identifier' => $this->getIdentifier(),
             'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
         ]);

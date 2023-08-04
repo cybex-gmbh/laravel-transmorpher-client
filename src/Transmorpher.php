@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
+use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Exceptions\TransformationNotFoundException;
@@ -103,7 +104,7 @@ abstract class Transmorpher
         try {
             $response = $this->configureApiRequest()
                 ->attach('file', $fileHandle)
-                ->post($this->getS2sApiUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
+                ->post(TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
 
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
@@ -154,7 +155,7 @@ abstract class Transmorpher
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending delete request.']);
 
         try {
-            $response = $this->configureApiRequest()->delete($this->getS2sApiUrl(sprintf('media/%s', $this->getIdentifier())));
+            $response = $this->configureApiRequest()->delete(TransmorpherApi::S2S->getUrl(sprintf('media/%s', $this->getIdentifier())));
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
@@ -209,7 +210,7 @@ abstract class Transmorpher
      */
     public function getVersions(): array
     {
-        return json_decode($this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('media/%s/versions', $this->getIdentifier()))), true);
+        return json_decode($this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('media/%s/versions', $this->getIdentifier()))), true);
     }
 
     /**
@@ -224,7 +225,7 @@ abstract class Transmorpher
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
-            $response = $this->configureApiRequest()->patch($this->getS2sApiUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)), [
+            $response = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)), [
                 'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
             ]);
             $clientResponse = $this->getClientResponseFromResponse($response);
@@ -299,7 +300,7 @@ abstract class Transmorpher
      */
     public function getWebUploadUrl(string $uploadToken = null): string
     {
-        return $this->getWebApiUrl('upload/' . $uploadToken);
+        return TransmorpherApi::WEB->getUrl('upload/' . $uploadToken);
     }
 
     /**
@@ -375,30 +376,6 @@ abstract class Transmorpher
     protected function getAuthToken(): string
     {
         return config('transmorpher.api.auth_token');
-    }
-
-    /**
-     * Get the s2s api URL to make calls to the Transmorpher.
-     *
-     * @param string|null $path An optional path which gets included in the URL.
-     *
-     * @return string The s2s api URL.
-     */
-    protected function getS2sApiUrl(string $path = null): string
-    {
-        return sprintf('%s/v%d/%s', config('transmorpher.api.s2s_url'), config('transmorpher.api.version'), $path);
-    }
-
-    /**
-     * Get the web api URL to make calls to the Transmorpher.
-     *
-     * @param string|null $path An optional path which gets included in the URL.
-     *
-     * @return string The web api URL.
-     */
-    protected function getWebApiUrl(string $path = null): string
-    {
-        return sprintf('%s/v%d/%s', config('transmorpher.api.web_url'), config('transmorpher.api.version'), $path);
     }
 
     /**

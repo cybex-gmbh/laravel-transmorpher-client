@@ -5,6 +5,7 @@ namespace Transmorpher;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
+use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Models\TransmorpherUpload;
 
 class ImageTransmorpher extends Transmorpher
@@ -31,7 +32,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getOriginal(int $versionNumber): array
     {
-        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/original', $this->getIdentifier(), $versionNumber)));
+        $response = $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('image/%s/version/%s/original', $this->getIdentifier(), $versionNumber)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
@@ -44,7 +45,7 @@ class ImageTransmorpher extends Transmorpher
      */
     public function getDerivativeForVersion(int $versionNumber, string $transformations): array
     {
-        $response = $this->configureApiRequest()->get($this->getS2sApiUrl(sprintf('image/%s/version/%s/derivative/%s', $this->getIdentifier(), $versionNumber, $transformations)));
+        $response = $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('image/%s/version/%s/derivative/%s', $this->getIdentifier(), $versionNumber, $transformations)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
@@ -98,6 +99,6 @@ class ImageTransmorpher extends Transmorpher
      */
     protected function sendReserveUploadSlotRequest(): Response
     {
-        return $this->configureApiRequest()->post($this->getS2sApiUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
+        return $this->configureApiRequest()->post(TransmorpherApi::S2S->getUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
     }
 }
