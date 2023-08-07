@@ -27,9 +27,9 @@ enum ClientErrorResponse: int
 
         // Server exception message is in 'message' field.
         $response['clientMessage'] = match ($this) {
-            self::NO_CONNECTION => 'Could not connect to server.',
-            self::NOT_FOUND => 'Canceled by a new upload or the upload is no longer valid.',
-            self::SERVER_ERROR => 'There was an error on the server.',
+            self::NO_CONNECTION => trans('transmorpher::errors.no_server_connection'),
+            self::NOT_FOUND => trans('transmorpher::errors.upload_canceled_or_took_too_long'),
+            self::SERVER_ERROR => trans('transmorpher::errors.server_error'),
             self::NOT_AUTHENTICATED,
             self::VALIDATION_ERROR => $body['message'],
         };
@@ -47,7 +47,7 @@ enum ClientErrorResponse: int
     {
         return [
             'state' => UploadState::ERROR->value,
-            'clientMessage' => 'An unexpected error occurred.',
+            'clientMessage' => trans('transmorpher::errors.unexpected_error'),
             'message' => $body['message'],
             'httpCode' => $code,
         ];

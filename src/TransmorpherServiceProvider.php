@@ -36,11 +36,16 @@ class TransmorpherServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/resources/views' => resource_path('views/vendor/transmorpher'),
             ], ['transmorpher', 'transmorpher.views']);
+
+            $this->publishes([
+                __DIR__ . '/lang' => $this->app->langPath('vendor/transmorpher'),
+            ], ['transmorpher', 'transmorpher.lang']);
         }
 
         $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
         $this->registerRoutes();
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'transmorpher');
+        $this->loadTranslationsFrom(__DIR__ . '/lang', 'transmorpher');
 
         Blade::componentNamespace('Transmorpher\\ViewComponents', 'transmorpher');
     }
