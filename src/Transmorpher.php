@@ -164,7 +164,7 @@ abstract class Transmorpher
             $this->transmorpherMedia->update(['is_ready' => 0]);
         } else {
             if ($clientResponse['httpCode'] === 404) {
-                $clientResponse['clientMessage'] = 'Media is already deleted.';
+                $clientResponse['clientMessage'] = trans('transmorpher::errors.media_already_deleted');
             }
         }
 
@@ -234,7 +234,7 @@ abstract class Transmorpher
 
         // HTTP code is only available in the response in case the request was not successful.
         if ($clientResponse['state'] === UploadState::ERROR->value && $clientResponse['httpCode'] === 404) {
-            $clientResponse['clientMessage'] = 'Selected version is no longer available';
+            $clientResponse['clientMessage'] = trans('transmorpher::errors.version_no_longer_available');
         }
 
         return $upload->handleStateUpdate($clientResponse);
