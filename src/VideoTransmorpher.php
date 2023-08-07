@@ -72,7 +72,8 @@ class VideoTransmorpher extends Transmorpher
      */
     public function getAcceptedFileTypes(): string
     {
-        return 'video/*';
+        // Somehow video/* doesn't contain the .mkv mimetype.
+        return 'video/*,video/x-matroska';
     }
 
     /**
