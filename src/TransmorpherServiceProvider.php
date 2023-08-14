@@ -5,6 +5,8 @@ namespace Transmorpher;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Transmorpher\Enums\SupportedApiVersion;
+use Transmorpher\Exceptions\UnsupportedApiVersionException;
 use Transmorpher\Helpers\Callback;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
@@ -18,6 +20,10 @@ class TransmorpherServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (!SupportedApiVersion::configuredVersionIsSupported()) {
+            throw new UnsupportedApiVersionException();
+        }
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
@@ -30,11 +36,16 @@ class TransmorpherServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/resources/views' => resource_path('views/vendor/transmorpher'),
             ], ['transmorpher', 'transmorpher.views']);
+
+            $this->publishes([
+                __DIR__ . '/lang' => $this->app->langPath('vendor/transmorpher'),
+            ], ['transmorpher', 'transmorpher.lang']);
         }
 
         $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
         $this->registerRoutes();
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'transmorpher');
+        $this->loadTranslationsFrom(__DIR__ . '/lang', 'transmorpher');
 
         Blade::componentNamespace('Transmorpher\\ViewComponents', 'transmorpher');
     }

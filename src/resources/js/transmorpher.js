@@ -5,6 +5,7 @@ if (!window.transmorpherScriptLoaded) {
     window.Dropzone = Dropzone;
     window.mediaTypes = {};
     window.transformations = {};
+    window.translations = {};
     window.motifs = [];
 
     const IMAGE = 'IMAGE';
@@ -41,6 +42,9 @@ if (!window.transmorpherScriptLoaded) {
             paramName: 'file',
             uploadToken: null,
             createImageThumbnails: false,
+            dictDefaultMessage: translations['drop_files_to_upload'],
+            dictFileTooBig: translations['max_file_size_exceeded'],
+            dictInvalidFileType: translations['invalid_file_type'],
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
@@ -92,7 +96,7 @@ if (!window.transmorpherScriptLoaded) {
                     }, body: JSON.stringify({
                         response: {
                             state: 'error',
-                            clientMessage: this.options.dictUploadCanceled,
+                            clientMessage: translations['upload_canceled'],
                             message: this.options.dictUploadCanceled,
                         },
                         http_code: file.xhr?.status
@@ -545,7 +549,7 @@ if (!window.transmorpherScriptLoaded) {
     window.displayStateInformation = function (stateInfoElement, state) {
         stateInfoElement.className = '';
         stateInfoElement.classList.add('badge', `badge-${state}`);
-        stateInfoElement.querySelector('span:first-of-type').textContent = `${state[0].toUpperCase()}${state.slice(1)}`;
+        stateInfoElement.querySelector('span:first-of-type').textContent = translations[state];
     }
 
     window.displayCardBorderState = function (transmorpherIdentifier, state) {
@@ -690,7 +694,7 @@ if (!window.transmorpherScriptLoaded) {
                 pressedOnce = false;
                 clearTimeout(timeOut);
             } else {
-                button.querySelector('span').textContent = 'Press again to confirm';
+                button.querySelector('span').textContent = translations['press_again_to_confirm'];
                 pressedOnce = true;
                 timeOut = setTimeout(() => {
                     pressedOnce = false;

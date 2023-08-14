@@ -7,8 +7,8 @@
             <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
         </div>
         <button class="button button-confirm confirm-restore">
-            <span>Restore</span>
-            <img src="{{ mix('icons/restore.svg', 'vendor/transmorpher') }}" alt="Restore" class="icon">
+            <span>@lang('transmorpher::dropzone.restore')</span>
+            <img src="{{ mix('icons/restore.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => 'Restore version'])" class="icon">
         </button>
     </div>
 </div>

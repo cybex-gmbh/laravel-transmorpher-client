@@ -5,6 +5,7 @@ namespace Transmorpher\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
+use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherUpload;
 
@@ -19,7 +20,7 @@ class Callback
      */
     public function __invoke(Request $request): Response
     {
-        if (!$verifiedRequest = sodium_crypto_sign_open(sodium_hex2bin($request->get('signed_response')), Http::get(sprintf('%s/publickey', config('transmorpher.api.s2s_url'))))) {
+        if (!$verifiedRequest = sodium_crypto_sign_open(sodium_hex2bin($request->get('signed_response')), Http::get(TransmorpherApi::S2S->getUrl('publickey')))) {
             return response()->noContent(403);
         }
 
