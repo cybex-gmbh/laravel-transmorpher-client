@@ -253,10 +253,12 @@ if (!window.transmorpherScriptLoaded) {
     window.updateVersionInformation = function (transmorpherIdentifier) {
         let modal = document.querySelector(`#modal-mi-${transmorpherIdentifier}`);
 
-        // Don't update when the modal is closed.
-        if (!modal.classList.contains('d-flex')) {
+        // Don't update when the modal is closed or currently fetching.
+        if (!modal.classList.contains('d-flex') || modal.dataset.fetching === 'true') {
             return;
         }
+
+        modal.dataset.fetching = 'true';
 
         let versionList = modal.querySelector('.version-list > ul');
         let defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true);
@@ -309,13 +311,6 @@ if (!window.transmorpherScriptLoaded) {
                     break;
             }
 
-            // When this method is called twice simultaneously (e.g. finished upload and opening the modal), the version history might be duplicated.
-            // In this case, clear the version list once more.
-            if (versionList.childElementCount > 1) {
-                versionList.replaceChildren();
-                versionList.append(defaultVersionEntry);
-            }
-
             let currentVersionAgeElement = modal.querySelector('.current-version-age');
             currentVersionAgeElement.textContent = versionAge;
             currentVersionAgeElement.classList.remove('d-none');
@@ -346,7 +341,7 @@ if (!window.transmorpherScriptLoaded) {
                 versionList.append(versionEntry);
                 versionEntry.classList.remove('d-none');
             })
-        })
+        }).finally(() => modal.dataset.fetching = 'false');
     }
 
     window.setVersion = function (transmorpherIdentifier, version) {
