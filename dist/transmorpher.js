@@ -238,6 +238,12 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.updateVersionInformation = function (transmorpherIdentifier) {
     var modal = document.querySelector("#modal-mi-".concat(transmorpherIdentifier));
+
+    // Don't update when the modal is closed or currently fetching.
+    if (!modal.classList.contains('d-flex') || modal.dataset.fetching === 'true') {
+      return;
+    }
+    modal.dataset.fetching = 'true';
     var versionList = modal.querySelector('.version-list > ul');
     var defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true);
 
@@ -311,6 +317,8 @@ if (!window.transmorpherScriptLoaded) {
         versionList.append(versionEntry);
         versionEntry.classList.remove('d-none');
       });
+    })["finally"](function () {
+      return modal.dataset.fetching = 'false';
     });
   };
   window.setVersion = function (transmorpherIdentifier, version) {
