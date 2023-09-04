@@ -9,12 +9,12 @@ use Transmorpher\Transmorpher;
 class MediaPreview extends Component
 {
     public bool $isReady;
-    public string $differentiator;
+    public string $topic;
 
-    public function __construct(public Transmorpher $motif)
+    public function __construct(public Transmorpher $topicHandler)
     {
-        $this->isReady = $motif->getTransmorpherMedia()->is_ready;
-        $this->differentiator = $motif->getTransmorpherMedia()->differentiator;
+        $this->isReady = $topicHandler->getTransmorpherMedia()->is_ready;
+        $this->topic = $topicHandler->getTransmorpherMedia()->topic;
     }
 
     /**
@@ -24,6 +24,6 @@ class MediaPreview extends Component
      */
     public function render(): string|View
     {
-        return view(sprintf('transmorpher::%s-preview', $this->motif->getTransmorpherMedia()->type->value));
+        return view(sprintf('transmorpher::%s-preview', $this->topicHandler->getTransmorpherMedia()->type->value));
     }
 }

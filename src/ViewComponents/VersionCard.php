@@ -11,9 +11,9 @@ class VersionCard extends Component
 {
     public MediaType $mediaType;
 
-    public function __construct(public Transmorpher $motif)
+    public function __construct(public Transmorpher $topicHandler)
     {
-        $this->mediaType = $motif->getTransmorpherMedia()->type;
+        $this->mediaType = $topicHandler->getTransmorpherMedia()->type;
     }
 
     /**
