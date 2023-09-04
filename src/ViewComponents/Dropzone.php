@@ -15,7 +15,7 @@ class Dropzone extends Component
     public bool $isProcessing;
     public bool $isUploading;
     public bool $isReady;
-    public string $differentiator;
+    public string $topic;
     public string|int $transmorpherMediaKey;
     public ?string $latestUploadToken;
     public int $lastUpdated;
@@ -32,16 +32,16 @@ class Dropzone extends Component
     public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
 
-    public function __construct(public Transmorpher $motif)
+    public function __construct(public Transmorpher $topicHandler)
     {
-        $this->mediaType = $motif->getTransmorpherMedia()->type;
-        $this->isProcessing = $motif->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
-        $this->isUploading = $motif->getTransmorpherMedia()->latest_upload_state === UploadState::UPLOADING;
-        $this->isReady = $motif->getTransmorpherMedia()->is_ready;
-        $this->differentiator = $motif->getTransmorpherMedia()->differentiator;
-        $this->transmorpherMediaKey = $motif->getTransmorpherMedia()->getKey();
-        $this->latestUploadToken = $motif->getTransmorpherMedia()->latest_upload_token;
-        $this->lastUpdated = $motif->getTransmorpherMedia()->updated_at->timestamp;
+        $this->mediaType = $topicHandler->getTransmorpherMedia()->type;
+        $this->isProcessing = $topicHandler->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
+        $this->isUploading = $topicHandler->getTransmorpherMedia()->latest_upload_state === UploadState::UPLOADING;
+        $this->isReady = $topicHandler->getTransmorpherMedia()->is_ready;
+        $this->topic = $topicHandler->getTransmorpherMedia()->topic;
+        $this->transmorpherMediaKey = $topicHandler->getTransmorpherMedia()->getKey();
+        $this->latestUploadToken = $topicHandler->getTransmorpherMedia()->latest_upload_token;
+        $this->lastUpdated = $topicHandler->getTransmorpherMedia()->updated_at->timestamp;
         $this->mediaTypes = array_column(MediaType::cases(), 'value', 'name');
         $this->srcSetTransformations = [
             '150w' => Transformation::WIDTH->getUrlRepresentation(150),

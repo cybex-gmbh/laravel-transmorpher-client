@@ -22,7 +22,7 @@ class TransmorpherMedia extends Model
     protected $fillable = [
         'transmorphable_type',
         'transmorphable_id',
-        'differentiator',
+        'topic',
         'public_path',
         'type',
         'is_ready',
@@ -62,6 +62,6 @@ class TransmorpherMedia extends Model
 
     public function getTransmorpher(): Transmorpher
     {
-        return $this->type->getTransmorpherClass()::getInstanceFor($this->Transmorphable, $this->differentiator);
+        return $this->type->getTransmorpherClass()::getInstanceFor($this->Transmorphable, $this->topic);
     }
 }

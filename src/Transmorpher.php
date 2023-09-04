@@ -26,22 +26,22 @@ abstract class Transmorpher
      * Get either an existing instance or creates a new one.
      *
      * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
-     * @param string $differentiator The Differentiator identifying the TransmorpherMedia.
+     * @param string $topic The topic identifying the TransmorpherMedia.
      *
      * @return static The Transmorpher instance.
      */
-    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $differentiator): static
+    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $topic): static
     {
-        return static::$instances[$model::class][$model->getKey()][$differentiator] ??= new static(...func_get_args());
+        return static::$instances[$model::class][$model->getKey()][$topic] ??= new static(...func_get_args());
     }
 
     /**
-     * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
+     * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and topic.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string $differentiator
+     * @param string $topic
      */
-    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $differentiator);
+    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $topic);
 
     /**
      * @param array $clientResponse
@@ -76,7 +76,7 @@ abstract class Transmorpher
         $this->validateIdentifier();
 
         $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
-            ['differentiator' => $this->differentiator, 'type' => $this->type],
+            ['topic' => $this->topic, 'type' => $this->type],
             ['is_ready' => 0]
         );
     }
@@ -146,7 +146,7 @@ abstract class Transmorpher
     }
 
     /**
-     * Delete all originals and derivatives for this differentiator on the Transmorpher.
+     * Delete all originals and derivatives for this topic on the Transmorpher.
      *
      * @return array The Transmorpher response.
      */
@@ -204,7 +204,7 @@ abstract class Transmorpher
     }
 
     /**
-     * Get all versions existing on the Transmorpher for this differentiator.
+     * Get all versions existing on the Transmorpher for this topic.
      *
      * @return array The Transmorpher response.
      */
@@ -279,7 +279,7 @@ abstract class Transmorpher
      */
     public function getIdentifier(): string
     {
-        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->differentiator, $this->model->getKey());
+        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->topic, $this->model->getKey());
     }
 
     /**
@@ -386,7 +386,7 @@ abstract class Transmorpher
     {
         // Identifier is used in file paths and URLs, therefore only alphanumeric characters, underscores and hyphens are allowed.
         if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
-            throw new InvalidIdentifierException($this->model, $this->differentiator);
+            throw new InvalidIdentifierException($this->model, $this->topic);
         }
     }
 }

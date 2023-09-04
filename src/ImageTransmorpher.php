@@ -13,12 +13,12 @@ class ImageTransmorpher extends Transmorpher
     protected MediaType $type = MediaType::IMAGE;
 
     /**
-     * Create a new ImageTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
+     * Create a new ImageTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and topic.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string $differentiator
+     * @param string $topic
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $topic)
     {
         $this->createTransmorpherMedia();
     }
