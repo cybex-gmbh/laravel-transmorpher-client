@@ -279,7 +279,7 @@ abstract class Transmorpher
      */
     public function getIdentifier(): string
     {
-        return sprintf('%s-%s-%s', $this->differentiator, $this->model->getTransmorpherAlias(), $this->model->getKey());
+        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->differentiator, $this->model->getKey());
     }
 
     /**
