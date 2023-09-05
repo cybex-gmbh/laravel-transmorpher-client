@@ -95,7 +95,7 @@ a method for each image or video you want the model to have.
 
 Images and Videos are identified by a media name, for which the function name is used in the following examples.
 
-For images you will have to return an instance of an `Image`:
+For images you will have to return an instance of a `Transmorpher\Image`:
 
 ```php
 public function imageFrontView(): Image
@@ -109,7 +109,7 @@ public function imageSideView(): Image
 }
 ```
 
-For videos you will have to return an instance of a `Video`:
+For videos you will have to return an instance of a `Transmorpher\Video`:
 
 ```php
 public function video(): Video
@@ -173,7 +173,7 @@ protected array $transmorpherImages = [
 protected array $transmorpherVideos = [];
 ```
 
-The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the media names as key and the corresponding `Media` class as value.
+The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the media names as key and the corresponding `Media`-class as value.
 This can be used to iterate over all images for a model for example.
 
 ## Dropzone Blade component & assets
@@ -211,7 +211,7 @@ To use the dropzone component in a template, you can simply include it like this
 <x-transmorpher::dropzone :media="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
-Depending on whether you pass an `Image` or a `Video`, the component will function as your upload form for images or videos.
+Depending on whether you pass a `Transmorpher\Image` or a `Transmorpher\Video`, the component will function as your upload form for images or videos.
 
 #### Dynamic usage
 
