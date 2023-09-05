@@ -30,7 +30,7 @@ trait HasTransmorpherMedia
     }
 
     /**
-     * Returns a collection with Images associated to media names.
+     * Returns a collection of Images associated to media names.
      *
      * @return Collection
      */
@@ -42,7 +42,7 @@ trait HasTransmorpherMedia
     }
 
     /**
-     * Returns a collection with Videos associated to media names.
+     * Returns a collection of Videos associated to media names.
      *
      * @return Collection
      */

@@ -174,7 +174,13 @@ protected array $transmorpherVideos = [];
 ```
 
 The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the media names as key and the corresponding `Media`-class as value.
-This can be used to iterate over all images for a model for example.
+This can be used to iterate over all images for a model for example:
+
+```html
+@foreach($yourModel->images() as $image)
+    <img src="{{ $image->getUrl() }}"></img>
+@endforeach
+```
 
 ## Dropzone Blade component & assets
 
