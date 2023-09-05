@@ -13,7 +13,7 @@ class Image extends Media
     protected MediaType $type = MediaType::IMAGE;
 
     /**
-     * Create a new Image and retrieves or creates the TransmorpherMedia for the specified model and media name.
+     * Create a new Image and retrieve or create the TransmorpherMedia for the specified model and media name.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $mediaName

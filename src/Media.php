@@ -116,7 +116,7 @@ abstract class Media
 
     /**
      * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
-     * The request itself is in the Image- / Video class, since the API differs.
+     * The request itself is in the Image or Video class, since the API differs.
      *
      * @return array
      */
