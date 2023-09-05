@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\UploadState;
-use Transmorpher\Transmorpher;
+use Transmorpher\Topic;
 
 class TransmorpherMedia extends Model
 {
@@ -60,8 +60,8 @@ class TransmorpherMedia extends Model
         return $this->hasMany(TransmorpherUpload::class);
     }
 
-    public function getTransmorpher(): Transmorpher
+    public function getTopic(): Topic
     {
-        return $this->type->getTransmorpherClass()::getInstanceFor($this->Transmorphable, $this->topic_name);
+        return $this->type->getTopicClass()::getInstanceFor($this->Transmorphable, $this->topic_name);
     }
 }

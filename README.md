@@ -93,41 +93,41 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define
 a method for each image or video you want the model to have.
 
-For images you will have to return an instance of an ImageTransmorpher:
+For images you will have to return an instance of an ImageTopic:
 
 ```php
-public function imageFrontView(): ImageTransmorpher
+public function imageFrontView(): ImageTopic
 {
-    return ImageTransmorpher::getInstanceFor($this, __FUNCTION__);
+    return ImageTopic::getInstanceFor($this, __FUNCTION__);
 }
 
-public function imageSideView(): ImageTransmorpher
+public function imageSideView(): ImageTopic
 {
-    return ImageTransmorpher::getInstanceFor($this, __FUNCTION__);
+    return ImageTopic::getInstanceFor($this, __FUNCTION__);
 }
 ```
 
-For videos you will have to return an instance of a VideoTransmorpher:
+For videos you will have to return an instance of a VideoTopic:
 
 ```php
-public function video(): VideoTransmorpher
+public function video(): VideoTopic
 {
-    return VideoTransmorpher::getInstanceFor($this, __FUNCTION__);
+    return VideoTopic::getInstanceFor($this, __FUNCTION__);
 }
 ```
 
-The instance of the corresponding `Transmorpher`-class can then be used to make API calls to the Transmorpher media
+The instance of the corresponding `Topic`-class can then be used to make API calls to the Transmorpher media
 server.
 
 ```php
-$imageTransmorpher = $yourModel->imageFrontView();
+$imageTopic = $yourModel->imageFrontView();
 
 // Upload an image to the media server.
-$imageTransmorpher->upload($fileHandle);
+$imageTopic->upload($fileHandle);
 
 // Get the public URL of the image for retrieving a derivative.
 // Transformations are optional and will be included in the URL. 
-$imageTransmorpher->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
+$imageTopic->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
 ```
 
 #### Identifier
@@ -171,7 +171,7 @@ protected array $transmorpherImages = [
 protected array $transmorpherVideos = [];
 ```
 
-The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the topics as key and the corresponding `Transmorpher` class as value.
+The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the topic names as key and the corresponding `Topic` class as value.
 This can be used to iterate over all images for a model for example.
 
 ## Dropzone Blade component & assets
@@ -209,7 +209,7 @@ To use the dropzone component in a template, you can simply include it like this
 <x-transmorpher::dropzone :topic="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
-Depending on whether you pass an ImageTransmorpher or a VideoTransmorpher, the component will function as your upload form for images or videos.
+Depending on whether you pass an ImageTopic or a VideoTopic, the component will function as your upload form for images or videos.
 
 #### Dynamic usage
 
@@ -238,7 +238,7 @@ npx mix
 
 To show derivatives on a webpage, you can use an HTML image tag.
 
-**NOTE**: These examples use Blade syntax and assume you have a valid `Transmorpher`-class instance in your template.
+**NOTE**: These examples use Blade syntax and assume you have a valid `Topic`-class instance in your template.
 
 ```html
 <img src="{{ $topic->getUrl() }}"></img>

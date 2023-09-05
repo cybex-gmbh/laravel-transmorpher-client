@@ -7,7 +7,7 @@ use Illuminate\View\View;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
-use Transmorpher\Transmorpher;
+use Transmorpher\Topic;
 
 class Dropzone extends Component
 {
@@ -32,7 +32,7 @@ class Dropzone extends Component
     public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
 
-    public function __construct(public Transmorpher $topic)
+    public function __construct(public Topic $topic)
     {
         $this->mediaType = $topic->getTransmorpherMedia()->type;
         $this->isProcessing = $topic->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;

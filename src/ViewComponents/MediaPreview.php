@@ -4,14 +4,14 @@ namespace Transmorpher\ViewComponents;
 
 use Illuminate\View\Component;
 use Illuminate\View\View;
-use Transmorpher\Transmorpher;
+use Transmorpher\Topic;
 
 class MediaPreview extends Component
 {
     public bool $isReady;
     public string $topicName;
 
-    public function __construct(public Transmorpher $topic)
+    public function __construct(public Topic $topic)
     {
         $this->isReady = $topic->getTransmorpherMedia()->is_ready;
         $this->topicName = $topic->getTransmorpherMedia()->topic_name;

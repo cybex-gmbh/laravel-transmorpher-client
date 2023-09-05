@@ -7,12 +7,12 @@ use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Models\TransmorpherUpload;
 
-class VideoTransmorpher extends Transmorpher
+class VideoTopic extends Topic
 {
     protected MediaType $type = MediaType::VIDEO;
 
     /**
-     * Create a new VideoTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and topic.
+     * Create a new VideoTopic and retrieves or creates the TransmorpherMedia for the specified model and topic.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $topicName
@@ -66,7 +66,7 @@ class VideoTransmorpher extends Transmorpher
     }
 
     /**
-     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     * Returns the accepted file mimetypes for this Topic for use in e.g. Dropzone validation.
      *
      * @return string
      */

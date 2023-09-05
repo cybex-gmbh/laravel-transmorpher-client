@@ -16,7 +16,7 @@ use Transmorpher\Exceptions\TransformationNotFoundException;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
-abstract class Transmorpher
+abstract class Topic
 {
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
@@ -28,7 +28,7 @@ abstract class Transmorpher
      * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
      * @param string $topicName The topic name identifying the TransmorpherMedia.
      *
-     * @return static The Transmorpher instance.
+     * @return static The Topic instance.
      */
     public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $topicName): static
     {
@@ -36,7 +36,7 @@ abstract class Transmorpher
     }
 
     /**
-     * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and topic.
+     * Create a new Topic and retrieves or creates the TransmorpherMedia for the specified model and topic.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $topicName
@@ -52,7 +52,7 @@ abstract class Transmorpher
     public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
 
     /**
-     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     * Returns the accepted file mimetypes for this Topic for use in e.g. Dropzone validation.
      *
      * @return string
      */
@@ -116,7 +116,7 @@ abstract class Transmorpher
 
     /**
      * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
-     * The request itself is in the Image- / VideoTransmorpher class, since the API differs.
+     * The request itself is in the Image- / VideoTopic class, since the API differs.
      *
      * @return array
      */

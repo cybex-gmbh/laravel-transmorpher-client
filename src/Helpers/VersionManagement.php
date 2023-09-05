@@ -20,8 +20,8 @@ class VersionManagement
     {
         return response()->json(
             array_merge(
-                $transmorpherMedia->getTransmorpher()->getVersions(), [
-                    'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTransmorpher()->getThumbnailUrl(), $transmorpherMedia->updated_at),
+                $transmorpherMedia->getTopic()->getVersions(), [
+                    'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getTopic()->getThumbnailUrl(), $transmorpherMedia->updated_at),
                     'publicPath' => $transmorpherMedia->public_path,
                 ]
             )
@@ -35,7 +35,7 @@ class VersionManagement
      */
     public function setVersion(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json($transmorpherMedia->getTransmorpher()->setVersion($request->input('version')));
+        return response()->json($transmorpherMedia->getTopic()->setVersion($request->input('version')));
     }
 
     /**
@@ -45,7 +45,7 @@ class VersionManagement
      */
     public function delete(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json($transmorpherMedia->getTransmorpher()->delete());
+        return response()->json($transmorpherMedia->getTopic()->delete());
     }
 
     /**
@@ -57,7 +57,7 @@ class VersionManagement
      */
     public function getOriginal(Request $request, TransmorpherMedia $transmorpherMedia, int $version): Response|Application|ResponseFactory
     {
-        $response = $transmorpherMedia->getTransmorpher()->getOriginal($version);
+        $response = $transmorpherMedia->getTopic()->getOriginal($version);
 
         return response($response['binary'], 200, ['Content-Type' => $response['mimetype']]);
     }
@@ -72,7 +72,7 @@ class VersionManagement
      */
     public function getDerivativeForVersion(Request $request, TransmorpherMedia $transmorpherMedia, int $version, string $transformations = ''): Response|Application|ResponseFactory
     {
-        $response = $transmorpherMedia->getTransmorpher()->getDerivativeForVersion($version, $transformations);
+        $response = $transmorpherMedia->getTopic()->getDerivativeForVersion($version, $transformations);
 
         return response($response['binary'], 200, ['Content-Type' => $response['mimetype']]);
     }
