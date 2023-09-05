@@ -16,7 +16,7 @@ class UploadToken
      */
     public function getUploadToken(TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json($transmorpherMedia->getTopic()->reserveUploadSlot());
+        return response()->json($transmorpherMedia->getMedia()->reserveUploadSlot());
     }
 
     /**

@@ -93,47 +93,49 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define
 a method for each image or video you want the model to have.
 
-For images you will have to return an instance of an ImageTopic:
+Images and Videos are identified by a media name, for which the function name is used in the following examples.
+
+For images you will have to return an instance of an `Image`:
 
 ```php
-public function imageFrontView(): ImageTopic
+public function imageFrontView(): Image
 {
-    return ImageTopic::getInstanceFor($this, __FUNCTION__);
+    return Image::getInstanceFor($this, __FUNCTION__);
 }
 
-public function imageSideView(): ImageTopic
+public function imageSideView(): Image
 {
-    return ImageTopic::getInstanceFor($this, __FUNCTION__);
+    return Image::getInstanceFor($this, __FUNCTION__);
 }
 ```
 
-For videos you will have to return an instance of a VideoTopic:
+For videos you will have to return an instance of a `Video`:
 
 ```php
-public function video(): VideoTopic
+public function video(): Video
 {
-    return VideoTopic::getInstanceFor($this, __FUNCTION__);
+    return Video::getInstanceFor($this, __FUNCTION__);
 }
 ```
 
-The instance of the corresponding `Topic`-class can then be used to make API calls to the Transmorpher media
+The instance of the corresponding `Media`-class can then be used to make API calls to the Transmorpher media
 server.
 
 ```php
-$imageTopic = $yourModel->imageFrontView();
+$image = $yourModel->imageFrontView();
 
 // Upload an image to the media server.
-$imageTopic->upload($fileHandle);
+$image->upload($fileHandle);
 
 // Get the public URL of the image for retrieving a derivative.
 // Transformations are optional and will be included in the URL. 
-$imageTopic->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
+$image->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
 ```
 
 #### Identifier
 
 To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of the following:
- - topic name: name for the media in the model
+ - media name: name for the media in the model
  - model id
  - an alias (by default the morph alias is used)
 
@@ -171,7 +173,7 @@ protected array $transmorpherImages = [
 protected array $transmorpherVideos = [];
 ```
 
-The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the topic names as key and the corresponding `Topic` class as value.
+The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the media names as key and the corresponding `Media` class as value.
 This can be used to iterate over all images for a model for example.
 
 ## Dropzone Blade component & assets
@@ -206,18 +208,18 @@ php artisan vendor:publish --tag=transmorpher.views
 To use the dropzone component in a template, you can simply include it like this:
 
 ```html
-<x-transmorpher::dropzone :topic="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
+<x-transmorpher::dropzone :media="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
-Depending on whether you pass an ImageTopic or a VideoTopic, the component will function as your upload form for images or videos.
+Depending on whether you pass an `Image` or a `Video`, the component will function as your upload form for images or videos.
 
 #### Dynamic usage
 
 If you want a more dynamic approach, to display a dropzone for each available image or video, you can use the dynamic way of defining images and videos mentioned above.
 
 ```html
-@foreach($yourModel->images() as $imageTopic)
-    <x-transmorpher::dropzone :topic="$imageTopic"></x-transmorpher::dropzone>
+@foreach($yourModel->images() as $image)
+    <x-transmorpher::dropzone :media="$image"></x-transmorpher::dropzone>
 @endforeach
 ```
 
@@ -238,16 +240,16 @@ npx mix
 
 To show derivatives on a webpage, you can use an HTML image tag.
 
-**NOTE**: These examples use Blade syntax and assume you have a valid `Topic`-class instance in your template.
+**NOTE**: These examples use Blade syntax and assume you have a valid `Media`-class instance in your template.
 
 ```html
-<img src="{{ $topic->getUrl() }}"></img>
+<img src="{{ $media->getUrl() }}"></img>
 ```
 
 You also have the possibility to apply transformations.
 
 ```html
-<img src="{{ $topic->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
+<img src="{{ $media->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
 ```
 
 List of available transformations:

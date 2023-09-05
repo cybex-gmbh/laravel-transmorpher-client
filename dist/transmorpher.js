@@ -17,26 +17,26 @@ if (!window.transmorpherScriptLoaded) {
   window.mediaTypes = {};
   window.transformations = {};
   window.translations = {};
-  window.topics = [];
+  window.media = [];
   var IMAGE = 'IMAGE';
   var VIDEO = 'VIDEO';
   window.setupComponent = function (transmorpherIdentifier) {
     dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
-    var topic = topics[transmorpherIdentifier];
+    var medium = media[transmorpherIdentifier];
     addConfirmEventListeners(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier), 1500);
 
     // Start polling if the video is still processing or an upload is in process.
-    if (topic.isProcessing || topic.isUploading) {
-      startPolling(transmorpherIdentifier, topic.latestUploadToken);
-      setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), getDateForDisplay(new Date(topic.lastUpdated * 1000)));
+    if (medium.isProcessing || medium.isUploading) {
+      startPolling(transmorpherIdentifier, medium.latestUploadToken);
+      setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), getDateForDisplay(new Date(medium.lastUpdated * 1000)));
     }
     new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
-      url: topic.webUploadUrl,
-      acceptedFiles: topic.acceptedFileTypes,
+      url: medium.webUploadUrl,
+      acceptedFiles: medium.acceptedFileTypes,
       chunking: true,
-      chunkSize: topic.chunkSize,
-      maxFilesize: topic.maxFilesize,
-      maxThumbnailFilesize: topic.maxThumbnailFilesize,
+      chunkSize: medium.chunkSize,
+      maxFilesize: medium.maxFilesize,
+      maxThumbnailFilesize: medium.maxThumbnailFilesize,
       timeout: 60000,
       uploadMultiple: false,
       paramName: 'file',
@@ -48,7 +48,7 @@ if (!window.transmorpherScriptLoaded) {
       init: function init() {
         // Processing-Event is emitted when the upload starts.
         this.on('processing', function () {
-          fetch("".concat(topic.routes.setUploadingState, "/").concat(this.options.uploadToken), {
+          fetch("".concat(medium.routes.setUploadingState, "/").concat(this.options.uploadToken), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ if (!window.transmorpherScriptLoaded) {
       // Update database when upload was canceled manually.
       canceled: function canceled(file) {
         var _file$xhr;
-        fetch("".concat(topics[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(this.options.uploadToken), {
+        fetch("".concat(media[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(this.options.uploadToken), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ if (!window.transmorpherScriptLoaded) {
     (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.remove();
     if (uploadToken) {
       var _file$xhr$status, _file$xhr2;
-      fetch("".concat(topics[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
+      fetch("".concat(media[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ if (!window.transmorpherScriptLoaded) {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
       document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
       updateVersionInformation(transmorpherIdentifier);
-      switch (topics[transmorpherIdentifier].mediaType) {
+      switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           // Set the newly uploaded image as display image.
           updateImageDisplay(transmorpherIdentifier, uploadResult.public_path, uploadResult.version);
@@ -254,7 +254,7 @@ if (!window.transmorpherScriptLoaded) {
     versionList.append(defaultVersionEntry);
 
     // Get all versions for this media.
-    fetch(topics[transmorpherIdentifier].routes.getVersions, {
+    fetch(media[transmorpherIdentifier].routes.getVersions, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -278,7 +278,7 @@ if (!window.transmorpherScriptLoaded) {
       });
       var versions = versionInformation.state === 'success' ? versionInformation.versions : [];
       var versionAge;
-      switch (topics[transmorpherIdentifier].mediaType) {
+      switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentVersion] * 1000));
           updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion);
@@ -302,11 +302,11 @@ if (!window.transmorpherScriptLoaded) {
         }
         var versionEntry = defaultVersionEntry.cloneNode(true);
         var versionAge = versionEntry.querySelector('.version-age');
-        switch (topics[transmorpherIdentifier].mediaType) {
+        switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-            versionEntry.querySelector('a').href = "".concat(topics[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
-            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(topics[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150");
-            versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(topics[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150 150w");
+            versionEntry.querySelector('a').href = "".concat(media[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
+            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150");
+            versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150 150w");
             break;
           case mediaTypes[VIDEO]:
             // Don't show video for now, will use thumbnails later.
@@ -331,7 +331,7 @@ if (!window.transmorpherScriptLoaded) {
     });
   };
   window.makeSetVersionCall = function (transmorpherIdentifier, version) {
-    fetch(topics[transmorpherIdentifier].routes.setVersion, {
+    fetch(media[transmorpherIdentifier].routes.setVersion, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -346,7 +346,7 @@ if (!window.transmorpherScriptLoaded) {
       if (setVersionResult.state !== 'error') {
         clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
         updateVersionInformation(transmorpherIdentifier);
-        switch (topics[transmorpherIdentifier].mediaType) {
+        switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
             updateMediaDisplay(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version);
             break;
@@ -371,7 +371,7 @@ if (!window.transmorpherScriptLoaded) {
     updateVersionInformation(transmorpherIdentifier);
   };
   window.deleteTransmorpherMedia = function (transmorpherIdentifier) {
-    fetch(topics[transmorpherIdentifier].routes["delete"], {
+    fetch(media[transmorpherIdentifier].routes["delete"], {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -396,7 +396,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
     var videoUrl = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-    switch (topics[transmorpherIdentifier].mediaType) {
+    switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
         updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
         break;
@@ -438,7 +438,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayPlaceholder = function (transmorpherIdentifier) {
     var imgElements;
-    switch (topics[transmorpherIdentifier].mediaType) {
+    switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
         imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
         imgElements.forEach(function (image) {
@@ -559,14 +559,14 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.reserveUploadSlot = function (transmorpherIdentifier, done) {
     // Reserve an upload slot at the Transmorpher media server.
-    fetch(topics[transmorpherIdentifier].routes.uploadToken, {
+    fetch(media[transmorpherIdentifier].routes.uploadToken, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-XSRF-TOKEN': getCsrfToken()
       },
       body: JSON.stringify({
-        transmorpher_media_key: topics[transmorpherIdentifier].transmorpherMediaKey
+        transmorpher_media_key: media[transmorpherIdentifier].transmorpherMediaKey
       })
     }).then(function (response) {
       return response.json();
@@ -577,13 +577,13 @@ if (!window.transmorpherScriptLoaded) {
       var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
       dropzone.options.uploadToken = getUploadTokenResult.upload_token;
       // Set the dropzone target to the media server upload url, which needs a valid upload token.
-      dropzone.options.url = "".concat(topics[transmorpherIdentifier].webUploadUrl).concat(getUploadTokenResult.upload_token);
+      dropzone.options.url = "".concat(media[transmorpherIdentifier].webUploadUrl).concat(getUploadTokenResult.upload_token);
       done();
     });
   };
   window.getState = function (transmorpherIdentifier) {
     var uploadToken = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    return fetch(topics[transmorpherIdentifier].routes.state, {
+    return fetch(media[transmorpherIdentifier].routes.state, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

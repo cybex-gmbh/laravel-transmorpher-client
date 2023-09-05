@@ -17,7 +17,7 @@ return new class extends Migration {
         Schema::create('transmorpher_media', function (Blueprint $table) {
             $table->id();
             $table->morphs('transmorphable');
-            $table->string('topic_name');
+            $table->string('media_name');
             $table->string('public_path')->nullable();
             $table->enum('type', ['image', 'video']);
             $table->boolean('is_ready');
@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->string('latest_upload_token')->unique()->nullable();
             $table->timestamps();
 
-            $table->unique(['transmorphable_id', 'transmorphable_type', 'topic_name'], 'transmorphable_id_type_topic_name_unique');
+            $table->unique(['transmorphable_id', 'transmorphable_type', 'media_name'], 'transmorphable_id_type_media_name_unique');
         });
     }
 };

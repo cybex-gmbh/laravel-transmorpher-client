@@ -16,7 +16,7 @@ use Transmorpher\Exceptions\TransformationNotFoundException;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
-abstract class Topic
+abstract class Media
 {
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
@@ -26,22 +26,22 @@ abstract class Topic
      * Get either an existing instance or creates a new one.
      *
      * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
-     * @param string $topicName The topic name identifying the TransmorpherMedia.
+     * @param string $mediaName The media name identifying the TransmorpherMedia.
      *
-     * @return static The Topic instance.
+     * @return static The Media instance.
      */
-    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $topicName): static
+    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $mediaName): static
     {
-        return static::$instances[$model::class][$model->getKey()][$topicName] ??= new static(...func_get_args());
+        return static::$instances[$model::class][$model->getKey()][$mediaName] ??= new static(...func_get_args());
     }
 
     /**
-     * Create a new Topic and retrieves or creates the TransmorpherMedia for the specified model and topic.
+     * Create a new Media and retrieves or creates the TransmorpherMedia for the specified model and media name.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string $topicName
+     * @param string $mediaName
      */
-    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $topicName);
+    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $mediaName);
 
     /**
      * @param array $clientResponse
@@ -52,7 +52,7 @@ abstract class Topic
     public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
 
     /**
-     * Returns the accepted file mimetypes for this Topic for use in e.g. Dropzone validation.
+     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
      *
      * @return string
      */
@@ -76,7 +76,7 @@ abstract class Topic
         $this->validateIdentifier();
 
         $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
-            ['topic_name' => $this->topicName, 'type' => $this->type],
+            ['media_name' => $this->mediaName, 'type' => $this->type],
             ['is_ready' => 0]
         );
     }
@@ -116,7 +116,7 @@ abstract class Topic
 
     /**
      * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
-     * The request itself is in the Image- / VideoTopic class, since the API differs.
+     * The request itself is in the Image- / Video class, since the API differs.
      *
      * @return array
      */
@@ -146,7 +146,7 @@ abstract class Topic
     }
 
     /**
-     * Delete all originals and derivatives for this topic on the Transmorpher.
+     * Delete all originals and derivatives for this media on the Transmorpher.
      *
      * @return array The Transmorpher response.
      */
@@ -204,7 +204,7 @@ abstract class Topic
     }
 
     /**
-     * Get all versions existing on the Transmorpher for this topic.
+     * Get all versions existing on the Transmorpher for this media.
      *
      * @return array The Transmorpher response.
      */
@@ -279,7 +279,7 @@ abstract class Topic
      */
     public function getIdentifier(): string
     {
-        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->topicName, $this->model->getKey());
+        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->mediaName, $this->model->getKey());
     }
 
     /**
@@ -386,7 +386,7 @@ abstract class Topic
     {
         // Identifier is used in file paths and URLs, therefore only alphanumeric characters, underscores and hyphens are allowed.
         if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
-            throw new InvalidIdentifierException($this->model, $this->topicName);
+            throw new InvalidIdentifierException($this->model, $this->mediaName);
         }
     }
 }

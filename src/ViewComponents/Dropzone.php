@@ -7,7 +7,7 @@ use Illuminate\View\View;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
-use Transmorpher\Topic;
+use Transmorpher\Media;
 
 class Dropzone extends Component
 {
@@ -15,7 +15,7 @@ class Dropzone extends Component
     public bool $isProcessing;
     public bool $isUploading;
     public bool $isReady;
-    public string $topicName;
+    public string $mediaName;
     public string|int $transmorpherMediaKey;
     public ?string $latestUploadToken;
     public int $lastUpdated;
@@ -32,16 +32,16 @@ class Dropzone extends Component
     public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
 
-    public function __construct(public Topic $topic)
+    public function __construct(public Media $media)
     {
-        $this->mediaType = $topic->getTransmorpherMedia()->type;
-        $this->isProcessing = $topic->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
-        $this->isUploading = $topic->getTransmorpherMedia()->latest_upload_state === UploadState::UPLOADING;
-        $this->isReady = $topic->getTransmorpherMedia()->is_ready;
-        $this->topicName = $topic->getTransmorpherMedia()->topic_name;
-        $this->transmorpherMediaKey = $topic->getTransmorpherMedia()->getKey();
-        $this->latestUploadToken = $topic->getTransmorpherMedia()->latest_upload_token;
-        $this->lastUpdated = $topic->getTransmorpherMedia()->updated_at->timestamp;
+        $this->mediaType = $media->getTransmorpherMedia()->type;
+        $this->isProcessing = $media->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
+        $this->isUploading = $media->getTransmorpherMedia()->latest_upload_state === UploadState::UPLOADING;
+        $this->isReady = $media->getTransmorpherMedia()->is_ready;
+        $this->mediaName = $media->getTransmorpherMedia()->media_name;
+        $this->transmorpherMediaKey = $media->getTransmorpherMedia()->getKey();
+        $this->latestUploadToken = $media->getTransmorpherMedia()->latest_upload_token;
+        $this->lastUpdated = $media->getTransmorpherMedia()->updated_at->timestamp;
         $this->mediaTypes = array_column(MediaType::cases(), 'value', 'name');
         $this->srcSetTransformations = [
             '150w' => Transformation::WIDTH->getUrlRepresentation(150),

@@ -4,7 +4,7 @@
     </div>
     <div class="card-body">
         <div class="media-preview transparency-indicator">
-            <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :topic="$topic"/>
+            <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :media="$media"/>
         </div>
         <button class="button button-confirm confirm-restore">
             <span>@lang('transmorpher::dropzone.restore')</span>

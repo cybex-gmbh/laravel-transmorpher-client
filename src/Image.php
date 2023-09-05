@@ -8,17 +8,17 @@ use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Models\TransmorpherUpload;
 
-class ImageTopic extends Topic
+class Image extends Media
 {
     protected MediaType $type = MediaType::IMAGE;
 
     /**
-     * Create a new ImageTopic and retrieves or creates the TransmorpherMedia for the specified model and topic.
+     * Create a new Image and retrieves or creates the TransmorpherMedia for the specified model and media name.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string $topicName
+     * @param string $mediaName
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $topicName)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $mediaName)
     {
         $this->createTransmorpherMedia();
     }
@@ -83,7 +83,7 @@ class ImageTopic extends Topic
     }
 
     /**
-     * Returns the accepted file mimetypes for this Topic for use in e.g. Dropzone validation.
+     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
      *
      * @return string
      */
