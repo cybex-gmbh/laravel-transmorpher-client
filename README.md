@@ -133,7 +133,7 @@ $imageTransmorpher->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg'
 #### Identifier
 
 To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of the following:
- - topic: name for the media in the model
+ - topic name: name for the media in the model
  - model id
  - an alias (by default the morph alias is used)
 
@@ -206,7 +206,7 @@ php artisan vendor:publish --tag=transmorpher.views
 To use the dropzone component in a template, you can simply include it like this:
 
 ```html
-<x-transmorpher::dropzone :topicHandler="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
+<x-transmorpher::dropzone :topic="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
 Depending on whether you pass an ImageTransmorpher or a VideoTransmorpher, the component will function as your upload form for images or videos.
@@ -216,8 +216,8 @@ Depending on whether you pass an ImageTransmorpher or a VideoTransmorpher, the c
 If you want a more dynamic approach, to display a dropzone for each available image or video, you can use the dynamic way of defining images and videos mentioned above.
 
 ```html
-@foreach($yourModel->images() as $imageTopicHandler)
-    <x-transmorpher::dropzone :topicHandler="$imageTopicHandler"></x-transmorpher::dropzone>
+@foreach($yourModel->images() as $imageTopic)
+    <x-transmorpher::dropzone :topic="$imageTopic"></x-transmorpher::dropzone>
 @endforeach
 ```
 
@@ -241,13 +241,13 @@ To show derivatives on a webpage, you can use an HTML image tag.
 **NOTE**: These examples use Blade syntax and assume you have a valid `Transmorpher`-class instance in your template.
 
 ```html
-<img src="{{ $topicHandler->getUrl() }}"></img>
+<img src="{{ $topic->getUrl() }}"></img>
 ```
 
 You also have the possibility to apply transformations.
 
 ```html
-<img src="{{ $topicHandler->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
+<img src="{{ $topic->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
 ```
 
 List of available transformations:

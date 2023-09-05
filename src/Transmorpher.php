@@ -26,22 +26,22 @@ abstract class Transmorpher
      * Get either an existing instance or creates a new one.
      *
      * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
-     * @param string $topic The topic identifying the TransmorpherMedia.
+     * @param string $topicName The topic name identifying the TransmorpherMedia.
      *
      * @return static The Transmorpher instance.
      */
-    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $topic): static
+    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $topicName): static
     {
-        return static::$instances[$model::class][$model->getKey()][$topic] ??= new static(...func_get_args());
+        return static::$instances[$model::class][$model->getKey()][$topicName] ??= new static(...func_get_args());
     }
 
     /**
      * Create a new Transmorpher and retrieves or creates the TransmorpherMedia for the specified model and topic.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string $topic
+     * @param string $topicName
      */
-    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $topic);
+    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $topicName);
 
     /**
      * @param array $clientResponse
@@ -76,7 +76,7 @@ abstract class Transmorpher
         $this->validateIdentifier();
 
         $this->transmorpherMedia = $this->model->TransmorpherMedia()->firstOrCreate(
-            ['topic' => $this->topic, 'type' => $this->type],
+            ['topic_name' => $this->topicName, 'type' => $this->type],
             ['is_ready' => 0]
         );
     }
@@ -279,7 +279,7 @@ abstract class Transmorpher
      */
     public function getIdentifier(): string
     {
-        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->topic, $this->model->getKey());
+        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->topicName, $this->model->getKey());
     }
 
     /**
@@ -386,7 +386,7 @@ abstract class Transmorpher
     {
         // Identifier is used in file paths and URLs, therefore only alphanumeric characters, underscores and hyphens are allowed.
         if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
-            throw new InvalidIdentifierException($this->model, $this->topic);
+            throw new InvalidIdentifierException($this->model, $this->topicName);
         }
     }
 }

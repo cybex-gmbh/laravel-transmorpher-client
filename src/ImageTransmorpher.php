@@ -16,9 +16,9 @@ class ImageTransmorpher extends Transmorpher
      * Create a new ImageTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and topic.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string $topic
+     * @param string $topicName
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $topic)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $topicName)
     {
         $this->createTransmorpherMedia();
     }

@@ -36,8 +36,8 @@ trait HasTransmorpherMedia
      */
     public function images(): Collection
     {
-        return collect($this->transmorpherImages)->mapWithKeys(function (string $topic) {
-            return [$topic => ImageTransmorpher::getInstanceFor($this, $topic)];
+        return collect($this->transmorpherImages)->mapWithKeys(function (string $topicName) {
+            return [$topicName => ImageTransmorpher::getInstanceFor($this, $topicName)];
         });
     }
 
@@ -48,8 +48,8 @@ trait HasTransmorpherMedia
      */
     public function videos(): Collection
     {
-        return collect($this->transmorpherVideos)->mapWithKeys(function (string $topic) {
-            return [$topic => VideoTransmorpher::getInstanceFor($this, $topic)];
+        return collect($this->transmorpherVideos)->mapWithKeys(function (string $topicName) {
+            return [$topicName => VideoTransmorpher::getInstanceFor($this, $topicName)];
         });
     }
 
