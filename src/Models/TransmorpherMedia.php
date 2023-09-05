@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\UploadState;
-use Transmorpher\Transmorpher;
+use Transmorpher\Media;
 
 class TransmorpherMedia extends Model
 {
@@ -22,7 +22,7 @@ class TransmorpherMedia extends Model
     protected $fillable = [
         'transmorphable_type',
         'transmorphable_id',
-        'differentiator',
+        'media_name',
         'public_path',
         'type',
         'is_ready',
@@ -60,8 +60,8 @@ class TransmorpherMedia extends Model
         return $this->hasMany(TransmorpherUpload::class);
     }
 
-    public function getTransmorpher(): Transmorpher
+    public function getMedia(): Media
     {
-        return $this->type->getTransmorpherClass()::getInstanceFor($this->Transmorphable, $this->differentiator);
+        return $this->type->getMediaClass()::getInstanceFor($this->Transmorphable, $this->media_name);
     }
 }

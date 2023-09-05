@@ -7,17 +7,17 @@ use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Models\TransmorpherUpload;
 
-class VideoTransmorpher extends Transmorpher
+class Video extends Media
 {
     protected MediaType $type = MediaType::VIDEO;
 
     /**
-     * Create a new VideoTransmorpher and retrieves or creates the TransmorpherMedia for the specified model and differentiator.
+     * Create a new Video and retrieves or creates the TransmorpherMedia for the specified model and media name.
      *
      * @param HasTransmorpherMediaInterface $model
-     * @param string $differentiator
+     * @param string $mediaName
      */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $differentiator)
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $mediaName)
     {
         $this->createTransmorpherMedia();
     }
@@ -66,7 +66,7 @@ class VideoTransmorpher extends Transmorpher
     }
 
     /**
-     * Returns the accepted file mimetypes for this Transmorpher for use in e.g. Dropzone validation.
+     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
      *
      * @return string
      */

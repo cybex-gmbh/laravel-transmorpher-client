@@ -5,15 +5,15 @@ namespace Transmorpher\ViewComponents;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Transmorpher;
+use Transmorpher\Media;
 
 class VersionCard extends Component
 {
     public MediaType $mediaType;
 
-    public function __construct(public Transmorpher $motif)
+    public function __construct(public Media $media)
     {
-        $this->mediaType = $motif->getTransmorpherMedia()->type;
+        $this->mediaType = $media->getTransmorpherMedia()->type;
     }
 
     /**

@@ -602,7 +602,7 @@
 .more-information-modal .card .card-body .card-side .badge span {
   justify-content: center;
 }
-.more-information-modal .card .card-body .card-side .motif-name {
+.more-information-modal .card .card-body .card-side .media-name {
   display: flex;
   gap: 0.3rem;
   align-items: center;

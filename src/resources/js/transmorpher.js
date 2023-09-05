@@ -6,14 +6,14 @@ if (!window.transmorpherScriptLoaded) {
     window.mediaTypes = {};
     window.transformations = {};
     window.translations = {};
-    window.motifs = [];
+    window.media = [];
 
     const IMAGE = 'IMAGE';
     const VIDEO = 'VIDEO';
 
     window.setupComponent = function (transmorpherIdentifier) {
         Dropzone.autoDiscover = false;
-        const motif = motifs[transmorpherIdentifier];
+        const medium = media[transmorpherIdentifier];
 
         addConfirmEventListeners(
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
@@ -22,21 +22,21 @@ if (!window.transmorpherScriptLoaded) {
         );
 
         // Start polling if the video is still processing or an upload is in process.
-        if (motif.isProcessing || motif.isUploading) {
-            startPolling(transmorpherIdentifier, motif.latestUploadToken);
+        if (medium.isProcessing || medium.isUploading) {
+            startPolling(transmorpherIdentifier, medium.latestUploadToken);
             setAgeElement(
                 document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
-                getDateForDisplay(new Date(motif.lastUpdated * 1000))
+                getDateForDisplay(new Date(medium.lastUpdated * 1000))
             );
         }
 
         new Dropzone(`#dz-${transmorpherIdentifier}`, {
-            url: motif.webUploadUrl,
-            acceptedFiles: motif.acceptedFileTypes,
+            url: medium.webUploadUrl,
+            acceptedFiles: medium.acceptedFileTypes,
             chunking: true,
-            chunkSize: motif.chunkSize,
-            maxFilesize: motif.maxFilesize,
-            maxThumbnailFilesize: motif.maxThumbnailFilesize,
+            chunkSize: medium.chunkSize,
+            maxFilesize: medium.maxFilesize,
+            maxThumbnailFilesize: medium.maxThumbnailFilesize,
             timeout: 60000,
             uploadMultiple: false,
             paramName: 'file',
@@ -48,7 +48,7 @@ if (!window.transmorpherScriptLoaded) {
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
-                    fetch(`${motif.routes.setUploadingState}/${this.options.uploadToken}`, {
+                    fetch(`${medium.routes.setUploadingState}/${this.options.uploadToken}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ if (!window.transmorpherScriptLoaded) {
             },
             // Update database when upload was canceled manually.
             canceled: function (file) {
-                fetch(`${motifs[transmorpherIdentifier].routes.handleUploadResponse}/${this.options.uploadToken}`, {
+                fetch(`${media[transmorpherIdentifier].routes.handleUploadResponse}/${this.options.uploadToken}`, {
                     method: 'POST', headers: {
                         'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                     }, body: JSON.stringify({
@@ -194,7 +194,7 @@ if (!window.transmorpherScriptLoaded) {
         document.querySelector(`#dz-${transmorpherIdentifier}`).querySelector('.dz-preview')?.remove();
 
         if (uploadToken) {
-            fetch(`${motifs[transmorpherIdentifier].routes.handleUploadResponse}/${uploadToken}`, {
+            fetch(`${media[transmorpherIdentifier].routes.handleUploadResponse}/${uploadToken}`, {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                 }, body: JSON.stringify({
@@ -220,7 +220,7 @@ if (!window.transmorpherScriptLoaded) {
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.remove('d-hidden');
             updateVersionInformation(transmorpherIdentifier);
 
-            switch (motifs[transmorpherIdentifier].mediaType) {
+            switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
                     // Set the newly uploaded image as display image.
                     updateImageDisplay(transmorpherIdentifier,
@@ -270,7 +270,7 @@ if (!window.transmorpherScriptLoaded) {
         versionList.append(defaultVersionEntry);
 
         // Get all versions for this media.
-        fetch(motifs[transmorpherIdentifier].routes.getVersions, {
+        fetch(media[transmorpherIdentifier].routes.getVersions, {
             method: 'GET', headers: {
                 'Content-Type': 'application/json',
             },
@@ -298,7 +298,7 @@ if (!window.transmorpherScriptLoaded) {
             let versions = versionInformation.state === 'success' ? versionInformation.versions : [];
 
             let versionAge;
-            switch (motifs[transmorpherIdentifier].mediaType) {
+            switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentVersion]) * 1000));
                     updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion)
@@ -324,11 +324,11 @@ if (!window.transmorpherScriptLoaded) {
                 let versionEntry = defaultVersionEntry.cloneNode(true);
                 let versionAge = versionEntry.querySelector('.version-age');
 
-                switch (motifs[transmorpherIdentifier].mediaType) {
+                switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
-                        versionEntry.querySelector('a').href = `${motifs[transmorpherIdentifier].routes.getOriginal}/${version}`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${motifs[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${motifs[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
+                        versionEntry.querySelector('a').href = `${media[transmorpherIdentifier].routes.getOriginal}/${version}`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
                         break;
                     case mediaTypes[VIDEO]:
                         // Don't show video for now, will use thumbnails later.
@@ -355,7 +355,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.makeSetVersionCall = function (transmorpherIdentifier, version) {
-        fetch(motifs[transmorpherIdentifier].routes.setVersion, {
+        fetch(media[transmorpherIdentifier].routes.setVersion, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             }, body: JSON.stringify({
@@ -368,7 +368,7 @@ if (!window.transmorpherScriptLoaded) {
                 clearInterval(window[`statusPolling${transmorpherIdentifier}`]);
                 updateVersionInformation(transmorpherIdentifier);
 
-                switch (motifs[transmorpherIdentifier].mediaType) {
+                switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
                         updateMediaDisplay(
                             transmorpherIdentifier,
@@ -401,7 +401,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.deleteTransmorpherMedia = function (transmorpherIdentifier) {
-        fetch(motifs[transmorpherIdentifier].routes.delete, {
+        fetch(media[transmorpherIdentifier].routes.delete, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             },
@@ -425,7 +425,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller, videoUrl = null) {
-        switch (motifs[transmorpherIdentifier].mediaType) {
+        switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
                 updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
                 break;
@@ -475,7 +475,7 @@ if (!window.transmorpherScriptLoaded) {
     window.displayPlaceholder = function (transmorpherIdentifier) {
         let imgElements;
 
-        switch (motifs[transmorpherIdentifier].mediaType) {
+        switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
                 imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
                 imgElements.forEach(image => {
@@ -615,11 +615,11 @@ if (!window.transmorpherScriptLoaded) {
 
     window.reserveUploadSlot = function (transmorpherIdentifier, done) {
         // Reserve an upload slot at the Transmorpher media server.
-        fetch(motifs[transmorpherIdentifier].routes.uploadToken, {
+        fetch(media[transmorpherIdentifier].routes.uploadToken, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             }, body: JSON.stringify({
-                transmorpher_media_key: motifs[transmorpherIdentifier].transmorpherMediaKey,
+                transmorpher_media_key: media[transmorpherIdentifier].transmorpherMediaKey,
             }),
         }).then(response => {
             return response.json();
@@ -631,14 +631,14 @@ if (!window.transmorpherScriptLoaded) {
             let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
             dropzone.options.uploadToken = getUploadTokenResult.upload_token
             // Set the dropzone target to the media server upload url, which needs a valid upload token.
-            dropzone.options.url = `${motifs[transmorpherIdentifier].webUploadUrl}${getUploadTokenResult.upload_token}`;
+            dropzone.options.url = `${media[transmorpherIdentifier].webUploadUrl}${getUploadTokenResult.upload_token}`;
 
             done()
         });
     }
 
     window.getState = function (transmorpherIdentifier, uploadToken = null) {
-        return fetch(motifs[transmorpherIdentifier].routes.state, {
+        return fetch(media[transmorpherIdentifier].routes.state, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             }, body: JSON.stringify({

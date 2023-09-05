@@ -4,17 +4,17 @@ namespace Transmorpher\ViewComponents;
 
 use Illuminate\View\Component;
 use Illuminate\View\View;
-use Transmorpher\Transmorpher;
+use Transmorpher\Media;
 
 class MediaPreview extends Component
 {
     public bool $isReady;
-    public string $differentiator;
+    public string $mediaName;
 
-    public function __construct(public Transmorpher $motif)
+    public function __construct(public Media $media)
     {
-        $this->isReady = $motif->getTransmorpherMedia()->is_ready;
-        $this->differentiator = $motif->getTransmorpherMedia()->differentiator;
+        $this->isReady = $media->getTransmorpherMedia()->is_ready;
+        $this->mediaName = $media->getTransmorpherMedia()->media_name;
     }
 
     /**
@@ -24,6 +24,6 @@ class MediaPreview extends Component
      */
     public function render(): string|View
     {
-        return view(sprintf('transmorpher::%s-preview', $this->motif->getTransmorpherMedia()->type->value));
+        return view(sprintf('transmorpher::%s-preview', $this->media->getTransmorpherMedia()->type->value));
     }
 }

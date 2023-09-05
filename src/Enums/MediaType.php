@@ -2,8 +2,8 @@
 
 namespace Transmorpher\Enums;
 
-use Transmorpher\ImageTransmorpher;
-use Transmorpher\VideoTransmorpher;
+use Transmorpher\Image;
+use Transmorpher\Video;
 
 enum MediaType: string
 {
@@ -11,15 +11,15 @@ enum MediaType: string
     case VIDEO = 'video';
 
     /**
-     * Get the class name of the corresponding Transmorpher class.
+     * Get the class name of the corresponding Media class.
      *
      * @return string
      */
-    public function getTransmorpherClass(): string
+    public function getMediaClass(): string
     {
         return match ($this) {
-            MediaType::IMAGE => ImageTransmorpher::class,
-            MediaType::VIDEO => VideoTransmorpher::class,
+            MediaType::IMAGE => Image::class,
+            MediaType::VIDEO => Video::class,
         };
     }
 }

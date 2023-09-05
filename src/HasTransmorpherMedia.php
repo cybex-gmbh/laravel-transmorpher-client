@@ -30,26 +30,26 @@ trait HasTransmorpherMedia
     }
 
     /**
-     * Returns a collection with ImageTransmorphers associated to motifs.
+     * Returns a collection of Images associated to media names.
      *
      * @return Collection
      */
     public function images(): Collection
     {
-        return collect($this->transmorpherImages)->mapWithKeys(function (string $motif) {
-            return [$motif => ImageTransmorpher::getInstanceFor($this, $motif)];
+        return collect($this->transmorpherImages)->mapWithKeys(function (string $mediaName) {
+            return [$mediaName => Image::getInstanceFor($this, $mediaName)];
         });
     }
 
     /**
-     * Returns a collection with VideoTransmorphers associated to motifs.
+     * Returns a collection of Videos associated to media names.
      *
      * @return Collection
      */
     public function videos(): Collection
     {
-        return collect($this->transmorpherVideos)->mapWithKeys(function (string $motif) {
-            return [$motif => VideoTransmorpher::getInstanceFor($this, $motif)];
+        return collect($this->transmorpherVideos)->mapWithKeys(function (string $mediaName) {
+            return [$mediaName => Video::getInstanceFor($this, $mediaName)];
         });
     }
 

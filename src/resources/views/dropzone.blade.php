@@ -1,18 +1,18 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<div id="component-{{ $motif->getIdentifier() }}">
+<div id="component-{{ $media->getIdentifier() }}">
     <div @class(['card', 'border-processing' => !$isReady || $isProcessing])>
         <div class="card-header">
             <div>
                 <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
                      alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value])" class="icon">
-                {{ $differentiator }}
+                {{ $mediaName }}
             </div>
             <div class="details">
                 <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.open_more_information_modal')"
                      class="icon"
-                     onclick="openMoreInformationModal('{{ $motif->getIdentifier() }}')">
+                     onclick="openMoreInformationModal('{{ $media->getIdentifier() }}')">
             </div>
         </div>
         <div class="card-body">
@@ -25,27 +25,27 @@
                     @endif
                 </span>
             </div>
-            <form method="POST" class="dropzone" id="dz-{{ $motif->getIdentifier() }}">
+            <form method="POST" class="dropzone" id="dz-{{ $media->getIdentifier() }}">
                 <div class="media-preview">
                     <div class="error-display d-none">
                         <span class="error-message"></span>
-                        <button type="button" class="btn-close" onclick="closeErrorMessage(this, '{{ $motif->getIdentifier() }}')">⨉</button>
+                        <button type="button" class="btn-close" onclick="closeErrorMessage(this, '{{ $media->getIdentifier() }}')">⨉</button>
                     </div>
-                    <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
+                    <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :media="$media"/>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="modal-mi-{{ $motif->getIdentifier() }}" class="modal more-information-modal d-none">
+    <div id="modal-mi-{{ $media->getIdentifier() }}" class="modal more-information-modal d-none">
         <div class="card">
             <div class="card-header">
-                <div class="motif-name">
+                <div class="media-name">
                     <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
                          alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value])" class="icon">
-                    {{ $differentiator }}
+                    {{ $mediaName }}
                 </div>
-                <button class="btn-close" onclick="closeMoreInformationModal('{{ $motif->getIdentifier() }}')">⨉</button>
+                <button class="btn-close" onclick="closeMoreInformationModal('{{ $media->getIdentifier() }}')">⨉</button>
             </div>
             <div class="card-body">
                 <div class="card-side">
@@ -57,25 +57,26 @@
                                 @lang('transmorpher::dropzone.uploading')
                             @endif
                         </span>
-                        <div class="motif-info">
+                        <div>
                             <p @class(['d-none' => !$isProcessing || !$isUploading])>@lang('transmorpher::dropzone.started') <span class="age"></span></p>
                         </div>
                         <span class="error-message"></span>
                     </div>
                     <span class="current-version-age"></span>
                     <div class="media-preview">
-                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :motif="$motif"/>
+                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :media="$media"/>
                     </div>
                     <button type=button @class(['button', 'button-confirm', 'confirm-delete', 'd-hidden' => !$isReady && !$isProcessing])>
                         <span>@lang('transmorpher::dropzone.delete')</span>
-                        <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => 'Delete media'])" class="icon">
+                        <img src="{{ mix('icons/delete.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => 'Delete media'])"
+                             class="icon">
                     </button>
                 </div>
                 <div class="card-main">
                     <div class="version-list">
                         <ul>
                             <li class="version-entry d-none">
-                                <x-transmorpher::version-card :motif="$motif"></x-transmorpher::version-card>
+                                <x-transmorpher::version-card :media="$media"></x-transmorpher::version-card>
                             </li>
                         </ul>
                     </div>
@@ -85,7 +86,7 @@
     </div>
 </div>
 
-<div id="modal-uc-{{ $motif->getIdentifier() }}" class="modal uc-modal d-none">
+<div id="modal-uc-{{ $media->getIdentifier() }}" class="modal uc-modal d-none">
     <div class="card">
         <div class="card-header">
             @switch($mediaType)
@@ -98,7 +99,7 @@
             @endswitch
         </div>
         <div class="card-body">
-            <button class="button" onclick="closeUploadConfirmModal('{{ $motif->getIdentifier() }}')">
+            <button class="button" onclick="closeUploadConfirmModal('{{ $media->getIdentifier() }}')">
                 @lang('transmorpher::dropzone.cancel')
             </button>
             <button class="button badge-error">
@@ -112,7 +113,7 @@
     mediaTypes = @json($mediaTypes);
     transformations = @json($srcSetTransformations);
     translations = @json($translations);
-    motifs['{{ $motif->getIdentifier() }}'] = {
+    media['{{ $media->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
             state: '{{ $stateRoute }}',
@@ -125,17 +126,17 @@
             uploadToken: '{{ $uploadTokenRoute }}',
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },
-        webUploadUrl: '{{ $motif->getWebUploadUrl() }}',
+        webUploadUrl: '{{ $media->getWebUploadUrl() }}',
         mediaType: '{{ $mediaType->value }}',
-        chunkSize: {{ $motif->getChunkSize() }},
-        maxFilesize: {{ $motif->getMaxFileSize() }},
-        maxThumbnailFilesize: {{ $motif->getMaxFileSize() }},
+        chunkSize: {{ $media->getChunkSize() }},
+        maxFilesize: {{ $media->getMaxFileSize() }},
+        maxThumbnailFilesize: {{ $media->getMaxFileSize() }},
         isProcessing: @json($isProcessing),
         isUploading: @json($isUploading),
         lastUpdated: '{{ $lastUpdated }}',
         latestUploadToken: '{{ $latestUploadToken }}',
-        acceptedFileTypes: '{{ $motif->getAcceptedFileTypes() }}'
+        acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}'
     }
 
-    setupComponent('{{ $motif->getIdentifier() }}');
+    setupComponent('{{ $media->getIdentifier() }}');
 </script>
