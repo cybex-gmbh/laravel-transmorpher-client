@@ -26,7 +26,7 @@ abstract class Media
      * Get either an existing instance or creates a new one.
      *
      * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
-     * @param string $mediaName The media name identifying the TransmorpherMedia.
+     * @param string $mediaName Specifies which media of the model it is.
      *
      * @return static The Media instance.
      */
