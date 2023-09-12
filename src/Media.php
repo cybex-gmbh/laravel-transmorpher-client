@@ -104,7 +104,10 @@ abstract class Media
         try {
             $response = $this->configureApiRequest()
                 ->attach('file', $fileHandle)
-                ->post(TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
+                ->post(
+                    TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])),
+                    ['identifier' => $this->getIdentifier()]
+                );
 
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
