@@ -101,14 +101,32 @@ abstract class Media
             return $this->upload->handleStateUpdate($tokenResponse);
         }
 
+        $chunkSize = config('transmorpher.dropzone_upload.chunk_size');
+        $chunkNumber = 1;
+        $totalChunks = ceil(fstat($fileHandle)['size'] / $chunkSize);
+
         try {
-            $response = $this->configureApiRequest()
-                ->attach('file', $fileHandle)
-                ->post(TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
+            while (!feof($fileHandle)) {
+                $chunk = fread($fileHandle, $chunkSize);
+
+                $response = $this->configureApiRequest()
+                    ->attach('file', $chunk, basename(stream_get_meta_data($fileHandle)['uri']))
+                    ->post(
+                        TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
+                            'identifier' => $this->getIdentifier(),
+                            'chunkNumber' => $chunkNumber,
+                            'totalChunks' => $totalChunks
+                        ]
+                    );
+
+                $chunkNumber++;
+            }
 
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+        } finally {
+            fclose($fileHandle);
         }
 
         return $this->upload->handleStateUpdate($clientResponse);
