@@ -101,7 +101,7 @@ abstract class Media
             return $this->upload->handleStateUpdate($tokenResponse);
         }
 
-        $chunkSize = config('transmorpher.dropzone_upload.chunk_size');
+        $chunkSize = $this->getChunkSize();
         $chunkNumber = 1;
         $totalChunks = ceil(fstat($fileHandle)['size'] / $chunkSize);
 
@@ -350,7 +350,7 @@ abstract class Media
      */
     public function getChunkSize(): int
     {
-        return config('transmorpher.dropzone_upload.chunk_size');
+        return config('transmorpher.upload.chunk_size');
     }
 
     /**
@@ -360,7 +360,7 @@ abstract class Media
      */
     public function getMaxFileSize(): int
     {
-        return config(sprintf('transmorpher.dropzone_upload.%s.max_file_size', $this->type->value));
+        return config(sprintf('transmorpher.upload.%s.max_file_size', $this->type->value));
     }
 
     /**
