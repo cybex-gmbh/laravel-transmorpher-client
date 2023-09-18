@@ -24,7 +24,7 @@ return [
         'placeholder_url' => env('TRANSMORPHER_WEB_PLACEHOLDER_URL', '')
     ],
 
-    'dropzone_upload' => [
+    'upload' => [
         'chunk_size' => 1 * 1024 * 1024,
         'image' => [
             'max_file_size' => 100

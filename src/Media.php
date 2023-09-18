@@ -101,14 +101,30 @@ abstract class Media
             return $this->upload->handleStateUpdate($tokenResponse);
         }
 
+        $chunkSize = $this->getChunkSize();
+        $chunkNumber = 1;
+        $totalChunks = ceil(fstat($fileHandle)['size'] / $chunkSize);
+
         try {
-            $response = $this->configureApiRequest()
-                ->attach('file', $fileHandle)
-                ->post(TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])));
+            while (!feof($fileHandle)) {
+                $chunk = fread($fileHandle, $chunkSize);
+
+                $response = $this->configureApiRequest()
+                    ->attach('file', $chunk, basename(stream_get_meta_data($fileHandle)['uri']))
+                    ->post(
+                        TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
+                            'identifier' => $this->getIdentifier(),
+                            'chunkNumber' => $chunkNumber++,
+                            'totalChunks' => $totalChunks
+                        ]
+                    );
+            }
 
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+        } finally {
+            fclose($fileHandle);
         }
 
         return $this->upload->handleStateUpdate($clientResponse);
@@ -332,7 +348,7 @@ abstract class Media
      */
     public function getChunkSize(): int
     {
-        return config('transmorpher.dropzone_upload.chunk_size');
+        return config('transmorpher.upload.chunk_size');
     }
 
     /**
@@ -342,7 +358,7 @@ abstract class Media
      */
     public function getMaxFileSize(): int
     {
-        return config(sprintf('transmorpher.dropzone_upload.%s.max_file_size', $this->type->value));
+        return config(sprintf('transmorpher.upload.%s.max_file_size', $this->type->value));
     }
 
     /**
