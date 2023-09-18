@@ -114,12 +114,10 @@ abstract class Media
                     ->post(
                         TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
                             'identifier' => $this->getIdentifier(),
-                            'chunkNumber' => $chunkNumber,
+                            'chunkNumber' => $chunkNumber++,
                             'totalChunks' => $totalChunks
                         ]
                     );
-
-                $chunkNumber++;
             }
 
             $clientResponse = $this->getClientResponseFromResponse($response);
