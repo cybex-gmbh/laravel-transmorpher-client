@@ -88,7 +88,7 @@ abstract class Media
      *
      * @return array The Transmorpher response.
      */
-    public function upload($fileHandle): array
+    public function upload($fileHandle, string $fileName = null): array
     {
         // There is no type hint for resource.
         if (!is_resource($fileHandle)) {
@@ -110,7 +110,7 @@ abstract class Media
                 $chunk = fread($fileHandle, $chunkSize);
 
                 $response = $this->configureApiRequest()
-                    ->attach('file', $chunk, basename(stream_get_meta_data($fileHandle)['uri']))
+                    ->attach('file', $chunk, $fileName ?: basename(stream_get_meta_data($fileHandle)['uri']))
                     ->post(
                         TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
                             'identifier' => $this->getIdentifier(),
@@ -123,8 +123,6 @@ abstract class Media
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-        } finally {
-            fclose($fileHandle);
         }
 
         return $this->upload->handleStateUpdate($clientResponse);

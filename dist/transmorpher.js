@@ -172,14 +172,14 @@ if (!window.transmorpherScriptLoaded) {
     ageElement.closest('p').classList.remove('d-none');
   };
   window.resetAgeElement = function (transmorpherIdentifier) {
-    var _document$querySelect;
-    (_document$querySelect = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age"))) === null || _document$querySelect === void 0 || (_document$querySelect = _document$querySelect.closest('p')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add('d-none');
+    var _document$querySelect, _document$querySelect2;
+    (_document$querySelect = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age"))) === null || _document$querySelect === void 0 ? void 0 : (_document$querySelect2 = _document$querySelect.closest('p')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.classList.add('d-none');
   };
   window.handleUploadResponse = function (file, response, transmorpherIdentifier, uploadToken) {
-    var _document$querySelect2;
+    var _document$querySelect3;
     // Clear the old timer.
     clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
-    (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.remove();
+    (_document$querySelect3 = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.remove();
     if (uploadToken) {
       var _file$xhr$status, _file$xhr2;
       fetch("".concat(media[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(uploadToken), {
@@ -543,9 +543,9 @@ if (!window.transmorpherScriptLoaded) {
     };
   };
   window.closeUploadConfirmModal = function (transmorpherIdentifier) {
-    var _document$querySelect3;
+    var _document$querySelect4;
     document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
-    (_document$querySelect3 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.remove();
+    (_document$querySelect4 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.remove();
     if (document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview:not(.dz-processing)"))) {
       document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview")).remove();
       document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
@@ -604,12 +604,12 @@ if (!window.transmorpherScriptLoaded) {
     };
   };
   window.closeErrorMessage = function (closeButton, transmorpherIdentifier) {
-    var _document$querySelect4, _closeButton$closest$;
+    var _document$querySelect5, _closeButton$closest$;
     closeButton.closest('.error-display').classList.add('d-none');
 
     // Reset errors.
     resetModalErrorMessageDisplay(transmorpherIdentifier);
-    (_document$querySelect4 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.classList.add('d-none');
+    (_document$querySelect5 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect5 === void 0 ? void 0 : _document$querySelect5.classList.add('d-none');
     (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 ? void 0 : _closeButton$closest$.classList.add('d-hidden');
     closeButton.closest('.card').classList.remove('border-error');
   };
@@ -752,7 +752,7 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Dropzone: () => (/* binding */ $3ed269f2f0fb224b$export$2e2bcd8739ae039),
+/* harmony export */   "Dropzone": () => (/* binding */ $3ed269f2f0fb224b$export$2e2bcd8739ae039),
 /* harmony export */   "default": () => (/* binding */ $3ed269f2f0fb224b$export$2e2bcd8739ae039)
 /* harmony export */ });
 /* harmony import */ var just_extend__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! just-extend */ "./node_modules/just-extend/index.esm.js");
