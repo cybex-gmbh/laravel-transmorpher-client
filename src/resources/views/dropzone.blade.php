@@ -1,7 +1,7 @@
 <script src="{{ mix('transmorpher.js', 'vendor/transmorpher') }}"></script>
 <link rel="stylesheet" href="{{ mix('transmorpher.css', 'vendor/transmorpher') }}" type="text/css"/>
 
-<div class="transmorpher">
+<div class="transmorpher" @style(['width: ' . $width => $width])>
     <div id="component-{{ $media->getIdentifier() }}">
         <div @class(['card', 'border-processing' => !$isReady || $isProcessing])>
             <div class="card-header">

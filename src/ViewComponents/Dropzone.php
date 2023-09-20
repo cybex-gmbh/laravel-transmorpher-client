@@ -32,7 +32,7 @@ class Dropzone extends Component
     public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
 
-    public function __construct(public Media $media)
+    public function __construct(public Media $media, public ?string $width = null)
     {
         $this->mediaType = $media->getTransmorpherMedia()->type;
         $this->isProcessing = $media->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;

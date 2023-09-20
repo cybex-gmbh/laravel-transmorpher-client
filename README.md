@@ -217,6 +217,8 @@ To use the dropzone component in a template, you can simply include it like this
 <x-transmorpher::dropzone :media="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
 ```
 
+**_NOTE:_** You can optionally define a fixed width by setting the width attribute (e.g. `width="300px"`).
+
 Depending on whether you pass a `Transmorpher\Image` or a `Transmorpher\Video`, the component will function as your upload form for images or videos.
 
 #### Dynamic usage
