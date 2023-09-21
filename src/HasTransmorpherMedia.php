@@ -60,4 +60,20 @@ trait HasTransmorpherMedia
     {
         return $this->transmorpherAlias ?? $this->getMorphClass();
     }
+
+    /**
+     * @return array
+     */
+    public function getTransmorpherImages(): array
+    {
+        return $this->transmorpherImages ?? [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getTransmorpherVideos(): array
+    {
+        return $this->transmorpherVideos ?? [];
+    }
 }
