@@ -3,6 +3,8 @@
 namespace Transmorpher;
 
 use Illuminate\Support\Collection;
+use ReflectionClass;
+use ReflectionMethod;
 use Transmorpher\Exceptions\MissingMorphAliasException;
 use Transmorpher\Models\TransmorpherMedia;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -62,18 +64,36 @@ trait HasTransmorpherMedia
     }
 
     /**
-     * @return array
+     * @return Collection
      */
-    public function getTransmorpherImages(): array
+    public function getTransmorpherImages(): Collection
     {
-        return $this->transmorpherImages ?? [];
+        return $this->getMediaMethods(Image::class)->merge($this->transmorpherImages ?? [])->unique()->sort(SORT_NATURAL);
     }
 
     /**
-     * @return array
+     * @return Collection
      */
-    public function getTransmorpherVideos(): array
+    public function getTransmorpherVideos(): Collection
     {
-        return $this->transmorpherVideos ?? [];
+        return $this->getMediaMethods(Video::class)->merge($this->transmorpherVideos ?? [])->unique()->sort(SORT_NATURAL);
+    }
+
+    /**
+     * @param string $mediaClass
+     * @return Collection
+     */
+    protected function getMediaMethods(string $mediaClass): Collection
+    {
+        $mediaMethods = collect();
+
+        $reflectionClass = new ReflectionClass($this);
+        foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
+            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true)) {
+                $mediaMethods->push($reflectionMethod->getName());
+            }
+        }
+
+        return $mediaMethods;
     }
 }
