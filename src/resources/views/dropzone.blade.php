@@ -137,7 +137,12 @@
         isUploading: @json($isUploading),
         lastUpdated: '{{ $lastUpdated }}',
         latestUploadToken: '{{ $latestUploadToken }}',
-        acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}'
+        acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}',
+        minWidth: '{{ $media->getMinWidth() }}',
+        maxWidth: '{{ $media->getMaxWidth() }}',
+        minHeight: '{{ $media->getMinHeight() }}',
+        maxHeight: '{{ $media->getMaxHeight() }}',
+        ratio: '{{ $media->getRatio() }}'
     }
 
     setupComponent('{{ $media->getIdentifier() }}');

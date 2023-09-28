@@ -83,16 +83,6 @@ class Image extends Media
     }
 
     /**
-     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
-     *
-     * @return string
-     */
-    public function getAcceptedFileTypes(): string
-    {
-        return 'image/*';
-    }
-
-    /**
      * Sends the request to reserve an upload slot to the Transmorpher media server API.
      *
      * @return Response

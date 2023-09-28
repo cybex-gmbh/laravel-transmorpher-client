@@ -76,17 +76,35 @@ if (!window.transmorpherScriptLoaded) {
                     errorElement.remove();
                 }
 
-                getState(transmorpherIdentifier)
-                    .then(uploadingStateResponse => {
-                        if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                            openUploadConfirmModal(
-                                transmorpherIdentifier,
-                                createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, done)
-                            );
+                let reader = new FileReader();
+
+                reader.onload = function (file) {
+                    let image = new Image();
+                    image.src = file.target.result;
+                    image.onload = function (file) {
+                        if ((medium.maxWidth && this.width > medium.maxWidth) || (medium.maxHeight && this.height > medium.maxHeight)) {
+                            done(translations['max_dimensions_exceeded']);
+                        } else if ((medium.minWidth && this.width < medium.minWidth) || (medium.minHeight && this.height < medium.minHeight)) {
+                            done(translations['min_dimensions_subceeded']);
+                        } else if (medium.ratio && this.width / this.height !== medium.ratio) {
+                            done(translations['invalid_ratio']);
                         } else {
-                            reserveUploadSlot(transmorpherIdentifier, done);
+                            getState(transmorpherIdentifier)
+                                .then(uploadingStateResponse => {
+                                    if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
+                                        openUploadConfirmModal(
+                                            transmorpherIdentifier,
+                                            createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, done)
+                                        );
+                                    } else {
+                                        reserveUploadSlot(transmorpherIdentifier, done);
+                                    }
+                                })
                         }
-                    })
+                    };
+                };
+
+                reader.readAsDataURL(file);
             },
             // Update database when upload was canceled manually.
             canceled: function (file) {

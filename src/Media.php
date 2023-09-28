@@ -52,13 +52,6 @@ abstract class Media
     public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
 
     /**
-     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
-     *
-     * @return string
-     */
-    public abstract function getAcceptedFileTypes(): string;
-
-    /**
      * @return string
      */
     public abstract function getThumbnailUrl(): string;
@@ -356,7 +349,67 @@ abstract class Media
      */
     public function getMaxFileSize(): int
     {
-        return config(sprintf('transmorpher.upload.%s.max_file_size', $this->type->value));
+        return config(sprintf('transmorpher.upload.%s.validations.max_file_size', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public function getAcceptedFileTypes(): string
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.mimetypes', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted min width for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMinWidth(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.width.min', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted max width for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMaxWidth(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.width.max', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted min height for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMinHeight(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.height.max', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted max height for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMaxHeight(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.height.max', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted max height for this Media for use in e.g. Dropzone validation.
+     *
+     * @return string|null
+     */
+    public function getRatio(): ?string
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.ratio', $this->type->value));
     }
 
     /**

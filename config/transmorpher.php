@@ -27,10 +27,41 @@ return [
     'upload' => [
         'chunk_size' => 1 * 1024 * 1024,
         'image' => [
-            'max_file_size' => 100
+            'validations' => [
+                'max_file_size' => 100,
+                'dimensions' => [
+                    'width' => [
+                        'min' => null,
+                        'max' => null,
+                    ],
+                    'height' => [
+                        'min' => null,
+                        'max' => null,
+                    ],
+                    // Width to height ratio, e.g. 1/1, 1/2, ...
+                    'ratio' => '',
+                ],
+                'mimetypes' => 'image/*',
+            ],
         ],
         'video' => [
-            'max_file_size' => 4000
+            'validations' => [
+                'max_file_size' => 4000,
+                'dimensions' => [
+                    'width' => [
+                        'min' => null,
+                        'max' => null,
+                    ],
+                    'height' => [
+                        'min' => null,
+                        'max' => null,
+                    ],
+                    // Width to height ratio, e.g. 1/1, 1/2, ...
+                    'ratio' => null,
+                ],
+                // Somehow video/* doesn't contain the .mkv mimetype.
+                'mimetypes' => 'video/*,video/x-matroska',
+            ],
         ],
     ]
 ];

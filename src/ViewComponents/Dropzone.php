@@ -49,7 +49,13 @@ class Dropzone extends Component
             '600w' => Transformation::WIDTH->getUrlRepresentation(600),
             '900w' => Transformation::WIDTH->getUrlRepresentation(900),
         ];
-        $this->translations = trans('transmorpher::dropzone');
+        $this->translations = trans('transmorpher::dropzone', [
+            'minWidth' => $media->getMinWidth(),
+            'maxWidth' => $media->getMaxWidth(),
+            'minHeight' => $media->getMinHeight(),
+            'maxHeight' => $media->getMaxHeight(),
+            'ratio' => $media->getRatio(),
+        ]);
 
         $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);
