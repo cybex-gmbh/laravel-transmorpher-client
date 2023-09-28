@@ -86,8 +86,8 @@ trait HasTransmorpherMedia
     protected function getMediaMethods(string $mediaClass): Collection
     {
         $mediaMethods = collect();
-
         $reflectionClass = new ReflectionClass($this);
+        
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
             if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true)) {
                 $mediaMethods->push($reflectionMethod->getName());
