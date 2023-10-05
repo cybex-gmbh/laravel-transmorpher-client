@@ -231,6 +231,25 @@ If you want a more dynamic approach, to display a dropzone for each available im
 @endforeach
 ```
 
+#### Validation
+
+**NOTE:** This is no security feature and will only be checked in the frontend.
+
+There are some validation rules which can be applied for the dropzone component:
+- accepted file types
+- max file size
+- min/max width *
+- min/max height *
+- ratio *
+
+All those validation rules can be configured in the `transmorpher.php` config file and will be applied to all dropzones.
+
+Additionally, you have the option to specify the validation rules marked with a '*' for a specific dropzone, which will take priority over the rules specified in the config file.
+
+```html
+<x-transmorpher::dropzone :media="$image" acceptedMinWidth="1920" acceptedMinHeight="1080" :acceptedRatio="16/9"></x-transmorpher::dropzone>
+```
+
 ## Development
 
 ### Frontend Assets

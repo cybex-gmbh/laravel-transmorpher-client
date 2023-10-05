@@ -389,7 +389,7 @@ abstract class Media
      */
     public function getMinHeight(): ?int
     {
-        return config(sprintf('transmorpher.upload.%s.validations.dimensions.height.max', $this->type->value));
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.height.min', $this->type->value));
     }
 
     /**
@@ -403,11 +403,11 @@ abstract class Media
     }
 
     /**
-     * Returns the accepted max height for this Media for use in e.g. Dropzone validation.
+     * Returns the accepted ratio for this Media for use in e.g. Dropzone validation.
      *
-     * @return string|null
+     * @return float|null
      */
-    public function getRatio(): ?string
+    public function getRatio(): ?float
     {
         return config(sprintf('transmorpher.upload.%s.validations.dimensions.ratio', $this->type->value));
     }

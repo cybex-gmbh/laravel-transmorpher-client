@@ -138,11 +138,11 @@
         lastUpdated: '{{ $lastUpdated }}',
         latestUploadToken: '{{ $latestUploadToken }}',
         acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}',
-        minWidth: '{{ $media->getMinWidth() }}',
-        maxWidth: '{{ $media->getMaxWidth() }}',
-        minHeight: '{{ $media->getMinHeight() }}',
-        maxHeight: '{{ $media->getMaxHeight() }}',
-        ratio: '{{ $media->getRatio() }}'
+        minWidth: '{{ $acceptedMinWidth }}',
+        maxWidth: '{{ $acceptedMaxWidth }}',
+        minHeight: '{{ $acceptedMinHeight }}',
+        maxHeight: '{{ $acceptedMaxHeight }}',
+        ratio: '{{ $acceptedRatio }}'
     }
 
     setupComponent('{{ $media->getIdentifier() }}');

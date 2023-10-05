@@ -38,8 +38,8 @@ return [
                         'min' => null,
                         'max' => null,
                     ],
-                    // Width to height ratio, e.g. 1/1, 1/2, ...
-                    'ratio' => '',
+                    // Width to height ratio, e.g. 1/1, 1/2, 16/9, ...
+                    'ratio' => null,
                 ],
                 'mimetypes' => 'image/*',
             ],
@@ -56,7 +56,7 @@ return [
                         'min' => null,
                         'max' => null,
                     ],
-                    // Width to height ratio, e.g. 1/1, 1/2, ...
+                    // Width to height ratio, e.g. 1/1, 1/2, 16/9, ...
                     'ratio' => null,
                 ],
                 // Somehow video/* doesn't contain the .mkv mimetype.

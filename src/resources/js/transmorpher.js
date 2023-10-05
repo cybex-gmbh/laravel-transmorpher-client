@@ -41,7 +41,6 @@ if (!window.transmorpherScriptLoaded) {
             uploadMultiple: false,
             paramName: 'file',
             uploadToken: null,
-            createImageThumbnails: false,
             dictDefaultMessage: translations['drop_files_to_upload'],
             dictFileTooBig: translations['max_file_size_exceeded'],
             dictInvalidFileType: translations['invalid_file_type'],
@@ -67,7 +66,36 @@ if (!window.transmorpherScriptLoaded) {
                     formData.append('identifier', transmorpherIdentifier);
                 })
             },
+            thumbnail: async function (file, dataUrl) {
+                if (!file.width || !file.height) {
+                    let dimensions = await getImageDimensions(file);
+                    file.width = dimensions.width;
+                    file.height = dimensions.height;
+                }
+
+                if ((medium.maxWidth && file.width > medium.maxWidth) || (medium.maxHeight && file.height > medium.maxHeight)) {
+                    file.done(translations['max_dimensions_exceeded']);
+                } else if ((medium.minWidth && file.width < medium.minWidth) || (medium.minHeight && file.height < medium.minHeight)) {
+                    file.done(translations['min_dimensions_subceeded']);
+                } else if (medium.ratio && (file.width / file.height).toFixed(2) !== Number(medium.ratio).toFixed(2)) {
+                    file.done(translations['invalid_ratio']);
+                } else {
+                    getState(transmorpherIdentifier)
+                        .then(uploadingStateResponse => {
+                            if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
+                                openUploadConfirmModal(
+                                    transmorpherIdentifier,
+                                    createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done)
+                                );
+                            } else {
+                                reserveUploadSlot(transmorpherIdentifier, file.done);
+                            }
+                        })
+                }
+            },
             accept: function (file, done) {
+                file.done = done;
+
                 // Remove previous elements to maintain a clean overlay.
                 this.element.querySelector('.dz-default').style.display = 'none';
 
@@ -75,36 +103,6 @@ if (!window.transmorpherScriptLoaded) {
                 if (errorElement = this.element.querySelector('.dz-error')) {
                     errorElement.remove();
                 }
-
-                let reader = new FileReader();
-
-                reader.onload = function (file) {
-                    let image = new Image();
-                    image.src = file.target.result;
-                    image.onload = function (file) {
-                        if ((medium.maxWidth && this.width > medium.maxWidth) || (medium.maxHeight && this.height > medium.maxHeight)) {
-                            done(translations['max_dimensions_exceeded']);
-                        } else if ((medium.minWidth && this.width < medium.minWidth) || (medium.minHeight && this.height < medium.minHeight)) {
-                            done(translations['min_dimensions_subceeded']);
-                        } else if (medium.ratio && this.width / this.height !== medium.ratio) {
-                            done(translations['invalid_ratio']);
-                        } else {
-                            getState(transmorpherIdentifier)
-                                .then(uploadingStateResponse => {
-                                    if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                                        openUploadConfirmModal(
-                                            transmorpherIdentifier,
-                                            createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, done)
-                                        );
-                                    } else {
-                                        reserveUploadSlot(transmorpherIdentifier, done);
-                                    }
-                                })
-                        }
-                    };
-                };
-
-                reader.readAsDataURL(file);
             },
             // Update database when upload was canceled manually.
             canceled: function (file) {
@@ -140,6 +138,21 @@ if (!window.transmorpherScriptLoaded) {
                 );
             },
         });
+    }
+
+    window.getImageDimensions = function (file) {
+        return new Promise((resolve) => {
+            let img = new Image();
+            img.src = URL.createObjectURL(file);
+
+            img.onload = function () {
+                URL.revokeObjectURL(this.src);
+                resolve({
+                    width: this.width,
+                    height: this.height
+                })
+            }
+        })
     }
 
     window.startPolling = function (transmorpherIdentifier, uploadToken) {
