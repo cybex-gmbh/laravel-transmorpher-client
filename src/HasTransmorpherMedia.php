@@ -5,12 +5,16 @@ namespace Transmorpher;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionMethod;
+use Transmorpher\Exceptions\DuplicateMediaNameException;
 use Transmorpher\Exceptions\MissingMorphAliasException;
 use Transmorpher\Models\TransmorpherMedia;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasTransmorpherMedia
 {
+    protected static Collection $cachedTransmorpherImages;
+    protected static Collection $cachedTransmorpherVideos;
+
     /**
      * @throws MissingMorphAliasException
      */
@@ -38,7 +42,7 @@ trait HasTransmorpherMedia
      */
     public function images(): Collection
     {
-        return collect($this->transmorpherImages)->mapWithKeys(function (string $mediaName) {
+        return $this->getTransmorpherImages()->mapWithKeys(function (string $mediaName) {
             return [$mediaName => Image::getInstanceFor($this, $mediaName)];
         });
     }
@@ -50,9 +54,39 @@ trait HasTransmorpherMedia
      */
     public function videos(): Collection
     {
-        return collect($this->transmorpherVideos)->mapWithKeys(function (string $mediaName) {
+        return $this->getTransmorpherVideos()->mapWithKeys(function (string $mediaName) {
             return [$mediaName => Video::getInstanceFor($this, $mediaName)];
         });
+    }
+
+    /**
+     * Returns a single Image for a media name.
+     *
+     * @param string $mediaName
+     * @return Image|null
+     */
+    public function image(string $mediaName): ?Image
+    {
+        if ($this->getTransmorpherImages()->contains($mediaName)) {
+            return Image::getInstanceFor($this, $mediaName);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a single Video for a media name.
+     *
+     * @param string $mediaName
+     * @return Video|null
+     */
+    public function video(string $mediaName): ?Video
+    {
+        if ($this->getTransmorpherVideos()->contains($mediaName)) {
+            return Video::getInstanceFor($this, $mediaName);
+        }
+
+        return null;
     }
 
     /**
@@ -68,7 +102,7 @@ trait HasTransmorpherMedia
      */
     public function getTransmorpherImages(): Collection
     {
-        return $this->getMediaMethods(Image::class)->merge($this->transmorpherImages ?? [])->unique()->sort(SORT_NATURAL);
+        return static::$cachedTransmorpherImages ??= $this->getTransmorpherMedia(Image::class, $this->transmorpherImages ?? []);
     }
 
     /**
@@ -76,7 +110,29 @@ trait HasTransmorpherMedia
      */
     public function getTransmorpherVideos(): Collection
     {
-        return $this->getMediaMethods(Video::class)->merge($this->transmorpherVideos ?? [])->unique()->sort(SORT_NATURAL);
+        return static::$cachedTransmorpherVideos ??= $this->getTransmorpherMedia(Video::class, $this->transmorpherVideos ?? []);
+    }
+
+    /**
+     * @param string $mediaClass
+     * @param array $mediaArray
+     * @return Collection
+     * @throws DuplicateMediaNameException
+     */
+    protected function getTransmorpherMedia(string $mediaClass, array $mediaArray): Collection
+    {
+        $mediaMethods = $this->getMediaMethods($mediaClass);
+        $loweredMediaMethods = $mediaMethods->map('strtolower');
+        $loweredMediaArray = array_map('strtolower', $mediaArray);
+
+        $duplicates = array_diff_key($loweredMediaArray, array_unique($loweredMediaArray));
+        $duplicates = $duplicates ? collect($duplicates) : $loweredMediaMethods->intersect($loweredMediaArray);
+
+        if ($duplicates->count()) {
+            throw new DuplicateMediaNameException($this::class, $duplicates);
+        }
+
+        return $mediaMethods->merge($mediaArray)->sort(SORT_NATURAL);
     }
 
     /**
@@ -87,10 +143,12 @@ trait HasTransmorpherMedia
     {
         $mediaMethods = collect();
         $reflectionClass = new ReflectionClass($this);
-        
+
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
-            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true)) {
-                $mediaMethods->push($reflectionMethod->getName());
+            $reflectionMethodName = $reflectionMethod->getName();
+
+            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && strtolower($reflectionMethodName) !== 'image' && strtolower($reflectionMethodName) !== 'video') {
+                $mediaMethods->push($reflectionMethodName);
             }
         }
 
