@@ -2,6 +2,7 @@
 
 namespace Transmorpher;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionMethod;
@@ -12,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasTransmorpherMedia
 {
-    protected static Collection $cachedTransmorpherImages;
-    protected static Collection $cachedTransmorpherVideos;
+    protected static Collection $cachedImageMediaNames;
+    protected static Collection $cachedVideoMediaNames;
 
     /**
      * @throws MissingMorphAliasException
@@ -38,25 +39,29 @@ trait HasTransmorpherMedia
     /**
      * Returns a collection of Images associated to media names.
      *
-     * @return Collection
+     * @return Attribute
      */
-    public function images(): Collection
+    public function images(): Attribute
     {
-        return $this->getTransmorpherImages()->mapWithKeys(function (string $mediaName) {
-            return [$mediaName => Image::getInstanceFor($this, $mediaName)];
-        });
+        return Attribute::make(
+            get: fn(): Collection => $this->getImageMediaNames()->mapWithKeys(function (string $mediaName) {
+                return [$mediaName => Image::getInstanceFor($this, $mediaName)];
+            })
+        );
     }
 
     /**
      * Returns a collection of Videos associated to media names.
      *
-     * @return Collection
+     * @return Attribute
      */
-    public function videos(): Collection
+    public function videos(): Attribute
     {
-        return $this->getTransmorpherVideos()->mapWithKeys(function (string $mediaName) {
-            return [$mediaName => Video::getInstanceFor($this, $mediaName)];
-        });
+        return Attribute::make(
+            get: fn(): Collection => $this->getVideoMediaNames()->mapWithKeys(function (string $mediaName) {
+                return [$mediaName => Video::getInstanceFor($this, $mediaName)];
+            })
+        );
     }
 
     /**
@@ -67,7 +72,7 @@ trait HasTransmorpherMedia
      */
     public function image(string $mediaName): ?Image
     {
-        if ($this->getTransmorpherImages()->contains($mediaName)) {
+        if ($this->getImageMediaNames()->contains($mediaName)) {
             return Image::getInstanceFor($this, $mediaName);
         }
 
@@ -82,7 +87,7 @@ trait HasTransmorpherMedia
      */
     public function video(string $mediaName): ?Video
     {
-        if ($this->getTransmorpherVideos()->contains($mediaName)) {
+        if ($this->getVideoMediaNames()->contains($mediaName)) {
             return Video::getInstanceFor($this, $mediaName);
         }
 
@@ -100,17 +105,17 @@ trait HasTransmorpherMedia
     /**
      * @return Collection
      */
-    public function getTransmorpherImages(): Collection
+    public function getImageMediaNames(): Collection
     {
-        return static::$cachedTransmorpherImages ??= $this->getTransmorpherMedia(Image::class, $this->transmorpherImages ?? []);
+        return static::$cachedImageMediaNames ??= $this->getMediaNames(Image::class, $this->transmorpherImages ?? []);
     }
 
     /**
      * @return Collection
      */
-    public function getTransmorpherVideos(): Collection
+    public function getVideoMediaNames(): Collection
     {
-        return static::$cachedTransmorpherVideos ??= $this->getTransmorpherMedia(Video::class, $this->transmorpherVideos ?? []);
+        return static::$cachedVideoMediaNames ??= $this->getMediaNames(Video::class, $this->transmorpherVideos ?? []);
     }
 
     /**
@@ -119,7 +124,7 @@ trait HasTransmorpherMedia
      * @return Collection
      * @throws DuplicateMediaNameException
      */
-    protected function getTransmorpherMedia(string $mediaClass, array $mediaArray): Collection
+    protected function getMediaNames(string $mediaClass, array $mediaArray): Collection
     {
         $mediaMethods = $this->getMediaMethods($mediaClass);
         $loweredMediaMethods = $mediaMethods->map('strtolower');

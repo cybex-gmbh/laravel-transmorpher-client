@@ -110,16 +110,16 @@ The trait `HasTransmorpherMedia` provides convenient methods to access your medi
 
 ```php
 // Retrieve all images as collection, with media name as key and the Image object as value.
-$yourModel->images();
+$yourModel->images;
 
 // Retrieve all videos as collection, with media name as key and the Video object as value.
-$yourModel->videos();
+$yourModel->videos;
 
 // Retrieve a single Image object.
-$yourModel->image('front')
+$yourModel->image('front');
 
 // Retrieve a single Video object.
-$yourModel->video('teaser')
+$yourModel->video('teaser');
 ```
 The instance of the corresponding `Media`-class can then be used to make API calls to the Transmorpher media
 server.
@@ -135,10 +135,10 @@ $image->upload($fileHandle);
 // Transformations are optional and will be included in the URL.
 $image->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
 ```
-The methods `images()` and `videos()` can be used to iterate over all your media for a model for example:
+You can iterate over all your media for a model with `images` and `videos`:
 
 ```html
-@foreach($yourModel->images() as $image)
+@foreach($yourModel->images as $image)
     <img src="{{ $image->getUrl() }}"></img>
 @endforeach
 ```
@@ -214,7 +214,7 @@ Depending on whether you pass a `Transmorpher\Image` or a `Transmorpher\Video`, 
 If you want a more dynamic approach, to display a dropzone for each available image or video, you can use the provided functions for retrieving all media mentioned above.
 
 ```html
-@foreach($yourModel->images() as $image)
+@foreach($yourModel->images as $image)
     <x-transmorpher::dropzone :media="$image"></x-transmorpher::dropzone>
 @endforeach
 ```
