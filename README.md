@@ -1,6 +1,6 @@
 # Laravel Transmorpher Client
 
-A client package for Laravel applications that use the Transmorpher media server.
+A client package for Laravel applications that use the [Transmorpher media server](https://github.com/cybex-gmbh/transmorpher).
 
 The client package provides a Dropzone component, which supports chunked uploads, out of the box.
 
