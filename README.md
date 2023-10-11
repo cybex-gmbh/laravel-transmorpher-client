@@ -230,6 +230,10 @@ There are some validation rules which can be applied for the dropzone component:
 - min/max height *
 - ratio *
 
+> **Warning**
+>
+> As comparisons between floating point numbers can be problematic, large dimensions (>10000px) can cause the ratio to not be 100% accurate.
+
 All those validation rules can be configured in the `transmorpher.php` config file and will be applied to all dropzones.
 
 Additionally, you have the option to specify the validation rules marked with a '*' for a specific dropzone, which will take priority over the rules specified in the config file.

@@ -21,6 +21,7 @@ class Dropzone extends Component
     public int $lastUpdated;
     public array $mediaTypes;
     public array $srcSetTransformations;
+    public ?float $acceptedCalculatedRatio;
     public array $translations;
     public string $stateRoute;
     public string $uploadTokenRoute;
@@ -39,7 +40,7 @@ class Dropzone extends Component
         public ?int $acceptedMaxWidth = null,
         public ?int $acceptedMinHeight = null,
         public ?int $acceptedMaxHeight = null,
-        public ?float $acceptedRatio = null,
+        public ?string $acceptedDisplayRatio = null,
     )
     {
         $this->mediaType = $media->getTransmorpherMedia()->type;
@@ -61,13 +62,14 @@ class Dropzone extends Component
         $this->acceptedMaxWidth ??= $this->media->getMaxWidth();
         $this->acceptedMinHeight ??= $this->media->getMinHeight();
         $this->acceptedMaxHeight ??= $this->media->getMaxHeight();
-        $this->acceptedRatio ??= $this->media->getRatio();
+        $this->acceptedDisplayRatio ??= $this->media->getDisplayRatio();
+        $this->acceptedCalculatedRatio = $this->media->getCalculatedRatio($this->acceptedDisplayRatio);
         $this->translations = trans('transmorpher::dropzone', [
             'minWidth' => $this->acceptedMinWidth ?? 'none',
             'maxWidth' => $this->acceptedMaxWidth ?? 'none',
             'minHeight' => $this->acceptedMinHeight ?? 'none',
             'maxHeight' => $this->acceptedMaxHeight ?? 'none',
-            'ratio' => round($this->acceptedRatio, 2),
+            'ratio' => $this->acceptedDisplayRatio,
         ]);
 
         $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);

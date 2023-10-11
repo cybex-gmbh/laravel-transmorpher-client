@@ -11,6 +11,7 @@ use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Enums\UploadState;
+use Transmorpher\Exceptions\InvalidConfigurationValueException;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Exceptions\TransformationNotFoundException;
 use Transmorpher\Models\TransmorpherMedia;
@@ -403,13 +404,34 @@ abstract class Media
     }
 
     /**
-     * Returns the accepted ratio for this Media for use in e.g. Dropzone validation.
+     * Returns the accepted ratio for this Media as string.
      *
-     * @return float|null
+     * @return string|null
      */
-    public function getRatio(): ?float
+    public function getDisplayRatio(): ?string
     {
         return config(sprintf('transmorpher.upload.%s.validations.dimensions.ratio', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted ratio for this Media as float for use in e.g. Dropzone validation.
+     *
+     * @param string|null $displayRatio
+     * @return float|null
+     * @throws InvalidConfigurationValueException
+     */
+    public function getCalculatedRatio(?string $displayRatio): ?float
+    {
+        if (!$displayRatio) {
+            return null;
+        }
+
+        if (!preg_match('/^(\d+):(\d+)$/', $displayRatio, $matches)) {
+            throw new InvalidConfigurationValueException('ratio', $displayRatio);
+        }
+
+        return $matches[1] / $matches[2];
+
     }
 
     /**

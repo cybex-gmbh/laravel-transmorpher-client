@@ -79,7 +79,8 @@ if (!window.transmorpherScriptLoaded) {
                     file.done(media[transmorpherIdentifier].translations['max_dimensions_exceeded']);
                 } else if ((medium.minWidth && file.width < medium.minWidth) || (medium.minHeight && file.height < medium.minHeight)) {
                     file.done(media[transmorpherIdentifier].translations['min_dimensions_subceeded']);
-                } else if (medium.ratio && (file.width / file.height).toFixed(2) !== Number(medium.ratio).toFixed(2)) {
+                // Since testing floating point values for equality is problematic, we define an upper bound on the rounding error.
+                } else if (medium.ratio && Math.abs(file.width / file.height - medium.ratio) > 0.0000000001) {
                     file.done(media[transmorpherIdentifier].translations['invalid_ratio']);
                 } else {
                     getState(transmorpherIdentifier)

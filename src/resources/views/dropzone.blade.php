@@ -142,7 +142,7 @@
         maxWidth: '{{ $acceptedMaxWidth }}',
         minHeight: '{{ $acceptedMinHeight }}',
         maxHeight: '{{ $acceptedMaxHeight }}',
-        ratio: '{{ $acceptedRatio }}'
+        ratio: '{{ $acceptedCalculatedRatio }}'
     }
 
     setupComponent('{{ $media->getIdentifier() }}');
