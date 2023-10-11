@@ -114,7 +114,6 @@
 <script type="text/javascript">
     mediaTypes = @json($mediaTypes);
     transformations = @json($srcSetTransformations);
-    translations = @json($translations);
     media['{{ $media->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {
@@ -128,6 +127,7 @@
             uploadToken: '{{ $uploadTokenRoute }}',
             setUploadingState: '{{ $setUploadingStateRoute }}'
         },
+        translations: @json($translations),
         webUploadUrl: '{{ $media->getWebUploadUrl() }}',
         mediaType: '{{ $mediaType->value }}',
         chunkSize: {{ $media->getChunkSize() }},
