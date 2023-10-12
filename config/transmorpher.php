@@ -25,9 +25,11 @@ return [
     ],
 
     'upload' => [
+        // Chunk size in mb.
         'chunk_size' => 1 * 1024 * 1024,
         'image' => [
             'validations' => [
+                // Max file size in mb.
                 'max_file_size' => 100,
                 'dimensions' => [
                     'width' => [
@@ -39,6 +41,7 @@ return [
                         'max' => null,
                     ],
                     // Width to height ratio, e.g. '1:1', '1:2', '16:9', ...
+                    // Only integers are allowed.
                     'ratio' => null,
                 ],
                 'mimetypes' => 'image/*',
@@ -46,7 +49,8 @@ return [
         ],
         'video' => [
             'validations' => [
-                'max_file_size' => 4000,
+                // Max file size in mb.
+                'max_file_size' => 10000,
                 'dimensions' => [
                     'width' => [
                         'min' => null,
@@ -57,6 +61,7 @@ return [
                         'max' => null,
                     ],
                     // Width to height ratio, e.g. '1:1', '1:2', '16:9', ...
+                    // Only integers are allowed.
                     'ratio' => null,
                 ],
                 // Somehow video/* doesn't contain the .mkv mimetype.
