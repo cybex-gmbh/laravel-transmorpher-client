@@ -128,10 +128,11 @@ trait HasTransmorpherMedia
     {
         $mediaMethods = $this->getMediaMethods($mediaClass);
         $loweredMediaMethods = $mediaMethods->map('strtolower');
-        $loweredMediaArray = array_map('strtolower', $mediaArray);
+        $loweredMediaNames = collect($mediaArray)->map('strtolower');
+        $duplicatesInArray = $loweredMediaNames->duplicates();
+        $conflictsWithMethods = $loweredMediaMethods->intersect($loweredMediaNames);
 
-        $duplicates = array_diff_key($loweredMediaArray, array_unique($loweredMediaArray));
-        $duplicates = $duplicates ? collect($duplicates) : $loweredMediaMethods->intersect($loweredMediaArray);
+        $duplicates = $conflictsWithMethods->merge($duplicatesInArray)->unique();
 
         if ($duplicates->count()) {
             throw new DuplicateMediaNameException($this::class, $duplicates);
