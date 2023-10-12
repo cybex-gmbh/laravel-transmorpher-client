@@ -6,7 +6,7 @@ return [
     'drop_files_to_upload' => 'Drop files here to upload',
     'error' => 'Error',
     'max_dimensions_exceeded' => 'Maximum image dimensions exceeded (width: :maxWidth, height: :maxHeight).',
-    'max_file_size_exceeded' => 'File is too big ({{filesize}}MiB). Max filesize: {{maxFilesize}}MiB.',
+    'max_file_size_exceeded' => 'File is too large ({{filesize}}MiB). Max filesize: {{maxFilesize}}MiB.',
     'min_dimensions_subceeded' => 'Minimum image dimensions subceeded (width: :minWidth, height: :minHeight).',
     'image_in_process' => 'There is currently an upload in process, do you want to overwrite it?',
     'invalid_file_type' => 'You can\'t upload files of this type.',
