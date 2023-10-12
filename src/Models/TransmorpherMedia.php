@@ -62,6 +62,6 @@ class TransmorpherMedia extends Model
 
     public function getMedia(): Media
     {
-        return $this->type->getMediaClass()::getInstanceFor($this->Transmorphable, $this->media_name);
+        return $this->type->getMediaClass()::for($this->Transmorphable, $this->media_name);
     }
 }

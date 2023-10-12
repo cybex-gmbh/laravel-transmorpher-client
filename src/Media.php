@@ -31,7 +31,7 @@ abstract class Media
      *
      * @return static The Media instance.
      */
-    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $mediaName): static
+    public static function for(HasTransmorpherMediaInterface $model, string $mediaName): static
     {
         return static::$instances[$model::class][$model->getKey()][$mediaName] ??= new static(...func_get_args());
     }

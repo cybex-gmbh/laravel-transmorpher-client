@@ -45,7 +45,7 @@ trait HasTransmorpherMedia
     {
         return Attribute::make(
             get: fn(): Collection => $this->getImageMediaNames()->mapWithKeys(function (string $mediaName) {
-                return [$mediaName => Image::getInstanceFor($this, $mediaName)];
+                return [$mediaName => Image::for($this, $mediaName)];
             })
         );
     }
@@ -59,7 +59,7 @@ trait HasTransmorpherMedia
     {
         return Attribute::make(
             get: fn(): Collection => $this->getVideoMediaNames()->mapWithKeys(function (string $mediaName) {
-                return [$mediaName => Video::getInstanceFor($this, $mediaName)];
+                return [$mediaName => Video::for($this, $mediaName)];
             })
         );
     }
@@ -73,7 +73,7 @@ trait HasTransmorpherMedia
     public function image(string $mediaName): ?Image
     {
         if ($this->getImageMediaNames()->contains($mediaName)) {
-            return Image::getInstanceFor($this, $mediaName);
+            return Image::for($this, $mediaName);
         }
 
         return null;
@@ -88,7 +88,7 @@ trait HasTransmorpherMedia
     public function video(string $mediaName): ?Video
     {
         if ($this->getVideoMediaNames()->contains($mediaName)) {
-            return Video::getInstanceFor($this, $mediaName);
+            return Video::for($this, $mediaName);
         }
 
         return null;
