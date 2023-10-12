@@ -5,7 +5,6 @@ if (!window.transmorpherScriptLoaded) {
     window.Dropzone = Dropzone;
     window.mediaTypes = {};
     window.transformations = {};
-    window.translations = {};
     window.media = [];
 
     const IMAGE = 'IMAGE';
@@ -18,7 +17,7 @@ if (!window.transmorpherScriptLoaded) {
         addConfirmEventListeners(
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
             createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier),
-            1500
+            transmorpherIdentifier
         );
 
         // Start polling if the video is still processing or an upload is in process.
@@ -41,10 +40,9 @@ if (!window.transmorpherScriptLoaded) {
             uploadMultiple: false,
             paramName: 'file',
             uploadToken: null,
-            createImageThumbnails: false,
-            dictDefaultMessage: translations['drop_files_to_upload'],
-            dictFileTooBig: translations['max_file_size_exceeded'],
-            dictInvalidFileType: translations['invalid_file_type'],
+            dictDefaultMessage: media[transmorpherIdentifier].translations['drop_files_to_upload'],
+            dictFileTooBig: media[transmorpherIdentifier].translations['max_file_size_exceeded'],
+            dictInvalidFileType: media[transmorpherIdentifier].translations['invalid_file_type'],
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
@@ -67,7 +65,40 @@ if (!window.transmorpherScriptLoaded) {
                     formData.append('identifier', transmorpherIdentifier);
                 })
             },
+            thumbnail: async function (file) {
+                if (!file.width || !file.height) {
+                    let dimensions = await getMediaDimensions(file, transmorpherIdentifier).catch(error => {
+                        file.done(error);
+                    });
+
+                    file.width = dimensions.width;
+                    file.height = dimensions.height;
+                }
+
+                if ((medium.maxWidth && file.width > medium.maxWidth) || (medium.maxHeight && file.height > medium.maxHeight)) {
+                    file.done(media[transmorpherIdentifier].translations['max_dimensions_exceeded']);
+                } else if ((medium.minWidth && file.width < medium.minWidth) || (medium.minHeight && file.height < medium.minHeight)) {
+                    file.done(media[transmorpherIdentifier].translations['min_dimensions_subceeded']);
+                // Since testing floating point values for equality is problematic, we define an upper bound on the rounding error.
+                } else if (medium.ratio && Math.abs(file.width / file.height - medium.ratio) > 0.0000000001) {
+                    file.done(media[transmorpherIdentifier].translations['invalid_ratio']);
+                } else {
+                    getState(transmorpherIdentifier)
+                        .then(uploadingStateResponse => {
+                            if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
+                                openUploadConfirmModal(
+                                    transmorpherIdentifier,
+                                    createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done)
+                                );
+                            } else {
+                                reserveUploadSlot(transmorpherIdentifier, file.done);
+                            }
+                        })
+                }
+            },
             accept: function (file, done) {
+                file.done = done;
+
                 // Remove previous elements to maintain a clean overlay.
                 this.element.querySelector('.dz-default').style.display = 'none';
 
@@ -76,17 +107,10 @@ if (!window.transmorpherScriptLoaded) {
                     errorElement.remove();
                 }
 
-                getState(transmorpherIdentifier)
-                    .then(uploadingStateResponse => {
-                        if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                            openUploadConfirmModal(
-                                transmorpherIdentifier,
-                                createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, done)
-                            );
-                        } else {
-                            reserveUploadSlot(transmorpherIdentifier, done);
-                        }
-                    })
+                // Dropzone only emits the "thumbnail" event for images.
+                if (!file.type.match(/image.*/)) {
+                    this.emit("thumbnail", file);
+                }
             },
             // Update database when upload was canceled manually.
             canceled: function (file) {
@@ -96,7 +120,7 @@ if (!window.transmorpherScriptLoaded) {
                     }, body: JSON.stringify({
                         response: {
                             state: 'error',
-                            clientMessage: translations['upload_canceled'],
+                            clientMessage: media[transmorpherIdentifier].translations['upload_canceled'],
                             message: this.options.dictUploadCanceled,
                         },
                         http_code: file.xhr?.status
@@ -122,6 +146,53 @@ if (!window.transmorpherScriptLoaded) {
                 );
             },
         });
+    }
+
+    window.getMediaDimensions = function (file, transmorpherIdentifier) {
+        switch (media[transmorpherIdentifier].mediaType) {
+            case mediaTypes[IMAGE]:
+                return getImageDimensions(file);
+            case mediaTypes[VIDEO]:
+                return getVideoDimensions(file)
+        }
+    }
+
+    window.getImageDimensions = function (file, transmorpherIdentifier) {
+        return new Promise((resolve, reject) => {
+            let img = new Image();
+            img.src = URL.createObjectURL(file);
+
+            img.onload = function () {
+                URL.revokeObjectURL(this.src);
+                resolve({
+                    width: this.width,
+                    height: this.height
+                })
+            }
+
+            img.onerror = function () {
+                reject(media[transmorpherIdentifier].translations['validation_error']);
+            }
+        })
+    }
+
+    window.getVideoDimensions = function (file, transmorpherIdentifier) {
+        return new Promise((resolve, reject) => {
+            let video = document.createElement('video');
+            video.src = URL.createObjectURL(file);
+
+            video.onloadedmetadata = function () {
+                URL.revokeObjectURL(this.src);
+                resolve({
+                    width: this.videoWidth,
+                    height: this.videoHeight
+                })
+            }
+
+            video.onerror = function () {
+                reject(media[transmorpherIdentifier].translations['validation_error']);
+            }
+        })
     }
 
     window.startPolling = function (transmorpherIdentifier, uploadToken) {
@@ -335,7 +406,7 @@ if (!window.transmorpherScriptLoaded) {
                         versionEntry.querySelector('.media-preview').remove();
                 }
 
-                addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), 1500);
+                addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), transmorpherIdentifier);
                 versionAge.textContent = getDateForDisplay(new Date(versions[version] * 1000));
 
                 versionList.append(versionEntry);
@@ -522,7 +593,7 @@ if (!window.transmorpherScriptLoaded) {
         let stateInfo = document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge');
 
         displayCardBorderState(transmorpherIdentifier, state)
-        displayStateInformation(stateInfo, state);
+        displayStateInformation(stateInfo, state, transmorpherIdentifier);
 
         if (message) {
             displayDropzoneErrorMessage(transmorpherIdentifier, message);
@@ -532,7 +603,7 @@ if (!window.transmorpherScriptLoaded) {
     }
 
     window.displayModalState = function (transmorpherIdentifier, state, message = null, resetError = true) {
-        displayStateInformation(document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .badge`), state);
+        displayStateInformation(document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .badge`), state, transmorpherIdentifier);
 
         if (message) {
             setModalErrorMessage(transmorpherIdentifier, message);
@@ -541,10 +612,10 @@ if (!window.transmorpherScriptLoaded) {
         }
     }
 
-    window.displayStateInformation = function (stateInfoElement, state) {
+    window.displayStateInformation = function (stateInfoElement, state, transmorpherIdentifier) {
         stateInfoElement.className = '';
         stateInfoElement.classList.add('badge', `badge-${state}`);
-        stateInfoElement.querySelector('span:first-of-type').textContent = translations[state];
+        stateInfoElement.querySelector('span:first-of-type').textContent = media[transmorpherIdentifier].translations[state];
     }
 
     window.displayCardBorderState = function (transmorpherIdentifier, state) {
@@ -677,7 +748,7 @@ if (!window.transmorpherScriptLoaded) {
         );
     }
 
-    window.addConfirmEventListeners = function (button, callback) {
+    window.addConfirmEventListeners = function (button, callback, transmorpherIdentifier) {
         let pressedOnce = false;
         let buttonText = button.textContent;
         let timeOut;
@@ -689,7 +760,7 @@ if (!window.transmorpherScriptLoaded) {
                 pressedOnce = false;
                 clearTimeout(timeOut);
             } else {
-                button.querySelector('span').textContent = translations['press_again_to_confirm'];
+                button.querySelector('span').textContent = media[transmorpherIdentifier].translations['press_again_to_confirm'];
                 pressedOnce = true;
                 timeOut = setTimeout(() => {
                     pressedOnce = false;

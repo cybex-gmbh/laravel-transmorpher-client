@@ -1,462 +1,469 @@
 @import '~dropzone/src/dropzone.scss';
 @import 'variables';
 
-.dropzone {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 2px solid #0000004C;
-  border-radius: 0;
-  padding: 1rem;
+.transmorpher {
+  min-width: 200px;
 
-  @extend .transparency-indicator;
-
-  .dz-message {
-    background-color: $darkgreySemiTransparent;
-    border: 1px dashed black;
-    border-radius: .3rem;
-    margin-top: 1rem;
-    padding: 1rem;
-    margin-bottom: 0;
-
-    .dz-button {
-      background: none;
-      border: none;
-      padding: 0;
-    }
-  }
-
-  .dz-preview {
+  .dropzone {
     width: 100%;
-    min-height: 0;
-    height: 58px;
-    margin: 1rem 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid #0000004C;
+    border-radius: 0;
+    padding: 1rem;
 
-    .dz-image, .dz-details, .dz-success-mark, .dz-error-mark {
-      display: none;
+    @extend .transparency-indicator;
+
+    .dz-message {
+      background-color: $darkgreySemiTransparent;
+      border: 1px dashed black;
+      border-radius: .3rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      margin-bottom: 0;
+
+      .dz-button {
+        background: none;
+        border: none;
+        padding: 0;
+      }
     }
 
-    .dz-progress {
-      z-index: 1
+    .dz-preview {
+      width: 100%;
+      min-height: 0;
+      height: 58px;
+      margin: 1rem 0 0;
+
+      .dz-image, .dz-details, .dz-success-mark, .dz-error-mark {
+        display: none;
+      }
+
+      .dz-progress {
+        z-index: 1
+      }
+    }
+
+    .dz-preview.dz-image-preview {
+      background: transparent;
     }
   }
 
-  .dz-preview.dz-image-preview {
-    background: transparent;
+  .transparency-indicator {
+    background-image: linear-gradient(135deg, $lightgrey 25%, $grey 0, $grey 50%, $lightgrey 0, $lightgrey 75%, $grey 0, $grey);
+    background-size: 2rem 2rem;
   }
-}
 
-.transparency-indicator {
-  background-image: linear-gradient(135deg, $lightgrey 25%, $grey 0, $grey 50%, $lightgrey 0, $lightgrey 75%, $grey 0, $grey);
-  background-size: 2rem 2rem;
-}
+  .box-shadow {
+    box-shadow: 0 1px 1px 0 rgba(60, 75, 100, .14), 0 2px 1px -1px rgba(60, 75, 100, .12), 0 1px 3px 0 rgba(60, 75, 100, .2);
+  }
 
-.box-shadow {
-  box-shadow: 0 1px 1px 0 rgba(60, 75, 100, .14), 0 2px 1px -1px rgba(60, 75, 100, .12), 0 1px 3px 0 rgba(60, 75, 100, .2);
-}
+  .box-shadow-inset {
+    box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, .14), inset 0 2px 1px -1px rgba(60, 75, 100, .12), inset 0 1px 3px 0 rgba(60, 75, 100, .2);
+  }
 
-.box-shadow-inset {
-  box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, .14), inset 0 2px 1px -1px rgba(60, 75, 100, .12), inset 0 1px 3px 0 rgba(60, 75, 100, .2);
-}
+  .video-transmorpher, .image-transmorpher {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    position: relative;
 
-.video-transmorpher, .image-transmorpher {
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  position: relative;
+    & img:first-of-type {
+      height: 100%;
+    }
+  }
 
-  & img:first-of-type {
+  .dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *), .full-size-link {
+    cursor: zoom-in;
+  }
+
+  .full-size-link {
+    width: 100%;
     height: 100%;
   }
-}
-
-.dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *), .full-size-link {
-  cursor: zoom-in;
-}
-
-.full-size-link {
-  width: 100%;
-  height: 100%;
-}
-
-.card {
-  min-width: 300px;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid $cardBorder;
-  border-radius: .25em;
-  background-color: $darkgrey;
-  margin-bottom: 1.5rem;
-
-  @extend .box-shadow;
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: .75rem 1.25rem;
-    border-bottom: 1px solid $grey;
-
-    > div {
-      display: flex;
-      align-items: center;
-      gap: .2rem;
-    }
-
-    .details {
-      display: flex;
-      gap: .3rem;
-    }
-  }
-
-  .card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1 1 auto;
-    padding: 0 1.25rem 1.25rem;
-
-    .badge {
-      margin: .3rem;
-    }
-  }
-}
-
-.badge {
-  padding: 1px .6rem;
-  border-radius: .3rem;
-}
-
-.badge-processing {
-  background-color: $processing;
-
-  & > span:first-of-type {
-    @extend .loading-indicator
-  }
-}
-
-.badge-success {
-  background-color: $success;
-}
-
-.badge-error {
-  background-color: $error;
-}
-
-.badge-uploading {
-  background-color: $uploading;
-
-  & > span:first-of-type {
-    @extend .loading-indicator
-  }
-}
-
-.border-success {
-  border-color: $success;
-}
-
-.border-error {
-  border-color: $error;
-}
-
-.border-processing {
-  border-color: $warning;
-}
-
-.border-uploading {
-  border-color: $uploading;
-}
-
-.d-hidden {
-  visibility: hidden;
-}
-
-.d-none {
-  display: none;
-}
-
-.modal {
-  position: fixed;
-  z-index: 10;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
-}
-
-.uc-modal {
-  justify-content: center;
-  align-items: center;
 
   .card {
-    width: fit-content;
-  }
-}
-
-.current-version-age {
-  text-align: center;
-}
-
-.version-list {
-  height: 100%;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  max-height: 100%;
-  padding: .6rem;
-  border: 1px solid $cardBorder;
-  border-radius: .3rem;
-  overflow: auto;
-
-  @extend .box-shadow-inset;
-
-  hr {
-    margin: 0 0 .6rem;
-  }
-
-  button {
-    @extend .button;
-
-    background-color: $restoreButton;
-  }
-
-  ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-
-    @media screen and (max-width: 935px) {
-      justify-content: center;
-    }
-  }
-
-  .card-header {
-    justify-content: center;
-  }
-
-  .version-entry {
-    max-width: 300px;
-
-    .card .card-body {
-      display: flex;
-      flex-direction: column;
-
-      .media-preview {
-        padding: 1rem 1rem 56.25%;
-      }
-
-      .confirm-restore {
-        margin: 1rem
-      }
-    }
-  }
-}
-
-.icon {
-  height: 20px;
-  width: 20px;
-
-  &.enlarge-icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    filter: drop-shadow(0px 0px 1px #000);
-    height: 30px;
-    width: 30px;
-  }
-}
-
-.error-display {
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  position: absolute;
-  padding: .3rem;
-  background-color: $error;
-  border: 1px solid $error;
-  border-radius: .15rem;
-  box-shadow: 0 1px 1px 0 rgb(60, 75, 100), 0 2px 1px -1px rgb(60, 75, 100), 0 1px 3px 0 rgb(60, 75, 100);
-
-  .error-message {
-    color: white;
-    text-shadow: 1px 1px 2px black;
-  }
-
-  .btn-close {
-    position: absolute;
-    margin: 0 .2rem;
-    font-size: .8rem;
-    top: 0;
-    right: 0;
-    font-weight: bold;
-    cursor: pointer;
-  }
-}
-
-.media-preview {
-  position: relative;
-  padding-bottom: 56.25%;
-  width: 100%;
-}
-
-.media-display {
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-
-.button {
-  padding: .2rem 1rem;
-  border: 0;
-  border-radius: 0.25rem;
-
-  &:hover {
-    filter: brightness(.95);
-  }
-}
-
-.loading-indicator {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-
-  &:after {
-    content: " ";
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    border: 2px solid;
-    border-color: #000 transparent #000 transparent;
-    animation: loading-indicator 1.2s linear infinite;
-  }
-
-  @keyframes loading-indicator {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-}
-
-.more-information-modal {
-  justify-content: center;
-  align-items: center;
-
-  .card {
-    width: 95%;
-    height: 95%;
-    margin: 0;
     display: flex;
     flex-direction: column;
+    border: 1px solid $cardBorder;
+    border-radius: .25em;
+    background-color: $darkgrey;
+    margin-bottom: 1.5rem;
+
+    @extend .box-shadow;
 
     .card-header {
-      .error-message {
-        color: $error;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .75rem 1.25rem;
+      border-bottom: 1px solid $grey;
+
+      > div {
+        display: flex;
+        align-items: center;
+        gap: .2rem;
+      }
+
+      .details {
+        display: flex;
+        gap: .3rem;
       }
     }
 
     .card-body {
       display: flex;
-      flex-direction: row;
-      padding: 1rem;
+      flex-direction: column;
+      align-items: center;
+      flex: 1 1 auto;
+      padding: 0 1.25rem 1.25rem;
 
-      .card-side {
+      .badge {
+        margin: .3rem;
+      }
+    }
+  }
+
+  .badge {
+    padding: 1px .6rem;
+    border-radius: .3rem;
+  }
+
+  .badge-processing {
+    background-color: $processing;
+
+    & > span:first-of-type {
+      @extend .loading-indicator
+    }
+  }
+
+  .badge-success {
+    background-color: $success;
+  }
+
+  .badge-error {
+    background-color: $error;
+  }
+
+  .badge-uploading {
+    background-color: $uploading;
+
+    & > span:first-of-type {
+      @extend .loading-indicator
+    }
+  }
+
+  .border-success {
+    border-color: $success;
+  }
+
+  .border-error {
+    border-color: $error;
+  }
+
+  .border-processing {
+    border-color: $warning;
+  }
+
+  .border-uploading {
+    border-color: $uploading;
+  }
+
+  .d-hidden {
+    visibility: hidden;
+  }
+
+  .d-none {
+    display: none;
+  }
+
+  .modal {
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+  }
+
+  .uc-modal {
+    justify-content: center;
+    align-items: center;
+
+    .card {
+      width: fit-content;
+    }
+  }
+
+  .current-version-age {
+    text-align: center;
+  }
+
+  .version-list {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    max-height: 100%;
+    padding: .6rem;
+    border: 1px solid $cardBorder;
+    border-radius: .3rem;
+    overflow: auto;
+
+    @extend .box-shadow-inset;
+
+    hr {
+      margin: 0 0 .6rem;
+    }
+
+    button {
+      @extend .button;
+
+      background-color: $restoreButton;
+    }
+
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 0;
+      list-style: none;
+
+      @media screen and (max-width: 935px) {
+        justify-content: center;
+      }
+    }
+
+    .card-header {
+      justify-content: center;
+    }
+
+    .version-entry {
+      max-width: 300px;
+
+      .card .card-body {
         display: flex;
         flex-direction: column;
-        height: 100%;
-        width: 25%;
-        padding-right: 1rem;
 
-        .badge {
-          text-align: center;
-          margin-bottom: 1rem;
+        .media-preview {
+          padding: 1rem 1rem 56.25%;
+        }
 
-          & span {
-            justify-content: center;
+        .confirm-restore {
+          margin: 1rem
+        }
+      }
+    }
+  }
+
+  .icon {
+    height: 20px;
+    width: 20px;
+
+    &.enlarge-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      filter: drop-shadow(0px 0px 1px #000);
+      height: 30px;
+      width: 30px;
+    }
+  }
+
+  .error-display {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    position: absolute;
+    padding: .3rem;
+    background-color: $error;
+    border: 1px solid $error;
+    border-radius: .15rem;
+    box-shadow: 0 1px 1px 0 rgb(60, 75, 100), 0 2px 1px -1px rgb(60, 75, 100), 0 1px 3px 0 rgb(60, 75, 100);
+
+    .error-message {
+      font-size: .875rem;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    .btn-close {
+      position: absolute;
+      margin: 0 .2rem;
+      font-size: .8rem;
+      top: 0;
+      right: 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+
+  .media-preview {
+    position: relative;
+    padding-bottom: 56.25%;
+    width: 100%;
+  }
+
+  .media-display {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  .button {
+    padding: .2rem 1rem;
+    border: 0;
+    border-radius: 0.25rem;
+
+    &:hover {
+      filter: brightness(.95);
+    }
+  }
+
+  .loading-indicator {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+
+    &:after {
+      content: " ";
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      border: 2px solid;
+      border-color: #000 transparent #000 transparent;
+      animation: loading-indicator 1.2s linear infinite;
+    }
+
+    @keyframes loading-indicator {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  }
+
+  .more-information-modal {
+    justify-content: center;
+    align-items: center;
+
+    .card {
+      width: 95%;
+      min-width: 300px;
+      height: 95%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+
+      .card-header {
+        .error-message {
+          color: $error;
+        }
+      }
+
+      .card-body {
+        display: flex;
+        flex-direction: row;
+        padding: 1rem;
+
+        .card-side {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          width: 25%;
+          padding-right: 1rem;
+
+          .badge {
+            text-align: center;
+            margin-bottom: 1rem;
+
+            & span {
+              justify-content: center;
+            }
+          }
+
+          .media-name {
+            display: flex;
+            gap: .3rem;
+            align-items: center;
+          }
+
+          .media-preview {
+            @extend .transparency-indicator, .box-shadow-inset;
+          }
+
+          .button {
+            align-self: center;
           }
         }
 
-        .media-name {
-          display: flex;
-          gap: .3rem;
+        .media-display {
+          flex-direction: column;
           align-items: center;
-        }
-
-        .media-preview {
-          @extend .transparency-indicator, .box-shadow-inset;
-        }
-
-        .button {
-          align-self: center;
-        }
-      }
-
-      .media-display {
-        flex-direction: column;
-        align-items: center;
-        padding: 1rem;
-      }
-
-      .card-main {
-        position: relative;
-        padding: .5rem;
-        width: 75%;
-        height: 100%
-      }
-    }
-  }
-
-  @media screen and (max-width: 935px) {
-    .card {
-      .card-body {
-        flex-direction: column;
-
-
-        .card-side {
-          width: 100%;
-          border-right: none;
-          padding-right: 0;
+          padding: 1rem;
         }
 
         .card-main {
-          margin-top: 2rem;
-          width: 100%;
-          padding: 0;
+          position: relative;
+          padding: .5rem;
+          width: 75%;
+          height: 100%
+        }
+      }
+    }
+
+    @media screen and (max-width: 935px) {
+      .card {
+        .card-body {
+          flex-direction: column;
+
+
+          .card-side {
+            width: 100%;
+            border-right: none;
+            padding-right: 0;
+          }
+
+          .card-main {
+            margin-top: 2rem;
+            width: 100%;
+            padding: 0;
+          }
         }
       }
     }
   }
-}
 
-.d-flex {
-  display: flex;
-}
-
-.button-confirm {
-  display: flex;
-  align-items: center;
-  gap: .3rem;
-
-  img {
-    pointer-events: none;
+  .d-flex {
+    display: flex;
   }
-}
 
-.confirm-delete {
-  margin-top: 1rem;
-  background-color: $error;
-}
+  .button-confirm {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
 
-.confirm-restore {
-  background-color: $restoreButton;
+    img {
+      pointer-events: none;
+    }
+  }
+
+  .confirm-delete {
+    margin-top: 1rem;
+    background-color: $error;
+  }
+
+  .confirm-restore {
+    background-color: $restoreButton;
+  }
 }

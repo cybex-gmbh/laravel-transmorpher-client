@@ -21,6 +21,7 @@ class Dropzone extends Component
     public int $lastUpdated;
     public array $mediaTypes;
     public array $srcSetTransformations;
+    public ?float $acceptedCalculatedRatio;
     public array $translations;
     public string $stateRoute;
     public string $uploadTokenRoute;
@@ -32,7 +33,15 @@ class Dropzone extends Component
     public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
 
-    public function __construct(public Media $media)
+    public function __construct(
+        public Media $media,
+        public ?string $width = null,
+        public ?int $acceptedMinWidth = null,
+        public ?int $acceptedMaxWidth = null,
+        public ?int $acceptedMinHeight = null,
+        public ?int $acceptedMaxHeight = null,
+        public ?string $acceptedDisplayRatio = null,
+    )
     {
         $this->mediaType = $media->getTransmorpherMedia()->type;
         $this->isProcessing = $media->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
@@ -49,7 +58,19 @@ class Dropzone extends Component
             '600w' => Transformation::WIDTH->getUrlRepresentation(600),
             '900w' => Transformation::WIDTH->getUrlRepresentation(900),
         ];
-        $this->translations = trans('transmorpher::dropzone');
+        $this->acceptedMinWidth ??= $this->media->getMinWidth();
+        $this->acceptedMaxWidth ??= $this->media->getMaxWidth();
+        $this->acceptedMinHeight ??= $this->media->getMinHeight();
+        $this->acceptedMaxHeight ??= $this->media->getMaxHeight();
+        $this->acceptedDisplayRatio ??= $this->media->getDisplayRatio();
+        $this->acceptedCalculatedRatio = $this->media->getCalculatedRatio($this->acceptedDisplayRatio);
+        $this->translations = trans('transmorpher::dropzone', [
+            'minWidth' => $this->acceptedMinWidth ?? 'none',
+            'maxWidth' => $this->acceptedMaxWidth ?? 'none',
+            'minHeight' => $this->acceptedMinHeight ?? 'none',
+            'maxHeight' => $this->acceptedMaxHeight ?? 'none',
+            'ratio' => $this->acceptedDisplayRatio,
+        ]);
 
         $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);

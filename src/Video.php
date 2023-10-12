@@ -66,17 +66,6 @@ class Video extends Media
     }
 
     /**
-     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
-     *
-     * @return string
-     */
-    public function getAcceptedFileTypes(): string
-    {
-        // Somehow video/* doesn't contain the .mkv mimetype.
-        return 'video/*,video/x-matroska';
-    }
-
-    /**
      * Sends the request to reserve an upload slot to the Transmorpher media server API.
      * For videos, a callback URL has to be provided.
      *

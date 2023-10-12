@@ -11,6 +11,7 @@ use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Enums\UploadState;
+use Transmorpher\Exceptions\InvalidConfigurationValueException;
 use Transmorpher\Exceptions\InvalidIdentifierException;
 use Transmorpher\Exceptions\TransformationNotFoundException;
 use Transmorpher\Models\TransmorpherMedia;
@@ -30,7 +31,7 @@ abstract class Media
      *
      * @return static The Media instance.
      */
-    public static function getInstanceFor(HasTransmorpherMediaInterface $model, string $mediaName): static
+    public static function for(HasTransmorpherMediaInterface $model, string $mediaName): static
     {
         return static::$instances[$model::class][$model->getKey()][$mediaName] ??= new static(...func_get_args());
     }
@@ -50,13 +51,6 @@ abstract class Media
      * @return void
      */
     public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
-
-    /**
-     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
-     *
-     * @return string
-     */
-    public abstract function getAcceptedFileTypes(): string;
 
     /**
      * @return string
@@ -88,7 +82,7 @@ abstract class Media
      *
      * @return array The Transmorpher response.
      */
-    public function upload($fileHandle): array
+    public function upload($fileHandle, string $fileName = null): array
     {
         // There is no type hint for resource.
         if (!is_resource($fileHandle)) {
@@ -110,7 +104,7 @@ abstract class Media
                 $chunk = fread($fileHandle, $chunkSize);
 
                 $response = $this->configureApiRequest()
-                    ->attach('file', $chunk, basename(stream_get_meta_data($fileHandle)['uri']))
+                    ->attach('file', $chunk, $fileName ?: basename(stream_get_meta_data($fileHandle)['uri']))
                     ->post(
                         TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
                             'identifier' => $this->getIdentifier(),
@@ -123,8 +117,6 @@ abstract class Media
             $clientResponse = $this->getClientResponseFromResponse($response);
         } catch (Exception $exception) {
             $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
-        } finally {
-            fclose($fileHandle);
         }
 
         return $this->upload->handleStateUpdate($clientResponse);
@@ -358,7 +350,88 @@ abstract class Media
      */
     public function getMaxFileSize(): int
     {
-        return config(sprintf('transmorpher.upload.%s.max_file_size', $this->type->value));
+        return config(sprintf('transmorpher.upload.%s.validations.max_file_size', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted file mimetypes for this Media for use in e.g. Dropzone validation.
+     *
+     * @return string
+     */
+    public function getAcceptedFileTypes(): string
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.mimetypes', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted min width for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMinWidth(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.width.min', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted max width for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMaxWidth(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.width.max', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted min height for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMinHeight(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.height.min', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted max height for this Media for use in e.g. Dropzone validation.
+     *
+     * @return int|null
+     */
+    public function getMaxHeight(): ?int
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.height.max', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted ratio for this Media as string.
+     *
+     * @return string|null
+     */
+    public function getDisplayRatio(): ?string
+    {
+        return config(sprintf('transmorpher.upload.%s.validations.dimensions.ratio', $this->type->value));
+    }
+
+    /**
+     * Returns the accepted ratio for this Media as float for use in e.g. Dropzone validation.
+     *
+     * @param string|null $displayRatio
+     * @return float|null
+     * @throws InvalidConfigurationValueException
+     */
+    public function getCalculatedRatio(?string $displayRatio): ?float
+    {
+        if (!$displayRatio) {
+            return null;
+        }
+
+        if (!preg_match('/^(\d+):(\d+)$/', $displayRatio, $matches)) {
+            throw new InvalidConfigurationValueException('ratio', $displayRatio);
+        }
+
+        return $matches[1] / $matches[2];
+
     }
 
     /**

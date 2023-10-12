@@ -1,6 +1,6 @@
 # Laravel Transmorpher Client
 
-A client package for Laravel applications that use the Transmorpher media server.
+A client package for Laravel applications that use the [Transmorpher media server](https://github.com/cybex-gmbh/transmorpher).
 
 The client package provides a Dropzone component, which supports chunked uploads, out of the box.
 
@@ -90,46 +90,57 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 }
 ```
 
-To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define
-a method for each image or video you want the model to have.
-
-Images and Videos are identified by a media name, for which the function name is used in the following examples.
-
-For images you will have to return an instance of a `Transmorpher\Image`:
+To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define specific array properties.
+Images and Videos are registered in those arrays by a media name.
 
 ```php
-public function imageFrontView(): Image
-{
-    return Image::getInstanceFor($this, __FUNCTION__);
-}
+protected array $transmorpherImages = [
+    'front',
+    'back'
+];
 
-public function imageSideView(): Image
-{
-    return Image::getInstanceFor($this, __FUNCTION__);
-}
+protected array $transmorpherVideos = [
+    'teaser'
+];
 ```
 
-For videos you will have to return an instance of a `Transmorpher\Video`:
+**NOTE:** These property names are not replaceable since they are expected by the `HasTransmorpherMedia` trait. 
+
+The trait `HasTransmorpherMedia` provides convenient methods to access your media.
 
 ```php
-public function video(): Video
-{
-    return Video::getInstanceFor($this, __FUNCTION__);
-}
-```
+// Retrieve all images as collection, with media name as key and the Image object as value.
+$yourModel->images;
 
+// Retrieve all videos as collection, with media name as key and the Video object as value.
+$yourModel->videos;
+
+// Retrieve a single Image object.
+$yourModel->image('front');
+
+// Retrieve a single Video object.
+$yourModel->video('teaser');
+```
 The instance of the corresponding `Media`-class can then be used to make API calls to the Transmorpher media
 server.
 
 ```php
-$image = $yourModel->imageFrontView();
+// Retrieve the 'back' Image instance.
+$image = $yourModel->image('back');
 
 // Upload an image to the media server.
 $image->upload($fileHandle);
 
 // Get the public URL of the image for retrieving a derivative.
-// Transformations are optional and will be included in the URL. 
+// Transformations are optional and will be included in the URL.
 $image->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
+```
+You can iterate over all your media for a model with `images` and `videos`:
+
+```html
+@foreach($yourModel->images as $image)
+    <img src="{{ $image->getUrl() }}"></img>
+@endforeach
 ```
 
 #### Identifier
@@ -144,7 +155,7 @@ Instead of using the morph alias, you can add the property `$transmorpherAlias` 
 ```php
 class YourModel extends Model implements HasTransmorpherMediaInterface
 {
-    use HasTransmorpherMedia
+    use HasTransmorpherMedia;
    
     protected string $transmorpherAlias = 'yourAlias';
     
@@ -157,30 +168,7 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 > **Warning**
 > 
 > The alias is not intended to be ever changed, as you change the identifier and therefore lose the access to your version history.
-> The images of the old identifier will still be accessible from the public, but the client cannot associate them to its model. 
-
-#### Dynamic images & videos
-
-If you need a more dynamic approach to defining images or videos for a model, you can also define an array and use the methods which are provided by the `HasTransmorpherMedia`
-trait.
-
-```php
-protected array $transmorpherImages = [
-    'frontView',
-    'sideView',
-];
-
-protected array $transmorpherVideos = [];
-```
-
-The trait needs these properties for the methods `images()` and `videos()`, which will return a collection with the media names as key and the corresponding `Media`-class as value.
-This can be used to iterate over all images for a model for example:
-
-```html
-@foreach($yourModel->images() as $image)
-    <img src="{{ $image->getUrl() }}"></img>
-@endforeach
-```
+> The images of the old identifier will still be accessible from the public, but the client cannot associate them to its model.
 
 ## Dropzone Blade component & assets
 
@@ -214,19 +202,44 @@ php artisan vendor:publish --tag=transmorpher.views
 To use the dropzone component in a template, you can simply include it like this:
 
 ```html
-<x-transmorpher::dropzone :media="$yourModel->imageFrontView()"></x-transmorpher::dropzone>
+<x-transmorpher::dropzone :media="$yourModel->image('front')"></x-transmorpher::dropzone>
 ```
+
+**_NOTE:_** You can optionally define a fixed width by setting the width attribute (e.g. `width="300px"`).
 
 Depending on whether you pass a `Transmorpher\Image` or a `Transmorpher\Video`, the component will function as your upload form for images or videos.
 
 #### Dynamic usage
 
-If you want a more dynamic approach, to display a dropzone for each available image or video, you can use the dynamic way of defining images and videos mentioned above.
+If you want a more dynamic approach, to display a dropzone for each available image or video, you can use the provided functions for retrieving all media mentioned above.
 
 ```html
-@foreach($yourModel->images() as $image)
+@foreach($yourModel->images as $image)
     <x-transmorpher::dropzone :media="$image"></x-transmorpher::dropzone>
 @endforeach
+```
+
+#### Validation
+
+**NOTE:** This is no security feature and will only be checked in the frontend.
+
+There are some validation rules which can be applied for the dropzone component:
+- accepted file types
+- max file size
+- min/max width *
+- min/max height *
+- ratio *
+
+> **Warning**
+>
+> As comparisons between floating point numbers can be problematic, large dimensions (>10000px) can cause the ratio to not be 100% accurate.
+
+All those validation rules can be configured in the `transmorpher.php` config file and will be applied to all dropzones.
+
+Additionally, you have the option to specify the validation rules marked with a '*' for a specific dropzone, which will take priority over the rules specified in the config file.
+
+```html
+<x-transmorpher::dropzone :media="$image" acceptedMinWidth="1920" acceptedMinHeight="1080" :acceptedRatio="16/9"></x-transmorpher::dropzone>
 ```
 
 ## Development
