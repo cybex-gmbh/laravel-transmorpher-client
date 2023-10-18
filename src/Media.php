@@ -287,7 +287,7 @@ abstract class Media
      */
     public function getIdentifier(): string
     {
-        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->mediaName, $this->model->getKey());
+        return sprintf('%s-%s-%s', $this->model->getTransmorpherAlias(), $this->model->getKey(), $this->mediaName);
     }
 
     /**
