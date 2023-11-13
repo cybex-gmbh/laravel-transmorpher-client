@@ -3,6 +3,12 @@
 return [
     'client_name' => env('TRANSMORPHER_CLIENT_NAME'),
 
+    // The middleware applied to routes provided by this package.
+    'routeMiddleware' => [
+        'web',
+        'auth'
+    ],
+
     'api' => [
         // Optionally specify the Transmorpher API version which should be used. For supported versions check the SupportedApiVersion enum.
         'version' => env('TRANSMORPHER_API_VERSION', 1),
