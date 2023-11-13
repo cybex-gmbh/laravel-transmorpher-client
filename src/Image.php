@@ -2,6 +2,7 @@
 
 namespace Transmorpher;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
@@ -80,6 +81,24 @@ class Image extends Media
     public function getThumbnailUrl(): string
     {
         return $this->getUrl(['height' => 150]);
+    }
+
+    /**
+     * Return the full size url for a specified version.
+     * If no version is specified, the current version is used.
+     *
+     * @param int|null $versionNumber
+     * @return string
+     */
+    public function getFullSizeUrl(int $versionNumber = null): string
+    {
+        if ($this->transmorpherMedia->is_ready && $this->transmorpherMedia->public_path) {
+            try {
+                return route('transmorpherGetOriginal', [$this->transmorpherMedia->getKey(), $versionNumber ?? $this->getVersions()['currentVersion']]);
+            } catch (ConnectionException $exception) {}
+        }
+
+        return $this->getPlaceholderUrl();
     }
 
     /**

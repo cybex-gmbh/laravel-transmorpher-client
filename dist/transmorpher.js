@@ -220,8 +220,18 @@ if (!window.transmorpherScriptLoaded) {
               displayState(transmorpherIdentifier, 'success');
               resetAgeElement(transmorpherIdentifier);
 
-              // Display the newly processed media and update links, also hide the placeholder image.
-              updateMediaDisplay(transmorpherIdentifier, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
+              // Get current version to update the link to the full size image.
+              fetch(media[transmorpherIdentifier].routes.getVersions, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              }).then(function (response) {
+                return response.json();
+              }).then(function (versionInformation) {
+                // Display the newly processed media and update links, also hide the placeholder image.
+                updateMediaDisplay(transmorpherIdentifier, versionInformation.currentVersion, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
+              });
               updateVersionInformation(transmorpherIdentifier);
             }
             break;
@@ -301,7 +311,7 @@ if (!window.transmorpherScriptLoaded) {
       switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           // Set the newly uploaded image as display image.
-          updateImageDisplay(transmorpherIdentifier, uploadResult.public_path, uploadResult.version);
+          updateImageDisplay(transmorpherIdentifier, uploadResult.version, uploadResult.public_path, uploadResult.version);
           break;
         case mediaTypes[VIDEO]:
           startPolling(transmorpherIdentifier, uploadToken);
@@ -369,7 +379,7 @@ if (!window.transmorpherScriptLoaded) {
       switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentVersion] * 1000));
-          updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion);
+          updateImageDisplay(transmorpherIdentifier, versionInformation.currentVersion, versionInformation.publicPath, versionInformation.currentVersion);
           break;
         case mediaTypes[VIDEO]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
@@ -436,7 +446,7 @@ if (!window.transmorpherScriptLoaded) {
         updateVersionInformation(transmorpherIdentifier);
         switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-            updateMediaDisplay(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version);
+            updateMediaDisplay(transmorpherIdentifier, setVersionResult.version, setVersionResult.public_path, setVersionResult.version);
             break;
           case mediaTypes[VIDEO]:
             startPolling(transmorpherIdentifier, setVersionResult.upload_token);
@@ -482,23 +492,23 @@ if (!window.transmorpherScriptLoaded) {
       }
     });
   };
-  window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
-    var videoUrl = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  window.updateMediaDisplay = function (transmorpherIdentifier, version, publicPath, cacheKiller) {
+    var videoUrl = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
     switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
-        updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
+        updateImageDisplay(transmorpherIdentifier, version, publicPath, cacheKiller);
         break;
       case mediaTypes[VIDEO]:
         updateVideoDisplay(transmorpherIdentifier, videoUrl);
         break;
     }
   };
-  window.updateImageDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
+  window.updateImageDisplay = function (transmorpherIdentifier, version, publicPath, cacheKiller) {
     var imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
     imgElements.forEach(function (image) {
       image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
       image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
-      image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+      image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, version);
 
       // Show enlarge icon.
       image.nextElementSibling.classList.remove('d-hidden');
@@ -554,9 +564,9 @@ if (!window.transmorpherScriptLoaded) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
     return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "/").concat(transformations, "?c=").concat(cacheKiller);
   };
-  window.getFullsizeUrl = function (transmorpherIdentifier, path, cacheKiller) {
+  window.getFullsizeUrl = function (transmorpherIdentifier, version) {
     var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "?c=").concat(cacheKiller);
+    return "".concat(media[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
   };
   window.displayState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;

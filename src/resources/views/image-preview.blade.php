@@ -1,5 +1,5 @@
 <div class="media-display">
-    <a class="full-size-link" target="_blank" href="{{ $media->getUrl() }}">
+    <a class="full-size-link" target="_blank" href="{{ $media->getFullSizeUrl() }}">
         <div class="dz-image image-transmorpher">
             <img data-delivery-url="{{ $media->getDeliveryUrl() }}"
                  data-placeholder-url="{{ $media->getPlaceholderUrl() }}"

@@ -217,8 +217,18 @@ if (!window.transmorpherScriptLoaded) {
                         displayState(transmorpherIdentifier, 'success');
                         resetAgeElement(transmorpherIdentifier);
 
-                        // Display the newly processed media and update links, also hide the placeholder image.
-                        updateMediaDisplay(transmorpherIdentifier, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
+                        // Get current version to update the link to the full size image.
+                        fetch(media[transmorpherIdentifier].routes.getVersions, {
+                            method: 'GET', headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        }).then(response => {
+                            return response.json();
+                        }).then(versionInformation => {
+                            // Display the newly processed media and update links, also hide the placeholder image.
+                            updateMediaDisplay(transmorpherIdentifier, versionInformation.currentVersion, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
+                        });
+
                         updateVersionInformation(transmorpherIdentifier);
                     }
                         break;
@@ -295,6 +305,7 @@ if (!window.transmorpherScriptLoaded) {
                 case mediaTypes[IMAGE]:
                     // Set the newly uploaded image as display image.
                     updateImageDisplay(transmorpherIdentifier,
+                        uploadResult.version,
                         uploadResult.public_path,
                         uploadResult.version
                     );
@@ -372,7 +383,7 @@ if (!window.transmorpherScriptLoaded) {
             switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentVersion]) * 1000));
-                    updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion)
+                    updateImageDisplay(transmorpherIdentifier, versionInformation.currentVersion, versionInformation.publicPath, versionInformation.currentVersion)
                     break;
                 case mediaTypes[VIDEO]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000));
@@ -443,6 +454,7 @@ if (!window.transmorpherScriptLoaded) {
                     case mediaTypes[IMAGE]:
                         updateMediaDisplay(
                             transmorpherIdentifier,
+                            setVersionResult.version,
                             setVersionResult.public_path,
                             setVersionResult.version
                         );
@@ -495,10 +507,10 @@ if (!window.transmorpherScriptLoaded) {
         })
     }
 
-    window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller, videoUrl = null) {
+    window.updateMediaDisplay = function (transmorpherIdentifier, version, publicPath, cacheKiller, videoUrl = null) {
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
-                updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
+                updateImageDisplay(transmorpherIdentifier, version, publicPath, cacheKiller);
                 break;
             case mediaTypes[VIDEO]:
                 updateVideoDisplay(transmorpherIdentifier, videoUrl);
@@ -506,13 +518,13 @@ if (!window.transmorpherScriptLoaded) {
         }
     }
 
-    window.updateImageDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
+    window.updateImageDisplay = function (transmorpherIdentifier, version, publicPath, cacheKiller) {
         let imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
 
         imgElements.forEach(image => {
             image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
             image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
-            image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+            image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, version);
 
             // Show enlarge icon.
             image.nextElementSibling.classList.remove('d-hidden');
@@ -578,10 +590,10 @@ if (!window.transmorpherScriptLoaded) {
         return `${imgElement.dataset.deliveryUrl}/${path}/${transformations}?c=${cacheKiller}`;
     }
 
-    window.getFullsizeUrl = function (transmorpherIdentifier, path, cacheKiller) {
+    window.getFullsizeUrl = function (transmorpherIdentifier, version) {
         let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`);
 
-        return `${imgElement.dataset.deliveryUrl}/${path}?c=${cacheKiller}`;
+        return `${media[transmorpherIdentifier].routes.getOriginal}/${version}`;
     }
 
     window.displayState = function (transmorpherIdentifier, state, message = null, resetError = true) {
