@@ -30,6 +30,8 @@ php artisan vendor:publish --tag=transmorpher.config
 
 There you can configure values such as the route to which the Transmorpher media server sends information after transcoding a video.
 
+By default, the `web` and `auth` middlewares are applied to this package's routes. You can configure this in the config file.
+
 ### .env keys
 
 Before you can use this package you have to configure some .env keys (or config values).
