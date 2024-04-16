@@ -2,7 +2,6 @@
 
 namespace Transmorpher;
 
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\TransmorpherApi;
@@ -70,7 +69,7 @@ class Image extends Media
      */
     public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
     {
-        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
+        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path'], 'hash' => $clientResponse['hash']]);
         $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
     }
 
@@ -80,15 +79,5 @@ class Image extends Media
     public function getThumbnailUrl(): string
     {
         return $this->getUrl(['height' => 150]);
-    }
-
-    /**
-     * Sends the request to reserve an upload slot to the Transmorpher media server API.
-     *
-     * @return Response
-     */
-    protected function sendReserveUploadSlotRequest(): Response
-    {
-        return $this->configureApiRequest()->post(TransmorpherApi::S2S->getUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
     }
 }

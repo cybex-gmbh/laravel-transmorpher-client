@@ -2,6 +2,7 @@
 
 namespace Transmorpher\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,8 +39,7 @@ class TransmorpherUpload extends Model
     protected static function booted(): void
     {
         static::saved(function (TransmorpherUpload $transmorpherUpload) {
-            // Only update the corresponding TransmorpherMedia model if this is the latest upload.
-            if ($transmorpherUpload->is($transmorpherUpload->TransmorpherMedia->TransmorpherUploads()->latest()->first())) {
+            if ($transmorpherUpload->isLatest) {
                 $transmorpherUpload->TransmorpherMedia()->update(['latest_upload_state' => $transmorpherUpload->state, 'latest_upload_token' => $transmorpherUpload->token]);
             }
         });
@@ -55,7 +55,7 @@ class TransmorpherUpload extends Model
         return $this->belongsTo(TransmorpherMedia::class);
     }
 
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
         return 'token';
     }
@@ -79,5 +79,12 @@ class TransmorpherUpload extends Model
         $response['latestUploadToken'] = $this->TransmorpherMedia->latest_upload_token;
 
         return $response;
+    }
+
+    public function isLatest(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): bool => $this->is($this->TransmorpherMedia->TransmorpherUploads()->latest()->first())
+        );
     }
 }

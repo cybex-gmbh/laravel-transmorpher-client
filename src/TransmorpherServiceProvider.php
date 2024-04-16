@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Transmorpher\Enums\SupportedApiVersion;
 use Transmorpher\Exceptions\UnsupportedApiVersionException;
-use Transmorpher\Helpers\Callback;
+use Transmorpher\Helpers\ApiController;
 use Transmorpher\Helpers\StateUpdate;
 use Transmorpher\Helpers\UploadToken;
 use Transmorpher\Helpers\VersionManagement;
@@ -61,7 +61,7 @@ class TransmorpherServiceProvider extends ServiceProvider
 
     protected function registerRoutes()
     {
-        Route::post(config('transmorpher.api.callback_route'), Callback::class)->name('transmorpherCallback');
+        Route::post(config('transmorpher.api.notifications_route'), ApiController::class)->name('transmorpherNotifications');
         Route::middleware(array_merge(['web'], config('transmorpher.routeMiddleware', [])))->group(function () {
             Route::post('transmorpher/{transmorpherMedia}/token', [UploadToken::class, 'getUploadToken'])->name('transmorpherUploadToken');
             Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
