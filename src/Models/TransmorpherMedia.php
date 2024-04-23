@@ -42,6 +42,13 @@ class TransmorpherMedia extends Model
         'latest_upload_state' => UploadState::class,
     ];
 
+    public static function fromIdentifier(string $identifier): TransmorpherMedia
+    {
+        [$alias, $key, $media_name] = explode('-', $identifier);
+
+        return TransmorpherMedia::whereTransmorphableType($alias)->whereTransmorphableId($key)->whereMediaName($media_name)->first();
+    }
+
     /**
      * Return the parent transmorphable model.
      *
@@ -71,6 +78,13 @@ class TransmorpherMedia extends Model
     {
         return Attribute::make(
             get: fn(): bool => $this->is_ready && $this->public_path
+        );
+    }
+
+    public function latestSuccessfulUpload(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): TransmorpherUpload => $this->TransmorpherUploads()->whereState(UploadState::SUCCESS->value)->latest()->first()
         );
     }
 }

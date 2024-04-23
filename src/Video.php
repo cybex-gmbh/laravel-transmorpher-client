@@ -25,7 +25,7 @@ class Video extends Media
      */
     public function getMp4Url(): string
     {
-        return sprintf('%smp4/video.mp4', $this->getUrl());
+        return $this->getUrl('mp4', 'mp4');
     }
 
     /**
@@ -33,7 +33,7 @@ class Video extends Media
      */
     public function getHlsUrl(): string
     {
-        return sprintf('%shls/video.m3u8', $this->getUrl());
+        return $this->getUrl('hls', 'm3u8');
     }
 
     /**
@@ -41,7 +41,12 @@ class Video extends Media
      */
     public function getDashUrl(): string
     {
-        return sprintf('%sdash/video.mpd', $this->getUrl());
+        return $this->getUrl('dash', 'mpd');
+    }
+
+    protected function getUrl(string $format, string $extension): string
+    {
+        return sprintf('%s/%s/video.%s?v=%s', $this->getBaseUrl(), $format, $extension, $this->getCacheBuster());
     }
 
     /**

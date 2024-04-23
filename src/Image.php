@@ -58,7 +58,7 @@ class Image extends Media
      */
     public function getDerivative(array $transformations = []): string
     {
-        return Http::get($this->getUrl($transformations))->body();
+        return Http::get($this->getBaseUrl($transformations))->body();
     }
 
     /**
@@ -71,6 +71,27 @@ class Image extends Media
     {
         $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path'], 'hash' => $clientResponse['hash']]);
         $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+    }
+
+    /**
+     * Get the public URL for retrieving a derivative with optional transformations.
+     *
+     * @param array $transformations Transformations in an array notation (e.g. ['width' => 1920, 'height' => 1080]).
+     *
+     * @return string The public URL to a derivative.
+     */
+    public function getUrl(array $transformations = []): string
+    {
+        if ($this->transmorpherMedia->isAvailable) {
+            return sprintf(
+                '%s/%s?v=%s',
+                $this->getBaseUrl(),
+                $this->getTransformations($transformations),
+                $this->getCacheBuster()
+            );
+        }
+
+        return $this->getPlaceholderUrl();
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Transmorpher;
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Transmorpher\Enums\ClientErrorResponse;
@@ -180,24 +181,17 @@ abstract class Media
     }
 
     /**
-     * Get the public URL for retrieving a derivative with optional transformations.
+     * Get the public base URL for retrieving a derivative.
      *
-     * @param array $transformations Transformations in an array notation (e.g. ['width' => 1920, 'height' => 1080]).
-     *
-     * @return string The public URL to a derivative.
+     * @return string The public base URL to a derivative.
      */
-    public function getUrl(array $transformations = []): string
+    protected function getBaseUrl(): string
     {
-        if ($this->transmorpherMedia->isAvailable) {
-            return sprintf(
-                '%s/%s/%s',
-                $this->getDeliveryUrl(),
-                $this->transmorpherMedia->public_path,
-                $this->getTransformations($transformations)
-            );
-        }
-
-        return $this->getPlaceholderUrl();
+        return sprintf(
+            '%s/%s',
+            $this->getDeliveryUrl(),
+            $this->transmorpherMedia->public_path,
+        );
     }
 
     /**
@@ -482,5 +476,18 @@ abstract class Media
         if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
             throw new InvalidIdentifierException($this->model, $this->mediaName);
         }
+    }
+
+    protected function getCacheBuster(): string
+    {
+        $cacheInvalidationRevision = Cache::remember('cache_invalidation_revision', now()->addDays(14), function () {
+            return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('cacheInvalidationRevision'))->body();
+        });
+
+        return sprintf(
+            '%s_%s',
+            $cacheInvalidationRevision,
+            $this->transmorpherMedia->hash ?? md5($this->transmorpherMedia->latestSuccessfulUpload->updated_at)
+        );
     }
 }
