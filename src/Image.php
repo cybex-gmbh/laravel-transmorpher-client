@@ -99,6 +99,6 @@ class Image extends Media
      */
     public function getThumbnailUrl(): string
     {
-        return $this->getUrl(['height' => 150]);
+        return $this->getUrl(['height' => 300]);
     }
 }

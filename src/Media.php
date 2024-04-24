@@ -58,6 +58,11 @@ abstract class Media
     /**
      * @return string
      */
+    public abstract function getUrl(): string;
+
+    /**
+     * @return string
+     */
     public abstract function getThumbnailUrl(): string;
 
     /**

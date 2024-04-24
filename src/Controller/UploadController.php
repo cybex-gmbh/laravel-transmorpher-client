@@ -1,16 +1,15 @@
 <?php
 
-namespace Transmorpher\Helpers;
+namespace Transmorpher\Controller;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
-class UploadToken
+class UploadController
 {
     /**
-     *
      * @param TransmorpherMedia $transmorpherMedia
      * @return JsonResponse
      */
@@ -27,6 +26,13 @@ class UploadToken
      */
     public function handleUploadResponse(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
-        return response()->json($transmorpherUpload->handleStateUpdate($request->input('response'), $request->input('http_code')));
+        return response()->json(
+            array_merge(
+                $transmorpherUpload->handleStateUpdate($request->input('response'), $request->input('http_code')), [
+                    'thumbnailUrl' => $transmorpherUpload->TransmorpherMedia->getMedia()->getThumbnailUrl(),
+                    'fullsizeUrl' => $transmorpherUpload->TransmorpherMedia->getMedia()->getUrl(),
+                ]
+            )
+        );
     }
 }

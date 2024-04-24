@@ -21,11 +21,21 @@ class Video extends Media
     }
 
     /**
+     * @param string $format
+     * @param string $extension
+     * @return string
+     */
+    protected function getVideoUrl(string $format, string $extension): string
+    {
+        return sprintf('%s/%s/video.%s?v=%s', $this->getBaseUrl(), $format, $extension, $this->getCacheBuster());
+    }
+
+    /**
      * @return string
      */
     public function getMp4Url(): string
     {
-        return $this->getUrl('mp4', 'mp4');
+        return $this->getVideoUrl('mp4', 'mp4');
     }
 
     /**
@@ -33,7 +43,7 @@ class Video extends Media
      */
     public function getHlsUrl(): string
     {
-        return $this->getUrl('hls', 'm3u8');
+        return $this->getVideoUrl('hls', 'm3u8');
     }
 
     /**
@@ -41,12 +51,7 @@ class Video extends Media
      */
     public function getDashUrl(): string
     {
-        return $this->getUrl('dash', 'mpd');
-    }
-
-    protected function getUrl(string $format, string $extension): string
-    {
-        return sprintf('%s/%s/video.%s?v=%s', $this->getBaseUrl(), $format, $extension, $this->getCacheBuster());
+        return $this->getVideoUrl('dash', 'mpd');
     }
 
     /**
@@ -58,6 +63,14 @@ class Video extends Media
     public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
     {
         $upload->update(['token' => $clientResponse['upload_token'], 'state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->getMp4Url();
     }
 
     /**

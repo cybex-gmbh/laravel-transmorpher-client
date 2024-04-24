@@ -1,6 +1,6 @@
 <?php
 
-namespace Transmorpher\Helpers;
+namespace Transmorpher\Controller;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Transmorpher\Models\TransmorpherMedia;
 
-class VersionManagement
+class MediaController
 {
     /**
      * @param Request $request
@@ -21,8 +21,8 @@ class VersionManagement
         return response()->json(
             array_merge(
                 $transmorpherMedia->getMedia()->getVersions(), [
-                    'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getMedia()->getThumbnailUrl(), $transmorpherMedia->updated_at),
-                    'publicPath' => $transmorpherMedia->public_path,
+                    'thumbnailUrl' => $transmorpherMedia->getMedia()->getThumbnailUrl(),
+                    'fullsizeUrl' => $transmorpherMedia->getMedia()->getUrl(),
                 ]
             )
         );
@@ -35,7 +35,14 @@ class VersionManagement
      */
     public function setVersion(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json($transmorpherMedia->getMedia()->setVersion($request->input('version')));
+        return response()->json(
+            array_merge(
+                $transmorpherMedia->getMedia()->setVersion($request->input('version')), [
+                    'thumbnailUrl' => $transmorpherMedia->getMedia()->getThumbnailUrl(),
+                    'fullsizeUrl' => $transmorpherMedia->getMedia()->getUrl(),
+                ]
+            )
+        );
     }
 
     /**

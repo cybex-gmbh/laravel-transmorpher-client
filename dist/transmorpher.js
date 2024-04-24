@@ -26,7 +26,7 @@ if (!window.transmorpherScriptLoaded) {
   window.setupComponent = function (transmorpherIdentifier) {
     dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
     var medium = media[transmorpherIdentifier];
-    addConfirmEventListeners(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier), transmorpherIdentifier);
+    addConfirmEventListener(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier), transmorpherIdentifier);
 
     // Start polling if the video is still processing or an upload is in process.
     if (medium.isProcessing || medium.isUploading) {
@@ -44,9 +44,9 @@ if (!window.transmorpherScriptLoaded) {
       uploadMultiple: false,
       paramName: 'file',
       uploadToken: null,
-      dictDefaultMessage: media[transmorpherIdentifier].translations['drop_files_to_upload'],
-      dictFileTooBig: media[transmorpherIdentifier].translations['max_file_size_exceeded'],
-      dictInvalidFileType: media[transmorpherIdentifier].translations['invalid_file_type'],
+      dictDefaultMessage: medium.translations['drop_files_to_upload'],
+      dictFileTooBig: medium.translations['max_file_size_exceeded'],
+      dictInvalidFileType: medium.translations['invalid_file_type'],
       init: function init() {
         // Processing-Event is emitted when the upload starts.
         this.on('processing', function () {
@@ -88,12 +88,12 @@ if (!window.transmorpherScriptLoaded) {
                 file.height = dimensions.height;
               case 6:
                 if (medium.maxWidth && file.width > medium.maxWidth || medium.maxHeight && file.height > medium.maxHeight) {
-                  file.done(media[transmorpherIdentifier].translations['max_dimensions_exceeded']);
+                  file.done(medium.translations['max_dimensions_exceeded']);
                 } else if (medium.minWidth && file.width < medium.minWidth || medium.minHeight && file.height < medium.minHeight) {
-                  file.done(media[transmorpherIdentifier].translations['min_dimensions_subceeded']);
+                  file.done(medium.translations['min_dimensions_subceeded']);
                   // Since testing floating point values for equality is problematic, we define an upper bound on the rounding error.
                 } else if (medium.ratio && Math.abs(file.width / file.height - medium.ratio) > 0.0000000001) {
-                  file.done(media[transmorpherIdentifier].translations['invalid_ratio']);
+                  file.done(medium.translations['invalid_ratio']);
                 } else {
                   getState(transmorpherIdentifier).then(function (uploadingStateResponse) {
                     if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
@@ -132,7 +132,7 @@ if (!window.transmorpherScriptLoaded) {
       // Update database when upload was canceled manually.
       canceled: function canceled(file) {
         var _file$xhr;
-        fetch("".concat(media[transmorpherIdentifier].routes.handleUploadResponse, "/").concat(this.options.uploadToken), {
+        fetch("".concat(medium.routes.handleUploadResponse, "/").concat(this.options.uploadToken), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ if (!window.transmorpherScriptLoaded) {
           body: JSON.stringify({
             response: {
               state: 'error',
-              clientMessage: media[transmorpherIdentifier].translations['upload_canceled'],
+              clientMessage: medium.translations['upload_canceled'],
               message: this.options.dictUploadCanceled
             },
             http_code: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
@@ -221,7 +221,7 @@ if (!window.transmorpherScriptLoaded) {
               resetAgeElement(transmorpherIdentifier);
 
               // Display the newly processed media and update links, also hide the placeholder image.
-              updateMediaDisplay(transmorpherIdentifier, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
+              updateMediaDisplay(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
               updateVersionInformation(transmorpherIdentifier);
             }
             break;
@@ -277,7 +277,7 @@ if (!window.transmorpherScriptLoaded) {
           'X-XSRF-TOKEN': getCsrfToken()
         },
         body: JSON.stringify({
-          // When the token retrieval failed, file doesn't contain the http code.
+          // When the token retrieval failed, "file" doesn't contain the http code.
           // It is instead passed in the response of the token retrieval request.
           response: response,
           http_code: (_file$xhr$status = (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status) !== null && _file$xhr$status !== void 0 ? _file$xhr$status : response === null || response === void 0 ? void 0 : response.http_code
@@ -293,7 +293,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
     resetAgeElement(transmorpherIdentifier);
-    // Check for undefined, which happens in cases where dropzone directly rejects the file e.g. due to max file size.
+    // Check for undefined, which happens in cases where dropzone directly rejects the file e.g., due to max file size.
     if (uploadResult.state !== undefined && uploadResult.state !== 'error') {
       document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
       document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
@@ -301,7 +301,7 @@ if (!window.transmorpherScriptLoaded) {
       switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           // Set the newly uploaded image as display image.
-          updateImageDisplay(transmorpherIdentifier, uploadResult.public_path, uploadResult.version);
+          updateImageDisplay(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
           break;
         case mediaTypes[VIDEO]:
           startPolling(transmorpherIdentifier, uploadToken);
@@ -369,12 +369,12 @@ if (!window.transmorpherScriptLoaded) {
       switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentVersion] * 1000));
-          updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion);
+          updateImageDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
           break;
         case mediaTypes[VIDEO]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
           if (versionInformation.currentlyProcessedVersion) {
-            updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl);
+            updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
           }
           break;
       }
@@ -392,7 +392,7 @@ if (!window.transmorpherScriptLoaded) {
         var versionAge = versionEntry.querySelector('.version-age');
         switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-            versionEntry.querySelector('a').href = "".concat(media[transmorpherIdentifier].routes.getOriginal, "/").concat(version);
+            versionEntry.querySelector('a').href = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version);
             versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150");
             versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150 150w");
             break;
@@ -400,7 +400,7 @@ if (!window.transmorpherScriptLoaded) {
             // Don't show video for now, will use thumbnails later.
             versionEntry.querySelector('.media-preview').remove();
         }
-        addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), transmorpherIdentifier);
+        addConfirmEventListener(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), transmorpherIdentifier);
         versionAge.textContent = getDateForDisplay(new Date(versions[version] * 1000));
         versionList.append(versionEntry);
         versionEntry.classList.remove('d-none');
@@ -436,7 +436,7 @@ if (!window.transmorpherScriptLoaded) {
         updateVersionInformation(transmorpherIdentifier);
         switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-            updateMediaDisplay(transmorpherIdentifier, setVersionResult.public_path, setVersionResult.version);
+            updateMediaDisplay(transmorpherIdentifier, setVersionResult.thumbnailUrl, setVersionResult.fullsizeUrl);
             break;
           case mediaTypes[VIDEO]:
             startPolling(transmorpherIdentifier, setVersionResult.upload_token);
@@ -482,40 +482,40 @@ if (!window.transmorpherScriptLoaded) {
       }
     });
   };
-  window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
-    var videoUrl = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
     switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
-        updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
+        updateImageDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
         break;
       case mediaTypes[VIDEO]:
-        updateVideoDisplay(transmorpherIdentifier, videoUrl);
+        updateVideoDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
         break;
     }
   };
-  window.updateImageDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
+  window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullSizeUrl) {
     var imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img:first-of-type"));
     imgElements.forEach(function (image) {
-      image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
-      image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
-      image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+      image.src = thumbnailUrl;
+      image.srcset = getSrcSetString(transmorpherIdentifier, thumbnailUrl);
+      image.closest('.full-size-link').href = fullSizeUrl;
 
       // Show enlarge icon.
       image.nextElementSibling.classList.remove('d-hidden');
     });
   };
-  window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
+  window.getSrcSetString = function (transmorpherIdentifier, imageUrl) {
     var srcStrings = [];
     Object.keys(transformations).forEach(function (key) {
-      srcStrings.push("".concat(getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations[key], cacheKiller), " ").concat(key));
+      var modifiedUrl = imageUrl.replace(/(\/).-.+(\?)/i, "$1".concat(transformations[key], "$2"));
+      srcStrings.push("".concat(modifiedUrl, " ").concat(key));
     });
     return srcStrings.join(', ');
   };
-  window.updateVideoDisplay = function (transmorpherIdentifier, url) {
+  window.updateVideoDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
     var videoElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " video.video-transmorpher"));
     videoElements.forEach(function (video) {
-      video.src = url;
-      video.querySelector('a').href = url;
+      video.src = thumbnailUrl;
+      video.querySelector('a').href = thumbnailUrl;
       video.classList.remove('d-none');
     });
 
@@ -549,14 +549,6 @@ if (!window.transmorpherScriptLoaded) {
       image.classList.remove('d-none');
     });
     document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .current-version-age")).classList.add('d-none');
-  };
-  window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, cacheKiller) {
-    var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "/").concat(transformations, "?c=").concat(cacheKiller);
-  };
-  window.getFullsizeUrl = function (transmorpherIdentifier, path, cacheKiller) {
-    var imgElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-image.image-transmorpher > img"));
-    return "".concat(imgElement.dataset.deliveryUrl, "/").concat(path, "?c=").concat(cacheKiller);
   };
   window.displayState = function (transmorpherIdentifier, state) {
     var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -708,7 +700,7 @@ if (!window.transmorpherScriptLoaded) {
       return cookie.startsWith("XSRF-TOKEN=");
     })) === null || _document$cookie$spli === void 0 ? void 0 : _document$cookie$spli.split("=")[1]);
   };
-  window.addConfirmEventListeners = function (button, callback, transmorpherIdentifier) {
+  window.addConfirmEventListener = function (button, callback, transmorpherIdentifier) {
     var pressedOnce = false;
     var buttonText = button.textContent;
     var timeOut;

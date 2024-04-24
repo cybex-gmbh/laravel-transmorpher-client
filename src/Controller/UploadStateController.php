@@ -1,6 +1,6 @@
 <?php
 
-namespace Transmorpher\Helpers;
+namespace Transmorpher\Controller;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use Transmorpher\Enums\UploadState;
 use Transmorpher\Models\TransmorpherMedia;
 use Transmorpher\Models\TransmorpherUpload;
 
-class StateUpdate
+class UploadStateController
 {
     /**
      * Get the processing state of the latest upload.
@@ -21,7 +21,7 @@ class StateUpdate
     {
         $latestUpload = $transmorpherMedia->TransmorpherUploads()->latest()->first();
 
-        // If no upload token was provided, return information for latest upload.
+        // If no upload token was provided, return information for the latest upload.
         if ($request->input('upload_token') && $request->input('upload_token') !== $transmorpherMedia->latest_upload_token) {
             $message = trans('transmorpher::errors.upload_canceled_or_took_too_long');
             $state = UploadState::ERROR->value;
@@ -30,8 +30,8 @@ class StateUpdate
         return response()->json([
             'clientMessage' => $message ?? $latestUpload?->message,
             'state' => $state ?? $latestUpload?->state,
-            'thumbnailUrl' => sprintf('%s?c=%s', $transmorpherMedia->getMedia()->getThumbnailUrl(), $latestUpload?->updated_at),
-            'publicPath' => $transmorpherMedia->public_path,
+            'thumbnailUrl' => $transmorpherMedia->getMedia()->getThumbnailUrl(),
+            'fullsizeUrl' => $transmorpherMedia->getMedia()->getUrl(),
             'latestUploadToken' => $transmorpherMedia->latest_upload_token,
             'lastUpdated' => $latestUpload?->updated_at
         ]);
