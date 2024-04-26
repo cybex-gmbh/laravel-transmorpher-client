@@ -62,7 +62,8 @@ class ApiController
      */
     protected function handleVideoTranscodingNotification(array $videoTranscodingResult): void
     {
-        // If we have no upload for the provided token, the derivatives were purged on the media server, and we should update the hash of the latest upload.
+        // If we receive a transcoding result, but we don't know the upload token, that means that the server has purged and recreated the derivatives. 
+        // Therefore we need to update the media hash on our side for cache busting.
         $upload = TransmorpherUpload::whereToken($videoTranscodingResult['upload_token'])->first()
             ?? TransmorpherMedia::fromIdentifier($videoTranscodingResult['identifier'])->latestSuccessfulUpload;
 
