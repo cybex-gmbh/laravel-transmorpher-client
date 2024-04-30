@@ -485,13 +485,13 @@ abstract class Media
 
     protected function getCacheBuster(): string
     {
-        $cacheInvalidationRevision = Cache::remember('cache_invalidation_revision', now()->addDays(14), function () {
-            return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('cacheInvalidationRevision'))->body();
+        $cacheBuster = Cache::remember('cache_invalidator', now()->addDays(14), function () {
+            return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('cacheInvalidator'))->body();
         });
 
         return sprintf(
             '%s_%s',
-            $cacheInvalidationRevision,
+            $cacheBuster,
             $this->transmorpherMedia->hash ?? md5($this->transmorpherMedia->latestSuccessfulUpload->updated_at)
         );
     }

@@ -75,7 +75,7 @@ class ApiController
     }
 
     /**
-     * Updates the cached cache invalidation revision.
+     * Updates the cached cache invalidator.
      * Clients will then receive new cache buster values when requesting derivatives.
      *
      * @param array $cacheInvalidationNotification
@@ -83,6 +83,6 @@ class ApiController
      */
     protected function handleCacheInvalidationNotification(array $cacheInvalidationNotification): void
     {
-        Cache::put('cache_invalidation_revision', $cacheInvalidationNotification['cache_invalidation_revision'], now()->addDays(14));
+        Cache::put('cache_invalidator', $cacheInvalidationNotification['cache_invalidator'], now()->addDays(14));
     }
 }
