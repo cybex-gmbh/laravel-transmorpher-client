@@ -117,7 +117,7 @@ abstract class Media
                     );
             }
 
-            $responseForClient = $this->prepareResponseForClient($responseFromServer);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
@@ -140,7 +140,7 @@ abstract class Media
 
         try {
             $responseFromServer = $this->sendReserveUploadSlotRequest();
-            $responseForClient = $this->prepareResponseForClient($responseFromServer);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
@@ -167,7 +167,7 @@ abstract class Media
 
         try {
             $responseFromServer = $this->configureApiRequest()->delete(TransmorpherApi::S2S->getUrl(sprintf('media/%s', $this->getIdentifier())));
-            $responseForClient = $this->prepareResponseForClient($responseFromServer);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
@@ -230,7 +230,7 @@ abstract class Media
 
         try {
             $responseFromServer = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)));
-            $responseForClient = $this->prepareResponseForClient($responseFromServer);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
@@ -256,20 +256,20 @@ abstract class Media
      * @param int $httpCode
      * @return array The response body.
      */
-    public function extractResponseForClient(array $responseFromServer, int $httpCode): array
+    public function generateResponseForClient(array $responseFromServer, int $httpCode): array
     {
         return isset($responseFromServer['state']) && $responseFromServer['state'] !== UploadState::ERROR->value ? $responseFromServer : ClientErrorResponse::get($responseFromServer, $httpCode);
     }
 
     /**
-     * Wraps the "extractResponseForClient"-method to extract the body and http code from a response.
+     * Wraps the "generateResponseForClient"-method to extract the body and http code from a response.
      *
      * @param Response $responseFromServer
      * @return array
      */
-    public function prepareResponseForClient(Response $responseFromServer): array
+    public function extractResponseForClient(Response $responseFromServer): array
     {
-        return $this->extractResponseForClient(json_decode($responseFromServer->body(), true), $responseFromServer->status());
+        return $this->generateResponseForClient(json_decode($responseFromServer->body(), true), $responseFromServer->status());
     }
 
     /**
