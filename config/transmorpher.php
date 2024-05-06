@@ -28,6 +28,7 @@ return [
         'placeholder_url' => env('TRANSMORPHER_WEB_PLACEHOLDER_URL', ''),
         'thumbnail' => [
             'transformations' => [
+                // Currently only height is configurable.
                 'height' => 300,
             ],
         ],
