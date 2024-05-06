@@ -25,7 +25,12 @@ return [
         // The URL used for retrieving derivative images.
         'url' => env('TRANSMORPHER_WEB_DELIVERY_BASE_URL'),
         // A placeholder URL which is used when media doesn't have an upload.
-        'placeholder_url' => env('TRANSMORPHER_WEB_PLACEHOLDER_URL', '')
+        'placeholder_url' => env('TRANSMORPHER_WEB_PLACEHOLDER_URL', ''),
+        'thumbnail' => [
+            'transformations' => [
+                'height' => 300,
+            ],
+        ],
     ],
 
     'upload' => [

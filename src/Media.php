@@ -483,6 +483,12 @@ abstract class Media
         }
     }
 
+    /**
+     * Get the cache buster.
+     * The cache invalidator received from the Transmorpher server is stored in the cache for 14 days.
+     *
+     * @return string
+     */
     protected function getCacheBuster(): string
     {
         $cacheBuster = Cache::remember('cache_invalidator', now()->addDays(14), function () {
@@ -494,5 +500,15 @@ abstract class Media
             $cacheBuster,
             $this->transmorpherMedia->hash ?? md5($this->transmorpherMedia->latestSuccessfulUpload->updated_at)
         );
+    }
+
+    /**
+     * Get the configured thumbnail height.
+     *
+     * @return int
+     */
+    protected function getThumbnailHeight(): int
+    {
+        return config('transmorpher.delivery.thumbnail.transformations.height', 300);
     }
 }
