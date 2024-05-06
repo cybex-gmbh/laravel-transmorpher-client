@@ -127,7 +127,6 @@ abstract class Media
 
     /**
      * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
-     * The request itself is in the Image or Video class, since the API differs.
      *
      * @return array
      */
@@ -137,9 +136,10 @@ abstract class Media
             'state' => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
+        $reserveUploadSlotUrl = TransmorpherApi::S2S->getUrl(sprintf('%s/reserveUploadSlot', $this->type->value));
 
         try {
-            $responseFromServer = $this->sendReserveUploadSlotRequest();
+            $responseFromServer = $this->configureApiRequest()->post($reserveUploadSlotUrl, ['identifier' => $this->getIdentifier()]);
             $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
@@ -439,16 +439,6 @@ abstract class Media
             ->withOptions(['stream' => true])
             ->acceptJson()
             ->withoutRedirecting();
-    }
-
-    /**
-     * Sends the request to reserve an upload slot to the Transmorpher media server API.
-     *
-     * @return Response
-     */
-    protected function sendReserveUploadSlotRequest(): Response
-    {
-        return $this->configureApiRequest()->post(TransmorpherApi::S2S->getUrl(sprintf('%s/reserveUploadSlot', $this->type->value)), ['identifier' => $this->getIdentifier()]);
     }
 
     /**
