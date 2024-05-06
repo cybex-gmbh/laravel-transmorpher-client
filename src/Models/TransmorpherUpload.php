@@ -67,7 +67,7 @@ class TransmorpherUpload extends Model
         // When this method is called from within a Media, the response for the frontend is already determined.
         // When this method is directly called from a controller (e.g. failed/successful upload), the server response still has to be checked (and replaced in case of errors).
         if ($httpCode) {
-            $response = $transmorpher->getClientResponse($response, $httpCode);
+            $response = $transmorpher->extractResponseForClient($response, $httpCode);
         }
 
         if ($response['state'] !== UploadState::ERROR->value) {

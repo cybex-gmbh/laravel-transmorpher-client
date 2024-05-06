@@ -48,12 +48,12 @@ abstract class Media
     protected abstract function __construct(HasTransmorpherMediaInterface $model, string $mediaName);
 
     /**
-     * @param array $clientResponse
+     * @param array $responseForClient
      * @param TransmorpherUpload $upload
      *
      * @return void
      */
-    public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
+    public abstract function updateAfterSuccessfulUpload(array $responseForClient, TransmorpherUpload $upload): void;
 
     /**
      * @return string
@@ -106,7 +106,7 @@ abstract class Media
             while (!feof($fileHandle)) {
                 $chunk = fread($fileHandle, $chunkSize);
 
-                $response = $this->configureApiRequest()
+                $responseFromServer = $this->configureApiRequest()
                     ->attach('file', $chunk, $fileName ?: basename(stream_get_meta_data($fileHandle)['uri']))
                     ->post(
                         TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
@@ -117,12 +117,12 @@ abstract class Media
                     );
             }
 
-            $clientResponse = $this->getClientResponseFromServerResponse($response);
+            $responseForClient = $this->prepareResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        return $this->upload->handleStateUpdate($clientResponse);
+        return $this->upload->handleStateUpdate($responseForClient);
     }
 
     /**
@@ -139,21 +139,21 @@ abstract class Media
         ]);
 
         try {
-            $response = $this->sendReserveUploadSlotRequest();
-            $clientResponse = $this->getClientResponseFromServerResponse($response);
+            $responseFromServer = $this->sendReserveUploadSlotRequest();
+            $responseForClient = $this->prepareResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        $valuesToUpdate = ['state' => $clientResponse['state'], 'message' => $clientResponse['message']];
+        $valuesToUpdate = ['state' => $responseForClient['state'], 'message' => $responseForClient['message']];
 
-        if ($clientResponse['state'] !== UploadState::ERROR->value) {
-            $valuesToUpdate['token'] = $clientResponse['upload_token'];
+        if ($responseForClient['state'] !== UploadState::ERROR->value) {
+            $valuesToUpdate['token'] = $responseForClient['upload_token'];
         }
 
         $this->upload->update($valuesToUpdate);
 
-        return $clientResponse;
+        return $responseForClient;
     }
 
     /**
@@ -166,23 +166,23 @@ abstract class Media
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending delete request.']);
 
         try {
-            $response = $this->configureApiRequest()->delete(TransmorpherApi::S2S->getUrl(sprintf('media/%s', $this->getIdentifier())));
-            $clientResponse = $this->getClientResponseFromServerResponse($response);
+            $responseFromServer = $this->configureApiRequest()->delete(TransmorpherApi::S2S->getUrl(sprintf('media/%s', $this->getIdentifier())));
+            $responseForClient = $this->prepareResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['state'] === UploadState::DELETED->value) {
+        if ($responseForClient['state'] === UploadState::DELETED->value) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
         } else {
-            if ($clientResponse['httpCode'] === 404) {
-                $clientResponse['clientMessage'] = trans('transmorpher::errors.media_already_deleted');
+            if ($responseForClient['httpCode'] === 404) {
+                $responseForClient['clientMessage'] = trans('transmorpher::errors.media_already_deleted');
             }
         }
 
-        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+        $upload->update(['state' => $responseForClient['state'], 'message' => $responseForClient['message']]);
 
-        return $clientResponse;
+        return $responseForClient;
     }
 
     /**
@@ -229,18 +229,18 @@ abstract class Media
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
-            $serverResponse = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)));
-            $clientResponse = $this->getClientResponseFromServerResponse($serverResponse);
+            $responseFromServer = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)));
+            $responseForClient = $this->prepareResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
         // HTTP code is only available in the response in case the request was not successful.
-        if ($clientResponse['state'] === UploadState::ERROR->value && $clientResponse['httpCode'] === 404) {
-            $clientResponse['clientMessage'] = trans('transmorpher::errors.version_no_longer_available');
+        if ($responseForClient['state'] === UploadState::ERROR->value && $responseForClient['httpCode'] === 404) {
+            $responseForClient['clientMessage'] = trans('transmorpher::errors.version_no_longer_available');
         }
 
-        return $upload->handleStateUpdate($clientResponse);
+        return $upload->handleStateUpdate($responseForClient);
     }
 
     /**
@@ -252,24 +252,24 @@ abstract class Media
     }
 
     /**
-     * @param array $serverResponse The server response as an array.
+     * @param array $responseFromServer The server response as an array.
      * @param int $httpCode
      * @return array The response body.
      */
-    public function getClientResponse(array $serverResponse, int $httpCode): array
+    public function extractResponseForClient(array $responseFromServer, int $httpCode): array
     {
-        return isset($serverResponse['state']) && $serverResponse['state'] !== UploadState::ERROR->value ? $serverResponse : ClientErrorResponse::get($serverResponse, $httpCode);
+        return isset($responseFromServer['state']) && $responseFromServer['state'] !== UploadState::ERROR->value ? $responseFromServer : ClientErrorResponse::get($responseFromServer, $httpCode);
     }
 
     /**
-     * Wraps the "getClientResponse"-method to extract the body and http code from a response.
+     * Wraps the "extractResponseForClient"-method to extract the body and http code from a response.
      *
-     * @param Response $serverResponse
+     * @param Response $responseFromServer
      * @return array
      */
-    public function getClientResponseFromServerResponse(Response $serverResponse): array
+    public function prepareResponseForClient(Response $responseFromServer): array
     {
-        return $this->getClientResponse(json_decode($serverResponse->body(), true), $serverResponse->status());
+        return $this->extractResponseForClient(json_decode($responseFromServer->body(), true), $responseFromServer->status());
     }
 
     /**

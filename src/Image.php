@@ -62,15 +62,15 @@ class Image extends Media
     }
 
     /**
-     * @param array $clientResponse
+     * @param array $responseForClient
      * @param TransmorpherUpload $upload
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
+    public function updateAfterSuccessfulUpload(array $responseForClient, TransmorpherUpload $upload): void
     {
-        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path'], 'hash' => $clientResponse['hash']]);
-        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $responseForClient['public_path'], 'hash' => $responseForClient['hash']]);
+        $upload->update(['state' => $responseForClient['state'], 'message' => $responseForClient['message']]);
     }
 
     /**

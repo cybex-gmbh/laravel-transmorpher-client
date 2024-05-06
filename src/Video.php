@@ -55,14 +55,14 @@ class Video extends Media
     }
 
     /**
-     * @param array $clientResponse
+     * @param array $responseForClient
      * @param TransmorpherUpload $upload
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
+    public function updateAfterSuccessfulUpload(array $responseForClient, TransmorpherUpload $upload): void
     {
-        $upload->update(['token' => $clientResponse['upload_token'], 'state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+        $upload->update(['token' => $responseForClient['upload_token'], 'state' => $responseForClient['state'], 'message' => $responseForClient['message']]);
     }
 
     /**
