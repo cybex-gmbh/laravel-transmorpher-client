@@ -7,18 +7,18 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Transmorpher\Enums\SupportedApiVersion;
 use Transmorpher\Exceptions\UnsupportedApiVersionException;
-use Transmorpher\Helpers\Callback;
-use Transmorpher\Helpers\StateUpdate;
-use Transmorpher\Helpers\UploadToken;
-use Transmorpher\Helpers\VersionManagement;
-use Transmorpher\ViewComponents\TransmorpherDropzone;
+use Transmorpher\Controller\ApiController;
+use Transmorpher\Controller\UploadStateController;
+use Transmorpher\Controller\UploadController;
+use Transmorpher\Controller\MediaController;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
+     * @throws UnsupportedApiVersionException
      */
-    public function boot()
+    public function boot(): void
     {
         if (!SupportedApiVersion::configuredVersionIsSupported()) {
             throw new UnsupportedApiVersionException();
@@ -53,25 +53,25 @@ class TransmorpherServiceProvider extends ServiceProvider
     /**
      * Register the application services.
      */
-    public function register()
+    public function register(): void
     {
         // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher.php', 'transmorpher');
     }
 
-    protected function registerRoutes()
+    protected function registerRoutes(): void
     {
-        Route::post(config('transmorpher.api.callback_route'), Callback::class)->name('transmorpherCallback');
+        Route::post(config('transmorpher.api.notifications_route'), ApiController::class)->name('transmorpherNotifications');
         Route::middleware(array_merge(['web'], config('transmorpher.routeMiddleware', [])))->group(function () {
-            Route::post('transmorpher/{transmorpherMedia}/token', [UploadToken::class, 'getUploadToken'])->name('transmorpherUploadToken');
-            Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadToken::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
-            Route::post('transmorpher/{transmorpherMedia}/state', [StateUpdate::class, 'getState'])->name('transmorpherState');
-            Route::get('transmorpher/{transmorpherMedia}/getVersions', [VersionManagement::class, 'getVersions'])->name('transmorpherGetVersions');
-            Route::post('transmorpher/{transmorpherMedia}/setVersion', [VersionManagement::class, 'setVersion'])->name('transmorpherSetVersion');
-            Route::post('transmorpher/{transmorpherMedia}/delete', [VersionManagement::class, 'delete'])->name('transmorpherDelete');
-            Route::get('transmorpher/{transmorpherMedia}/getOriginal/{version}', [VersionManagement::class, 'getOriginal'])->name('transmorpherGetOriginal');
-            Route::get('transmorpher/{transmorpherMedia}/getDerivativeForVersion/{version}/{transformations?}', [VersionManagement::class, 'getDerivativeForVersion'])->name('transmorpherGetDerivativeForVersion');
-            Route::post('transmorpher/setUploadingState/{transmorpherUpload}', [StateUpdate::class, 'setUploadingState'])->name('transmorpherSetUploadingState');
+            Route::post('transmorpher/{transmorpherMedia}/token', [UploadController::class, 'getUploadToken'])->name('transmorpherUploadToken');
+            Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadController::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
+            Route::post('transmorpher/{transmorpherMedia}/state', [UploadStateController::class, 'getState'])->name('transmorpherState');
+            Route::get('transmorpher/{transmorpherMedia}/getVersions', [MediaController::class, 'getVersions'])->name('transmorpherGetVersions');
+            Route::post('transmorpher/{transmorpherMedia}/setVersion', [MediaController::class, 'setVersion'])->name('transmorpherSetVersion');
+            Route::post('transmorpher/{transmorpherMedia}/delete', [MediaController::class, 'delete'])->name('transmorpherDelete');
+            Route::get('transmorpher/{transmorpherMedia}/getOriginal/{version}', [MediaController::class, 'getOriginal'])->name('transmorpherGetOriginal');
+            Route::get('transmorpher/{transmorpherMedia}/getDerivativeForVersion/{version}/{transformations?}', [MediaController::class, 'getDerivativeForVersion'])->name('transmorpherGetDerivativeForVersion');
+            Route::post('transmorpher/setUploadingState/{transmorpherUpload}', [UploadStateController::class, 'setUploadingState'])->name('transmorpherSetUploadingState');
         });
     }
 }

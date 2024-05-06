@@ -8,7 +8,7 @@ The client package provides a Dropzone component, which supports chunked uploads
 
 ## Installation
 
-To get the latest version, simply require the project using [Composer](https://getcomposer.org):
+To get the latest version, require the project using [Composer](https://getcomposer.org):
 
 ```bash
 composer require cybex/laravel-transmorpher-client
@@ -36,7 +36,7 @@ By default, the `web` and `auth` middlewares are applied to this package's route
 
 ### .env keys
 
-Before you can use this package you have to configure some .env keys (or config values).
+Before you can use this package, you have to configure some .env keys (or config values).
 
 The `TRANSMORPHER_AUTH_TOKEN` is a Laravel Sanctum token which is used for authentication at the Transmorpher media
 server. This token should be provided to you by an admin of the Transmorpher media server.
@@ -57,12 +57,11 @@ The `TRANSMORPHER_DELIVERY_URL` is the Transmorpher endpoint which is used to re
 TRANSMORPHER_WEB_DELIVERY_BASE_URL=https://example.com
 ```
 
-**_NOTE:_** In case you are in a docker environment or similar, you might want to set specific URLs for server to server communication. You can do so by using the following .env
-keys:
+**_NOTE:_** In case you are in a docker environment or similar, you might want to set specific URLs for server-to-server communication.
+You can do so by using the following .env keys:
 
 ```dotenv
 TRANSMORPHER_S2S_API_BASE_URL=http://example/api
-TRANSMORPHER_S2S_CALLBACK_BASE_URL=http://example
 ```
 
 A placeholder image can be displayed for media without uploads.
@@ -113,10 +112,10 @@ protected array $transmorpherVideos = [
 The trait `HasTransmorpherMedia` provides convenient methods to access your media.
 
 ```php
-// Retrieve all images as collection, with media name as key and the Image object as value.
+// Retrieve all images as a collection, with media name as key and the Image object as value.
 $yourModel->images;
 
-// Retrieve all videos as collection, with media name as key and the Video object as value.
+// Retrieve all videos as a collection, with media name as key and the Video object as value.
 $yourModel->videos;
 
 // Retrieve a single Image object.

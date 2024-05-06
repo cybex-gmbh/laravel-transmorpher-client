@@ -2,9 +2,7 @@
 
 namespace Transmorpher;
 
-use Illuminate\Http\Client\Response;
 use Transmorpher\Enums\MediaType;
-use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Models\TransmorpherUpload;
 
 class Video extends Media
@@ -23,11 +21,21 @@ class Video extends Media
     }
 
     /**
+     * @param string $format
+     * @param string $extension
+     * @return string
+     */
+    protected function getVideoUrl(string $format, string $extension): string
+    {
+        return sprintf('%s/%s/video.%s?v=%s', $this->getBaseUrl(), $format, $extension, $this->getCacheBuster());
+    }
+
+    /**
      * @return string
      */
     public function getMp4Url(): string
     {
-        return sprintf('%smp4/video.mp4', $this->getUrl());
+        return $this->getVideoUrl('mp4', 'mp4');
     }
 
     /**
@@ -35,7 +43,7 @@ class Video extends Media
      */
     public function getHlsUrl(): string
     {
-        return sprintf('%shls/video.m3u8', $this->getUrl());
+        return $this->getVideoUrl('hls', 'm3u8');
     }
 
     /**
@@ -43,18 +51,26 @@ class Video extends Media
      */
     public function getDashUrl(): string
     {
-        return sprintf('%sdash/video.mpd', $this->getUrl());
+        return $this->getVideoUrl('dash', 'mpd');
     }
 
     /**
-     * @param array $clientResponse
+     * @param array $responseForClient
      * @param TransmorpherUpload $upload
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
+    public function updateAfterSuccessfulUpload(array $responseForClient, TransmorpherUpload $upload): void
     {
-        $upload->update(['token' => $clientResponse['upload_token'], 'state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+        $upload->update(['token' => $responseForClient['upload_token'], 'state' => $responseForClient['state'], 'message' => $responseForClient['message']]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->getMp4Url();
     }
 
     /**
@@ -63,19 +79,5 @@ class Video extends Media
     public function getThumbnailUrl(): string
     {
         return $this->getMp4Url();
-    }
-
-    /**
-     * Sends the request to reserve an upload slot to the Transmorpher media server API.
-     * For videos, a callback URL has to be provided.
-     *
-     * @return Response
-     */
-    protected function sendReserveUploadSlotRequest(): Response
-    {
-        return $this->configureApiRequest()->post(TransmorpherApi::S2S->getUrl('video/reserveUploadSlot'), [
-            'identifier' => $this->getIdentifier(),
-            'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
-        ]);
     }
 }

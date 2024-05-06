@@ -14,7 +14,7 @@ if (!window.transmorpherScriptLoaded) {
         Dropzone.autoDiscover = false;
         const medium = media[transmorpherIdentifier];
 
-        addConfirmEventListeners(
+        addConfirmEventListener(
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
             createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier),
             transmorpherIdentifier
@@ -40,9 +40,9 @@ if (!window.transmorpherScriptLoaded) {
             uploadMultiple: false,
             paramName: 'file',
             uploadToken: null,
-            dictDefaultMessage: media[transmorpherIdentifier].translations['drop_files_to_upload'],
-            dictFileTooBig: media[transmorpherIdentifier].translations['max_file_size_exceeded'],
-            dictInvalidFileType: media[transmorpherIdentifier].translations['invalid_file_type'],
+            dictDefaultMessage: medium.translations['drop_files_to_upload'],
+            dictFileTooBig: medium.translations['max_file_size_exceeded'],
+            dictInvalidFileType: medium.translations['invalid_file_type'],
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
@@ -66,6 +66,7 @@ if (!window.transmorpherScriptLoaded) {
                 })
             },
             thumbnail: async function (file) {
+                // Dropzone sometimes (small files) manages to calculate width and height, if not, we have to calculate it ourselves.
                 if (!file.width || !file.height) {
                     let dimensions = await getMediaDimensions(file, transmorpherIdentifier).catch(error => {
                         file.done(error);
@@ -76,12 +77,12 @@ if (!window.transmorpherScriptLoaded) {
                 }
 
                 if ((medium.maxWidth && file.width > medium.maxWidth) || (medium.maxHeight && file.height > medium.maxHeight)) {
-                    file.done(media[transmorpherIdentifier].translations['max_dimensions_exceeded']);
+                    file.done(medium.translations['max_dimensions_exceeded']);
                 } else if ((medium.minWidth && file.width < medium.minWidth) || (medium.minHeight && file.height < medium.minHeight)) {
-                    file.done(media[transmorpherIdentifier].translations['min_dimensions_subceeded']);
-                // Since testing floating point values for equality is problematic, we define an upper bound on the rounding error.
+                    file.done(medium.translations['min_dimensions_subceeded']);
+                    // Since testing floating point values for equality is problematic, we define an upper bound on the rounding error.
                 } else if (medium.ratio && Math.abs(file.width / file.height - medium.ratio) > 0.0000000001) {
-                    file.done(media[transmorpherIdentifier].translations['invalid_ratio']);
+                    file.done(medium.translations['invalid_ratio']);
                 } else {
                     getState(transmorpherIdentifier)
                         .then(uploadingStateResponse => {
@@ -114,13 +115,13 @@ if (!window.transmorpherScriptLoaded) {
             },
             // Update database when upload was canceled manually.
             canceled: function (file) {
-                fetch(`${media[transmorpherIdentifier].routes.handleUploadResponse}/${this.options.uploadToken}`, {
+                fetch(`${medium.routes.handleUploadResponse}/${this.options.uploadToken}`, {
                     method: 'POST', headers: {
                         'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                     }, body: JSON.stringify({
                         response: {
                             state: 'error',
-                            clientMessage: media[transmorpherIdentifier].translations['upload_canceled'],
+                            clientMessage: medium.translations['upload_canceled'],
                             message: this.options.dictUploadCanceled,
                         },
                         http_code: file.xhr?.status
@@ -218,7 +219,7 @@ if (!window.transmorpherScriptLoaded) {
                         resetAgeElement(transmorpherIdentifier);
 
                         // Display the newly processed media and update links, also hide the placeholder image.
-                        updateMediaDisplay(transmorpherIdentifier, pollingInformation.publicPath, pollingInformation.lastUpdated, pollingInformation.thumbnailUrl);
+                        updateMediaDisplay(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
                         updateVersionInformation(transmorpherIdentifier);
                     }
                         break;
@@ -269,7 +270,7 @@ if (!window.transmorpherScriptLoaded) {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                 }, body: JSON.stringify({
-                    // When the token retrieval failed, file doesn't contain the http code.
+                    // When the token retrieval failed, "file" doesn't contain the http code.
                     // It is instead passed in the response of the token retrieval request.
                     response: response, http_code: file.xhr?.status ?? response?.http_code
                 })
@@ -285,7 +286,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
         resetAgeElement(transmorpherIdentifier);
-        // Check for undefined, which happens in cases where dropzone directly rejects the file e.g. due to max file size.
+        // Check for undefined, which happens in cases where dropzone directly rejects the file e.g., due to max file size.
         if (uploadResult.state !== undefined && uploadResult.state !== 'error') {
             document.querySelector(`#dz-${transmorpherIdentifier}`).classList.remove('dz-started');
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.remove('d-hidden');
@@ -294,10 +295,7 @@ if (!window.transmorpherScriptLoaded) {
             switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
                     // Set the newly uploaded image as display image.
-                    updateImageDisplay(transmorpherIdentifier,
-                        uploadResult.public_path,
-                        uploadResult.version
-                    );
+                    updateImageDisplay(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
                     break;
                 case mediaTypes[VIDEO]:
                     startPolling(transmorpherIdentifier, uploadToken)
@@ -372,12 +370,12 @@ if (!window.transmorpherScriptLoaded) {
             switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentVersion]) * 1000));
-                    updateImageDisplay(transmorpherIdentifier, versionInformation.publicPath, versionInformation.currentVersion)
+                    updateImageDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl)
                     break;
                 case mediaTypes[VIDEO]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000));
                     if (versionInformation.currentlyProcessedVersion) {
-                        updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl);
+                        updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
                     }
                     break;
             }
@@ -397,7 +395,7 @@ if (!window.transmorpherScriptLoaded) {
 
                 switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
-                        versionEntry.querySelector('a').href = `${media[transmorpherIdentifier].routes.getOriginal}/${version}`;
+                        versionEntry.querySelector('a').href = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}`;
                         versionEntry.querySelector('.dz-image img:first-of-type').src = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
                         versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
                         break;
@@ -406,7 +404,7 @@ if (!window.transmorpherScriptLoaded) {
                         versionEntry.querySelector('.media-preview').remove();
                 }
 
-                addConfirmEventListeners(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), transmorpherIdentifier);
+                addConfirmEventListener(versionEntry.querySelector('button'), createCallbackWithArguments(setVersion, transmorpherIdentifier, version), transmorpherIdentifier);
                 versionAge.textContent = getDateForDisplay(new Date(versions[version] * 1000));
 
                 versionList.append(versionEntry);
@@ -443,8 +441,8 @@ if (!window.transmorpherScriptLoaded) {
                     case mediaTypes[IMAGE]:
                         updateMediaDisplay(
                             transmorpherIdentifier,
-                            setVersionResult.public_path,
-                            setVersionResult.version
+                            setVersionResult.thumbnailUrl,
+                            setVersionResult.fullsizeUrl
                         );
                         break;
                     case mediaTypes[VIDEO]:
@@ -495,46 +493,47 @@ if (!window.transmorpherScriptLoaded) {
         })
     }
 
-    window.updateMediaDisplay = function (transmorpherIdentifier, publicPath, cacheKiller, videoUrl = null) {
+    window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
-                updateImageDisplay(transmorpherIdentifier, publicPath, cacheKiller);
+                updateImageDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
                 break;
             case mediaTypes[VIDEO]:
-                updateVideoDisplay(transmorpherIdentifier, videoUrl);
+                updateVideoDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
                 break;
         }
     }
 
-    window.updateImageDisplay = function (transmorpherIdentifier, publicPath, cacheKiller) {
+    window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullSizeUrl) {
         let imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
 
         imgElements.forEach(image => {
-            image.src = getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations['300w'], cacheKiller);
-            image.srcset = getSrcSetString(transmorpherIdentifier, publicPath, cacheKiller);
-            image.closest('.full-size-link').href = getFullsizeUrl(transmorpherIdentifier, publicPath, cacheKiller);
+            image.src = thumbnailUrl;
+            image.srcset = getSrcSetString(transmorpherIdentifier, thumbnailUrl);
+            image.closest('.full-size-link').href = fullSizeUrl;
 
             // Show enlarge icon.
             image.nextElementSibling.classList.remove('d-hidden');
         });
     }
 
-    window.getSrcSetString = function (transmorpherIdentifier, publicPath, cacheKiller) {
+    window.getSrcSetString = function (transmorpherIdentifier, imageUrl) {
         let srcStrings = []
 
         Object.keys(transformations).forEach(key => {
-            srcStrings.push(`${getImageThumbnailUrl(transmorpherIdentifier, publicPath, transformations[key], cacheKiller)} ${key}`);
+            let modifiedUrl = imageUrl.replace(/(\/).-.+(\?)/i, `$1${transformations[key]}$2`);
+            srcStrings.push(`${modifiedUrl} ${key}`);
         })
 
         return srcStrings.join(', ');
     }
 
-    window.updateVideoDisplay = function (transmorpherIdentifier, url) {
+    window.updateVideoDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
         let videoElements = document.querySelectorAll(`#component-${transmorpherIdentifier} video.video-transmorpher`);
 
         videoElements.forEach(video => {
-            video.src = url;
-            video.querySelector('a').href = url;
+            video.src = thumbnailUrl;
+            video.querySelector('a').href = thumbnailUrl;
             video.classList.remove('d-none');
         })
 
@@ -570,18 +569,6 @@ if (!window.transmorpherScriptLoaded) {
         })
 
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .current-version-age`).classList.add('d-none');
-    }
-
-    window.getImageThumbnailUrl = function (transmorpherIdentifier, path, transformations, cacheKiller) {
-        let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`)
-
-        return `${imgElement.dataset.deliveryUrl}/${path}/${transformations}?c=${cacheKiller}`;
-    }
-
-    window.getFullsizeUrl = function (transmorpherIdentifier, path, cacheKiller) {
-        let imgElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-image.image-transmorpher > img`);
-
-        return `${imgElement.dataset.deliveryUrl}/${path}?c=${cacheKiller}`;
     }
 
     window.displayState = function (transmorpherIdentifier, state, message = null, resetError = true) {
@@ -748,7 +735,7 @@ if (!window.transmorpherScriptLoaded) {
         );
     }
 
-    window.addConfirmEventListeners = function (button, callback, transmorpherIdentifier) {
+    window.addConfirmEventListener = function (button, callback, transmorpherIdentifier) {
         let pressedOnce = false;
         let buttonText = button.textContent;
         let timeOut;

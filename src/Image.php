@@ -2,7 +2,6 @@
 
 namespace Transmorpher;
 
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\TransmorpherApi;
@@ -59,19 +58,40 @@ class Image extends Media
      */
     public function getDerivative(array $transformations = []): string
     {
-        return Http::get($this->getUrl($transformations))->body();
+        return Http::get($this->getBaseUrl($transformations))->body();
     }
 
     /**
-     * @param array $clientResponse
+     * @param array $responseForClient
      * @param TransmorpherUpload $upload
      *
      * @return void
      */
-    public function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void
+    public function updateAfterSuccessfulUpload(array $responseForClient, TransmorpherUpload $upload): void
     {
-        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $clientResponse['public_path']]);
-        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+        $this->transmorpherMedia->update(['is_ready' => 1, 'public_path' => $responseForClient['public_path'], 'hash' => $responseForClient['hash']]);
+        $upload->update(['state' => $responseForClient['state'], 'message' => $responseForClient['message']]);
+    }
+
+    /**
+     * Get the public URL for retrieving a derivative with optional transformations.
+     *
+     * @param array $transformations Transformations in an array notation (e.g. ['width' => 1920, 'height' => 1080]).
+     *
+     * @return string The public URL to a derivative.
+     */
+    public function getUrl(array $transformations = []): string
+    {
+        if ($this->transmorpherMedia->isAvailable) {
+            return sprintf(
+                '%s/%s?v=%s',
+                $this->getBaseUrl(),
+                $this->getTransformations($transformations),
+                $this->getCacheBuster()
+            );
+        }
+
+        return $this->getPlaceholderUrl();
     }
 
     /**
@@ -79,16 +99,6 @@ class Image extends Media
      */
     public function getThumbnailUrl(): string
     {
-        return $this->getUrl(['height' => 150]);
-    }
-
-    /**
-     * Sends the request to reserve an upload slot to the Transmorpher media server API.
-     *
-     * @return Response
-     */
-    protected function sendReserveUploadSlotRequest(): Response
-    {
-        return $this->configureApiRequest()->post(TransmorpherApi::S2S->getUrl('image/reserveUploadSlot'), ['identifier' => $this->getIdentifier()]);
+        return $this->getUrl(['height' => $this->getThumbnailHeight()]);
     }
 }
