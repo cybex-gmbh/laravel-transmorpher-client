@@ -56,14 +56,14 @@ abstract class Media
     public abstract function updateAfterSuccessfulUpload(array $responseForClient, TransmorpherUpload $upload): void;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public abstract function getUrl(): string;
+    public abstract function getUrl(): ?string;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public abstract function getThumbnailUrl(): string;
+    public abstract function getThumbnailUrl(): ?string;
 
     /**
      * @return void
