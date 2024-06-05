@@ -25,15 +25,15 @@ class Video extends Media
      * @param string $extension
      * @return string
      */
-    protected function getVideoUrl(string $format, string $extension): string
+    protected function getVideoUrl(string $format, string $extension): ?string
     {
-        return sprintf('%s/%s/video.%s?v=%s', $this->getBaseUrl(), $format, $extension, $this->getCacheBuster());
+        return  $this->transmorpherMedia->isAvailable ? sprintf('%s/%s/video.%s?v=%s', $this->getBaseUrl(), $format, $extension, $this->getCacheBuster()) : null;
     }
 
     /**
      * @return string
      */
-    public function getMp4Url(): string
+    public function getMp4Url(): ?string
     {
         return $this->getVideoUrl('mp4', 'mp4');
     }
@@ -41,7 +41,7 @@ class Video extends Media
     /**
      * @return string
      */
-    public function getHlsUrl(): string
+    public function getHlsUrl(): ?string
     {
         return $this->getVideoUrl('hls', 'm3u8');
     }
@@ -49,7 +49,7 @@ class Video extends Media
     /**
      * @return string
      */
-    public function getDashUrl(): string
+    public function getDashUrl(): ?string
     {
         return $this->getVideoUrl('dash', 'mpd');
     }
@@ -66,17 +66,17 @@ class Video extends Media
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUrl(): string
+    public function getUrl(): ?string
     {
         return $this->getMp4Url();
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getThumbnailUrl(): string
+    public function getThumbnailUrl(): ?string
     {
         return $this->getMp4Url();
     }
