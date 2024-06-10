@@ -1,0 +1,7 @@
+amigor/ export-ignore
+.github/ export-ignore
+.env.example export-ignore
+docker-compose.yml export-ignore
+docker-compose.pullpreview.yml export-ignore
+sail export-ignore
+
