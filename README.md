@@ -247,6 +247,30 @@ Additionally, you have the option to specify the validation rules marked with a 
 
 ## Development
 
+### Companion app
+
+The Laravel Transmorpher Client comes with a demonstration app which can be used to test the client package.
+
+To get started: 
+
+```bash
+cp .env.example .env
+cp .env.example ./amigor/.env
+
+./sail up -d
+./sail shell
+
+composer install
+php artisan migrate
+
+# Optionally seed the database with a user
+php artisan db:seed --class=PullpreviewSeeder
+```
+
+The package source code is symlinked to the app's `vendor` directory. When changing branches, you need to run `composer update` in the app's directory.
+
+Laravel Sail is set up to start in the app's directory.
+
 ### Frontend Assets
 For installing frontend dependencies you will have to run:
 ```bash
