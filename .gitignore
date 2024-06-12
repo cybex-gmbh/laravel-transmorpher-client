@@ -1,7 +1,10 @@
 composer.lock
+!/amigor/composer.lock
 vendor
+!amigor/public/vendor
 /.idea
 yarn.lock
 yarn-error.log
 node_modules
 package-lock.json
+.env

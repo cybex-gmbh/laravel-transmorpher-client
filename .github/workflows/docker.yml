@@ -1,0 +1,17 @@
+name: Docker Image CI
+
+on:
+  release:
+    types: [ published ]
+  pull_request:
+    types: [ labeled, synchronize, closed ]
+
+jobs:
+  build-push-docker-image:
+    name: Build and push docker image
+    # https://github.com/cybex-gmbh/github-workflows/blob/main/.github/workflows/docker-build-push.yml
+    uses: cybex-gmbh/github-workflows/.github/workflows/docker-build-push.yml@feature/further-configuration-options
+    with:
+      DOCKER_REPOSITORY: cybexwebdev/transmorpher-amigor
+      DOCKERFILE_PATH: ./amigor/docker/Dockerfile
+    secrets: inherit
