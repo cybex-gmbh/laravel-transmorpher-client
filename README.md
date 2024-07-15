@@ -296,7 +296,6 @@ To get started:
 
 ```bash
 cp .env.example .env
-cp .env.example ./amigor/.env
 
 ./sail up -d
 ./sail shell
@@ -307,6 +306,7 @@ php artisan db:seed --class=PullpreviewSeeder
 ```
 
 The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update` in the app directory.
+The .env in the root directory is symlinked to the app directory.
 
 Laravel Sail is set up to start in the app directory.
 

@@ -17,6 +17,7 @@ services:
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
+            - './.env:/var/www/html/amigor/.env'
         networks:
             - shared
             - internal
