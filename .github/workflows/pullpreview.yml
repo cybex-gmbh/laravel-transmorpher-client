@@ -24,8 +24,10 @@ jobs:
       - name: Write secrets in .env file
         if: ${{ contains(github.event.pull_request.labels.*.name, 'pullpreview') }}
         run: |
-          echo "TRANSMORPHER_AUTH_TOKEN_HASH=\"${{ secrets.PULLPREVIEW_TRANSMORPHER_AUTH_TOKEN_HASH }}\"" >> amigor/.env.transmorpher
-          echo "TRANSMORPHER_SIGNING_KEYPAIR=\"${{ secrets.PULLPREVIEW_TRANSMORPHER_SIGNING_KEYPAIR }}\"" >> amigor/.env.transmorpher
+          echo "TRANSMORPHER_AUTH_TOKEN_HASH=\"${{ secrets.PULLPREVIEW_SANCTUM_AUTH_TOKEN_HASH }}\"" >> amigor/.env.transmorpher
+          echo "TRANSMORPHER_SIGNING_KEYPAIR=\"${{ secrets.PULLPREVIEW_SODIUM_KEYPAIR }}\"" >> amigor/.env.transmorpher
+          echo "SEED_USER_NAME=\"${{ secrets.PULLPREVIEW_USER_NAME }}\"" >> amigor/.env.transmorpher
+          echo "SEED_USER_EMAIL=\"${{ secrets.PULLPREVIEW_USER_EMAIL }}\"" >> amigor/.env.transmorpher
 
       - name: Upload transmorpher env file
         if: ${{ contains(github.event.pull_request.labels.*.name, 'pullpreview') }}
@@ -53,7 +55,7 @@ jobs:
       ARTIFACT_NAME: transmorpher-env
     secrets:
       ENV_VARS: |
-        TRANSMORPHER_AUTH_TOKEN="${{ secrets.PULLPREVIEW_TRANSMORPHER_AUTH_TOKEN }}"
+        TRANSMORPHER_AUTH_TOKEN="${{ secrets.PULLPREVIEW_SANCTUM_AUTH_TOKEN }}"
       PULLPREVIEW_AWS_ACCESS_KEY_ID: ${{ secrets.PULLPREVIEW_AWS_ACCESS_KEY_ID }}
       PULLPREVIEW_AWS_SECRET_ACCESS_KEY: ${{ secrets.PULLPREVIEW_AWS_SECRET_ACCESS_KEY }}
       PULLPREVIEW_BASIC_AUTH: ${{ secrets.PULLPREVIEW_BASIC_AUTH }}

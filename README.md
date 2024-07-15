@@ -306,9 +306,9 @@ php artisan migrate
 php artisan db:seed --class=PullpreviewSeeder
 ```
 
-The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update` in the app's directory.
+The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update` in the app directory.
 
-Laravel Sail is set up to start in the app's directory.
+Laravel Sail is set up to start in the app directory.
 
 ### [Pullpreview](https://github.com/pullpreview/action)
 
@@ -316,9 +316,11 @@ For more information, take a look at the PullPreview section of the [github-work
 
 App-specific GitHub Secrets:
 
-- PULLPREVIEW_TRANSMORPHER_SIGNING_KEYPAIR
-- PULLPREVIEW_TRANSMORPHER_AUTH_TOKEN
-- PULLPREVIEW_TRANSMORPHER_AUTH_TOKEN_HASH
+- PULLPREVIEW_SODIUM_KEYPAIR
+- PULLPREVIEW_SANCTUM_AUTH_TOKEN
+- PULLPREVIEW_SANCTUM_AUTH_TOKEN_HASH
+- PULLPREVIEW_USER_NAME
+- PULLPREVIEW_USER_EMAIL
 
 #### Companion App
 

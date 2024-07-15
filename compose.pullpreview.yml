@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: ${APP_CONTAINER_NAME:-amigor}
+    container_name: ${APP_CONTAINER_NAME:-transmorpher-amigor}
     build:
       context: .
       dockerfile: ./amigor/docker/Dockerfile
@@ -23,10 +23,10 @@ services:
       - '.env:/var/www/html/amigor/.env'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.${AMIGOR_CONTAINER_NAME:-amigor}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`)'
-      - 'traefik.http.routers.${AMIGOR_CONTAINER_NAME:-amigor}.tls=true'
-      - 'traefik.http.routers.${AMIGOR_CONTAINER_NAME:-amigor}.tls.certresolver=production'
-      - 'traefik.http.routers.${AMIGOR_CONTAINER_NAME:-amigor}.priority=1'
+      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`)'
+      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.tls=true'
+      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.tls.certresolver=production'
+      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.priority=1'
       - 'traefik.http.routers.amigor-root.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`) && Path(`/`)'
       - 'traefik.http.routers.amigor-root.middlewares=htpasswd'
       - 'traefik.http.routers.amigor-root.tls=true'
@@ -69,16 +69,17 @@ services:
       PULLPREVIEW_FIRST_RUN: ${PULLPREVIEW_FIRST_RUN}
       VIDEO_TRANSCODING_WORKERS_AMOUNT: ${VIDEO_TRANSCODING_WORKERS_AMOUNT:-1}
       APP_URL: ${PULLPREVIEW_URL}/transmorpherServer
+      CLIENT_CONTAINER_NAME: ${APP_CONTAINER_NAME:-transmorpher-amigor}
     volumes:
       - 'transmorpher-storage:/var/www/html/storage'
       - './amigor/.env.transmorpher:/var/www/html/.env'
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`) && PathPrefix(`/transmorpherServer`)'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher}.middlewares=strip-path-prefix@docker'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher}.priority=2'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher}.tls=true'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher}.tls.certresolver=production'
+      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`) && PathPrefix(`/transmorpherServer`)'
+      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.middlewares=strip-path-prefix@docker'
+      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.priority=2'
+      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.tls=true'
+      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.tls.certresolver=production'
       - "traefik.http.middlewares.strip-path-prefix.stripprefix.prefixes=/transmorpherServer"
   mysql-transmorpher:
     image: 'mysql/mysql-server:8.0'
