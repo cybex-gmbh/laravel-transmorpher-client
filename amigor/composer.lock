@@ -137,11 +137,11 @@
         },
         {
             "name": "cybex/laravel-transmorpher-client",
-            "version": "dev-feature/companion-app",
+            "version": "dev-fix/css",
             "dist": {
                 "type": "path",
                 "url": "vendor/cybex/laravel-transmorpher-client",
-                "reference": "2c47837093b4c83bc787dfeeabd280e0d1c2fe07"
+                "reference": "fe3a923a38759639a30fe3d4b53188197618d8ba"
             },
             "require": {
                 "enyo/dropzone": "^5.9",

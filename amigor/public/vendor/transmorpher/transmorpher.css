@@ -266,6 +266,10 @@
 
 .transmorpher {
   min-width: 200px;
+  line-height: 1.5;
+}
+.transmorpher * {
+  box-sizing: border-box;
 }
 .transmorpher .dropzone {
   width: 100%;
@@ -442,6 +446,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 @media screen and (max-width: 935px) {
@@ -476,6 +481,12 @@
   filter: drop-shadow(0px 0px 1px #000);
   height: 30px;
   width: 30px;
+}
+.transmorpher .icon[role=button] {
+  cursor: pointer;
+}
+.transmorpher .btn-close {
+  cursor: pointer;
 }
 .transmorpher .error-display {
   width: 100%;
