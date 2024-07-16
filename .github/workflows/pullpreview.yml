@@ -48,7 +48,7 @@ jobs:
       statuses: write # to create commit status
 
     name: Deploy PullPreview staging environment
-    uses: cybex-gmbh/github-workflows/.github/workflows/pullpreview.yml@feature/further-configuration-options
+    uses: cybex-gmbh/github-workflows/.github/workflows/pullpreview.yml@main
     with:
       PULLPREVIEW_ADMINS: jheusinger, gael-connan-cybex, holyfabi, lupinitylabs, mszulik
       INSTANCE_TYPE: large
