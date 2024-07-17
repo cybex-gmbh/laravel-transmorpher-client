@@ -2,6 +2,7 @@
 
 namespace Transmorpher\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,7 +28,8 @@ class TransmorpherMedia extends Model
         'type',
         'is_ready',
         'latest_upload_state',
-        'latest_upload_token'
+        'latest_upload_token',
+        'hash'
     ];
 
     /**
@@ -39,6 +41,13 @@ class TransmorpherMedia extends Model
         'type' => MediaType::class,
         'latest_upload_state' => UploadState::class,
     ];
+
+    public static function fromIdentifier(string $identifier): TransmorpherMedia
+    {
+        [$alias, $key, $media_name] = explode('-', $identifier);
+
+        return TransmorpherMedia::whereTransmorphableType($alias)->whereTransmorphableId($key)->whereMediaName($media_name)->first();
+    }
 
     /**
      * Return the parent transmorphable model.
@@ -63,5 +72,19 @@ class TransmorpherMedia extends Model
     public function getMedia(): Media
     {
         return $this->type->getMediaClass()::for($this->Transmorphable, $this->media_name);
+    }
+
+    public function isAvailable(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): bool => $this->is_ready && $this->public_path
+        );
+    }
+
+    public function latestSuccessfulUpload(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): TransmorpherUpload => $this->TransmorpherUploads()->whereState(UploadState::SUCCESS->value)->latest()->first()
+        );
     }
 }

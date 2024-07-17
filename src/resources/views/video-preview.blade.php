@@ -6,7 +6,7 @@
         </p>
     </video>
     <img data-placeholder-url="{{ $media->getPlaceholderUrl() }}"
-         src="{{ !$isReady ? $media->getUrl() : '' }}"
+         src="{{ !$isReady ? $media->getPlaceholderUrl() : '' }}"
          alt="@lang('transmorpher::image-alt-tags.placeholder_image', ['media_name' => $mediaName])"
             @class(['dz-image', 'video-transmorpher', 'd-none' => $isReady])
     />

@@ -5,9 +5,11 @@ namespace Transmorpher;
 use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Transmorpher\Enums\ClientErrorResponse;
+use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Enums\UploadState;
@@ -22,6 +24,7 @@ abstract class Media
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
     protected TransmorpherUpload $upload;
+    protected MediaType $type;
 
     /**
      * Get either an existing instance or creates a new one.
@@ -45,22 +48,22 @@ abstract class Media
     protected abstract function __construct(HasTransmorpherMediaInterface $model, string $mediaName);
 
     /**
-     * @param array $clientResponse
+     * @param array $responseForClient
      * @param TransmorpherUpload $upload
      *
      * @return void
      */
-    public abstract function updateAfterSuccessfulUpload(array $clientResponse, TransmorpherUpload $upload): void;
+    public abstract function updateAfterSuccessfulUpload(array $responseForClient, TransmorpherUpload $upload): void;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public abstract function getThumbnailUrl(): string;
+    public abstract function getUrl(): ?string;
 
     /**
-     * @return Response
+     * @return string|null
      */
-    protected abstract function sendReserveUploadSlotRequest(): Response;
+    public abstract function getThumbnailUrl(): ?string;
 
     /**
      * @return void
@@ -103,7 +106,7 @@ abstract class Media
             while (!feof($fileHandle)) {
                 $chunk = fread($fileHandle, $chunkSize);
 
-                $response = $this->configureApiRequest()
+                $responseFromServer = $this->configureApiRequest()
                     ->attach('file', $chunk, $fileName ?: basename(stream_get_meta_data($fileHandle)['uri']))
                     ->post(
                         TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
@@ -114,17 +117,16 @@ abstract class Media
                     );
             }
 
-            $clientResponse = $this->getClientResponseFromResponse($response);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        return $this->upload->handleStateUpdate($clientResponse);
+        return $this->upload->handleStateUpdate($responseForClient);
     }
 
     /**
      * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
-     * The request itself is in the Image or Video class, since the API differs.
      *
      * @return array
      */
@@ -134,23 +136,24 @@ abstract class Media
             'state' => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
+        $reserveUploadSlotUrl = TransmorpherApi::S2S->getUrl(sprintf('%s/reserveUploadSlot', $this->type->value));
 
         try {
-            $response = $this->sendReserveUploadSlotRequest();
-            $clientResponse = $this->getClientResponseFromResponse($response);
+            $responseFromServer = $this->configureApiRequest()->post($reserveUploadSlotUrl, ['identifier' => $this->getIdentifier()]);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        $valuesToUpdate = ['state' => $clientResponse['state'], 'message' => $clientResponse['message']];
+        $valuesToUpdate = ['state' => $responseForClient['state'], 'message' => $responseForClient['message']];
 
-        if ($clientResponse['state'] !== UploadState::ERROR->value) {
-            $valuesToUpdate['token'] = $clientResponse['upload_token'];
+        if ($responseForClient['state'] !== UploadState::ERROR->value) {
+            $valuesToUpdate['token'] = $responseForClient['upload_token'];
         }
 
         $this->upload->update($valuesToUpdate);
 
-        return $clientResponse;
+        return $responseForClient;
     }
 
     /**
@@ -163,44 +166,37 @@ abstract class Media
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending delete request.']);
 
         try {
-            $response = $this->configureApiRequest()->delete(TransmorpherApi::S2S->getUrl(sprintf('media/%s', $this->getIdentifier())));
-            $clientResponse = $this->getClientResponseFromResponse($response);
+            $responseFromServer = $this->configureApiRequest()->delete(TransmorpherApi::S2S->getUrl(sprintf('media/%s', $this->getIdentifier())));
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
-        if ($clientResponse['state'] === UploadState::DELETED->value) {
+        if ($responseForClient['state'] === UploadState::DELETED->value) {
             $this->transmorpherMedia->update(['is_ready' => 0]);
         } else {
-            if ($clientResponse['httpCode'] === 404) {
-                $clientResponse['clientMessage'] = trans('transmorpher::errors.media_already_deleted');
+            if ($responseForClient['httpCode'] === 404) {
+                $responseForClient['clientMessage'] = trans('transmorpher::errors.media_already_deleted');
             }
         }
 
-        $upload->update(['state' => $clientResponse['state'], 'message' => $clientResponse['message']]);
+        $upload->update(['state' => $responseForClient['state'], 'message' => $responseForClient['message']]);
 
-        return $clientResponse;
+        return $responseForClient;
     }
 
     /**
-     * Get the public URL for retrieving a derivative with optional transformations.
+     * Get the public base URL for retrieving a derivative.
      *
-     * @param array $transformations Transformations in an array notation (e.g. ['width' => 1920, 'height' => 1080]).
-     *
-     * @return string The public URL to a derivative.
+     * @return string The public base URL to a derivative.
      */
-    public function getUrl(array $transformations = []): string
+    protected function getBaseUrl(): string
     {
-        if ($this->transmorpherMedia->is_ready && $this->transmorpherMedia->public_path) {
-            return sprintf(
-                '%s/%s/%s',
-                $this->getDeliveryUrl(),
-                $this->transmorpherMedia->public_path,
-                $this->getTransformations($transformations)
-            );
-        }
-
-        return $this->getPlaceholderUrl();
+        return sprintf(
+            '%s/%s',
+            $this->getDeliveryUrl(),
+            $this->transmorpherMedia->public_path,
+        );
     }
 
     /**
@@ -222,7 +218,7 @@ abstract class Media
     }
 
     /**
-     * Set a version as current version on the Transmorpher.
+     * Set a version as the current version on the Transmorpher.
      *
      * @param int $versionNumber The version number which should be set as current.
      *
@@ -233,20 +229,18 @@ abstract class Media
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
-            $response = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)), [
-                'callback_url' => sprintf('%s/%s', config('transmorpher.api.callback_base_url'), config('transmorpher.api.callback_route')),
-            ]);
-            $clientResponse = $this->getClientResponseFromResponse($response);
+            $responseFromServer = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)));
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
-            $clientResponse = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
         // HTTP code is only available in the response in case the request was not successful.
-        if ($clientResponse['state'] === UploadState::ERROR->value && $clientResponse['httpCode'] === 404) {
-            $clientResponse['clientMessage'] = trans('transmorpher::errors.version_no_longer_available');
+        if ($responseForClient['state'] === UploadState::ERROR->value && $responseForClient['httpCode'] === 404) {
+            $responseForClient['clientMessage'] = trans('transmorpher::errors.version_no_longer_available');
         }
 
-        return $upload->handleStateUpdate($clientResponse);
+        return $upload->handleStateUpdate($responseForClient);
     }
 
     /**
@@ -258,24 +252,24 @@ abstract class Media
     }
 
     /**
-     * @param array $response The server response as an array.
+     * @param array $responseFromServer The server response as an array.
      * @param int $httpCode
      * @return array The response body.
      */
-    public function getClientResponse(array $response, int $httpCode): array
+    public function generateResponseForClient(array $responseFromServer, int $httpCode): array
     {
-        return isset($response['state']) && $response['state'] !== UploadState::ERROR->value ? $response : ClientErrorResponse::get($response, $httpCode);
+        return isset($responseFromServer['state']) && $responseFromServer['state'] !== UploadState::ERROR->value ? $responseFromServer : ClientErrorResponse::get($responseFromServer, $httpCode);
     }
 
     /**
-     * Wraps the "getClientResponse"-method to extract the body and http code from a response.
+     * Wraps the "generateResponseForClient"-method to extract the body and http code from a response.
      *
-     * @param Response $response
+     * @param Response $responseFromServer
      * @return array
      */
-    public function getClientResponseFromResponse(Response $response): array
+    public function extractResponseForClient(Response $responseFromServer): array
     {
-        return $this->getClientResponse(json_decode($response->body(), true), $response->status());
+        return $this->generateResponseForClient(json_decode($responseFromServer->body(), true), $responseFromServer->status());
     }
 
     /**
@@ -317,6 +311,7 @@ abstract class Media
      * @param array $transformations An array of transformations.
      *
      * @return string The transformations converted to a string.
+     * @throws TransformationNotFoundException
      */
     public function getTransformations(array $transformations): string
     {
@@ -431,7 +426,6 @@ abstract class Media
         }
 
         return $matches[1] / $matches[2];
-
     }
 
     /**
@@ -477,5 +471,34 @@ abstract class Media
         if (!preg_match('/^\w(-?\w)*$/', $this->getIdentifier())) {
             throw new InvalidIdentifierException($this->model, $this->mediaName);
         }
+    }
+
+    /**
+     * Get the cache buster.
+     * The cache invalidator received from the Transmorpher server is stored in the cache for 14 days.
+     *
+     * @return string
+     */
+    protected function getCacheBuster(): string
+    {
+        $cacheBuster = Cache::remember('cache_invalidator', now()->addDays(14), function () {
+            return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('cacheInvalidator'))->body();
+        });
+
+        return sprintf(
+            '%s_%s',
+            $cacheBuster,
+            $this->transmorpherMedia->hash ?? md5($this->transmorpherMedia->latestSuccessfulUpload->updated_at)
+        );
+    }
+
+    /**
+     * Get the configured thumbnail height.
+     *
+     * @return int
+     */
+    protected function getThumbnailHeight(): int
+    {
+        return config('transmorpher.delivery.thumbnail.transformations.height', 300);
     }
 }

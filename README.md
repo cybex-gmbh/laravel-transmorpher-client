@@ -1,12 +1,14 @@
 # Laravel Transmorpher Client
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/cybex/laravel-transmorpher-client.svg?style=flat-square)](https://packagist.org/packages/cybex/laravel-transmorpher-client)
+
 A client package for Laravel applications that use the [Transmorpher media server](https://github.com/cybex-gmbh/transmorpher).
 
 The client package provides a Dropzone component, which supports chunked uploads, out of the box.
 
 ## Installation
 
-To get the latest version, simply require the project using [Composer](https://getcomposer.org):
+To get the latest version, require the project using [Composer](https://getcomposer.org):
 
 ```bash
 composer require cybex/laravel-transmorpher-client
@@ -34,7 +36,7 @@ By default, the `web` and `auth` middlewares are applied to this package's route
 
 ### .env keys
 
-Before you can use this package you have to configure some .env keys (or config values).
+Before you can use this package, you have to configure some .env keys (or config values).
 
 The `TRANSMORPHER_AUTH_TOKEN` is a Laravel Sanctum token which is used for authentication at the Transmorpher media
 server. This token should be provided to you by an admin of the Transmorpher media server.
@@ -55,12 +57,11 @@ The `TRANSMORPHER_DELIVERY_URL` is the Transmorpher endpoint which is used to re
 TRANSMORPHER_WEB_DELIVERY_BASE_URL=https://example.com
 ```
 
-**_NOTE:_** In case you are in a docker environment or similar, you might want to set specific URLs for server to server communication. You can do so by using the following .env
-keys:
+**_NOTE:_** In case you are in a docker environment or similar, you might want to set specific URLs for server-to-server communication.
+You can do so by using the following .env keys:
 
 ```dotenv
 TRANSMORPHER_S2S_API_BASE_URL=http://example/api
-TRANSMORPHER_S2S_CALLBACK_BASE_URL=http://example
 ```
 
 A placeholder image can be displayed for media without uploads.
@@ -106,15 +107,15 @@ protected array $transmorpherVideos = [
 ];
 ```
 
-**NOTE:** These property names are not replaceable since they are expected by the `HasTransmorpherMedia` trait. 
+**NOTE:** These property names are not replaceable since they are expected by the `HasTransmorpherMedia` trait.
 
 The trait `HasTransmorpherMedia` provides convenient methods to access your media.
 
 ```php
-// Retrieve all images as collection, with media name as key and the Image object as value.
+// Retrieve all images as a collection, with media name as key and the Image object as value.
 $yourModel->images;
 
-// Retrieve all videos as collection, with media name as key and the Video object as value.
+// Retrieve all videos as a collection, with media name as key and the Video object as value.
 $yourModel->videos;
 
 // Retrieve a single Image object.
@@ -123,6 +124,7 @@ $yourModel->image('front');
 // Retrieve a single Video object.
 $yourModel->video('teaser');
 ```
+
 The instance of the corresponding `Media`-class can then be used to make API calls to the Transmorpher media
 server.
 
@@ -137,6 +139,7 @@ $image->upload($fileHandle);
 // Transformations are optional and will be included in the URL.
 $image->getUrl(['width' => 1920, 'height' => 1080, 'format' => 'jpg', 'quality' => 80]);
 ```
+
 You can iterate over all your media for a model with `images` and `videos`:
 
 ```html
@@ -148,9 +151,10 @@ You can iterate over all your media for a model with `images` and `videos`:
 #### Identifier
 
 To uniquely identify media, an identifier is passed to the Transmorpher media server. This identifier consists of the following:
- - media name: name for the media in the model
- - model id
- - an alias (by default the morph alias is used)
+
+- media name: name for the media in the model
+- model id
+- an alias (by default the morph alias is used)
 
 Instead of using the morph alias, you can add the property `$transmorpherAlias` to your model, which will then be used for the identifier.
 
@@ -168,7 +172,7 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 **_NOTE:_** As the identifier is used in filenames and URLs, your chosen alias may not contain special characters (e.g. slashes).
 
 > **Warning**
-> 
+>
 > The alias is not intended to be ever changed, as you change the identifier and therefore lose the access to your version history.
 > The images of the old identifier will still be accessible from the public, but the client cannot associate them to its model.
 
@@ -226,6 +230,7 @@ If you want a more dynamic approach, to display a dropzone for each available im
 **NOTE:** This is no security feature and will only be checked in the frontend.
 
 There are some validation rules which can be applied for the dropzone component:
+
 - accepted file types
 - max file size
 - min/max width *
@@ -247,12 +252,15 @@ Additionally, you have the option to specify the validation rules marked with a 
 ## Development
 
 ### Frontend Assets
+
 For installing frontend dependencies you will have to run:
+
 ```bash
 npm install
 ```
 
 For compiling assets you can use the following command in the project root:
+
 ```bash
 npx mix
 ```
@@ -274,10 +282,64 @@ You also have the possibility to apply transformations.
 ```
 
 List of available transformations:
+
 - width
 - height
 - format
 - quality
+
+### Companion app
+
+The Laravel Transmorpher Client comes with a demonstration app which can be used to test the client package.
+
+To get started:
+
+```bash
+cp .env.example .env
+
+./sail up -d
+./sail shell
+
+composer install
+php artisan migrate
+php artisan db:seed --class=PullpreviewSeeder
+```
+
+The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update` in the app directory.
+The .env in the root directory is symlinked to the app directory.
+
+Laravel Sail is set up to start in the app directory.
+
+### [Pullpreview](https://github.com/pullpreview/action)
+
+For more information, take a look at the PullPreview section of the [github-workflow repository](https://github.com/cybex-gmbh/github-workflows#pullpreview).
+
+App-specific GitHub Secrets:
+
+- PULLPREVIEW_SODIUM_KEYPAIR
+- PULLPREVIEW_SANCTUM_AUTH_TOKEN
+- PULLPREVIEW_SANCTUM_AUTH_TOKEN_HASH
+- PULLPREVIEW_USER_NAME
+- PULLPREVIEW_USER_EMAIL
+
+#### Companion App
+
+A demonstration app, which implements the client package, is booted with PullPreview and available at the PullPreview root URL. The Transmorpher media server runs
+under `/transmorpherServer`.
+
+Additionally, an image is created with the branch name as tag. This image can be used in the Transmorpher media server for testing related changes. This image is deleted on pull
+request close.
+
+#### Auth Token (Hash)
+
+The Transmorpher media server is seeded with a user with an auth token. To get access, you will have to locally create a token and use this token and its hash.
+
+```bash
+php artisan create:user pullpreview pullpreview@example.com http://pullpreview.test/transmorpher/notifications
+```
+
+Take the hash of the token from the `personal_access_tokens` table and save it to GitHub secrets. The command also provides a `TRANSMORPHER_AUTH_TOKEN`, which should be stored in
+the corresponding GitHub secret.
 
 ## License
 

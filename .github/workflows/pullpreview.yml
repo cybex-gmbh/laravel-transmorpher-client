@@ -1,0 +1,61 @@
+name: PullPreview
+
+on:
+  pull_request:
+    types: [ labeled, unlabeled, synchronize, closed, reopened ]
+
+jobs:
+  prepare-transmorpher-environment:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'pullpreview') || github.event.action == 'unlabeled' || github.event.action == 'closed' }}
+    name: Prepare PullPreview staging environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Transmorpher Client repo
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'pullpreview') && github.event.action != 'unlabeled' && github.event.action != 'closed' }}
+        # https://github.com/actions/checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            amigor/.env.transmorpher
+          # https://git-scm.com/docs/git-sparse-checkout#_internalscone_mode_handling
+          sparse-checkout-cone-mode: false
+
+      - name: Write secrets in .env file
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'pullpreview') && github.event.action != 'unlabeled' && github.event.action != 'closed' }}
+        run: |
+          echo "TRANSMORPHER_AUTH_TOKEN_HASH=\"${{ secrets.PULLPREVIEW_SANCTUM_AUTH_TOKEN_HASH }}\"" >> amigor/.env.transmorpher
+          echo "TRANSMORPHER_SIGNING_KEYPAIR=\"${{ secrets.PULLPREVIEW_SODIUM_KEYPAIR }}\"" >> amigor/.env.transmorpher
+          echo "SEED_USER_NAME=\"${{ secrets.PULLPREVIEW_USER_NAME }}\"" >> amigor/.env.transmorpher
+          echo "SEED_USER_EMAIL=\"${{ secrets.PULLPREVIEW_USER_EMAIL }}\"" >> amigor/.env.transmorpher
+
+      - name: Upload transmorpher env file
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'pullpreview') && github.event.action != 'unlabeled' && github.event.action != 'closed' }}
+        # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: transmorpher-env
+          path: |
+            placeholderSoFilePathsArePreserved
+            amigor/.env.transmorpher
+
+  deploy-staging-environment:
+    needs: prepare-transmorpher-environment
+    permissions:
+      contents: read # to fetch code (actions/checkout)
+      deployments: write # to delete deployments
+      pull-requests: write # to remove labels
+      statuses: write # to create commit status
+
+    name: Deploy PullPreview staging environment
+    uses: cybex-gmbh/github-workflows/.github/workflows/pullpreview.yml@main
+    with:
+      PULLPREVIEW_ADMINS: jheusinger, gael-connan-cybex, holyfabi, lupinitylabs, mszulik
+      INSTANCE_TYPE: large
+      ARTIFACT_NAME: transmorpher-env
+    secrets:
+      ENV_VARS: |
+        TRANSMORPHER_AUTH_TOKEN="${{ secrets.PULLPREVIEW_SANCTUM_AUTH_TOKEN }}"
+      PULLPREVIEW_AWS_ACCESS_KEY_ID: ${{ secrets.PULLPREVIEW_AWS_ACCESS_KEY_ID }}
+      PULLPREVIEW_AWS_SECRET_ACCESS_KEY: ${{ secrets.PULLPREVIEW_AWS_SECRET_ACCESS_KEY }}
+      PULLPREVIEW_BASIC_AUTH: ${{ secrets.PULLPREVIEW_BASIC_AUTH }}

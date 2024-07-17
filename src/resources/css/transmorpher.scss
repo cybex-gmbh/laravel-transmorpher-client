@@ -3,6 +3,11 @@
 
 .transmorpher {
   min-width: 200px;
+  line-height: 1.5;
+
+  * {
+    box-sizing: border-box;
+  }
 
   .dropzone {
     width: 100%;
@@ -230,6 +235,7 @@
       flex-wrap: wrap;
       gap: 1rem;
       padding: 0;
+      margin: 0;
       list-style: none;
 
       @media screen and (max-width: 935px) {
@@ -271,6 +277,14 @@
       height: 30px;
       width: 30px;
     }
+
+    &[role="button"] {
+      cursor: pointer;
+    }
+  }
+
+  .btn-close {
+    cursor: pointer;
   }
 
   .error-display {
