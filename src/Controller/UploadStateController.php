@@ -30,10 +30,9 @@ class UploadStateController
         return response()->json([
             'clientMessage' => $message ?? $latestUpload?->message,
             'state' => $state ?? $latestUpload?->state,
-            'thumbnailUrl' => $transmorpherMedia->getMedia()->getThumbnailUrl(),
-            'fullsizeUrl' => $transmorpherMedia->getMedia()->getUrl(),
             'latestUploadToken' => $transmorpherMedia->latest_upload_token,
-            'lastUpdated' => $latestUpload?->updated_at
+            'lastUpdated' => $latestUpload?->updated_at,
+            ...$transmorpherMedia->getMedia()->getMediaUrls()
         ]);
     }
 
