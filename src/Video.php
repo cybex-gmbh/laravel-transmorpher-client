@@ -80,4 +80,17 @@ class Video extends Media
     {
         return $this->transmorpherMedia->isAvailable ? $this->getMp4Url() : $this->getPlaceholderUrl();
     }
+
+    /**
+     * @return array
+     */
+    public function getMediaUrls(): array
+    {
+        return [
+            'mp4Url' => $this->getMp4Url(),
+            'hlsUrl' => $this->getHlsUrl(),
+            'dashUrl' => $this->getDashUrl(),
+            'thumbnailUrl' => $this->getThumbnailUrl(),
+        ];
+    }
 }
