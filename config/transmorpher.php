@@ -3,8 +3,9 @@
 return [
     'client_name' => env('TRANSMORPHER_CLIENT_NAME'),
 
-    // The middleware applied to routes provided by this package. The 'web' middleware is necessary and applied by default.
+    // The middleware applied to routes provided by this package.
     'routeMiddleware' => [
+        'web',
         'auth'
     ],
 
