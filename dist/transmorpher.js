@@ -617,11 +617,12 @@ if (!window.transmorpherScriptLoaded) {
     modal.classList.add('d-flex');
     previewElement ? previewElement.style.display = 'none' : null;
     modal.querySelector('.badge-error').onclick = function () {
+      var _dropzone$files$;
       previewElement ? previewElement.style.display = 'block' : null;
       document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
       if (dropzone.files[1] != null) {
         dropzone.removeFile(dropzone.files[0]);
-      } else if (uploadState !== 'processing' && dropzone.files[0].status !== dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].ADDED) {
+      } else if (uploadState !== 'processing' && (dropzone === null || dropzone === void 0 || (_dropzone$files$ = dropzone.files[0]) === null || _dropzone$files$ === void 0 ? void 0 : _dropzone$files$.status) !== dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].ADDED) {
         // This happens when the dropzone state was reset while initializing.
         displayState(transmorpherIdentifier, 'error', media[transmorpherIdentifier].translations['upload_aborted']);
         return;

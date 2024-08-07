@@ -655,7 +655,7 @@ if (!window.transmorpherScriptLoaded) {
 
             if (dropzone.files[1] != null) {
                 dropzone.removeFile(dropzone.files[0]);
-            } else if (uploadState !== 'processing' && dropzone.files[0].status !== Dropzone.ADDED) {
+            } else if (uploadState !== 'processing' && dropzone?.files[0]?.status !== Dropzone.ADDED) {
                 // This happens when the dropzone state was reset while initializing.
                 displayState(transmorpherIdentifier, 'error', media[transmorpherIdentifier].translations['upload_aborted']);
                 return;
