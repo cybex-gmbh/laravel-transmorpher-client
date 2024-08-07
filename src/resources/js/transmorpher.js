@@ -654,7 +654,7 @@ if (!window.transmorpherScriptLoaded) {
             if (dropzone.files[1] != null) {
                 dropzone.removeFile(dropzone.files[0]);
             } else if (uploadState !== 'processing' && dropzone.files[0].status !== Dropzone.ADDED) {
-                displayState(transmorpherIdentifier, 'error', media[transmorpherIdentifier].translations['upload_already_finished']);
+                displayState(transmorpherIdentifier, 'error', media[transmorpherIdentifier].translations['upload_aborted']);
                 return;
             }
 
