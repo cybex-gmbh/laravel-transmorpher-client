@@ -290,6 +290,8 @@ if (!window.transmorpherScriptLoaded) {
     } else {
       displayUploadResult(response, transmorpherIdentifier, uploadToken);
     }
+
+    // Fixes undefined state after first upload.
     document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone.removeAllFiles();
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
@@ -620,6 +622,7 @@ if (!window.transmorpherScriptLoaded) {
       if (dropzone.files[1] != null) {
         dropzone.removeFile(dropzone.files[0]);
       } else if (uploadState !== 'processing' && dropzone.files[0].status !== dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].ADDED) {
+        // This happens when the dropzone state was reset while initializing.
         displayState(transmorpherIdentifier, 'error', media[transmorpherIdentifier].translations['upload_aborted']);
         return;
       }

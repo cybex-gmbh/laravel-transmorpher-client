@@ -141,7 +141,7 @@
             "dist": {
                 "type": "path",
                 "url": "vendor/cybex/laravel-transmorpher-client",
-                "reference": "ca16cd2f021ace6213c5b3320772ee88d5cc79a1"
+                "reference": "ceaf6255a860eacfbc3ee8b67271c4c065dc619e"
             },
             "require": {
                 "enyo/dropzone": "^5.9",
