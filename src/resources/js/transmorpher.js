@@ -89,7 +89,8 @@ if (!window.transmorpherScriptLoaded) {
                             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
                                 openUploadConfirmModal(
                                     transmorpherIdentifier,
-                                    createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done)
+                                    createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done),
+                                    uploadingStateResponse.state
                                 );
                             } else {
                                 reserveUploadSlot(transmorpherIdentifier, file.done);
@@ -282,6 +283,10 @@ if (!window.transmorpherScriptLoaded) {
         } else {
             displayUploadResult(response, transmorpherIdentifier, uploadToken);
         }
+
+
+        // Fixes undefined state after first upload.
+        document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone.removeAllFiles();
     }
 
     window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
@@ -416,7 +421,7 @@ if (!window.transmorpherScriptLoaded) {
     window.setVersion = function (transmorpherIdentifier, version) {
         getState(transmorpherIdentifier).then(uploadingStateResponse => {
             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(makeSetVersionCall, transmorpherIdentifier, version));
+                openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(makeSetVersionCall, transmorpherIdentifier, version), uploadingStateResponse.state);
             } else {
                 makeSetVersionCall(transmorpherIdentifier, version);
             }
@@ -636,7 +641,7 @@ if (!window.transmorpherScriptLoaded) {
         return date.toLocaleString();
     }
 
-    window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
+    window.openUploadConfirmModal = function (transmorpherIdentifier, callback, uploadState) {
         let modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
         let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
         let previewElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`);
@@ -645,12 +650,17 @@ if (!window.transmorpherScriptLoaded) {
         previewElement ? previewElement.style.display = 'none' : null;
 
         modal.querySelector('.badge-error').onclick = function () {
-            if (dropzone.files[1] != null) {
-                dropzone.removeFile(dropzone.files[0]);
-            }
-
             previewElement ? previewElement.style.display = 'block' : null;
             document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.remove('d-flex');
+
+            if (dropzone.files[1] != null) {
+                dropzone.removeFile(dropzone.files[0]);
+            } else if (uploadState !== 'processing' && dropzone?.files[0]?.status !== Dropzone.ADDED) {
+                // This happens when the dropzone state was reset while initializing.
+                displayState(transmorpherIdentifier, 'error', media[transmorpherIdentifier].translations['upload_aborted']);
+                return;
+            }
+
             callback();
         }
     }

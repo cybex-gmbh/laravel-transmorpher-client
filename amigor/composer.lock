@@ -137,11 +137,11 @@
         },
         {
             "name": "cybex/laravel-transmorpher-client",
-            "version": "dev-fix/css",
+            "version": "dev-fix/overwriting-uploads",
             "dist": {
                 "type": "path",
                 "url": "vendor/cybex/laravel-transmorpher-client",
-                "reference": "fe3a923a38759639a30fe3d4b53188197618d8ba"
+                "reference": "a832d742b07e3375a238e6fb6403a033d5c1ffd0"
             },
             "require": {
                 "enyo/dropzone": "^5.9",
