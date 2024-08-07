@@ -5,7 +5,7 @@ return [
 
     // The middleware applied to routes provided by this package. The 'web' middleware is necessary and applied by default.
     'routeMiddleware' => [
-//        'auth'
+        'web'
     ],
 
     'api' => [
