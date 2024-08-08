@@ -291,7 +291,7 @@ if (!window.transmorpherScriptLoaded) {
       displayUploadResult(response, transmorpherIdentifier, uploadToken);
     }
 
-    // The file object stays in the dropzone forever and messes with our state, we don't need it.
+    // Remove the uploaded file to reset the state.
     var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
     dropzone.removeFile(dropzone.files[0]);
   };
