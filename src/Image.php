@@ -101,4 +101,16 @@ class Image extends Media
     {
         return $this->getUrl(['height' => $this->getThumbnailHeight()]);
     }
+
+    /**
+     * @return array
+     */
+    public function getMediaUrls(): array
+    {
+        return [
+            'fullsizeUrl' => $this->getUrl(),
+            'thumbnailUrl' => $this->getThumbnailUrl(),
+        ];
+
+    }
 }

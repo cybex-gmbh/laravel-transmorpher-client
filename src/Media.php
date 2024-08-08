@@ -66,6 +66,11 @@ abstract class Media
     public abstract function getThumbnailUrl(): ?string;
 
     /**
+     * @return array
+     */
+    public abstract function getMediaUrls(): array;
+
+    /**
      * @return void
      */
     protected function createTransmorpherMedia(): void

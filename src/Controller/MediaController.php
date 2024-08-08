@@ -19,12 +19,7 @@ class MediaController
     public function getVersions(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
         return response()->json(
-            array_merge(
-                $transmorpherMedia->getMedia()->getVersions(), [
-                    'thumbnailUrl' => $transmorpherMedia->getMedia()->getThumbnailUrl(),
-                    'fullsizeUrl' => $transmorpherMedia->getMedia()->getUrl(),
-                ]
-            )
+            array_merge($transmorpherMedia->getMedia()->getVersions(), $transmorpherMedia->getMedia()->getMediaUrls())
         );
     }
 
@@ -36,12 +31,7 @@ class MediaController
     public function setVersion(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
         return response()->json(
-            array_merge(
-                $transmorpherMedia->getMedia()->setVersion($request->input('version')), [
-                    'thumbnailUrl' => $transmorpherMedia->getMedia()->getThumbnailUrl(),
-                    'fullsizeUrl' => $transmorpherMedia->getMedia()->getUrl(),
-                ]
-            )
+            array_merge($transmorpherMedia->getMedia()->setVersion($request->input('version')), $transmorpherMedia->getMedia()->getMediaUrls())
         );
     }
 
@@ -52,7 +42,9 @@ class MediaController
      */
     public function delete(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json($transmorpherMedia->getMedia()->delete());
+        return response()->json(array_merge($transmorpherMedia->getMedia()->delete(), [
+            'placeholderUrl' => $transmorpherMedia->getMedia()->getPlaceholderUrl()
+        ]));
     }
 
     /**
