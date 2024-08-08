@@ -43,6 +43,7 @@ if (!window.transmorpherScriptLoaded) {
             dictDefaultMessage: medium.translations['drop_files_to_upload'],
             dictFileTooBig: medium.translations['max_file_size_exceeded'],
             dictInvalidFileType: medium.translations['invalid_file_type'],
+            createImageThumbnails: false,
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
@@ -108,10 +109,7 @@ if (!window.transmorpherScriptLoaded) {
                     errorElement.remove();
                 }
 
-                // Dropzone only emits the "thumbnail" event for images.
-                if (!file.type.match(/image.*/)) {
-                    this.emit("thumbnail", file);
-                }
+                this.emit("thumbnail", file);
             },
             // Update database when upload was canceled manually.
             canceled: function (file) {
