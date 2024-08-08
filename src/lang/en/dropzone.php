@@ -19,7 +19,6 @@ return [
     'success' => 'Success',
     'uploading' => 'Uploading',
     'upload_canceled' => 'Upload canceled',
-    'upload_aborted' => 'Error, please try again.',
     'validation_error' => 'There was an error when trying to validate media dimensions.',
     'video_in_process' => 'A video is currently uploading or processing, do you want to overwrite it?',
     'html_video_not_supported' => 'Your browser doesn\'t support HTML video. Here is a link to the video instead.'

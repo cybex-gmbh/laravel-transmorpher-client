@@ -97,7 +97,7 @@ if (!window.transmorpherScriptLoaded) {
                 } else {
                   getState(transmorpherIdentifier).then(function (uploadingStateResponse) {
                     if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                      openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done), uploadingStateResponse.state);
+                      openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done));
                     } else {
                       reserveUploadSlot(transmorpherIdentifier, file.done);
                     }
@@ -291,8 +291,9 @@ if (!window.transmorpherScriptLoaded) {
       displayUploadResult(response, transmorpherIdentifier, uploadToken);
     }
 
-    // Fixes undefined state after first upload.
-    document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone.removeAllFiles();
+    // Remove the uploaded file to reset the state.
+    var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
+    dropzone.removeFile(dropzone.files[0]);
   };
   window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
     resetAgeElement(transmorpherIdentifier);
@@ -415,7 +416,7 @@ if (!window.transmorpherScriptLoaded) {
   window.setVersion = function (transmorpherIdentifier, version) {
     getState(transmorpherIdentifier).then(function (uploadingStateResponse) {
       if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-        openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(makeSetVersionCall, transmorpherIdentifier, version), uploadingStateResponse.state);
+        openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(makeSetVersionCall, transmorpherIdentifier, version));
       } else {
         makeSetVersionCall(transmorpherIdentifier, version);
       }
@@ -610,7 +611,7 @@ if (!window.transmorpherScriptLoaded) {
     }
     return date.toLocaleString();
   };
-  window.openUploadConfirmModal = function (transmorpherIdentifier, callback, uploadState) {
+  window.openUploadConfirmModal = function (transmorpherIdentifier, callback) {
     var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
     var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
     var previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
@@ -620,12 +621,18 @@ if (!window.transmorpherScriptLoaded) {
       var _dropzone$files$;
       previewElement ? previewElement.style.display = 'block' : null;
       document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
-      if (dropzone.files[1] != null) {
+
+      // If there is an upload in progress, remove it.
+      if (((_dropzone$files$ = dropzone.files[0]) === null || _dropzone$files$ === void 0 ? void 0 : _dropzone$files$.status) === 'uploading') {
+        // If a version was restored, show the default message.
+        if (!dropzone.files[1]) {
+          document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
+        }
         dropzone.removeFile(dropzone.files[0]);
-      } else if (uploadState !== 'processing' && (dropzone === null || dropzone === void 0 || (_dropzone$files$ = dropzone.files[0]) === null || _dropzone$files$ === void 0 ? void 0 : _dropzone$files$.status) !== dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].ADDED) {
-        // This happens when the dropzone state was reset while initializing.
-        displayState(transmorpherIdentifier, 'error', media[transmorpherIdentifier].translations['upload_aborted']);
-        return;
+      } else if (dropzone.files[0]) {
+        // If the file is not uploading, the overwrite button was clicked after finishing the upload. Display the progressbar.
+        document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'none';
+        previewElement ? previewElement.style.display = 'block' : null;
       }
       callback();
     };
