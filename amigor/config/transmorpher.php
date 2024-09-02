@@ -3,10 +3,9 @@
 return [
     'client_name' => env('TRANSMORPHER_CLIENT_NAME'),
 
-    // The middleware applied to routes provided by this package. The 'web' middleware is necessary and applied by default.
-    'routeMiddleware' => [
-        'web'
-    ],
+    // The middleware applied to routes provided by this package.
+    // The SubstituteBindings middleware is necessary (included in web and api middleware groups).
+    'routeMiddleware' => ['web'],
 
     'api' => [
         // Optionally, specify the Transmorpher API version which should be used. For supported versions, check the SupportedApiVersion enum.

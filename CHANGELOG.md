@@ -6,7 +6,8 @@
 > Breaking change!
 
 - Route middleware is now fully configurable
-  - the `web` middleware is no longer applied by default and has to be set in already published config files 
+  - the `web` and `auth` middlewares are now only applied by default when no config value is set
+  - already published config files have to be adjusted accordingly
 
 
 
