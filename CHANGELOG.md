@@ -6,9 +6,6 @@
 > Breaking change!
 
 - Route middleware is now fully configurable
+  - the `SubstitueBindings` middleware is now always applied as it is necessary to resolve route model bindings
   - the `web` and `auth` middlewares are now only applied by default when no config value is set
   - already published config files have to be adjusted accordingly
-
-
-
-

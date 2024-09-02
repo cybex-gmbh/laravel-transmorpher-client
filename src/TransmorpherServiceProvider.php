@@ -2,6 +2,7 @@
 
 namespace Transmorpher;
 
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -62,7 +63,7 @@ class TransmorpherServiceProvider extends ServiceProvider
     protected function registerRoutes(): void
     {
         Route::post(config('transmorpher.api.notifications_route'), ApiController::class)->name('transmorpherNotifications');
-        Route::middleware(config('transmorpher.routeMiddleware', ['web', 'auth']))->group(function () {
+        Route::middleware(array_merge(config('transmorpher.routeMiddleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
             Route::post('transmorpher/{transmorpherMedia}/token', [UploadController::class, 'getUploadToken'])->name('transmorpherUploadToken');
             Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadController::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
             Route::post('transmorpher/{transmorpherMedia}/state', [UploadStateController::class, 'getState'])->name('transmorpherState');
