@@ -27,7 +27,7 @@ class UploadStateController
             $state = UploadState::ERROR->value;
         }
 
-        if ($state ?? $latestUpload?->state === UploadState::DELETED) {
+        if (($state ?? $latestUpload?->state->value) === UploadState::DELETED->value) {
             $mediaUrls = ['placeholderUrl' => $transmorpherMedia->getMedia()->getPlaceholderUrl()];
         } else {
             $mediaUrls = $transmorpherMedia->getMedia()->getMediaUrls();
