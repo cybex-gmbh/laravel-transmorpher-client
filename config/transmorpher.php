@@ -3,8 +3,9 @@
 return [
     'client_name' => env('TRANSMORPHER_CLIENT_NAME'),
 
-    // The middleware applied to routes provided by this package.
-    // The SubstituteBindings middleware is always applied.
+    // The middlewares applied to routes provided by this package:
+    // - the "SubstituteBindings" middleware will be applied additionally.
+    // - "web" and "auth" middlewares will be applied when this is not set.
 //    'routeMiddleware' => ['web', 'auth'],
 
     'api' => [
