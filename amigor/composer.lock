@@ -137,11 +137,11 @@
         },
         {
             "name": "cybex/laravel-transmorpher-client",
-            "version": "dev-fix/unintended-requests-on-mimetype-validation-error",
+            "version": "dev-feature/fully-configurable-route-middleware",
             "dist": {
                 "type": "path",
                 "url": "vendor/cybex/laravel-transmorpher-client",
-                "reference": "95f2af449ea6d05ecd24d571d1c1d5d92ec4aa2f"
+                "reference": "686cdd797bceebbfb7ca3510cd0f25c3ef6eda74"
             },
             "require": {
                 "enyo/dropzone": "^5.9",
