@@ -20,7 +20,6 @@
   - when `transmorpher.routeMiddleware` is not set, the `web` and `auth` middlewares are applied
   - already published config files have to be adjusted accordingly
 
-
 - [BREAKING] Responses which included media URLs now include media type specific URLs
   - for videos, the MP4 URL, HLS URL, DASH URL and thumbnail URL are now included in the response
   - for images, the fullsize URL and thumbnail URL are now included in the response
@@ -30,6 +29,3 @@
 
 - fixed a bug where overwriting uploads would fail when the dropzone was not in a reset (e.g., freshly loaded page) state
 - fixed a bug where unintentional requests for upload slots where made when dropping a wrong mimetype into the video dropzone
-
-
-
