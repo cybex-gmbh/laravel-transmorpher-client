@@ -13,7 +13,7 @@
 
 ### Route middleware
 
->![NOTE]
+> [!NOTE]
 > Likelihood Of Impact: Medium
 
 Route middlewares are now fully configurable.
@@ -32,7 +32,7 @@ To restore the default, uncomment the `transmorpher.routeMiddleware` config key:
 
 ### API responses
 
->![NOTE]
+> [!NOTE]
 > Likelihood Of Impact: Low
 
 Responses which included media URLs now include media type specific URLs.
