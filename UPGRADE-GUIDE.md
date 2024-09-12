@@ -21,13 +21,12 @@ Route middlewares are now fully configurable.
 When `transmorpher.routeMiddleware` is not set, the `web` and `auth` middlewares are now applied. `SubstituteBindings` is now always applied.
 
 If you previously published the config file, you will no longer have the `web` middleware applied by default. 
-To restore the default, uncomment the `transmorpher.routeMiddleware` config key:
+To re-add the `web` middleware, add it to the `transmorpher.routeMiddleware` config key or comment out the line.
+
+In the example below, we have added the `web` middleware.
 
 ```php
-    // The middlewares applied to routes provided by this package:
-    // - the "SubstituteBindings" middleware will be applied additionally.
-    // - "web" and "auth" middlewares will be applied when this is not set.
-//    'routeMiddleware' => ['web', 'auth'],
+'routeMiddleware' => ['web', 'auth'],
 ```
 
 ### API responses
