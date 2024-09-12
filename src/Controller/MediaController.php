@@ -12,15 +12,12 @@ use Transmorpher\Models\TransmorpherMedia;
 class MediaController
 {
     /**
-     * @param Request $request
      * @param TransmorpherMedia $transmorpherMedia
      * @return JsonResponse
      */
-    public function getVersions(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
+    public function getVersions(TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json(
-            array_merge($transmorpherMedia->getMedia()->getVersions(), $transmorpherMedia->getMedia()->getMediaUrls())
-        );
+        return response()->json(($transmorpherMedia->getMedia()->getVersions()));
     }
 
     /**
@@ -30,31 +27,25 @@ class MediaController
      */
     public function setVersion(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json(
-            array_merge($transmorpherMedia->getMedia()->setVersion($request->input('version')), $transmorpherMedia->getMedia()->getMediaUrls())
-        );
+        return response()->json($transmorpherMedia->getMedia()->setVersion($request->input('version')));
     }
 
     /**
-     * @param Request $request
      * @param TransmorpherMedia $transmorpherMedia
      * @return JsonResponse
      */
-    public function delete(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
+    public function delete(TransmorpherMedia $transmorpherMedia): JsonResponse
     {
-        return response()->json(array_merge($transmorpherMedia->getMedia()->delete(), [
-            'placeholderUrl' => $transmorpherMedia->getMedia()->getPlaceholderUrl()
-        ]));
+        return response()->json($transmorpherMedia->getMedia()->delete());
     }
 
     /**
-     * @param Request $request
      * @param TransmorpherMedia $transmorpherMedia
      * @param int $version
      *
      * @return Application|ResponseFactory|Response
      */
-    public function getOriginal(Request $request, TransmorpherMedia $transmorpherMedia, int $version): Response|Application|ResponseFactory
+    public function getOriginal(TransmorpherMedia $transmorpherMedia, int $version): Response|Application|ResponseFactory
     {
         $response = $transmorpherMedia->getMedia()->getOriginal($version);
 
@@ -62,14 +53,13 @@ class MediaController
     }
 
     /**
-     * @param Request $request
      * @param TransmorpherMedia $transmorpherMedia
      * @param int $version
      * @param string $transformations
      *
      * @return Application|ResponseFactory|Response
      */
-    public function getDerivativeForVersion(Request $request, TransmorpherMedia $transmorpherMedia, int $version, string $transformations = ''): Response|Application|ResponseFactory
+    public function getDerivativeForVersion(TransmorpherMedia $transmorpherMedia, int $version, string $transformations = ''): Response|Application|ResponseFactory
     {
         $response = $transmorpherMedia->getMedia()->getDerivativeForVersion($version, $transformations);
 
