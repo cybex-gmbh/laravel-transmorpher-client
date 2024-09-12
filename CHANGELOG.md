@@ -21,5 +21,5 @@
 
 ### Bug Fixes
 
-- fixed a bug where overwriting uploads would fail when the dropzone was not in a reset (e.g., freshly loaded page) state
+- fixed a bug where overwriting uploads would fail when the dropzone was not in the initial state (e.g., freshly loaded page)
 - fixed a bug where unintentional requests for upload slots where made when dropping a wrong mimetype into the video dropzone
