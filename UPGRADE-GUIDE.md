@@ -41,9 +41,9 @@ If you use a custom frontend, you will need to adjust to the new response format
 
 - for videos, the MP4 URL, HLS URL, DASH URL and thumbnail URL are now included in the response
 
-```json
+```json5
 {
-  ...
+  // ...
   "mp4Url": "https://example.com/video.mp4",
   "hlsUrl": "https://example.com/video.m3u8",
   "dashUrl": "https://example.com/video.mpd",
@@ -53,9 +53,9 @@ If you use a custom frontend, you will need to adjust to the new response format
 
 - for deleted media, the placeholder URL is included in the response
 
-```json
+```json5
 {
-  ...
+  // ...
   "placeholderUrl": "https://example.com/placeholder.jpg"
 }
 ```
