@@ -12,15 +12,22 @@
 
 Route middlewares are now fully configurable.
 
-When `transmorpher.routeMiddleware` is not set, the `web` and `auth` middlewares are now applied. `SubstituteBindings` is now always applied.
+When `transmorpher.routeMiddleware` is not set, the `web` and `auth` middlewares are now applied. `SubstituteBindings` is now always added.
 
-If you previously published the config file, you will no longer have the `web` middleware applied by default.
-If you need sessions and CSRF protection for the package routes, add the `web` middleware to the `transmorpher.routeMiddleware` config key or comment out the line.
+If you previously published the config file, only the `auth` middleware is configured.
+Now, you will no longer have `web` added to the configured middlewares.
+Using `auth` without `web` will not work.
 
-In the example below, we have added the `web` middleware.
+If you need `auth`, add the `web` middleware (sessions and CSRF protection) to the `transmorpher.routeMiddleware` config key or comment out the line.
 
 ```php
 'routeMiddleware' => ['web', 'auth'],
+```
+
+If you don't want `auth`, remove it from the configuration.
+
+```php
+'routeMiddleware' => [],
 ```
 
 ### API responses
