@@ -40,4 +40,22 @@ Responses which included media URLs now include media type specific URLs.
 If you use a custom frontend, you will need to adjust to the new response format:
 
 - for videos, the MP4 URL, HLS URL, DASH URL and thumbnail URL are now included in the response
+
+```json
+{
+  ...
+  "mp4Url": "https://example.com/video.mp4",
+  "hlsUrl": "https://example.com/video.m3u8",
+  "dashUrl": "https://example.com/video.mpd",
+  "thumbnailUrl": "https.//example.com/thumbnail.jpg"
+}
+```
+
 - for deleted media, the placeholder URL is included in the response
+
+```json
+{
+  ...
+  "placeholderUrl": "https://example.com/placeholder.jpg"
+}
+```
