@@ -15,7 +15,7 @@ Route middlewares are now fully configurable.
 When `transmorpher.routeMiddleware` is not set, the `web` and `auth` middlewares are now applied. `SubstituteBindings` is now always applied.
 
 If you previously published the config file, you will no longer have the `web` middleware applied by default.
-To re-add the `web` middleware, add it to the `transmorpher.routeMiddleware` config key or comment out the line.
+If you need sessions and CSRF protection for the package routes, add the `web` middleware to the `transmorpher.routeMiddleware` config key or comment out the line.
 
 In the example below, we have added the `web` middleware.
 
