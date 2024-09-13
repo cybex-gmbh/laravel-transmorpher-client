@@ -78,7 +78,7 @@ class TransmorpherUpload extends Model
 
         $response['latestUploadToken'] = $this->TransmorpherMedia->latest_upload_token;
 
-        return $response;
+        return array_merge($response, $transmorpher->getMediaUrls());
     }
 
     public function isLatest(): Attribute

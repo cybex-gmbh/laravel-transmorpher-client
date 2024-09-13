@@ -43,6 +43,7 @@ if (!window.transmorpherScriptLoaded) {
             dictDefaultMessage: medium.translations['drop_files_to_upload'],
             dictFileTooBig: medium.translations['max_file_size_exceeded'],
             dictInvalidFileType: medium.translations['invalid_file_type'],
+            createImageThumbnails: false,
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
@@ -89,7 +90,7 @@ if (!window.transmorpherScriptLoaded) {
                             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
                                 openUploadConfirmModal(
                                     transmorpherIdentifier,
-                                    createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done)
+                                    createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done),
                                 );
                             } else {
                                 reserveUploadSlot(transmorpherIdentifier, file.done);
@@ -108,10 +109,7 @@ if (!window.transmorpherScriptLoaded) {
                     errorElement.remove();
                 }
 
-                // Dropzone only emits the "thumbnail" event for images.
-                if (!file.type.match(/image.*/)) {
-                    this.emit("thumbnail", file);
-                }
+                this.emit("thumbnail", file);
             },
             // Update database when upload was canceled manually.
             canceled: function (file) {
@@ -282,6 +280,10 @@ if (!window.transmorpherScriptLoaded) {
         } else {
             displayUploadResult(response, transmorpherIdentifier, uploadToken);
         }
+
+        // Remove the uploaded file to reset the state.
+        let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
+        dropzone.removeFile(dropzone.files[0]);
     }
 
     window.displayUploadResult = function (uploadResult, transmorpherIdentifier, uploadToken) {
@@ -645,12 +647,23 @@ if (!window.transmorpherScriptLoaded) {
         previewElement ? previewElement.style.display = 'none' : null;
 
         modal.querySelector('.badge-error').onclick = function () {
-            if (dropzone.files[1] != null) {
-                dropzone.removeFile(dropzone.files[0]);
-            }
-
             previewElement ? previewElement.style.display = 'block' : null;
             document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.remove('d-flex');
+
+            // If there is an upload in progress, remove it.
+            if (dropzone.files[0]?.status === 'uploading') {
+                // If a version was restored, show the default message.
+                if (!dropzone.files[1]) {
+                    document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'block';
+                }
+
+                dropzone.removeFile(dropzone.files[0]);
+            } else if (dropzone.files[0]) {
+                // If the file is not uploading, the overwrite button was clicked after finishing the upload. Display the progressbar.
+                document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'none';
+                previewElement ? previewElement.style.display = 'block' : null;
+            }
+
             callback();
         }
     }

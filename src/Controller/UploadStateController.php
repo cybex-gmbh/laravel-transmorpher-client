@@ -27,13 +27,18 @@ class UploadStateController
             $state = UploadState::ERROR->value;
         }
 
+        if (($state ?? $latestUpload?->state->value) === UploadState::DELETED->value) {
+            $mediaUrls = ['placeholderUrl' => $transmorpherMedia->getMedia()->getPlaceholderUrl()];
+        } else {
+            $mediaUrls = $transmorpherMedia->getMedia()->getMediaUrls();
+        }
+
         return response()->json([
             'clientMessage' => $message ?? $latestUpload?->message,
             'state' => $state ?? $latestUpload?->state,
-            'thumbnailUrl' => $transmorpherMedia->getMedia()->getThumbnailUrl(),
-            'fullsizeUrl' => $transmorpherMedia->getMedia()->getUrl(),
             'latestUploadToken' => $transmorpherMedia->latest_upload_token,
-            'lastUpdated' => $latestUpload?->updated_at
+            'lastUpdated' => $latestUpload?->updated_at,
+            ...$mediaUrls
         ]);
     }
 

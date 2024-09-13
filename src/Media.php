@@ -66,6 +66,11 @@ abstract class Media
     public abstract function getThumbnailUrl(): ?string;
 
     /**
+     * @return array
+     */
+    public abstract function getMediaUrls(): array;
+
+    /**
      * @return void
      */
     protected function createTransmorpherMedia(): void
@@ -182,7 +187,9 @@ abstract class Media
 
         $upload->update(['state' => $responseForClient['state'], 'message' => $responseForClient['message']]);
 
-        return $responseForClient;
+        return array_merge($responseForClient, [
+            'placeholderUrl' => $this->getPlaceholderUrl()
+        ]);
     }
 
     /**
@@ -214,7 +221,12 @@ abstract class Media
      */
     public function getVersions(): array
     {
-        return json_decode($this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('media/%s/versions', $this->getIdentifier()))), true);
+        return array_merge(
+            json_decode(
+                $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('media/%s/versions', $this->getIdentifier()))),
+                true
+            ),
+            $this->getMediaUrls());
     }
 
     /**
