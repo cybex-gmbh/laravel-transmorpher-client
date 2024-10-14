@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Transmorpher\HasTransmorpherMedia;
 use Transmorpher\HasTransmorpherMediaInterface;
+use Transmorpher\Image;
+use Transmorpher\Video;
 
 class User extends Authenticatable implements HasTransmorpherMediaInterface
 {
@@ -49,11 +51,24 @@ class User extends Authenticatable implements HasTransmorpherMediaInterface
 
     protected array $transmorpherImages = [
         'front',
-        'back'
     ];
 
     protected array $transmorpherVideos = [
         'teaser',
-        'full'
     ];
+
+    /**
+     * Example of a media method.
+     *
+     * @return Image
+     */
+    public function mediaMethod(): Image
+    {
+        return Image::for($this, 'back');
+    }
+
+    public function mediaMethodWithUnionType(): Image|Video
+    {
+        return Video::for($this, 'full');
+    }
 }
