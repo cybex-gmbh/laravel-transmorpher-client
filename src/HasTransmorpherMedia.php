@@ -3,23 +3,24 @@
 namespace Transmorpher;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionUnionType;
 use Transmorpher\Exceptions\DuplicateMediaNameException;
 use Transmorpher\Exceptions\MissingMorphAliasException;
 use Transmorpher\Models\TransmorpherMedia;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasTransmorpherMedia
 {
-    protected static Collection $cachedImageMediaNames;
-    protected static Collection $cachedVideoMediaNames;
+    public static Collection $cachedImageMediaArrayNames;
+    public static Collection $cachedVideoMediaArrayNames;
 
     /**
      * @throws MissingMorphAliasException
      */
-    public static function bootHasTransmorpherMedia()
+    public static function bootHasTransmorpherMedia(): void
     {
         if (static::getModel()->getTransmorpherAlias() === static::class) {
             throw new MissingMorphAliasException(static::class);
@@ -107,7 +108,7 @@ trait HasTransmorpherMedia
      */
     public function getImageMediaNames(): Collection
     {
-        return static::$cachedImageMediaNames ??= $this->getMediaNames(Image::class, $this->transmorpherImages ?? []);
+        return $this->getMediaNames(Image::class, $this->transmorpherImages ?? [], 'cachedImageMediaArrayNames');
     }
 
     /**
@@ -115,20 +116,23 @@ trait HasTransmorpherMedia
      */
     public function getVideoMediaNames(): Collection
     {
-        return static::$cachedVideoMediaNames ??= $this->getMediaNames(Video::class, $this->transmorpherVideos ?? []);
+        return $this->getMediaNames(Video::class, $this->transmorpherVideos ?? [], 'cachedVideoMediaArrayNames');
     }
 
     /**
+     * Get the media names extracted from the media arrays and media methods based on the media class.
+     *
      * @param string $mediaClass
      * @param array $mediaArray
+     * @param string $cacheName
      * @return Collection
      * @throws DuplicateMediaNameException
      */
-    protected function getMediaNames(string $mediaClass, array $mediaArray): Collection
+    protected function getMediaNames(string $mediaClass, array $mediaArray, string $cacheName): Collection
     {
         $mediaMethods = $this->getMediaMethods($mediaClass);
         $loweredMediaMethods = $mediaMethods->map('strtolower');
-        $loweredMediaNames = collect($mediaArray)->map('strtolower');
+        $loweredMediaNames = static::${$cacheName} ??= collect($mediaArray)->map('strtolower');
         $duplicatesInArray = $loweredMediaNames->duplicates();
         $conflictsWithMethods = $loweredMediaMethods->intersect($loweredMediaNames);
 
@@ -142,6 +146,8 @@ trait HasTransmorpherMedia
     }
 
     /**
+     * Extract media names from media methods based on the returned media class.
+     *
      * @param string $mediaClass
      * @return Collection
      */
@@ -153,11 +159,20 @@ trait HasTransmorpherMedia
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
             $reflectionMethodName = $reflectionMethod->getName();
 
-            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && strtolower($reflectionMethodName) !== 'image' && strtolower($reflectionMethodName) !== 'video') {
-                $mediaMethods->push($reflectionMethodName);
+            if (is_a($this->getReflectionMethodReturnType($reflectionMethod), $mediaClass, true) && strtolower($reflectionMethodName) !== 'image' && strtolower($reflectionMethodName) !== 'video') {
+                $mediaMethods->push($reflectionMethod->invoke($this)->getMediaName());
             }
         }
 
         return $mediaMethods;
+    }
+
+    protected function getReflectionMethodReturnType(ReflectionMethod $reflectionMethod): ?string
+    {
+        if (is_a($reflectionMethod->getReturnType(), ReflectionUnionType::class)) {
+            return $reflectionMethod->invoke($this)::class;
+        }
+
+        return $reflectionMethod->getReturnType()?->getName();
     }
 }

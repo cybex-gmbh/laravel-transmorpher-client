@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b46dd8ffd906200ec34a036c691631a",
+    "content-hash": "34a9b595e36d533d9d546bcb20f31248",
     "packages": [
         {
             "name": "brick/math",
@@ -137,11 +137,11 @@
         },
         {
             "name": "cybex/laravel-transmorpher-client",
-            "version": "dev-feature/media-urls",
+            "version": "dev-fix/media-methods",
             "dist": {
                 "type": "path",
                 "url": "vendor/cybex/laravel-transmorpher-client",
-                "reference": "1c3fe06194bbc5d97e2aa09dcca8704c5a6a627a"
+                "reference": "e321d6247d190e8ed02b89cb648e629ec64d6214"
             },
             "require": {
                 "enyo/dropzone": "^5.9",
@@ -7918,7 +7918,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.3"
+        "php": "8.3.*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"

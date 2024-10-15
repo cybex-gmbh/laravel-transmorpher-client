@@ -263,6 +263,11 @@ abstract class Media
         return $this->transmorpherMedia;
     }
 
+    public function getMediaName(): string
+    {
+        return $this->mediaName;
+    }
+
     /**
      * @param array $responseFromServer The server response as an array.
      * @param int $httpCode
