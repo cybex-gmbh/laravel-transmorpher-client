@@ -6,8 +6,8 @@
         <div @class(['card', 'border-processing' => !$isReady || $isProcessing])>
             <div class="card-header">
                 <div>
-                    <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
-                         alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value])" class="icon">
+                    <img src="{{ mix(sprintf('icons/%s.svg', $media->type->value), 'vendor/transmorpher') }}"
+                         alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $media->type->value])" class="icon">
                     {{ $mediaName }}
                 </div>
                 <div class="details">
@@ -32,7 +32,7 @@
                             <span class="error-message"></span>
                             <button type="button" class="btn-close" onclick="closeErrorMessage(this, '{{ $media->getIdentifier() }}')">⨉</button>
                         </div>
-                        <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :media="$media"/>
+                        <x-transmorpher::media-preview :media="$media"/>
                     </div>
                 </form>
             </div>
@@ -42,8 +42,8 @@
             <div class="card">
                 <div class="card-header">
                     <div class="media-name">
-                        <img src="{{ mix(sprintf('icons/%s.svg', $mediaType->value), 'vendor/transmorpher') }}"
-                             alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $mediaType->value])" class="icon">
+                        <img src="{{ mix(sprintf('icons/%s.svg', $media->type->value), 'vendor/transmorpher') }}"
+                             alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $media->type->value])" class="icon">
                         {{ $mediaName }}
                     </div>
                     <button class="btn-close" onclick="closeMoreInformationModal('{{ $media->getIdentifier() }}')">⨉</button>
@@ -65,7 +65,7 @@
                         </div>
                         <span class="current-version-age"></span>
                         <div class="media-preview">
-                            <x-dynamic-component :component="sprintf('transmorpher::%s-preview', $mediaType->value)" :media="$media"/>
+                            <x-transmorpher::media-preview :media="$media"/>
                         </div>
                         <button type=button @class(['button', 'button-confirm', 'confirm-delete', 'd-hidden' => !$isReady && !$isProcessing])>
                             <span>@lang('transmorpher::dropzone.delete')</span>
@@ -90,14 +90,7 @@
     <div id="modal-uc-{{ $media->getIdentifier() }}" class="modal uc-modal d-none">
         <div class="card">
             <div class="card-header">
-                @switch($mediaType)
-                    @case(\Transmorpher\Enums\MediaType::IMAGE)
-                        @lang('transmorpher::dropzone.image_in_process')
-                        @break
-                    @case(\Transmorpher\Enums\MediaType::VIDEO)
-                        @lang('transmorpher::dropzone.video_in_process')
-                        @break
-                @endswitch
+                {{ $media->type->getUploadInProgressTranslation() }}
             </div>
             <div class="card-body">
                 <button class="button" onclick="closeUploadConfirmModal('{{ $media->getIdentifier() }}')">
@@ -129,7 +122,7 @@
         },
         translations: @json($translations),
         webUploadUrl: '{{ $media->getWebUploadUrl() }}',
-        mediaType: '{{ $mediaType->value }}',
+        mediaType: '{{ $media->type->value }}',
         chunkSize: {{ $media->getChunkSize() }},
         maxFilesize: {{ $media->getMaxFileSize() }},
         maxThumbnailFilesize: {{ $media->getMaxFileSize() }},

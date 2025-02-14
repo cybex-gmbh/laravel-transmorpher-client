@@ -2,27 +2,34 @@
 
 namespace Transmorpher\Enums;
 
-use InvalidArgumentException;
 use Transmorpher\Exceptions\InvalidTransformationValueException;
-use Transmorpher\Exceptions\TransformationNotFoundException;
 
 enum Transformation: string
 {
     case WIDTH = 'w';
     case HEIGHT = 'h';
     case FORMAT = 'f';
+    case PAGE = 'p';
     case QUALITY = 'q';
 
+    /**
+     * @param string|int $value
+     * @return string
+     */
     public function getUrlRepresentation(string|int $value): string
     {
         return sprintf('%s-%s', $this->value, $this->validate($value));
     }
 
+    /**
+     * @throws InvalidTransformationValueException
+     */
     public function validate(string|int $value): string|int
     {
         $valid = match ($this) {
             self::WIDTH,
-            self::HEIGHT => filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]),
+            self::HEIGHT,
+            self::PAGE => filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]),
             self::FORMAT => is_string($value),
             self::QUALITY => filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]])
         };

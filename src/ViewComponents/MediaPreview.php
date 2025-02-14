@@ -24,6 +24,6 @@ class MediaPreview extends Component
      */
     public function render(): string|View
     {
-        return view(sprintf('transmorpher::%s-preview', $this->media->getTransmorpherMedia()->type->value));
+        return view(sprintf('transmorpher::%s-preview', $this->media->type->value));
     }
 }

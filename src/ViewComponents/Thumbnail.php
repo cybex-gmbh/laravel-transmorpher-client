@@ -6,10 +6,15 @@ use Illuminate\View\Component;
 use Illuminate\View\View;
 use Transmorpher\Media;
 
-class VersionCard extends Component
+class Thumbnail extends Component
 {
+    public bool $isReady;
+    public string $mediaName;
+
     public function __construct(public Media $media)
     {
+        $this->isReady = $media->getTransmorpherMedia()->is_ready;
+        $this->mediaName = $media->getTransmorpherMedia()->media_name;
     }
 
     /**
@@ -19,6 +24,6 @@ class VersionCard extends Component
      */
     public function render(): string|View
     {
-        return view('transmorpher::version-card');
+        return view('transmorpher::thumbnail');
     }
 }

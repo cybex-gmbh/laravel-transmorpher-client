@@ -24,7 +24,7 @@ abstract class Media
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
     protected TransmorpherUpload $upload;
-    protected MediaType $type;
+    public MediaType $type;
 
     /**
      * Get either an existing instance or creates a new one.
@@ -40,12 +40,15 @@ abstract class Media
     }
 
     /**
-     * Create a new Media and retrieves or creates the TransmorpherMedia for the specified model and media name.
+     * Create a new Media and retrieve or create the TransmorpherMedia for the specified model and media name.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $mediaName
      */
-    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $mediaName);
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $mediaName)
+    {
+        $this->createTransmorpherMedia();
+    }
 
     /**
      * @param array $responseForClient
@@ -332,6 +335,7 @@ abstract class Media
                 'width' => $transformationParts[] = Transformation::WIDTH->getUrlRepresentation($value),
                 'height' => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
                 'format' => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
+                'page' => $transformationParts[] = Transformation::PAGE->getUrlRepresentation($value),
                 'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
                 default => throw new TransformationNotFoundException($transformation)
             };

@@ -12,6 +12,7 @@ return [
     'invalid_file_type' => 'You can\'t upload files of this type.',
     'invalid_ratio' => 'The ratio has to be :ratio.',
     'overwrite' => 'Overwrite',
+    'pdf_in_process' => 'There is currently an upload in process, do you want to overwrite it?',
     'press_again_to_confirm' => 'Press again to confirm',
     'processing' => 'Processing',
     'restore' => 'Restore',

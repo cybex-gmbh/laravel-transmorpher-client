@@ -11,7 +11,6 @@ use Transmorpher\Media;
 
 class Dropzone extends Component
 {
-    public MediaType $mediaType;
     public bool $isProcessing;
     public bool $isUploading;
     public bool $isReady;
@@ -43,7 +42,6 @@ class Dropzone extends Component
         public ?string $acceptedDisplayRatio = null,
     )
     {
-        $this->mediaType = $media->getTransmorpherMedia()->type;
         $this->isProcessing = $media->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
         $this->isUploading = $media->getTransmorpherMedia()->latest_upload_state === UploadState::UPLOADING;
         $this->isReady = $media->getTransmorpherMedia()->is_ready;
