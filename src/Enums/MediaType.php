@@ -3,13 +3,13 @@
 namespace Transmorpher\Enums;
 
 use Transmorpher\Image;
-use Transmorpher\Pdf;
+use Transmorpher\Document;
 use Transmorpher\Video;
 
 enum MediaType: string
 {
     case IMAGE = 'image';
-    case PDF = 'pdf';
+    case DOCUMENT = 'document';
     case VIDEO = 'video';
 
     /**
@@ -21,7 +21,7 @@ enum MediaType: string
     {
         return match ($this) {
             MediaType::IMAGE => Image::class,
-            MediaType::PDF => Pdf::class,
+            MediaType::DOCUMENT => Document::class,
             MediaType::VIDEO => Video::class,
         };
     }

@@ -12,8 +12,8 @@
     <x-transmorpher::dropzone :media="$image" width="300px"></x-transmorpher::dropzone>
 @endforeach
 
-@foreach(App\Models\User::first()->pdfs as $pdf)
-    <x-transmorpher::dropzone :media="$pdf" width="300px"></x-transmorpher::dropzone>
+@foreach(App\Models\User::first()->documents as $document)
+    <x-transmorpher::dropzone :media="$document" width="300px"></x-transmorpher::dropzone>
 @endforeach
 
 @foreach(App\Models\User::first()->videos as $video)

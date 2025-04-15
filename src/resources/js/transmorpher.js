@@ -8,7 +8,7 @@ if (!window.transmorpherScriptLoaded) {
     window.media = [];
 
     const IMAGE = 'IMAGE';
-    const PDF = 'PDF';
+    const DOCUMENT = 'DOCUMENT';
     const VIDEO = 'VIDEO';
 
     window.setupComponent = function (transmorpherIdentifier) {
@@ -152,7 +152,7 @@ if (!window.transmorpherScriptLoaded) {
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
                 return getImageDimensions(file);
-            case mediaTypes[PDF]:
+            case mediaTypes[DOCUMENT]:
                 return new Promise((resolve) => resolve({width: null, height: null}));
             case mediaTypes[VIDEO]:
                 return getVideoDimensions(file)
@@ -299,7 +299,7 @@ if (!window.transmorpherScriptLoaded) {
 
             switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
-                case mediaTypes[PDF]:
+                case mediaTypes[DOCUMENT]:
                     updateThumbnail(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
                     break;
                 case mediaTypes[VIDEO]:
@@ -374,7 +374,7 @@ if (!window.transmorpherScriptLoaded) {
             let versionAge;
             switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
-                case mediaTypes[PDF]:
+                case mediaTypes[DOCUMENT]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentVersion]) * 1000));
                     updateThumbnail(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl)
                     break;
@@ -401,7 +401,7 @@ if (!window.transmorpherScriptLoaded) {
 
                 switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
-                    case mediaTypes[PDF]:
+                    case mediaTypes[DOCUMENT]:
                         versionEntry.querySelector('a').href = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}`;
                         versionEntry.querySelector('.dz-image img:first-of-type').src = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
                         versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
@@ -446,7 +446,7 @@ if (!window.transmorpherScriptLoaded) {
 
                 switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
-                    case mediaTypes[PDF]:
+                    case mediaTypes[DOCUMENT]:
                         updateMediaDisplay(
                             transmorpherIdentifier,
                             setVersionResult.thumbnailUrl,
@@ -504,7 +504,7 @@ if (!window.transmorpherScriptLoaded) {
     window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
-            case mediaTypes[PDF]:
+            case mediaTypes[DOCUMENT]:
                 updateThumbnail(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
                 break;
             case mediaTypes[VIDEO]:
@@ -558,7 +558,7 @@ if (!window.transmorpherScriptLoaded) {
 
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
-            case mediaTypes[PDF]:
+            case mediaTypes[DOCUMENT]:
                 imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image > img:first-of-type`)
                 imgElements.forEach(image => {
                     let aTag = image.closest('.full-size-link')

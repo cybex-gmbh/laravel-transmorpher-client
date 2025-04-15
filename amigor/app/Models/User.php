@@ -52,7 +52,7 @@ class User extends Authenticatable implements HasTransmorpherMediaInterface
         'back'
     ];
 
-    protected array $transmorpherPdfs = [
+    protected array $transmorpherDocuments = [
         'document',
         'user-guide'
     ];

@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('transmorpher_media', function (Blueprint $table) {
-            $table->enum('type', ['image', 'video', 'pdf'])->change();
+            $table->enum('type', ['image', 'video', 'document'])->change();
         });
     }
 };

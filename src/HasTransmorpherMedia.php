@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait HasTransmorpherMedia
 {
     protected static Collection $cachedImageMediaNames;
-    protected static Collection $cachedPdfMediaNames;
+    protected static Collection $cachedDocumentMediaNames;
     protected static Collection $cachedVideoMediaNames;
 
     /**
@@ -52,15 +52,15 @@ trait HasTransmorpherMedia
     }
 
     /**
-     * Returns a collection of Pdfs associated to media names.
+     * Returns a collection of Documents associated to media names.
      *
      * @return Attribute
      */
-    public function pdfs(): Attribute
+    public function documents(): Attribute
     {
         return Attribute::make(
-            get: fn(): Collection => $this->getPdfMediaNames()->mapWithKeys(function (string $mediaName) {
-                return [$mediaName => Pdf::for($this, $mediaName)];
+            get: fn(): Collection => $this->getDocumentMediaNames()->mapWithKeys(function (string $mediaName) {
+                return [$mediaName => Document::for($this, $mediaName)];
             })
         );
     }
@@ -95,15 +95,15 @@ trait HasTransmorpherMedia
     }
 
     /**
-     * Returns a single Pdf for a media name.
+     * Returns a single Document for a media name.
      *
      * @param string $mediaName
-     * @return Pdf|null
+     * @return Document|null
      */
-    public function pdf(string $mediaName): ?Pdf
+    public function document(string $mediaName): ?Document
     {
-        if ($this->getPdfMediaNames()->contains($mediaName)) {
-            return Pdf::for($this, $mediaName);
+        if ($this->getDocumentMediaNames()->contains($mediaName)) {
+            return Document::for($this, $mediaName);
         }
 
         return null;
@@ -143,9 +143,9 @@ trait HasTransmorpherMedia
     /**
      * @return Collection
      */
-    public function getPdfMediaNames(): Collection
+    public function getDocumentMediaNames(): Collection
     {
-        return static::$cachedPdfMediaNames ??= $this->getMediaNames(Pdf::class, $this->transmorpherPdfs ?? []);
+        return static::$cachedDocumentMediaNames ??= $this->getMediaNames(Document::class, $this->transmorpherDocuments ?? []);
     }
 
     /**
@@ -191,7 +191,7 @@ trait HasTransmorpherMedia
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
             $reflectionMethodName = $reflectionMethod->getName();
 
-            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && strtolower($reflectionMethodName) !== 'image' && strtolower($reflectionMethodName) !== 'pdf' && strtolower($reflectionMethodName) !== 'video') {
+            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && strtolower($reflectionMethodName) !== 'image' && strtolower($reflectionMethodName) !== 'document' && strtolower($reflectionMethodName) !== 'video') {
                 $mediaMethods->push($reflectionMethodName);
             }
         }

@@ -94,12 +94,17 @@ class YourModel extends Model implements HasTransmorpherMediaInterface
 ```
 
 To configure your model to be able to have media and make API calls to the Transmorpher media server, you have to define specific array properties.
-Images and Videos are registered in those arrays by a media name.
+Images, Documents and Videos are registered in those arrays by a media name.
 
 ```php
 protected array $transmorpherImages = [
     'front',
     'back'
+];
+
+protected array $transmorpherDocuments = [
+    'user-guide',
+    'warning-label'
 ];
 
 protected array $transmorpherVideos = [
@@ -115,11 +120,17 @@ The trait `HasTransmorpherMedia` provides convenient methods to access your medi
 // Retrieve all images as a collection, with media name as key and the Image object as value.
 $yourModel->images;
 
+// Retrieve all documents as a collection, with media name as key and the Document object as value.
+$yourModel->documents;
+
 // Retrieve all videos as a collection, with media name as key and the Video object as value.
 $yourModel->videos;
 
 // Retrieve a single Image object.
 $yourModel->image('front');
+
+// Retrieve a single Document object.
+$yourModel->document('user-guide');
 
 // Retrieve a single Video object.
 $yourModel->video('teaser');
@@ -213,7 +224,8 @@ To use the dropzone component in a template, you can simply include it like this
 
 **_NOTE:_** You can optionally define a fixed width by setting the width attribute (e.g. `width="300px"`).
 
-Depending on whether you pass a `Transmorpher\Image` or a `Transmorpher\Video`, the component will function as your upload form for images or videos.
+Depending on whether you pass a `Transmorpher\Image`, `Transmorpher\Document`
+or a `Transmorpher\Video` the component will function as your upload form for images, documents or videos.
 
 #### Dynamic usage
 
@@ -287,6 +299,9 @@ List of available transformations:
 - height
 - format
 - quality
+- page*
+
+> Marked with * only applies to documents.
 
 ### Companion app
 

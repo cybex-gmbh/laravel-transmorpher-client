@@ -22,7 +22,7 @@ if (!window.transmorpherScriptLoaded) {
   window.transformations = {};
   window.media = [];
   var IMAGE = 'IMAGE';
-  var PDF = 'PDF';
+  var DOCUMENT = 'DOCUMENT';
   var VIDEO = 'VIDEO';
   window.setupComponent = function (transmorpherIdentifier) {
     dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
@@ -159,7 +159,7 @@ if (!window.transmorpherScriptLoaded) {
     switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
         return getImageDimensions(file);
-      case mediaTypes[PDF]:
+      case mediaTypes[DOCUMENT]:
         return new Promise(function (resolve) {
           return resolve({
             width: null,
@@ -308,7 +308,7 @@ if (!window.transmorpherScriptLoaded) {
       updateVersionInformation(transmorpherIdentifier);
       switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
-        case mediaTypes[PDF]:
+        case mediaTypes[DOCUMENT]:
           updateThumbnail(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
           break;
         case mediaTypes[VIDEO]:
@@ -376,7 +376,7 @@ if (!window.transmorpherScriptLoaded) {
       var versionAge;
       switch (media[transmorpherIdentifier].mediaType) {
         case mediaTypes[IMAGE]:
-        case mediaTypes[PDF]:
+        case mediaTypes[DOCUMENT]:
           versionAge = getDateForDisplay(new Date(versions[versionInformation.currentVersion] * 1000));
           updateThumbnail(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
           break;
@@ -401,7 +401,7 @@ if (!window.transmorpherScriptLoaded) {
         var versionAge = versionEntry.querySelector('.version-age');
         switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-          case mediaTypes[PDF]:
+          case mediaTypes[DOCUMENT]:
             versionEntry.querySelector('a').href = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version);
             versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150");
             versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150 150w");
@@ -446,7 +446,7 @@ if (!window.transmorpherScriptLoaded) {
         updateVersionInformation(transmorpherIdentifier);
         switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
-          case mediaTypes[PDF]:
+          case mediaTypes[DOCUMENT]:
             updateMediaDisplay(transmorpherIdentifier, setVersionResult.thumbnailUrl, setVersionResult.fullsizeUrl);
             break;
           case mediaTypes[VIDEO]:
@@ -496,7 +496,7 @@ if (!window.transmorpherScriptLoaded) {
   window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
     switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
-      case mediaTypes[PDF]:
+      case mediaTypes[DOCUMENT]:
         updateThumbnail(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
         break;
       case mediaTypes[VIDEO]:
@@ -542,7 +542,7 @@ if (!window.transmorpherScriptLoaded) {
     var imgElements;
     switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
-      case mediaTypes[PDF]:
+      case mediaTypes[DOCUMENT]:
         imgElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " .dz-image > img:first-of-type"));
         imgElements.forEach(function (image) {
           var aTag = image.closest('.full-size-link');
