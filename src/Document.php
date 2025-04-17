@@ -4,7 +4,7 @@ namespace Transmorpher;
 
 use Transmorpher\Enums\MediaType;
 
-class Document extends StaticMedia
+class Document extends OnDemandDerivativeMedia
 {
     public MediaType $type = MediaType::DOCUMENT;
 }

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Transmorpher\Enums\TransmorpherApi;
 use Transmorpher\Models\TransmorpherUpload;
 
-abstract class StaticMedia extends Media
+abstract class OnDemandDerivativeMedia extends Media
 {
     /**
      * Retrieve the specified version as original.
