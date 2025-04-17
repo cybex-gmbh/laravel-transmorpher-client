@@ -30,13 +30,15 @@ abstract class Media
      * Get either an existing instance or creates a new one.
      *
      * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
-     * @param string $mediaName Specifies which media of the model it is.
+     * @param string|null $mediaName Specifies which media of the model it is. Uses the name of the calling function as default.
      *
      * @return static The Media instance.
      */
-    public static function for(HasTransmorpherMediaInterface $model, string $mediaName): static
+    public static function for(HasTransmorpherMediaInterface $model, ?string $mediaName = null): static
     {
-        return static::$instances[$model::class][$model->getKey()][$mediaName] ??= new static(...func_get_args());
+        $mediaName ??= debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
+
+        return static::$instances[$model::class][$model->getKey()][$mediaName] ??= new static($model, $mediaName);
     }
 
     /**
