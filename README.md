@@ -359,7 +359,7 @@ App-specific GitHub Secrets:
 #### Companion App
 
 A demonstration app, which implements the client package, is booted with PullPreview and available at the PullPreview root URL.
-The Transmorpher media server runs as `transmorpher.` subdomain.
+The Transmorpher media server runs under the `transmorpher.` subdomain.
 
 Additionally, an image is created with the branch name as tag. This image can be used in the Transmorpher media server for testing related changes. This image is deleted on pull
 request close.
