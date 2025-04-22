@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionMethod;
+use Transmorpher\Enums\MediaType;
 use Transmorpher\Exceptions\DuplicateMediaNameException;
 use Transmorpher\Exceptions\MissingMorphAliasException;
 use Transmorpher\Models\TransmorpherMedia;
@@ -191,7 +192,7 @@ trait HasTransmorpherMedia
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
             $reflectionMethodName = $reflectionMethod->getName();
 
-            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && strtolower($reflectionMethodName) !== 'image' && strtolower($reflectionMethodName) !== 'document' && strtolower($reflectionMethodName) !== 'video') {
+            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && !in_array(strtolower($reflectionMethodName), MediaType::asArray())) {
                 $mediaMethods->push($reflectionMethodName);
             }
         }
