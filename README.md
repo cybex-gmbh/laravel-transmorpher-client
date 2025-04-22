@@ -117,20 +117,20 @@ protected array $transmorpherVideos = [
 Additionally, you can define media by using methods. The function name will be used as media name.
 
 ```php
-    public function side(): Image
-    {
-        return Image::for($this);
-    }
-    
-    public function privacyPolicy(): Document
-    {
-        return Document::for($this);
-    }
-    
-    public function trailer(): Video
-    {
-        return Video::for($this);
-    }
+public function side(): Image
+{
+    return Image::for($this);
+}
+
+public function privacyPolicy(): Document
+{
+    return Document::for($this);
+}
+
+public function trailer(): Video
+{
+    return Video::for($this);
+}
 ```
 
 The trait `HasTransmorpherMedia` provides convenient methods to access your media.
