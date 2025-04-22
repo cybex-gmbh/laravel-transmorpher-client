@@ -10,11 +10,13 @@ class Thumbnail extends Component
 {
     public bool $isReady;
     public string $mediaName;
+    public array $defaultTransformations;
 
     public function __construct(public Media $media)
     {
         $this->isReady = $media->getTransmorpherMedia()->is_ready;
         $this->mediaName = $media->getTransmorpherMedia()->media_name;
+        $this->defaultTransformations = $media->getThumbnailDefaultTransformations();
     }
 
     /**

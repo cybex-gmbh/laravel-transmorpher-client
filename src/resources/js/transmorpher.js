@@ -4,7 +4,6 @@ if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
     window.mediaTypes = {};
-    window.transformations = {};
     window.media = [];
 
     const IMAGE = 'IMAGE';
@@ -402,9 +401,11 @@ if (!window.transmorpherScriptLoaded) {
                 switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
                     case mediaTypes[DOCUMENT]:
+                        let transformations = media[transmorpherIdentifier].transformations;
+
                         versionEntry.querySelector('a').href = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/${transformations['150w']}`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/${transformations['150w']} 150w`;
                         break;
                     case mediaTypes[VIDEO]:
                         // Don't show video for now, will use thumbnails later.
@@ -530,6 +531,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.getSrcSetString = function (transmorpherIdentifier, imageUrl) {
         let srcStrings = []
+        let transformations = media[transmorpherIdentifier].transformations;
 
         Object.keys(transformations).forEach(key => {
             let modifiedUrl = imageUrl.replace(/(\/).-.+(\?)/i, `$1${transformations[key]}$2`);

@@ -99,6 +99,5 @@ abstract class OnDemandDerivativeMedia extends Media
             'fullsizeUrl' => $this->getUrl(),
             'thumbnailUrl' => $this->getThumbnailUrl(),
         ];
-
     }
 }

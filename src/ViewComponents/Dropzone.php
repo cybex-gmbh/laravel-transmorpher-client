@@ -42,6 +42,9 @@ class Dropzone extends Component
         public ?string $acceptedDisplayRatio = null,
     )
     {
+        $thumbnailDefaultTransformations = $media->getThumbnailDefaultTransformations() ?? [];
+        $thumbnailDefaultTransformationsUrlRepresentation = $media->getTransformations($thumbnailDefaultTransformations);
+
         $this->isProcessing = $media->getTransmorpherMedia()->latest_upload_state === UploadState::PROCESSING;
         $this->isUploading = $media->getTransmorpherMedia()->latest_upload_state === UploadState::UPLOADING;
         $this->isReady = $media->getTransmorpherMedia()->is_ready;
@@ -51,10 +54,10 @@ class Dropzone extends Component
         $this->lastUpdated = $media->getTransmorpherMedia()->updated_at->timestamp;
         $this->mediaTypes = array_column(MediaType::cases(), 'value', 'name');
         $this->srcSetTransformations = [
-            '150w' => Transformation::WIDTH->getUrlRepresentation(150),
-            '300w' => Transformation::WIDTH->getUrlRepresentation(300),
-            '600w' => Transformation::WIDTH->getUrlRepresentation(600),
-            '900w' => Transformation::WIDTH->getUrlRepresentation(900),
+            '150w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(150)])),
+            '300w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(300)])),
+            '600w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(600)])),
+            '900w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(900)])),
         ];
         $this->acceptedMinWidth ??= $this->media->getMinWidth();
         $this->acceptedMaxWidth ??= $this->media->getMaxWidth();

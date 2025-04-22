@@ -338,6 +338,7 @@ abstract class Media
                 'height' => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
                 'format' => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
                 'page' => $transformationParts[] = Transformation::PAGE->getUrlRepresentation($value),
+                'ppi' => $transformationParts[] = Transformation::PPI->getUrlRepresentation($value),
                 'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
                 default => throw new TransformationNotFoundException($transformation)
             };
@@ -444,6 +445,16 @@ abstract class Media
         }
 
         return $matches[1] / $matches[2];
+    }
+
+    /**
+     * Get the default transformations for the preview image displayed as thumbnail on the dropzone component.
+     *
+     * @return array
+     */
+    public function getThumbnailDefaultTransformations(): array
+    {
+        return [];
     }
 
     /**

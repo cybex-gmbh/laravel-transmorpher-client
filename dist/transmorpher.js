@@ -19,7 +19,6 @@ if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
   window.mediaTypes = {};
-  window.transformations = {};
   window.media = [];
   var IMAGE = 'IMAGE';
   var DOCUMENT = 'DOCUMENT';
@@ -402,9 +401,10 @@ if (!window.transmorpherScriptLoaded) {
         switch (media[transmorpherIdentifier].mediaType) {
           case mediaTypes[IMAGE]:
           case mediaTypes[DOCUMENT]:
+            var transformations = media[transmorpherIdentifier].transformations;
             versionEntry.querySelector('a').href = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version);
-            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150");
-            versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/w-150 150w");
+            versionEntry.querySelector('.dz-image img:first-of-type').src = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/").concat(transformations['150w']);
+            versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(media[transmorpherIdentifier].routes.getDerivativeForVersion, "/").concat(version, "/").concat(transformations['150w'], " 150w");
             break;
           case mediaTypes[VIDEO]:
             // Don't show video for now, will use thumbnails later.
@@ -519,6 +519,7 @@ if (!window.transmorpherScriptLoaded) {
   };
   window.getSrcSetString = function (transmorpherIdentifier, imageUrl) {
     var srcStrings = [];
+    var transformations = media[transmorpherIdentifier].transformations;
     Object.keys(transformations).forEach(function (key) {
       var modifiedUrl = imageUrl.replace(/(\/).-.+(\?)/i, "$1".concat(transformations[key], "$2"));
       srcStrings.push("".concat(modifiedUrl, " ").concat(key));
