@@ -137,11 +137,11 @@
         },
         {
             "name": "cybex/laravel-transmorpher-client",
-            "version": "dev-feature/media-urls",
+            "version": "dev-feature/pdf",
             "dist": {
                 "type": "path",
                 "url": "vendor/cybex/laravel-transmorpher-client",
-                "reference": "1c3fe06194bbc5d97e2aa09dcca8704c5a6a627a"
+                "reference": "020db3172f246b052f1442a864de849f1cf9e9b6"
             },
             "require": {
                 "enyo/dropzone": "^5.9",
@@ -7920,6 +7920,6 @@
     "platform": {
         "php": "^8.3"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

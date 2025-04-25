@@ -52,6 +52,11 @@ class User extends Authenticatable implements HasTransmorpherMediaInterface
         'back'
     ];
 
+    protected array $transmorpherDocuments = [
+        'document',
+        'user-guide'
+    ];
+
     protected array $transmorpherVideos = [
         'teaser',
         'full'

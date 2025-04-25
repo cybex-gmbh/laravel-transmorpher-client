@@ -4,10 +4,10 @@ if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
     window.mediaTypes = {};
-    window.transformations = {};
     window.media = [];
 
     const IMAGE = 'IMAGE';
+    const DOCUMENT = 'DOCUMENT';
     const VIDEO = 'VIDEO';
 
     window.setupComponent = function (transmorpherIdentifier) {
@@ -151,6 +151,8 @@ if (!window.transmorpherScriptLoaded) {
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
                 return getImageDimensions(file);
+            case mediaTypes[DOCUMENT]:
+                return new Promise((resolve) => resolve({width: null, height: null}));
             case mediaTypes[VIDEO]:
                 return getVideoDimensions(file)
         }
@@ -296,8 +298,8 @@ if (!window.transmorpherScriptLoaded) {
 
             switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
-                    // Set the newly uploaded image as display image.
-                    updateImageDisplay(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
+                case mediaTypes[DOCUMENT]:
+                    updateThumbnail(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
                     break;
                 case mediaTypes[VIDEO]:
                     startPolling(transmorpherIdentifier, uploadToken)
@@ -371,8 +373,9 @@ if (!window.transmorpherScriptLoaded) {
             let versionAge;
             switch (media[transmorpherIdentifier].mediaType) {
                 case mediaTypes[IMAGE]:
+                case mediaTypes[DOCUMENT]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentVersion]) * 1000));
-                    updateImageDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl)
+                    updateThumbnail(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl)
                     break;
                 case mediaTypes[VIDEO]:
                     versionAge = getDateForDisplay(new Date((versions[versionInformation.currentlyProcessedVersion]) * 1000));
@@ -397,9 +400,12 @@ if (!window.transmorpherScriptLoaded) {
 
                 switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
+                    case mediaTypes[DOCUMENT]:
+                        let transformations = media[transmorpherIdentifier].transformations;
+
                         versionEntry.querySelector('a').href = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150`;
-                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/w-150 150w`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/${transformations['150w']}`;
+                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${media[transmorpherIdentifier].routes.getDerivativeForVersion}/${version}/${transformations['150w']} 150w`;
                         break;
                     case mediaTypes[VIDEO]:
                         // Don't show video for now, will use thumbnails later.
@@ -441,6 +447,7 @@ if (!window.transmorpherScriptLoaded) {
 
                 switch (media[transmorpherIdentifier].mediaType) {
                     case mediaTypes[IMAGE]:
+                    case mediaTypes[DOCUMENT]:
                         updateMediaDisplay(
                             transmorpherIdentifier,
                             setVersionResult.thumbnailUrl,
@@ -498,7 +505,8 @@ if (!window.transmorpherScriptLoaded) {
     window.updateMediaDisplay = function (transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
-                updateImageDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
+            case mediaTypes[DOCUMENT]:
+                updateThumbnail(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
                 break;
             case mediaTypes[VIDEO]:
                 updateVideoDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
@@ -506,13 +514,15 @@ if (!window.transmorpherScriptLoaded) {
         }
     }
 
-    window.updateImageDisplay = function (transmorpherIdentifier, thumbnailUrl, fullSizeUrl) {
-        let imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
+    window.updateThumbnail = function (transmorpherIdentifier, thumbnailUrl, fullSizeUrl) {
+        let imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image > img:first-of-type`)
 
         imgElements.forEach(image => {
             image.src = thumbnailUrl;
             image.srcset = getSrcSetString(transmorpherIdentifier, thumbnailUrl);
-            image.closest('.full-size-link').href = fullSizeUrl;
+            let aTag = image.closest('.full-size-link')
+            aTag.href = fullSizeUrl;
+            aTag.classList.remove('disabled');
 
             // Show enlarge icon.
             image.nextElementSibling.classList.remove('d-hidden');
@@ -521,6 +531,7 @@ if (!window.transmorpherScriptLoaded) {
 
     window.getSrcSetString = function (transmorpherIdentifier, imageUrl) {
         let srcStrings = []
+        let transformations = media[transmorpherIdentifier].transformations;
 
         Object.keys(transformations).forEach(key => {
             let modifiedUrl = imageUrl.replace(/(\/).-.+(\?)/i, `$1${transformations[key]}$2`);
@@ -549,9 +560,12 @@ if (!window.transmorpherScriptLoaded) {
 
         switch (media[transmorpherIdentifier].mediaType) {
             case mediaTypes[IMAGE]:
-                imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image.image-transmorpher > img:first-of-type`)
+            case mediaTypes[DOCUMENT]:
+                imgElements = document.querySelectorAll(`#component-${transmorpherIdentifier} .dz-image > img:first-of-type`)
                 imgElements.forEach(image => {
-                    image.closest('.full-size-link').href = image.dataset.placeholderUrl;
+                    let aTag = image.closest('.full-size-link')
+                    aTag.href = image.dataset.placeholderUrl;
+                    aTag.classList.add('disabled');
 
                     // Hide enlarge icon.
                     image.nextElementSibling.classList.add('d-hidden');

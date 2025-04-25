@@ -318,16 +318,16 @@
 .transmorpher .box-shadow-inset, .transmorpher .more-information-modal .card .card-body .card-side .media-preview, .transmorpher .version-list {
   box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, 0.14), inset 0 2px 1px -1px rgba(60, 75, 100, 0.12), inset 0 1px 3px 0 rgba(60, 75, 100, 0.2);
 }
-.transmorpher .video-transmorpher, .transmorpher .image-transmorpher {
+.transmorpher *[class*=-transmorpher] {
   display: flex;
   justify-content: center;
   height: 100%;
   position: relative;
 }
-.transmorpher .video-transmorpher img:first-of-type, .transmorpher .image-transmorpher img:first-of-type {
+.transmorpher *[class*=-transmorpher] img:first-of-type {
   height: 100%;
 }
-.transmorpher .dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *), .transmorpher .full-size-link {
+.transmorpher .dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *, .media-display), .transmorpher .full-size-link:not(.disabled) {
   cursor: zoom-in;
 }
 .transmorpher .full-size-link {
@@ -526,6 +526,10 @@
   height: 100%;
   top: 0;
   left: 0;
+}
+.transmorpher .media-display a.full-size-link.disabled {
+  pointer-events: none;
+  cursor: default;
 }
 .transmorpher .button, .transmorpher .version-list button {
   padding: 0.2rem 1rem;

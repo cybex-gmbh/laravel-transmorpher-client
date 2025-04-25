@@ -57,6 +57,13 @@ return [
                 'mimetypes' => 'image/*',
             ],
         ],
+        'document' => [
+            'validations' => [
+                // Max file size in mb.
+                'max_file_size' => 100,
+                'mimetypes' => 'application/pdf',
+            ],
+        ],
         'video' => [
             'validations' => [
                 // Max file size in mb.

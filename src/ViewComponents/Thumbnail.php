@@ -6,15 +6,17 @@ use Illuminate\View\Component;
 use Illuminate\View\View;
 use Transmorpher\Media;
 
-class MediaPreview extends Component
+class Thumbnail extends Component
 {
     public bool $isReady;
     public string $mediaName;
+    public array $defaultTransformations;
 
     public function __construct(public Media $media)
     {
         $this->isReady = $media->getTransmorpherMedia()->is_ready;
         $this->mediaName = $media->getTransmorpherMedia()->media_name;
+        $this->defaultTransformations = $media->getThumbnailDefaultTransformations();
     }
 
     /**
@@ -24,6 +26,6 @@ class MediaPreview extends Component
      */
     public function render(): string|View
     {
-        return view(sprintf('transmorpher::%s-preview', $this->media->type->value));
+        return view('transmorpher::thumbnail');
     }
 }

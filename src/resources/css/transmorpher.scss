@@ -68,7 +68,7 @@
     box-shadow: inset 0 1px 1px 0 rgba(60, 75, 100, .14), inset 0 2px 1px -1px rgba(60, 75, 100, .12), inset 0 1px 3px 0 rgba(60, 75, 100, .2);
   }
 
-  .video-transmorpher, .image-transmorpher {
+  *[class*='-transmorpher'] {
     display: flex;
     justify-content: center;
     height: 100%;
@@ -79,7 +79,7 @@
     }
   }
 
-  .dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *), .full-size-link {
+  .dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *, .media-display), .full-size-link:not(.disabled) {
     cursor: zoom-in;
   }
 
@@ -329,6 +329,11 @@
     height: 100%;
     top: 0;
     left: 0;
+
+    a.full-size-link.disabled {
+      pointer-events: none;
+      cursor: default;
+    }
   }
 
   .button {

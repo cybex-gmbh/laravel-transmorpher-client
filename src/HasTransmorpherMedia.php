@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionMethod;
+use Transmorpher\Enums\MediaType;
 use Transmorpher\Exceptions\DuplicateMediaNameException;
 use Transmorpher\Exceptions\MissingMorphAliasException;
 use Transmorpher\Models\TransmorpherMedia;
@@ -14,12 +15,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait HasTransmorpherMedia
 {
     protected static Collection $cachedImageMediaNames;
+    protected static Collection $cachedDocumentMediaNames;
     protected static Collection $cachedVideoMediaNames;
 
     /**
      * @throws MissingMorphAliasException
      */
-    public static function bootHasTransmorpherMedia()
+    public static function bootHasTransmorpherMedia(): void
     {
         if (static::getModel()->getTransmorpherAlias() === static::class) {
             throw new MissingMorphAliasException(static::class);
@@ -46,6 +48,20 @@ trait HasTransmorpherMedia
         return Attribute::make(
             get: fn(): Collection => $this->getImageMediaNames()->mapWithKeys(function (string $mediaName) {
                 return [$mediaName => Image::for($this, $mediaName)];
+            })
+        );
+    }
+
+    /**
+     * Returns a collection of Documents associated to media names.
+     *
+     * @return Attribute
+     */
+    public function documents(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): Collection => $this->getDocumentMediaNames()->mapWithKeys(function (string $mediaName) {
+                return [$mediaName => Document::for($this, $mediaName)];
             })
         );
     }
@@ -80,6 +96,21 @@ trait HasTransmorpherMedia
     }
 
     /**
+     * Returns a single Document for a media name.
+     *
+     * @param string $mediaName
+     * @return Document|null
+     */
+    public function document(string $mediaName): ?Document
+    {
+        if ($this->getDocumentMediaNames()->contains($mediaName)) {
+            return Document::for($this, $mediaName);
+        }
+
+        return null;
+    }
+
+    /**
      * Returns a single Video for a media name.
      *
      * @param string $mediaName
@@ -108,6 +139,14 @@ trait HasTransmorpherMedia
     public function getImageMediaNames(): Collection
     {
         return static::$cachedImageMediaNames ??= $this->getMediaNames(Image::class, $this->transmorpherImages ?? []);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getDocumentMediaNames(): Collection
+    {
+        return static::$cachedDocumentMediaNames ??= $this->getMediaNames(Document::class, $this->transmorpherDocuments ?? []);
     }
 
     /**
@@ -153,7 +192,7 @@ trait HasTransmorpherMedia
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
             $reflectionMethodName = $reflectionMethod->getName();
 
-            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && strtolower($reflectionMethodName) !== 'image' && strtolower($reflectionMethodName) !== 'video') {
+            if (is_a($reflectionMethod->getReturnType()?->getName(), $mediaClass, true) && !in_array(strtolower($reflectionMethodName), MediaType::asArray())) {
                 $mediaMethods->push($reflectionMethodName);
             }
         }
