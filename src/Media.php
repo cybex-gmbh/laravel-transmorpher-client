@@ -24,28 +24,33 @@ abstract class Media
     protected TransmorpherMedia $transmorpherMedia;
     protected static array $instances = [];
     protected TransmorpherUpload $upload;
-    protected MediaType $type;
+    public MediaType $type;
 
     /**
      * Get either an existing instance or creates a new one.
      *
      * @param HasTransmorpherMediaInterface $model A model which has TransmorpherMedia.
-     * @param string $mediaName Specifies which media of the model it is.
+     * @param string|null $mediaName Specifies which media of the model it is. Uses the name of the calling function as default.
      *
      * @return static The Media instance.
      */
-    public static function for(HasTransmorpherMediaInterface $model, string $mediaName): static
+    public static function for(HasTransmorpherMediaInterface $model, ?string $mediaName = null): static
     {
-        return static::$instances[$model::class][$model->getKey()][$mediaName] ??= new static(...func_get_args());
+        $mediaName ??= debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
+
+        return static::$instances[$model::class][$model->getKey()][$mediaName] ??= new static($model, $mediaName);
     }
 
     /**
-     * Create a new Media and retrieves or creates the TransmorpherMedia for the specified model and media name.
+     * Create a new Media and retrieve or create the TransmorpherMedia for the specified model and media name.
      *
      * @param HasTransmorpherMediaInterface $model
      * @param string $mediaName
      */
-    protected abstract function __construct(HasTransmorpherMediaInterface $model, string $mediaName);
+    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $mediaName)
+    {
+        $this->createTransmorpherMedia();
+    }
 
     /**
      * @param array $responseForClient
@@ -332,6 +337,8 @@ abstract class Media
                 'width' => $transformationParts[] = Transformation::WIDTH->getUrlRepresentation($value),
                 'height' => $transformationParts[] = Transformation::HEIGHT->getUrlRepresentation($value),
                 'format' => $transformationParts[] = Transformation::FORMAT->getUrlRepresentation($value),
+                'page' => $transformationParts[] = Transformation::PAGE->getUrlRepresentation($value),
+                'ppi' => $transformationParts[] = Transformation::PPI->getUrlRepresentation($value),
                 'quality' => $transformationParts[] = Transformation::QUALITY->getUrlRepresentation($value),
                 default => throw new TransformationNotFoundException($transformation)
             };
@@ -438,6 +445,16 @@ abstract class Media
         }
 
         return $matches[1] / $matches[2];
+    }
+
+    /**
+     * Get the default transformations for the preview image displayed as thumbnail on the dropzone component.
+     *
+     * @return array
+     */
+    public function getThumbnailDefaultTransformations(): array
+    {
+        return [];
     }
 
     /**

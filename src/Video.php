@@ -7,23 +7,12 @@ use Transmorpher\Models\TransmorpherUpload;
 
 class Video extends Media
 {
-    protected MediaType $type = MediaType::VIDEO;
-
-    /**
-     * Create a new Video and retrieves or creates the TransmorpherMedia for the specified model and media name.
-     *
-     * @param HasTransmorpherMediaInterface $model
-     * @param string $mediaName
-     */
-    protected function __construct(protected HasTransmorpherMediaInterface $model, protected string $mediaName)
-    {
-        $this->createTransmorpherMedia();
-    }
+    public MediaType $type = MediaType::VIDEO;
 
     /**
      * @param string $format
      * @param string $extension
-     * @return string
+     * @return string|null
      */
     protected function getVideoUrl(string $format, string $extension): ?string
     {
@@ -31,7 +20,7 @@ class Video extends Media
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getMp4Url(): ?string
     {
@@ -39,7 +28,7 @@ class Video extends Media
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getHlsUrl(): ?string
     {
@@ -47,7 +36,7 @@ class Video extends Media
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDashUrl(): ?string
     {
