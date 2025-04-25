@@ -75,12 +75,12 @@ class Dropzone extends Component
 
         $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
         $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);
-        $this->handleUploadResponseRoute = route('transmorpherHandleUploadResponse', '');
+        $this->handleUploadResponseRoute = route('transmorpherHandleUploadResponse');
         $this->getVersionsRoute = route('transmorpherGetVersions', $this->transmorpherMediaKey);
         $this->setVersionRoute = route('transmorpherSetVersion', $this->transmorpherMediaKey);
         $this->deleteRoute = route('transmorpherDelete', $this->transmorpherMediaKey);
-        $this->getOriginalRoute = route('transmorpherGetOriginal', [$this->transmorpherMediaKey, '']);
-        $this->getDerivativeForVersionRoute = route('transmorpherGetDerivativeForVersion', [$this->transmorpherMediaKey, '']);
+        $this->getOriginalRoute = route('transmorpherGetOriginal', $this->transmorpherMediaKey);
+        $this->getDerivativeForVersionRoute = route('transmorpherGetDerivativeForVersion', $this->transmorpherMediaKey);
         $this->setUploadingStateRoute = route('transmorpherSetUploadingState', '');
     }
 
