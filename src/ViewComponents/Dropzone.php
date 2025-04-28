@@ -2,6 +2,7 @@
 
 namespace Transmorpher\ViewComponents;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 use Transmorpher\Enums\MediaType;
@@ -73,15 +74,18 @@ class Dropzone extends Component
             'ratio' => $this->acceptedDisplayRatio,
         ]);
 
-        $this->stateRoute = route('transmorpherState', $this->transmorpherMediaKey);
-        $this->uploadTokenRoute = route('transmorpherUploadToken', $this->transmorpherMediaKey);
-        $this->handleUploadResponseRoute = route('transmorpherHandleUploadResponse');
-        $this->getVersionsRoute = route('transmorpherGetVersions', $this->transmorpherMediaKey);
-        $this->setVersionRoute = route('transmorpherSetVersion', $this->transmorpherMediaKey);
-        $this->deleteRoute = route('transmorpherDelete', $this->transmorpherMediaKey);
-        $this->getOriginalRoute = route('transmorpherGetOriginal', $this->transmorpherMediaKey);
-        $this->getDerivativeForVersionRoute = route('transmorpherGetDerivativeForVersion', $this->transmorpherMediaKey);
-        $this->setUploadingStateRoute = route('transmorpherSetUploadingState', '');
+        $domain = config('app.url');
+        $routes =  Route::getRoutes()->getRoutesByName();
+
+        $this->stateRoute = sprintf('%s/%s', $domain, $routes['transmorpherState']->uri);
+        $this->uploadTokenRoute = sprintf('%s/%s', $domain, $routes['transmorpherUploadToken']->uri);
+        $this->handleUploadResponseRoute = sprintf('%s/%s', $domain, $routes['transmorpherHandleUploadResponse']->uri);
+        $this->getVersionsRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetVersions']->uri);
+        $this->setVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetVersion']->uri);
+        $this->deleteRoute = sprintf('%s/%s', $domain, $routes['transmorpherDelete']->uri);
+        $this->getOriginalRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetOriginal']->uri);
+        $this->getDerivativeForVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetDerivativeForVersion']->uri);
+        $this->setUploadingStateRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetUploadingState']->uri);
     }
 
     /**
