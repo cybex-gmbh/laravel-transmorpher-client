@@ -16,7 +16,7 @@
     - p: The page to be displayed as image
     - all regular image transformations
 
-- When defining media via methods, the name of the calling method will now be used as media name.
+- When defining media via methods, the name of the calling method will now automatically be used as media name.
 See the according [readme section](README.md#allow-models-to-have-images-and-videos) for more information
   
 ## [v0.4.0](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.3.0...v0.4.0)
