@@ -1,5 +1,24 @@
 # Release Notes
 
+## [v0.5.1](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.5.0...v0.5.1)
+
+- Add support for Laravel 12
+
+## [v0.5.0](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.4.0...v0.5.0)
+
+### Features
+- PDF uploads are now supported
+  - PDFs can be uploaded and previewed
+  - Requesting a PDF without a format will return the document
+  - Requesting a PDF with an image format will return the document as an image
+  - Available transformations:
+    - ppi: The ppi will be multiplied with the document dimensions, which results in the image resolution
+    - p: The page to be displayed as image
+    - all regular image transformations
+
+- When defining media via methods, the name of the calling method will now automatically be used as media name.
+See the according [readme section](README.md#allow-models-to-have-images-and-videos) for more information
+  
 ## [v0.4.0](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.3.0...v0.4.0)
 
 > [!WARNING]
