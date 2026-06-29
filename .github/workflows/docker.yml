@@ -13,5 +13,5 @@ jobs:
     uses: cybex-gmbh/github-workflows/.github/workflows/docker-build-push.yml@main
     with:
       DOCKER_REPOSITORY: cybexwebdev/transmorpher-amigor
-      DOCKERFILE_PATH: ./amigor/docker/Dockerfile
+      DOCKERFILE_PATH: ./amigor/docker/prod/Dockerfile
     secrets: inherit
