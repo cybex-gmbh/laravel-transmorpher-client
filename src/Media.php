@@ -146,7 +146,7 @@ abstract class Media
             'state' => UploadState::INITIALIZING,
             'message' => 'Sending request.',
         ]);
-        $reserveUploadSlotUrl = TransmorpherApi::S2S->getUrl(sprintf('%s/reserveUploadSlot', $this->type->value));
+        $reserveUploadSlotUrl = TransmorpherApi::S2S->getUrl(sprintf('%s/upload/reserve', $this->type->value));
 
         try {
             $responseFromServer = $this->configureApiRequest()->post($reserveUploadSlotUrl, ['identifier' => $this->getIdentifier()]);
@@ -246,7 +246,7 @@ abstract class Media
         $upload = $this->transmorpherMedia->TransmorpherUploads()->create(['state' => UploadState::INITIALIZING, 'message' => 'Sending request to restore version.']);
 
         try {
-            $responseFromServer = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/version/%s', $this->getIdentifier(), $versionNumber)));
+            $responseFromServer = $this->configureApiRequest()->patch(TransmorpherApi::S2S->getUrl(sprintf('media/%s/versions/%s', $this->getIdentifier(), $versionNumber)));
             $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
@@ -511,7 +511,7 @@ abstract class Media
     protected function getCacheBuster(): string
     {
         $cacheBuster = Cache::remember('cache_invalidator', now()->addDays(14), function () {
-            return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('cacheInvalidator'))->body();
+            return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('meta/cacheInvalidator'))->body();
         });
 
         return sprintf(
