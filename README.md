@@ -75,7 +75,7 @@ You can specify the Transmorpher API version which should be used. Make sure the
 For versions supported by the client, check the SupportedApiVersion enum.
 
 ```dotenv
-TRANSMORPHER_API_VERSION=1
+TRANSMORPHER_API_VERSION=2
 ```
 
 ### Allow models to have images and videos

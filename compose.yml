@@ -10,6 +10,7 @@ services:
       - './amigor:/var/www'
       - '.:/var/package'
       - '.env:/var/www/.env'
+      - './dist:/var/www/public/vendor/transmorpher'
       # For .bash_history and similar
       - 'home:/home/www'
     networks:
