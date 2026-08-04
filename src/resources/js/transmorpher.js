@@ -1,10 +1,12 @@
 import Dropzone from 'dropzone';
+import UploadHandlerFactory from './classes/UploadHandlerFactory.js';
 
 if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
     window.Dropzone = Dropzone;
     window.mediaTypes = {};
     window.media = [];
+    window.uploadHandler = '';
 
     const IMAGE = 'IMAGE';
     const DOCUMENT = 'DOCUMENT';
@@ -13,6 +15,7 @@ if (!window.transmorpherScriptLoaded) {
     window.setupComponent = function (transmorpherIdentifier) {
         Dropzone.autoDiscover = false;
         const medium = media[transmorpherIdentifier];
+        const handler = UploadHandlerFactory.create(uploadHandler);
 
         addConfirmEventListener(
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
@@ -46,6 +49,7 @@ if (!window.transmorpherScriptLoaded) {
             dictFileTooBig: medium.translations['max_file_size_exceeded'],
             dictInvalidFileType: medium.translations['invalid_file_type'],
             createImageThumbnails: false,
+            ...handler.getDropzoneOptions(),
             init: function () {
                 // Processing-Event is emitted when the upload starts.
                 this.on('processing', function () {
@@ -67,7 +71,7 @@ if (!window.transmorpherScriptLoaded) {
 
                 this.on('sending', function (file, xhr, formData) {
                     // Add identifier to request body.
-                    formData.append('identifier', transmorpherIdentifier);
+                    formData?.append('identifier', transmorpherIdentifier);
                 })
             },
             thumbnail: async function (file) {
@@ -132,10 +136,10 @@ if (!window.transmorpherScriptLoaded) {
                     })
                 })
             },
-            success: function (file, response) {
-                this.element.querySelector('.dz-default').style.display = 'block';
+            success: async function (file, response) {
+                await completeUpload(file, transmorpherIdentifier, this.options.uploadToken)
 
-                completeUpload(file, transmorpherIdentifier, this.options.uploadToken)
+                this.element.querySelector('.dz-default').style.display = 'block';
             },
             error: function (file, response) {
                 handleUploadResponse(
@@ -197,11 +201,11 @@ if (!window.transmorpherScriptLoaded) {
         return chunkUploadUrlResponse.url;
     };
 
-    window.completeUpload = function (file, transmorpherIdentifier, uploadToken) {
+    window.completeUpload = async function (file, transmorpherIdentifier, uploadToken) {
         const completeUploadUrl = media[transmorpherIdentifier].routes.completeUpload
             .replace('{transmorpherUpload}', uploadToken);
 
-        fetch(completeUploadUrl, {
+        await fetch(completeUploadUrl, {
             method: 'POST',
             headers: {
                 'X-XSRF-TOKEN': getCsrfToken(),

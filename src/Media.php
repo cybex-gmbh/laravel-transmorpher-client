@@ -3,6 +3,7 @@
 namespace Transmorpher;
 
 use Exception;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
@@ -505,6 +506,18 @@ abstract class Media
     public function getThumbnailDefaultTransformations(): array
     {
         return [];
+    }
+
+    /**
+     * Get the upload handler configured on the Transmorpher Server.
+     *
+     * @return string
+     *
+     * @throws ConnectionException
+     */
+    public function getUploadHandler(): string
+    {
+        return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('meta/uploadHandler'))->body();
     }
 
     /**

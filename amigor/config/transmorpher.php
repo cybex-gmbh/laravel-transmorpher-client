@@ -36,7 +36,7 @@ return [
 
     'upload' => [
         // Chunk size in mb.
-        'chunk_size' => 1 * 1024 * 1024,
+        'chunk_size' => 5 * 1024 * 1024,
         'image' => [
             'validations' => [
                 // Max file size in mb.

@@ -2229,6 +2229,168 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ },
 
+/***/ "./src/resources/js/classes/UploadHandler/AbstractUploadHandler.js"
+/*!*************************************************************************!*\
+  !*** ./src/resources/js/classes/UploadHandler/AbstractUploadHandler.js ***!
+  \*************************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ AbstractUploadHandler)
+/* harmony export */ });
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var AbstractUploadHandler = /*#__PURE__*/function () {
+  function AbstractUploadHandler() {
+    _classCallCheck(this, AbstractUploadHandler);
+    if ((this instanceof AbstractUploadHandler ? this.constructor : void 0) === AbstractUploadHandler) {
+      throw new Error('UploadHandler is abstract and cannot be instantiated directly.');
+    }
+  }
+  return _createClass(AbstractUploadHandler, [{
+    key: "getDropzoneOptions",
+    value: function getDropzoneOptions() {
+      throw new Error('getDropzoneOptions() must be implemented by subclass.');
+    }
+  }]);
+}();
+
+
+/***/ },
+
+/***/ "./src/resources/js/classes/UploadHandler/DefaultUploadHandler.js"
+/*!************************************************************************!*\
+  !*** ./src/resources/js/classes/UploadHandler/DefaultUploadHandler.js ***!
+  \************************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ DefaultUploadHandler)
+/* harmony export */ });
+/* harmony import */ var _AbstractUploadHandler_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractUploadHandler.js */ "./src/resources/js/classes/UploadHandler/AbstractUploadHandler.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
+function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
+function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+
+var DefaultUploadHandler = /*#__PURE__*/function (_AbstractUploadHandle) {
+  function DefaultUploadHandler() {
+    _classCallCheck(this, DefaultUploadHandler);
+    return _callSuper(this, DefaultUploadHandler, arguments);
+  }
+  _inherits(DefaultUploadHandler, _AbstractUploadHandle);
+  return _createClass(DefaultUploadHandler, [{
+    key: "getDropzoneOptions",
+    value: function getDropzoneOptions() {
+      return {
+        binaryBody: false
+      };
+    }
+  }]);
+}(_AbstractUploadHandler_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+/***/ },
+
+/***/ "./src/resources/js/classes/UploadHandler/S3MultiPartUploadHandler.js"
+/*!****************************************************************************!*\
+  !*** ./src/resources/js/classes/UploadHandler/S3MultiPartUploadHandler.js ***!
+  \****************************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ S3MultiPartUploadHandler)
+/* harmony export */ });
+/* harmony import */ var _AbstractUploadHandler_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractUploadHandler.js */ "./src/resources/js/classes/UploadHandler/AbstractUploadHandler.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
+function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
+function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+
+var S3MultiPartUploadHandler = /*#__PURE__*/function (_AbstractUploadHandle) {
+  function S3MultiPartUploadHandler() {
+    _classCallCheck(this, S3MultiPartUploadHandler);
+    return _callSuper(this, S3MultiPartUploadHandler, arguments);
+  }
+  _inherits(S3MultiPartUploadHandler, _AbstractUploadHandle);
+  return _createClass(S3MultiPartUploadHandler, [{
+    key: "getDropzoneOptions",
+    value: function getDropzoneOptions() {
+      return {
+        binaryBody: true
+      };
+    }
+  }]);
+}(_AbstractUploadHandler_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+/***/ },
+
+/***/ "./src/resources/js/classes/UploadHandlerFactory.js"
+/*!**********************************************************!*\
+  !*** ./src/resources/js/classes/UploadHandlerFactory.js ***!
+  \**********************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ UploadHandlerFactory)
+/* harmony export */ });
+/* harmony import */ var _UploadHandler_DefaultUploadHandler_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UploadHandler/DefaultUploadHandler.js */ "./src/resources/js/classes/UploadHandler/DefaultUploadHandler.js");
+/* harmony import */ var _UploadHandler_S3MultiPartUploadHandler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UploadHandler/S3MultiPartUploadHandler.js */ "./src/resources/js/classes/UploadHandler/S3MultiPartUploadHandler.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+
+var UploadHandlerFactory = /*#__PURE__*/function () {
+  function UploadHandlerFactory() {
+    _classCallCheck(this, UploadHandlerFactory);
+  }
+  return _createClass(UploadHandlerFactory, null, [{
+    key: "create",
+    value: function create(uploadHandler) {
+      switch (uploadHandler) {
+        case 's3-multi-part':
+          return new _UploadHandler_S3MultiPartUploadHandler_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        default:
+          return new _UploadHandler_DefaultUploadHandler_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+      }
+    }
+  }]);
+}();
+
+
+/***/ },
+
 /***/ "./src/resources/js/transmorpher.js"
 /*!******************************************!*\
   !*** ./src/resources/js/transmorpher.js ***!
@@ -2237,22 +2399,32 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.mjs");
+/* harmony import */ var _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/UploadHandlerFactory.js */ "./src/resources/js/classes/UploadHandlerFactory.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
 
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.Dropzone = dropzone__WEBPACK_IMPORTED_MODULE_0__["default"];
   window.mediaTypes = {};
   window.media = [];
+  window.uploadHandler = '';
   var IMAGE = 'IMAGE';
   var DOCUMENT = 'DOCUMENT';
   var VIDEO = 'VIDEO';
   window.setupComponent = function (transmorpherIdentifier) {
     dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
     var medium = media[transmorpherIdentifier];
+    var handler = _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_1__["default"].create(uploadHandler);
     addConfirmEventListener(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier), transmorpherIdentifier);
 
     // Start polling if the video is still processing or an upload is in process.
@@ -2260,7 +2432,7 @@ if (!window.transmorpherScriptLoaded) {
       startPolling(transmorpherIdentifier, medium.latestUploadToken);
       setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), getDateForDisplay(new Date(medium.lastUpdated * 1000)));
     }
-    var dz = new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
+    var dz = new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), _objectSpread(_objectSpread({
       url: 'placeholder',
       // URL is set dynamically for each chunk. We cannot use an async function to retrieve them here, unfortunately.
       method: "PUT",
@@ -2277,7 +2449,8 @@ if (!window.transmorpherScriptLoaded) {
       dictDefaultMessage: medium.translations['drop_files_to_upload'],
       dictFileTooBig: medium.translations['max_file_size_exceeded'],
       dictInvalidFileType: medium.translations['invalid_file_type'],
-      createImageThumbnails: false,
+      createImageThumbnails: false
+    }, handler.getDropzoneOptions()), {}, {
       init: function init() {
         // Processing-Event is emitted when the upload starts.
         this.on('processing', function () {
@@ -2297,7 +2470,7 @@ if (!window.transmorpherScriptLoaded) {
         });
         this.on('sending', function (file, xhr, formData) {
           // Add identifier to request body.
-          formData.append('identifier', transmorpherIdentifier);
+          formData === null || formData === void 0 || formData.append('identifier', transmorpherIdentifier);
         });
       },
       thumbnail: function () {
@@ -2394,62 +2567,77 @@ if (!window.transmorpherScriptLoaded) {
           })
         });
       },
-      success: function success(file, response) {
-        this.element.querySelector('.dz-default').style.display = 'block';
-        completeUpload(file, transmorpherIdentifier, this.options.uploadToken);
-      },
+      success: function () {
+        var _success = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(file, response) {
+          return _regenerator().w(function (_context3) {
+            while (1) switch (_context3.n) {
+              case 0:
+                _context3.n = 1;
+                return completeUpload(file, transmorpherIdentifier, this.options.uploadToken);
+              case 1:
+                this.element.querySelector('.dz-default').style.display = 'block';
+              case 2:
+                return _context3.a(2);
+            }
+          }, _callee3, this);
+        }));
+        function success(_x3, _x4) {
+          return _success.apply(this, arguments);
+        }
+        return success;
+      }(),
       error: function error(file, response) {
         handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
       }
-    });
+    }));
     var originalSubmitRequest = dz.submitRequest.bind(dz);
 
     // Overwrite the Dropzone submitRequest implementation to dynamically set the URL for each chunk.
     // Uses the original implementation to actually send the request.
     dz.submitRequest = /*#__PURE__*/function () {
-      var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(xhr, formData, files) {
+      var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(xhr, formData, files) {
         var _file$upload, _chunk$dataBlock$chun, _chunk$dataBlock;
         var file, chunk, chunkIndex, chunkUploadUrl;
-        return _regenerator().w(function (_context3) {
-          while (1) switch (_context3.n) {
+        return _regenerator().w(function (_context4) {
+          while (1) switch (_context4.n) {
             case 0:
               file = files === null || files === void 0 ? void 0 : files[0];
               chunk = file === null || file === void 0 || (_file$upload = file.upload) === null || _file$upload === void 0 || (_file$upload = _file$upload.chunks) === null || _file$upload === void 0 ? void 0 : _file$upload.find(function (c) {
                 return c.xhr === xhr;
               }); // Fallback to 1 for non-chunked/small files
               chunkIndex = ((_chunk$dataBlock$chun = chunk === null || chunk === void 0 || (_chunk$dataBlock = chunk.dataBlock) === null || _chunk$dataBlock === void 0 ? void 0 : _chunk$dataBlock.chunkIndex) !== null && _chunk$dataBlock$chun !== void 0 ? _chunk$dataBlock$chun : 0) + 1;
-              _context3.n = 1;
+              _context4.n = 1;
               return getUploadUrl(transmorpherIdentifier, chunkIndex, file === null || file === void 0 ? void 0 : file.done);
             case 1:
-              chunkUploadUrl = _context3.v;
+              chunkUploadUrl = _context4.v;
               if (chunkUploadUrl) {
-                _context3.n = 2;
+                _context4.n = 2;
                 break;
               }
-              return _context3.a(2);
+              return _context4.a(2);
             case 2:
               // Set the URL on the xhr right before sending.
               xhr.open(this.options.method, chunkUploadUrl);
               xhr.setRequestHeader('Accept', 'application/json');
-              return _context3.a(2, originalSubmitRequest(xhr, formData, files));
+              return _context4.a(2, originalSubmitRequest(xhr, formData, files));
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
-      return function (_x3, _x4, _x5) {
+      return function (_x5, _x6, _x7) {
         return _ref2.apply(this, arguments);
       };
     }();
   };
   window.getUploadUrl = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(transmorpherIdentifier, chunkIndex, done) {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(transmorpherIdentifier, chunkIndex, done) {
       var dropzone, uploadToken, chunkUploadUrl, chunkUploadUrlResponse;
-      return _regenerator().w(function (_context4) {
-        while (1) switch (_context4.n) {
+      return _regenerator().w(function (_context5) {
+        while (1) switch (_context5.n) {
           case 0:
             dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
             uploadToken = dropzone.options.uploadToken;
             chunkUploadUrl = media[transmorpherIdentifier].routes.chunkUrl.replace('{transmorpherUpload}', uploadToken).replace('{chunkNumber}', chunkIndex);
-            _context4.n = 1;
+            _context5.n = 1;
             return fetch(chunkUploadUrl, {
               headers: {
                 'X-XSRF-TOKEN': getCsrfToken()
@@ -2458,44 +2646,58 @@ if (!window.transmorpherScriptLoaded) {
               return res.json();
             });
           case 1:
-            chunkUploadUrlResponse = _context4.v;
+            chunkUploadUrlResponse = _context5.v;
             if (!(chunkUploadUrlResponse.state === 'error')) {
-              _context4.n = 2;
+              _context5.n = 2;
               break;
             }
             done(chunkUploadUrlResponse);
-            return _context4.a(2, null);
+            return _context5.a(2, null);
           case 2:
-            return _context4.a(2, chunkUploadUrlResponse.url);
+            return _context5.a(2, chunkUploadUrlResponse.url);
         }
-      }, _callee4);
+      }, _callee5);
     }));
-    return function (_x6, _x7, _x8) {
+    return function (_x8, _x9, _x0) {
       return _ref3.apply(this, arguments);
     };
   }();
-  window.completeUpload = function (file, transmorpherIdentifier, uploadToken) {
-    var completeUploadUrl = media[transmorpherIdentifier].routes.completeUpload.replace('{transmorpherUpload}', uploadToken);
-    fetch(completeUploadUrl, {
-      method: 'POST',
-      headers: {
-        'X-XSRF-TOKEN': getCsrfToken()
-      }
-    }).then(function (res) {
-      return res.json();
-    }).then(function (completeUploadResponse) {
-      handleUploadResponse(file, completeUploadResponse, transmorpherIdentifier, uploadToken);
-    });
-  };
+  window.completeUpload = /*#__PURE__*/function () {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(file, transmorpherIdentifier, uploadToken) {
+      var completeUploadUrl;
+      return _regenerator().w(function (_context6) {
+        while (1) switch (_context6.n) {
+          case 0:
+            completeUploadUrl = media[transmorpherIdentifier].routes.completeUpload.replace('{transmorpherUpload}', uploadToken);
+            _context6.n = 1;
+            return fetch(completeUploadUrl, {
+              method: 'POST',
+              headers: {
+                'X-XSRF-TOKEN': getCsrfToken()
+              }
+            }).then(function (res) {
+              return res.json();
+            }).then(function (completeUploadResponse) {
+              handleUploadResponse(file, completeUploadResponse, transmorpherIdentifier, uploadToken);
+            });
+          case 1:
+            return _context6.a(2);
+        }
+      }, _callee6);
+    }));
+    return function (_x1, _x10, _x11) {
+      return _ref4.apply(this, arguments);
+    };
+  }();
   window.abortUpload = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(transmorpherIdentifier) {
+    var _ref5 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(transmorpherIdentifier) {
       var medium, abortUploadUrl;
-      return _regenerator().w(function (_context5) {
-        while (1) switch (_context5.n) {
+      return _regenerator().w(function (_context7) {
+        while (1) switch (_context7.n) {
           case 0:
             medium = media[transmorpherIdentifier];
             abortUploadUrl = media[transmorpherIdentifier].routes.abortUpload.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
-            _context5.n = 1;
+            _context7.n = 1;
             return fetch(abortUploadUrl, {
               method: 'DELETE',
               headers: {
@@ -2503,12 +2705,12 @@ if (!window.transmorpherScriptLoaded) {
               }
             });
           case 1:
-            return _context5.a(2);
+            return _context7.a(2);
         }
-      }, _callee5);
+      }, _callee7);
     }));
-    return function (_x9) {
-      return _ref4.apply(this, arguments);
+    return function (_x12) {
+      return _ref5.apply(this, arguments);
     };
   }();
   window.getMediaDimensions = function (file, transmorpherIdentifier) {
@@ -2993,10 +3195,10 @@ if (!window.transmorpherScriptLoaded) {
     var previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
     modal.classList.add('d-flex');
     previewElement ? previewElement.style.display = 'none' : null;
-    modal.querySelector('.badge-error').onclick = /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6() {
+    modal.querySelector('.badge-error').onclick = /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee8() {
       var _dropzone$files$;
-      return _regenerator().w(function (_context6) {
-        while (1) switch (_context6.n) {
+      return _regenerator().w(function (_context8) {
+        while (1) switch (_context8.n) {
           case 0:
             previewElement ? previewElement.style.display = 'block' : null;
             document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
@@ -3013,14 +3215,14 @@ if (!window.transmorpherScriptLoaded) {
               document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'none';
               previewElement ? previewElement.style.display = 'block' : null;
             }
-            _context6.n = 1;
+            _context8.n = 1;
             return abortUpload(transmorpherIdentifier);
           case 1:
             callback();
           case 2:
-            return _context6.a(2);
+            return _context8.a(2);
         }
-      }, _callee6);
+      }, _callee8);
     }));
   };
   window.closeUploadConfirmModal = function (transmorpherIdentifier) {

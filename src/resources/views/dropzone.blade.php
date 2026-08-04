@@ -106,6 +106,7 @@
 
 <script type="text/javascript">
     mediaTypes = @json($mediaTypes);
+    uploadHandler = '{{ $uploadHandler }}'
     media['{{ $media->getIdentifier() }}'] = {
         transmorpherMediaKey: {{ $transmorpherMediaKey }},
         routes: {

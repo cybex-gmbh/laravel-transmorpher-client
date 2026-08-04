@@ -23,6 +23,7 @@ class Dropzone extends Component
     public array $srcSetTransformations;
     public ?float $acceptedCalculatedRatio;
     public array $translations;
+    public string $uploadHandler;
     public string $stateRoute;
     public string $uploadTokenRoute;
     public string $handleUploadResponseRoute;
@@ -76,6 +77,7 @@ class Dropzone extends Component
             'maxHeight' => $this->acceptedMaxHeight ?? 'none',
             'ratio' => $this->acceptedDisplayRatio,
         ]);
+        $this->uploadHandler = $this->media->getUploadHandler();
 
         $domain = config('app.url');
         $routes =  Route::getRoutes()->getRoutesByName();
