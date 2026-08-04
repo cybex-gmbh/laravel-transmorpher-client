@@ -2260,10 +2260,13 @@ if (!window.transmorpherScriptLoaded) {
       startPolling(transmorpherIdentifier, medium.latestUploadToken);
       setAgeElement(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), getDateForDisplay(new Date(medium.lastUpdated * 1000)));
     }
-    new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
-      url: medium.webUploadUrl,
+    var dz = new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), {
+      url: 'placeholder',
+      // URL is set dynamically for each chunk. We cannot use an async function to retrieve them here, unfortunately.
+      method: "PUT",
       acceptedFiles: medium.acceptedFileTypes,
       chunking: true,
+      forceChunking: true,
       chunkSize: medium.chunkSize,
       maxFilesize: medium.maxFilesize,
       maxThumbnailFilesize: medium.maxThumbnailFilesize,
@@ -2298,21 +2301,21 @@ if (!window.transmorpherScriptLoaded) {
         });
       },
       thumbnail: function () {
-        var _thumbnail = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(file) {
+        var _thumbnail = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(file) {
           var dimensions;
-          return _regenerator().w(function (_context) {
-            while (1) switch (_context.n) {
+          return _regenerator().w(function (_context2) {
+            while (1) switch (_context2.n) {
               case 0:
                 if (!(!file.width || !file.height)) {
-                  _context.n = 2;
+                  _context2.n = 2;
                   break;
                 }
-                _context.n = 1;
+                _context2.n = 1;
                 return getMediaDimensions(file, transmorpherIdentifier)["catch"](function (error) {
                   file.done(error);
                 });
               case 1:
-                dimensions = _context.v;
+                dimensions = _context2.v;
                 file.width = dimensions.width;
                 file.height = dimensions.height;
               case 2:
@@ -2324,18 +2327,36 @@ if (!window.transmorpherScriptLoaded) {
                 } else if (medium.ratio && Math.abs(file.width / file.height - medium.ratio) > 0.0000000001) {
                   file.done(medium.translations['invalid_ratio']);
                 } else {
-                  getState(transmorpherIdentifier).then(function (uploadingStateResponse) {
-                    if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                      openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done));
-                    } else {
-                      reserveUploadSlot(transmorpherIdentifier, file.done);
-                    }
-                  });
+                  getState(transmorpherIdentifier).then(/*#__PURE__*/function () {
+                    var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(uploadingStateResponse) {
+                      return _regenerator().w(function (_context) {
+                        while (1) switch (_context.n) {
+                          case 0:
+                            if (!(uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing')) {
+                              _context.n = 2;
+                              break;
+                            }
+                            _context.n = 1;
+                            return openUploadConfirmModal(transmorpherIdentifier, createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done));
+                          case 1:
+                            _context.n = 3;
+                            break;
+                          case 2:
+                            reserveUploadSlot(transmorpherIdentifier, file.done);
+                          case 3:
+                            return _context.a(2);
+                        }
+                      }, _callee);
+                    }));
+                    return function (_x2) {
+                      return _ref.apply(this, arguments);
+                    };
+                  }());
                 }
               case 3:
-                return _context.a(2);
+                return _context2.a(2);
             }
-          }, _callee);
+          }, _callee2);
         }));
         function thumbnail(_x) {
           return _thumbnail.apply(this, arguments);
@@ -2375,13 +2396,121 @@ if (!window.transmorpherScriptLoaded) {
       },
       success: function success(file, response) {
         this.element.querySelector('.dz-default').style.display = 'block';
-        handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
+        completeUpload(file, transmorpherIdentifier, this.options.uploadToken);
       },
       error: function error(file, response) {
         handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
       }
     });
+    var originalSubmitRequest = dz.submitRequest.bind(dz);
+
+    // Overwrite the Dropzone submitRequest implementation to dynamically set the URL for each chunk.
+    // Uses the original implementation to actually send the request.
+    dz.submitRequest = /*#__PURE__*/function () {
+      var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(xhr, formData, files) {
+        var _file$upload, _chunk$dataBlock$chun, _chunk$dataBlock;
+        var file, chunk, chunkIndex, chunkUploadUrl;
+        return _regenerator().w(function (_context3) {
+          while (1) switch (_context3.n) {
+            case 0:
+              file = files === null || files === void 0 ? void 0 : files[0];
+              chunk = file === null || file === void 0 || (_file$upload = file.upload) === null || _file$upload === void 0 || (_file$upload = _file$upload.chunks) === null || _file$upload === void 0 ? void 0 : _file$upload.find(function (c) {
+                return c.xhr === xhr;
+              }); // Fallback to 1 for non-chunked/small files
+              chunkIndex = ((_chunk$dataBlock$chun = chunk === null || chunk === void 0 || (_chunk$dataBlock = chunk.dataBlock) === null || _chunk$dataBlock === void 0 ? void 0 : _chunk$dataBlock.chunkIndex) !== null && _chunk$dataBlock$chun !== void 0 ? _chunk$dataBlock$chun : 0) + 1;
+              _context3.n = 1;
+              return getUploadUrl(transmorpherIdentifier, chunkIndex, file === null || file === void 0 ? void 0 : file.done);
+            case 1:
+              chunkUploadUrl = _context3.v;
+              if (chunkUploadUrl) {
+                _context3.n = 2;
+                break;
+              }
+              return _context3.a(2);
+            case 2:
+              // Set the URL on the xhr right before sending.
+              xhr.open(this.options.method, chunkUploadUrl);
+              xhr.setRequestHeader('Accept', 'application/json');
+              return _context3.a(2, originalSubmitRequest(xhr, formData, files));
+          }
+        }, _callee3, this);
+      }));
+      return function (_x3, _x4, _x5) {
+        return _ref2.apply(this, arguments);
+      };
+    }();
   };
+  window.getUploadUrl = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(transmorpherIdentifier, chunkIndex, done) {
+      var dropzone, uploadToken, chunkUploadUrl, chunkUploadUrlResponse;
+      return _regenerator().w(function (_context4) {
+        while (1) switch (_context4.n) {
+          case 0:
+            dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
+            uploadToken = dropzone.options.uploadToken;
+            chunkUploadUrl = media[transmorpherIdentifier].routes.chunkUrl.replace('{transmorpherUpload}', uploadToken).replace('{chunkNumber}', chunkIndex);
+            _context4.n = 1;
+            return fetch(chunkUploadUrl, {
+              headers: {
+                'X-XSRF-TOKEN': getCsrfToken()
+              }
+            }).then(function (res) {
+              return res.json();
+            });
+          case 1:
+            chunkUploadUrlResponse = _context4.v;
+            if (!(chunkUploadUrlResponse.state === 'error')) {
+              _context4.n = 2;
+              break;
+            }
+            done(chunkUploadUrlResponse);
+            return _context4.a(2, null);
+          case 2:
+            return _context4.a(2, chunkUploadUrlResponse.url);
+        }
+      }, _callee4);
+    }));
+    return function (_x6, _x7, _x8) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+  window.completeUpload = function (file, transmorpherIdentifier, uploadToken) {
+    var completeUploadUrl = media[transmorpherIdentifier].routes.completeUpload.replace('{transmorpherUpload}', uploadToken);
+    fetch(completeUploadUrl, {
+      method: 'POST',
+      headers: {
+        'X-XSRF-TOKEN': getCsrfToken()
+      }
+    }).then(function (res) {
+      return res.json();
+    }).then(function (completeUploadResponse) {
+      handleUploadResponse(file, completeUploadResponse, transmorpherIdentifier, uploadToken);
+    });
+  };
+  window.abortUpload = /*#__PURE__*/function () {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(transmorpherIdentifier) {
+      var medium, abortUploadUrl;
+      return _regenerator().w(function (_context5) {
+        while (1) switch (_context5.n) {
+          case 0:
+            medium = media[transmorpherIdentifier];
+            abortUploadUrl = media[transmorpherIdentifier].routes.abortUpload.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+            _context5.n = 1;
+            return fetch(abortUploadUrl, {
+              method: 'DELETE',
+              headers: {
+                'X-XSRF-TOKEN': getCsrfToken()
+              }
+            });
+          case 1:
+            return _context5.a(2);
+        }
+      }, _callee5);
+    }));
+    return function (_x9) {
+      return _ref4.apply(this, arguments);
+    };
+  }();
   window.getMediaDimensions = function (file, transmorpherIdentifier) {
     switch (media[transmorpherIdentifier].mediaType) {
       case mediaTypes[IMAGE]:
@@ -2438,7 +2567,7 @@ if (!window.transmorpherScriptLoaded) {
     // Has to be stored in a global variable, to be able to clear the timer when a new video is dropped in the dropzone.
     window[statusPollingVariable] = setInterval(function () {
       // Clear timer after 24 hours.
-      if (new Date().getTime > expirationTime) {
+      if (new Date().getTime() > expirationTime.getTime()) {
         clearInterval(window[statusPollingVariable]);
       }
 
@@ -2500,7 +2629,7 @@ if (!window.transmorpherScriptLoaded) {
     clearInterval(window["statusPolling".concat(transmorpherIdentifier)]);
     (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier)).querySelector('.dz-preview')) === null || _document$querySelect2 === void 0 || _document$querySelect2.remove();
     if (uploadToken) {
-      var _file$xhr$status, _file$xhr2;
+      var _response$httpCode, _file$xhr2;
       var url = media[transmorpherIdentifier].routes.handleUploadResponse.replace('{transmorpherUpload}', uploadToken);
       fetch(url, {
         method: 'POST',
@@ -2509,10 +2638,8 @@ if (!window.transmorpherScriptLoaded) {
           'X-XSRF-TOKEN': getCsrfToken()
         },
         body: JSON.stringify({
-          // When the token retrieval failed, "file" doesn't contain the http code.
-          // It is instead passed in the response of the token retrieval request.
           response: response,
-          http_code: (_file$xhr$status = (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status) !== null && _file$xhr$status !== void 0 ? _file$xhr$status : response === null || response === void 0 ? void 0 : response.http_code
+          http_code: (_response$httpCode = response === null || response === void 0 ? void 0 : response.httpCode) !== null && _response$httpCode !== void 0 ? _response$httpCode : (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status
         })
       }).then(function (response) {
         return response.json();
@@ -2866,25 +2993,35 @@ if (!window.transmorpherScriptLoaded) {
     var previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
     modal.classList.add('d-flex');
     previewElement ? previewElement.style.display = 'none' : null;
-    modal.querySelector('.badge-error').onclick = function () {
+    modal.querySelector('.badge-error').onclick = /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6() {
       var _dropzone$files$;
-      previewElement ? previewElement.style.display = 'block' : null;
-      document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
+      return _regenerator().w(function (_context6) {
+        while (1) switch (_context6.n) {
+          case 0:
+            previewElement ? previewElement.style.display = 'block' : null;
+            document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
 
-      // If there is an upload in progress, remove it.
-      if (((_dropzone$files$ = dropzone.files[0]) === null || _dropzone$files$ === void 0 ? void 0 : _dropzone$files$.status) === 'uploading') {
-        // If a version was restored, show the default message.
-        if (!dropzone.files[1]) {
-          document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
+            // If there is an upload in progress, remove it.
+            if (((_dropzone$files$ = dropzone.files[0]) === null || _dropzone$files$ === void 0 ? void 0 : _dropzone$files$.status) === 'uploading') {
+              // If a version was restored, show the default message.
+              if (!dropzone.files[1]) {
+                document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
+              }
+              dropzone.removeFile(dropzone.files[0]);
+            } else if (dropzone.files[0]) {
+              // If the file is not uploading, the overwrite button was clicked after finishing the upload. Display the progressbar.
+              document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'none';
+              previewElement ? previewElement.style.display = 'block' : null;
+            }
+            _context6.n = 1;
+            return abortUpload(transmorpherIdentifier);
+          case 1:
+            callback();
+          case 2:
+            return _context6.a(2);
         }
-        dropzone.removeFile(dropzone.files[0]);
-      } else if (dropzone.files[0]) {
-        // If the file is not uploading, the overwrite button was clicked after finishing the upload. Display the progressbar.
-        document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'none';
-        previewElement ? previewElement.style.display = 'block' : null;
-      }
-      callback();
-    };
+      }, _callee6);
+    }));
   };
   window.closeUploadConfirmModal = function (transmorpherIdentifier) {
     var _document$querySelect3;
@@ -2904,6 +3041,7 @@ if (!window.transmorpherScriptLoaded) {
   window.reserveUploadSlot = function (transmorpherIdentifier, done) {
     var medium = media[transmorpherIdentifier];
     var url = medium.routes.uploadToken.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+    var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
 
     // Reserve an upload slot at the Transmorpher media server.
     fetch(url, {
@@ -2913,7 +3051,7 @@ if (!window.transmorpherScriptLoaded) {
         'X-XSRF-TOKEN': getCsrfToken()
       },
       body: JSON.stringify({
-        transmorpher_media_key: medium.transmorpherMediaKey
+        filename: dropzone.files[0].name
       })
     }).then(function (response) {
       return response.json();
@@ -2921,10 +3059,7 @@ if (!window.transmorpherScriptLoaded) {
       if (getUploadTokenResult.state === 'error') {
         done(getUploadTokenResult);
       }
-      var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
       dropzone.options.uploadToken = getUploadTokenResult.upload_token;
-      // Set the dropzone target to the media server upload url, which needs a valid upload token.
-      dropzone.options.url = "".concat(medium.webUploadUrl).concat(getUploadTokenResult.upload_token);
       done();
     });
   };

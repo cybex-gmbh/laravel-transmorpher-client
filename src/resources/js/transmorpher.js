@@ -29,10 +29,12 @@ if (!window.transmorpherScriptLoaded) {
             );
         }
 
-        new Dropzone(`#dz-${transmorpherIdentifier}`, {
-            url: medium.webUploadUrl,
+        const dz = new Dropzone(`#dz-${transmorpherIdentifier}`, {
+            url: 'placeholder', // URL is set dynamically for each chunk. We cannot use an async function to retrieve them here, unfortunately.
+            method: "PUT",
             acceptedFiles: medium.acceptedFileTypes,
             chunking: true,
+            forceChunking: true,
             chunkSize: medium.chunkSize,
             maxFilesize: medium.maxFilesize,
             maxThumbnailFilesize: medium.maxThumbnailFilesize,
@@ -88,9 +90,9 @@ if (!window.transmorpherScriptLoaded) {
                     file.done(medium.translations['invalid_ratio']);
                 } else {
                     getState(transmorpherIdentifier)
-                        .then(uploadingStateResponse => {
+                        .then(async uploadingStateResponse => {
                             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                                openUploadConfirmModal(
+                                await openUploadConfirmModal(
                                     transmorpherIdentifier,
                                     createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done),
                                 );
@@ -133,12 +135,7 @@ if (!window.transmorpherScriptLoaded) {
             success: function (file, response) {
                 this.element.querySelector('.dz-default').style.display = 'block';
 
-                handleUploadResponse(
-                    file,
-                    response,
-                    transmorpherIdentifier,
-                    this.options.uploadToken
-                );
+                completeUpload(file, transmorpherIdentifier, this.options.uploadToken)
             },
             error: function (file, response) {
                 handleUploadResponse(
@@ -147,6 +144,88 @@ if (!window.transmorpherScriptLoaded) {
                     transmorpherIdentifier,
                     this.options.uploadToken
                 );
+            },
+        });
+
+        const originalSubmitRequest = dz.submitRequest.bind(dz);
+
+        // Overwrite the Dropzone submitRequest implementation to dynamically set the URL for each chunk.
+        // Uses the original implementation to actually send the request.
+        dz.submitRequest = async function (xhr, formData, files) {
+            const file = files?.[0];
+            const chunk = file?.upload?.chunks?.find(c => c.xhr === xhr);
+
+            // Fallback to 1 for non-chunked/small files
+            const chunkIndex = ((chunk?.dataBlock?.chunkIndex ?? 0) + 1);
+
+            const chunkUploadUrl = await getUploadUrl(transmorpherIdentifier, chunkIndex, file?.done);
+
+            // Do not submit the request if we did not receive a URL.
+            // An error is displayed for the user.
+            if (!chunkUploadUrl) {
+                return;
+            }
+
+            // Set the URL on the xhr right before sending.
+            xhr.open(this.options.method, chunkUploadUrl);
+            xhr.setRequestHeader('Accept', 'application/json');
+
+            return originalSubmitRequest(xhr, formData, files);
+        };
+    }
+
+    window.getUploadUrl = async function (transmorpherIdentifier, chunkIndex, done) {
+        const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
+        const uploadToken = dropzone.options.uploadToken;
+
+        const chunkUploadUrl = media[transmorpherIdentifier].routes.chunkUrl
+            .replace('{transmorpherUpload}', uploadToken)
+            .replace('{chunkNumber}', chunkIndex);
+
+        const chunkUploadUrlResponse = await fetch(chunkUploadUrl, {
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
+            },
+        }).then(res => res.json());
+
+        if (chunkUploadUrlResponse.state === 'error') {
+            done(chunkUploadUrlResponse);
+
+            return null;
+        }
+
+        return chunkUploadUrlResponse.url;
+    };
+
+    window.completeUpload = function (file, transmorpherIdentifier, uploadToken) {
+        const completeUploadUrl = media[transmorpherIdentifier].routes.completeUpload
+            .replace('{transmorpherUpload}', uploadToken);
+
+        fetch(completeUploadUrl, {
+            method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
+            },
+        }).then(res => res.json())
+            .then(completeUploadResponse => {
+                handleUploadResponse(
+                    file,
+                    completeUploadResponse,
+                    transmorpherIdentifier,
+                    uploadToken
+                );
+            });
+    }
+
+    window.abortUpload = async function (transmorpherIdentifier) {
+        const medium = media[transmorpherIdentifier];
+        const abortUploadUrl = media[transmorpherIdentifier].routes.abortUpload
+            .replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+
+        await fetch(abortUploadUrl, {
+            method: 'DELETE',
+            headers: {
+                'X-XSRF-TOKEN': getCsrfToken(),
             },
         });
     }
@@ -209,7 +288,7 @@ if (!window.transmorpherScriptLoaded) {
         // Has to be stored in a global variable, to be able to clear the timer when a new video is dropped in the dropzone.
         window[statusPollingVariable] = setInterval(function () {
             // Clear timer after 24 hours.
-            if (new Date().getTime > expirationTime) {
+            if (new Date().getTime() > expirationTime.getTime()) {
                 clearInterval(window[statusPollingVariable]);
             }
 
@@ -276,9 +355,7 @@ if (!window.transmorpherScriptLoaded) {
                 method: 'POST', headers: {
                     'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken(),
                 }, body: JSON.stringify({
-                    // When the token retrieval failed, "file" doesn't contain the http code.
-                    // It is instead passed in the response of the token retrieval request.
-                    response: response, http_code: file.xhr?.status ?? response?.http_code
+                    response: response, http_code: response?.httpCode ?? file.xhr?.status
                 })
             }).then(response => {
                 return response.json();
@@ -683,7 +760,7 @@ if (!window.transmorpherScriptLoaded) {
         modal.classList.add('d-flex');
         previewElement ? previewElement.style.display = 'none' : null;
 
-        modal.querySelector('.badge-error').onclick = function () {
+        modal.querySelector('.badge-error').onclick = async function () {
             previewElement ? previewElement.style.display = 'block' : null;
             document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.remove('d-flex');
 
@@ -701,6 +778,7 @@ if (!window.transmorpherScriptLoaded) {
                 previewElement ? previewElement.style.display = 'block' : null;
             }
 
+            await abortUpload(transmorpherIdentifier)
             callback();
         }
     }
@@ -725,12 +803,14 @@ if (!window.transmorpherScriptLoaded) {
         const medium = media[transmorpherIdentifier];
         const url = medium.routes.uploadToken.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
 
+        let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
+
         // Reserve an upload slot at the Transmorpher media server.
         fetch(url, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken()
             }, body: JSON.stringify({
-                transmorpher_media_key: medium.transmorpherMediaKey,
+                filename: dropzone.files[0].name,
             }),
         }).then(response => {
             return response.json();
@@ -739,10 +819,7 @@ if (!window.transmorpherScriptLoaded) {
                 done(getUploadTokenResult);
             }
 
-            let dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
             dropzone.options.uploadToken = getUploadTokenResult.upload_token
-            // Set the dropzone target to the media server upload url, which needs a valid upload token.
-            dropzone.options.url = `${medium.webUploadUrl}${getUploadTokenResult.upload_token}`;
 
             done()
         });

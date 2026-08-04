@@ -8,6 +8,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
+use Log;
 use Transmorpher\Enums\ClientErrorResponse;
 use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\Transformation;
@@ -138,9 +139,11 @@ abstract class Media
     /**
      * Handles reservation of an upload slot, also includes database interactions and retrieval of suitable client response.
      *
+     * @param string $filename
+     *
      * @return array
      */
-    public function reserveUploadSlot(): array
+    public function reserveUploadSlot(string $filename): array
     {
         $this->upload = $this->transmorpherMedia->TransmorpherUploads()->create([
             'state' => UploadState::INITIALIZING,
@@ -149,7 +152,7 @@ abstract class Media
         $reserveUploadSlotUrl = TransmorpherApi::S2S->getUrl(sprintf('%s/upload/reserve', $this->type->value));
 
         try {
-            $responseFromServer = $this->configureApiRequest()->post($reserveUploadSlotUrl, ['identifier' => $this->getIdentifier()]);
+            $responseFromServer = $this->configureApiRequest()->post($reserveUploadSlotUrl, ['identifier' => $this->getIdentifier(), 'filename' => $filename]);
             $responseForClient = $this->extractResponseForClient($responseFromServer);
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
@@ -162,6 +165,53 @@ abstract class Media
         }
 
         $this->upload->update($valuesToUpdate);
+
+        return $responseForClient;
+    }
+
+    public function getChunkUploadUrl(TransmorpherUpload $upload, int $chunkNumber): array
+    {
+        $getChunkUploadUrlUrl = TransmorpherApi::S2S->getUrl(sprintf('upload/%s/chunkUrl/%s', $upload->token, $chunkNumber));
+
+        try {
+            $responseFromServer = $this->configureApiRequest()->get($getChunkUploadUrlUrl);
+        } catch (Exception $exception) {
+            return ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+        }
+
+        return $responseFromServer->ok()
+            ? json_decode($responseFromServer->body(), associative: true)
+            : $this->extractResponseForClient($responseFromServer);
+    }
+
+    public function completeUpload(TransmorpherUpload $upload): array
+    {
+        $completeUploadUrl = TransmorpherApi::S2S->getUrl(sprintf('upload/%s/complete', $upload->token));
+
+        try {
+            $responseFromServer = $this->configureApiRequest()->post($completeUploadUrl);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
+        } catch (Exception $exception) {
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+        }
+
+        return $responseForClient;
+    }
+
+    public function abortUpload(TransmorpherUpload $upload): array
+    {
+        $abortUploadUrl = TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $upload->token));
+
+        try {
+            $responseFromServer = $this->configureApiRequest()->delete($abortUploadUrl);
+            $responseForClient = $this->extractResponseForClient($responseFromServer);
+        } catch (Exception $exception) {
+            $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+        }
+
+        if ($responseForClient['state'] === UploadState::ERROR->value) {
+            Log::error(sprintf('Failed to abort file upload. Message: %s', $responseForClient['message']));
+        }
 
         return $responseForClient;
     }

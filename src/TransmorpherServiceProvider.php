@@ -80,6 +80,9 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::get('transmorpher/{transmorpherMedia}/getOriginal/{version}', [MediaController::class, 'getOriginal'])->name('transmorpherGetOriginal');
             Route::get('transmorpher/{transmorpherMedia}/getDerivativeForVersion/{version}/{transformations?}', [MediaController::class, 'getDerivativeForVersion'])->name('transmorpherGetDerivativeForVersion');
             Route::post('transmorpher/setUploadingState/{transmorpherUpload}', [UploadStateController::class, 'setUploadingState'])->name('transmorpherSetUploadingState');
+            Route::get('transmorpher/{transmorpherUpload}/chunkUrl/{chunkNumber}', [UploadController::class, 'getChunkUploadUrl'])->name('transmorpherGetChunkUploadUrl');
+            Route::post('transmorpher/completeUpload/{transmorpherUpload}', [UploadController::class, 'completeUpload'])->name('transmorpherCompleteUpload');
+            Route::delete('transmorpher/abortUpload/{transmorpherMedia}', [UploadController::class, 'abortUpload'])->name('transmorpherAbortUpload');
         });
     }
 

@@ -117,7 +117,10 @@
             getOriginal: '{{ $getOriginalRoute }}',
             getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
             uploadToken: '{{ $uploadTokenRoute }}',
-            setUploadingState: '{{ $setUploadingStateRoute }}'
+            setUploadingState: '{{ $setUploadingStateRoute }}',
+            chunkUrl: '{{ $getChunkUrlRoute }}',
+            completeUpload: '{{ $completeUploadRoute }}',
+            abortUpload: '{{ $abortUploadRoute }}'
         },
         transformations: @json($srcSetTransformations),
         translations: @json($translations),

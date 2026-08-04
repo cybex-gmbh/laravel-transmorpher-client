@@ -32,6 +32,9 @@ class Dropzone extends Component
     public string $getOriginalRoute;
     public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
+    public string $getChunkUrlRoute;
+    public string $completeUploadRoute;
+    public string $abortUploadRoute;
 
     public function __construct(
         public Media $media,
@@ -86,6 +89,9 @@ class Dropzone extends Component
         $this->getOriginalRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetOriginal']->uri);
         $this->getDerivativeForVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetDerivativeForVersion']->uri);
         $this->setUploadingStateRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetUploadingState']->uri);
+        $this->getChunkUrlRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetChunkUploadUrl']->uri);
+        $this->completeUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherCompleteUpload']->uri);
+        $this->abortUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherAbortUpload']->uri);
     }
 
     /**
