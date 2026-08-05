@@ -25,6 +25,7 @@
 
 - A new base image has been introduced, for usage see the [README Development section](README.md#development)
 - The package's assets are now symlinked to the app directory, manually publishing assets after compiling is no longer needed
+- The large transmorpher.js file has been split up into separate files for better maintainability
 
 ## [v0.5.1](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.5.0...v0.5.1)
 
