@@ -1,5 +1,17 @@
 # Upgrade Guide
 
+## v0.5.1 to v0.6.0
+
+- [Release Notes](CHANGELOG.md#v060)
+- [GitHub diff](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.5.1...v0.6.0)
+
+> [!WARNING]
+> Breaking changes!
+
+- Transmorpher Media Server API v1 is no longer supported
+- To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
+- If you have published the config, or set the TRANSMORPHER_API_VERSION env key, you will need to update the default or value to 2
+
 ## v0.3.0 to v0.4.0
 
 - [Release Notes](CHANGELOG.md#v040)
