@@ -96,19 +96,33 @@ abstract class Media
      * @param resource $fileHandle
      *
      * @return array The Transmorpher response.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
-    public function upload($fileHandle, string $fileName = null): array
+    public function upload($fileHandle, ?string $fileName = null): array
     {
         // There is no type hint for resource.
         if (!is_resource($fileHandle)) {
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
-        $tokenResponse = $this->reserveUploadSlot();
+        $uploadHandler = $this->getUploadHandler();
+
+        // If the response is an array, there was an error.
+        if (is_array($uploadHandler)) {
+            throw new Exception(sprintf('Failed to retrieve upload handler from server: %s', $uploadHandler['message']));
+        }
+
+        $fileName ??= basename(stream_get_meta_data($fileHandle)['uri']);
+
+        $tokenResponse = $this->reserveUploadSlot($fileName);
 
         if ($tokenResponse['state'] === UploadState::ERROR->value) {
             return $this->upload->handleStateUpdate($tokenResponse);
         }
+
+        $transmorpherUpload = $this->transmorpherMedia->TransmorpherUploads()->whereToken($tokenResponse['upload_token'])->first();
 
         $chunkSize = $this->getChunkSize();
         $chunkNumber = 1;
@@ -116,24 +130,43 @@ abstract class Media
 
         try {
             while (!feof($fileHandle)) {
-                $chunk = fread($fileHandle, $chunkSize);
+                $responseForClient = $this->getChunkUploadUrl($transmorpherUpload, $chunkNumber);
 
-                $responseFromServer = $this->configureApiRequest()
-                    ->attach('file', $chunk, $fileName ?: basename(stream_get_meta_data($fileHandle)['uri']))
-                    ->post(
-                        TransmorpherApi::S2S->getUrl(sprintf('upload/%s', $tokenResponse['upload_token'])), [
+                if (!isset($responseForClient['url'])) {
+                    return $this->upload->handleStateUpdate($responseForClient);
+                }
+
+                // The server will return the web URL, we need to replace it with the S2S URL.
+                $url = str_replace(TransmorpherApi::WEB->getUrl(), TransmorpherApi::S2S->getUrl(), $responseForClient['url']);
+                $chunk = fread($fileHandle, $chunkSize);
+                $responseFromServer = match ($uploadHandler) {
+                    's3-multi-part' => Http::withBody($chunk)->put($url),
+                    default => $this->configureApiRequest()
+                        ->attach('file', $chunk, $fileName)
+                        ->put($url, [
                             'identifier' => $this->getIdentifier(),
-                            'chunkNumber' => $chunkNumber++,
-                            'totalChunks' => $totalChunks
-                        ]
-                    );
+                            'chunkNumber' => $chunkNumber,
+                            'totalChunks' => $totalChunks,
+                        ]),
+                };
+
+                if (!$responseFromServer->ok()) {
+                    break;
+                }
+
+                $chunkNumber++;
             }
 
-            $responseForClient = $this->extractResponseForClient($responseFromServer);
+            if (!$responseFromServer->ok()) {
+                $responseForClient = $this->extractResponseForClient($responseFromServer);
+            } else {
+                $responseForClient = $this->completeUpload($transmorpherUpload);
+            }
         } catch (Exception $exception) {
             $responseForClient = ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
         }
 
+        // Will abort the upload in case of error.
         return $this->upload->handleStateUpdate($responseForClient);
     }
 
@@ -368,7 +401,7 @@ abstract class Media
      * @param string|null $uploadToken
      * @return string
      */
-    public function getWebUploadUrl(string $uploadToken = null): string
+    public function getWebUploadUrl(?string $uploadToken = null): string
     {
         return TransmorpherApi::WEB->getUrl('upload/' . $uploadToken);
     }
@@ -511,13 +544,23 @@ abstract class Media
     /**
      * Get the upload handler configured on the Transmorpher Server.
      *
-     * @return string
+     * @return array|string
      *
      * @throws ConnectionException
      */
-    public function getUploadHandler(): string
+    public function getUploadHandler(): array|string
     {
-        return $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('meta/uploadHandler'))->body();
+        try {
+            $responseFromServer = $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl('meta/uploadHandler'));
+        } catch (Exception $exception) {
+            return ClientErrorResponse::NO_CONNECTION->getResponse(['message' => $exception->getMessage()]);
+        }
+
+        if (!$responseFromServer->ok()) {
+            return $this->extractResponseForClient($responseFromServer);
+        }
+
+        return $responseFromServer->body();
     }
 
     /**

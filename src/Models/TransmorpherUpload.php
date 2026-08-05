@@ -60,7 +60,7 @@ class TransmorpherUpload extends Model
         return 'token';
     }
 
-    public function handleStateUpdate(array $response, int $httpCode = null): array
+    public function handleStateUpdate(array $response, ?int $httpCode = null): array
     {
         $transmorpher = $this->TransmorpherMedia->getMedia();
 
