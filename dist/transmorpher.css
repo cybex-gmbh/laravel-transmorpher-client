@@ -308,6 +308,9 @@
 .transmorpher .dropzone .dz-preview.dz-image-preview {
   background: transparent;
 }
+.transmorpher .dropzone.is-completing-upload .dz-preview .dz-progress {
+  opacity: 1;
+}
 .transmorpher .transparency-indicator, .transmorpher .more-information-modal .card .card-body .card-side .media-preview, .transmorpher .dropzone {
   background-image: linear-gradient(135deg, #ebedef 25%, #d8dbe0 0, #d8dbe0 50%, #ebedef 0, #ebedef 75%, #d8dbe0 0, #d8dbe0);
   background-size: 2rem 2rem;

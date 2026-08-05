@@ -53,6 +53,13 @@
     .dz-preview.dz-image-preview {
       background: transparent;
     }
+
+    &.is-completing-upload {
+      // Keep the progress bar visible while completeUpload is still running server-side.
+      .dz-preview .dz-progress {
+        opacity: 1;
+      }
+    }
   }
 
   .transparency-indicator {

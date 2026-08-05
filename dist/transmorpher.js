@@ -2572,10 +2572,12 @@ if (!window.transmorpherScriptLoaded) {
           return _regenerator().w(function (_context3) {
             while (1) switch (_context3.n) {
               case 0:
+                this.element.classList.add('is-completing-upload');
                 _context3.n = 1;
                 return completeUpload(file, transmorpherIdentifier, this.options.uploadToken);
               case 1:
                 this.element.querySelector('.dz-default').style.display = 'block';
+                this.element.classList.remove('is-completing-upload');
               case 2:
                 return _context3.a(2);
             }

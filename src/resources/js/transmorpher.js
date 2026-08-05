@@ -137,9 +137,11 @@ if (!window.transmorpherScriptLoaded) {
                 })
             },
             success: async function (file, response) {
+                this.element.classList.add('is-completing-upload');
                 await completeUpload(file, transmorpherIdentifier, this.options.uploadToken)
 
                 this.element.querySelector('.dz-default').style.display = 'block';
+                this.element.classList.remove('is-completing-upload');
             },
             error: function (file, response) {
                 handleUploadResponse(
