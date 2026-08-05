@@ -13,7 +13,7 @@
                 <div class="details">
                     <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.open_more_information_modal')"
                          class="icon"
-                         onclick="openMoreInformationModal('{{ $media->getIdentifier() }}')">
+                         onclick="window.transmorpher.openMoreInformationModal('{{ $media->getIdentifier() }}')">
                 </div>
             </div>
             <div class="card-body">
@@ -34,7 +34,7 @@
                                     {{ trans('transmorpher::errors.no_server_connection') }}
                                 @endif
                             </span>
-                            <button type="button" class="btn-close" onclick="closeErrorMessage(this, '{{ $media->getIdentifier() }}')">⨉</button>
+                            <button type="button" class="btn-close" onclick="window.transmorpher.closeErrorMessage(this, '{{ $media->getIdentifier() }}')">⨉</button>
                         </div>
                         <x-transmorpher::media-preview :media="$media"/>
                     </div>
@@ -50,7 +50,7 @@
                              alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $media->type->value])" class="icon">
                         {{ $mediaName }}
                     </div>
-                    <button class="btn-close" onclick="closeMoreInformationModal('{{ $media->getIdentifier() }}')">⨉</button>
+                    <button class="btn-close" onclick="window.transmorpher.closeMoreInformationModal('{{ $media->getIdentifier() }}')">⨉</button>
                 </div>
                 <div class="card-body">
                     <div class="card-side">
@@ -97,7 +97,7 @@
                 {{ $media->type->getUploadInProgressTranslation() }}
             </div>
             <div class="card-body">
-                <button class="button" onclick="closeUploadConfirmModal('{{ $media->getIdentifier() }}')">
+                <button class="button" onclick="window.transmorpher.closeUploadConfirmModal('{{ $media->getIdentifier() }}')">
                     @lang('transmorpher::dropzone.cancel')
                 </button>
                 <button class="button badge-error">
@@ -110,9 +110,9 @@
 
 <script type="text/javascript">
     if (!@json($hasConnectionError)) {
-        mediaTypes = @json($mediaTypes);
-        uploadHandler = '{{ $uploadHandler }}'
-        media['{{ $media->getIdentifier() }}'] = {
+        window.transmorpher.registerMediaTypes(@json($mediaTypes));
+        window.transmorpher.setUploadHandler('{{ $uploadHandler }}');
+        window.transmorpher.registerMedium('{{ $media->getIdentifier() }}', {
             transmorpherMediaKey: {{ $transmorpherMediaKey }},
             routes: {
                 state: '{{ $stateRoute }}',
@@ -145,7 +145,7 @@
             minHeight: '{{ $acceptedMinHeight }}',
             maxHeight: '{{ $acceptedMaxHeight }}',
             ratio: '{{ $acceptedCalculatedRatio }}'
-        }
+        });
 
         setupComponent('{{ $media->getIdentifier() }}');
     }
