@@ -3297,7 +3297,7 @@ function _displayUploadResult() {
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
             transmorpherIdentifier: transmorpherIdentifier,
             thumbnailUrl: uploadResult.thumbnailUrl,
-            fullSizeUrl: uploadResult.fullsizeUrl
+            fullsizeUrl: uploadResult.fullsizeUrl
           });
           return _context0.a(3, 4);
         case 3:
@@ -3416,7 +3416,7 @@ function _updateVersionInformation() {
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
             transmorpherIdentifier: transmorpherIdentifier,
             thumbnailUrl: versionInformation.thumbnailUrl,
-            fullSizeUrl: versionInformation.fullsizeUrl
+            fullsizeUrl: versionInformation.fullsizeUrl
           });
           return _context1.a(3, 8);
         case 7:
@@ -3996,7 +3996,7 @@ function updateMediaDisplay(_ref1) {
       updateThumbnail({
         transmorpherIdentifier: transmorpherIdentifier,
         thumbnailUrl: thumbnailUrl,
-        fullSizeUrl: fullsizeUrl
+        fullsizeUrl: fullsizeUrl
       });
       break;
     case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO:
@@ -4010,7 +4010,7 @@ function updateMediaDisplay(_ref1) {
 function updateThumbnail(_ref10) {
   var transmorpherIdentifier = _ref10.transmorpherIdentifier,
     thumbnailUrl = _ref10.thumbnailUrl,
-    fullSizeUrl = _ref10.fullSizeUrl;
+    fullsizeUrl = _ref10.fullsizeUrl;
   var imageElements = getPrimaryPreviewImages({
     transmorpherIdentifier: transmorpherIdentifier
   });
@@ -4021,7 +4021,7 @@ function updateThumbnail(_ref10) {
       imageUrl: thumbnailUrl
     });
     var aTag = image.closest('.full-size-link');
-    aTag.href = fullSizeUrl;
+    aTag.href = fullsizeUrl;
     aTag.classList.remove('disabled');
 
     // Show enlarge icon.

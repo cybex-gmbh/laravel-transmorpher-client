@@ -83,7 +83,7 @@ export function updateMediaDisplay({transmorpherIdentifier, thumbnailUrl, fullsi
     switch (getMedium({transmorpherIdentifier}).mediaType) {
         case MEDIA_TYPE.IMAGE:
         case MEDIA_TYPE.DOCUMENT:
-            updateThumbnail({transmorpherIdentifier, thumbnailUrl, fullSizeUrl: fullsizeUrl});
+            updateThumbnail({transmorpherIdentifier, thumbnailUrl, fullsizeUrl});
             break;
         case MEDIA_TYPE.VIDEO:
             updateVideoDisplay({transmorpherIdentifier, thumbnailUrl});
@@ -91,7 +91,7 @@ export function updateMediaDisplay({transmorpherIdentifier, thumbnailUrl, fullsi
     }
 }
 
-export function updateThumbnail({transmorpherIdentifier, thumbnailUrl, fullSizeUrl}) {
+export function updateThumbnail({transmorpherIdentifier, thumbnailUrl, fullsizeUrl}) {
     const imageElements = getPrimaryPreviewImages({transmorpherIdentifier});
 
     imageElements.forEach(image => {
@@ -99,7 +99,7 @@ export function updateThumbnail({transmorpherIdentifier, thumbnailUrl, fullSizeU
         image.srcset = getSrcSetString({transmorpherIdentifier, imageUrl: thumbnailUrl});
 
         const aTag = image.closest('.full-size-link');
-        aTag.href = fullSizeUrl;
+        aTag.href = fullsizeUrl;
         aTag.classList.remove('disabled');
 
         // Show enlarge icon.

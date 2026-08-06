@@ -291,7 +291,7 @@ async function displayUploadResult({uploadResult, transmorpherIdentifier, upload
         switch (getMedium({transmorpherIdentifier}).mediaType) {
             case MEDIA_TYPE.IMAGE:
             case MEDIA_TYPE.DOCUMENT:
-                updateThumbnail({transmorpherIdentifier, thumbnailUrl: uploadResult.thumbnailUrl, fullSizeUrl: uploadResult.fullsizeUrl});
+                updateThumbnail({transmorpherIdentifier, thumbnailUrl: uploadResult.thumbnailUrl, fullsizeUrl: uploadResult.fullsizeUrl});
                 break;
             case MEDIA_TYPE.VIDEO:
                 startPolling({transmorpherIdentifier, uploadToken});
@@ -359,7 +359,7 @@ async function updateVersionInformation({transmorpherIdentifier}) {
             case MEDIA_TYPE.IMAGE:
             case MEDIA_TYPE.DOCUMENT:
                 versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentVersion] * 1000)});
-                updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullSizeUrl: versionInformation.fullsizeUrl});
+                updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullsizeUrl: versionInformation.fullsizeUrl});
                 break;
             case MEDIA_TYPE.VIDEO:
                 versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)});
