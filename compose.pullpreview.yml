@@ -4,8 +4,8 @@ x-common-volumes: &common-volumes
   - 'storage:/var/www/storage'
   - '.env:/var/www/.env'
 
-x-transmorpher-app-image: &transmorpher-app-image cybexwebdev/transmorpher:chore-new-base-images-app
-x-transmorpher-transcoder-image: &transmorpher-transcoder-image cybexwebdev/transmorpher:chore-new-base-images-transcoder
+x-transmorpher-app-image: &transmorpher-app-image cybexwebdev/transmorpher:chore-v2-route-naming-app
+x-transmorpher-transcoder-image: &transmorpher-transcoder-image cybexwebdev/transmorpher:chore-v2-route-naming-transcoder
 
 x-transmorpher-common: &transmorpher-common
   image: *transmorpher-app-image
