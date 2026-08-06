@@ -13,8 +13,6 @@ import {
     storeUploadResponse,
 } from './api.js';
 import {
-    closeErrorMessage as closeErrorMessageDisplay,
-    closeMoreInformationModal as closeMoreInformationModalDisplay,
     closeUploadConfirmModalDisplay,
     displayCardBorderState,
     displayModalState,
@@ -27,25 +25,25 @@ import {
     updateThumbnail,
     updateVideoDisplay,
 } from './ui.js';
-import {addConfirmEventListener, createCallbackWithArguments, getDateForDisplay, getMediaDimensions} from './utils.js';
+import {addConfirmEventListener, getDateForDisplay, getMediaDimensions} from './utils.js';
 
-export function setupComponent(transmorpherIdentifier) {
+export function setupComponent({transmorpherIdentifier}) {
     Dropzone.autoDiscover = false;
-    const medium = getMedium(transmorpherIdentifier);
+    const medium = getMedium({transmorpherIdentifier});
 
-    addConfirmEventListener(
-        document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
-        createCallbackWithArguments(deleteTransmorpherMedia, transmorpherIdentifier),
-        transmorpherIdentifier
-    );
+    addConfirmEventListener({
+        button: document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
+        callback: () => deleteTransmorpherMedia({transmorpherIdentifier}),
+        transmorpherIdentifier,
+    });
 
     // Start polling if the video is still processing or an upload is in process.
     if (medium.isProcessing || medium.isUploading) {
-        startPolling(transmorpherIdentifier, medium.latestUploadToken);
-        setAgeElement(
-            document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
-            getDateForDisplay(new Date(medium.lastUpdated * 1000))
-        );
+        startPolling({transmorpherIdentifier, uploadToken: medium.latestUploadToken});
+        setAgeElement({
+            ageElement: document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
+            dateTime: getDateForDisplay({date: new Date(medium.lastUpdated * 1000)}),
+        });
     }
 
     const dz = new Dropzone(`#dz-${transmorpherIdentifier}`, {
@@ -68,11 +66,11 @@ export function setupComponent(transmorpherIdentifier) {
         ...state.uploadHandler.getDropzoneOptions({transmorpherMedium: medium}),
         init: function () {
             this.on('processing', async function () {
-                await setUploadingState(transmorpherIdentifier, this.options.uploadToken);
+                await setUploadingState({transmorpherIdentifier, uploadToken: this.options.uploadToken});
 
-                clearStatusPolling(transmorpherIdentifier);
-                displayState(transmorpherIdentifier, 'uploading', null, false);
-                startPolling(transmorpherIdentifier, this.options.uploadToken);
+                clearStatusPolling({transmorpherIdentifier});
+                displayState({transmorpherIdentifier, stateName: 'uploading', resetError: false});
+                startPolling({transmorpherIdentifier, uploadToken: this.options.uploadToken});
             });
 
             this.on('sending', function (file, xhr, formData) {
@@ -84,7 +82,7 @@ export function setupComponent(transmorpherIdentifier) {
             // Dropzone sometimes (small files) manages to calculate width and height, if not, we have to calculate it ourselves.
             if (!file.width || !file.height) {
                 try {
-                    const dimensions = await getMediaDimensions(file, medium.mediaType, medium.translations.validation_error);
+                    const dimensions = await getMediaDimensions({file, mediaType: medium.mediaType, validationError: medium.translations.validation_error});
                     file.width = dimensions.width;
                     file.height = dimensions.height;
                 } catch (error) {
@@ -112,18 +110,18 @@ export function setupComponent(transmorpherIdentifier) {
                 return;
             }
 
-            const uploadingStateResponse = await getState(transmorpherIdentifier);
+            const uploadingStateResponse = await getState({transmorpherIdentifier});
 
             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-                openUploadConfirmModal(
+                openUploadConfirmModal({
                     transmorpherIdentifier,
-                    createCallbackWithArguments(reserveUploadSlot, transmorpherIdentifier, file.done)
-                );
+                    callback: () => reserveUploadSlot({transmorpherIdentifier, done: file.done})
+                });
 
                 return;
             }
 
-            await reserveUploadSlot(transmorpherIdentifier, file.done);
+            await reserveUploadSlot({transmorpherIdentifier, done: file.done});
         },
         accept: function (file, done) {
             file.done = done;
@@ -139,29 +137,28 @@ export function setupComponent(transmorpherIdentifier) {
             this.emit('thumbnail', file);
         },
         canceled: async function (file) {
-            await storeUploadResponse(
+            await storeUploadResponse({
                 transmorpherIdentifier,
-                this.options.uploadToken,
-                {
+                uploadToken: this.options.uploadToken,
+                response: {
                     state: 'error',
                     clientMessage: medium.translations.upload_canceled,
                     message: this.options.dictUploadCanceled,
                 },
-                file.xhr?.status
-            );
+                httpCode: file.xhr?.status,
+            });
         },
         success: async function (file) {
             this.element.classList.add('is-completing-upload');
 
-            const completeUploadResponse = await completeUpload(transmorpherIdentifier, this.options.uploadToken);
-            await handleUploadResponse(file, completeUploadResponse, transmorpherIdentifier, this.options.uploadToken);
+            const completeUploadResponse = await completeUpload({transmorpherIdentifier, uploadToken: this.options.uploadToken});
+            await handleUploadResponse({file, response: completeUploadResponse, transmorpherIdentifier, uploadToken: this.options.uploadToken});
 
             this.element.querySelector('.dz-default').style.display = 'block';
             this.element.classList.remove('is-completing-upload');
-
         },
         error: function (file, response) {
-            handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
+            handleUploadResponse({file, response, transmorpherIdentifier, uploadToken: this.options.uploadToken});
         },
     });
 
@@ -173,7 +170,7 @@ export function setupComponent(transmorpherIdentifier) {
         const chunk = file?.upload?.chunks?.find(candidateChunk => candidateChunk.xhr === xhr);
         const chunkIndex = (chunk?.dataBlock?.chunkIndex ?? 0) + 1;
 
-        const chunkUploadUrl = await getUploadUrl(transmorpherIdentifier, chunkIndex, file?.done);
+        const chunkUploadUrl = await getUploadUrl({transmorpherIdentifier, chunkIndex, uploadToken: this.options.uploadToken, done: file?.done});
 
         if (!chunkUploadUrl) {
             return;
@@ -186,8 +183,9 @@ export function setupComponent(transmorpherIdentifier) {
     };
 }
 
-async function reserveUploadSlot(transmorpherIdentifier, done) {
-    const getUploadTokenResult = await reserveUploadSlotRequest(transmorpherIdentifier);
+async function reserveUploadSlot({transmorpherIdentifier, done}) {
+    const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
+    const getUploadTokenResult = await reserveUploadSlotRequest({transmorpherIdentifier, filename: dropzone.files[0].name});
 
     if (getUploadTokenResult.state === 'error') {
         done(getUploadTokenResult);
@@ -195,84 +193,82 @@ async function reserveUploadSlot(transmorpherIdentifier, done) {
         return;
     }
 
-    const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
     dropzone.options.uploadToken = getUploadTokenResult.upload_token;
 
     done();
 }
 
-
-function startPolling(transmorpherIdentifier, uploadToken) {
+function startPolling({transmorpherIdentifier, uploadToken}) {
     const expirationTime = new Date();
     expirationTime.setDate(expirationTime.getDate() + 1);
 
     const intervalId = setInterval(async () => {
         if (new Date().getTime() > expirationTime.getTime()) {
-            clearStatusPolling(transmorpherIdentifier);
+            clearStatusPolling({transmorpherIdentifier});
 
             return;
         }
 
-        const pollingInformation = await getState(transmorpherIdentifier, uploadToken);
+        const pollingInformation = await getState({transmorpherIdentifier, uploadToken});
 
         switch (pollingInformation.state) {
             case 'success': {
-                clearStatusPolling(transmorpherIdentifier);
-                displayState(transmorpherIdentifier, 'success');
-                resetAgeElement(transmorpherIdentifier);
-                updateMediaDisplay(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
+                clearStatusPolling({transmorpherIdentifier});
+                displayState({transmorpherIdentifier, stateName: 'success'});
+                resetAgeElement({transmorpherIdentifier});
+                updateMediaDisplay({transmorpherIdentifier, thumbnailUrl: pollingInformation.thumbnailUrl, fullsizeUrl: pollingInformation.fullsizeUrl});
 
-                await updateVersionInformation(transmorpherIdentifier);
+                await updateVersionInformation({transmorpherIdentifier});
                 break;
             }
             case 'error': {
-                clearStatusPolling(transmorpherIdentifier);
+                clearStatusPolling({transmorpherIdentifier});
 
                 if (uploadToken !== pollingInformation.latestUploadToken) {
-                    startPolling(transmorpherIdentifier, pollingInformation.latestUploadToken);
+                    startPolling({transmorpherIdentifier, uploadToken: pollingInformation.latestUploadToken});
                 }
 
-                displayState(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
-                resetAgeElement(transmorpherIdentifier);
+                displayState({transmorpherIdentifier, stateName: 'error', message: pollingInformation.clientMessage});
+                resetAgeElement({transmorpherIdentifier});
                 break;
             }
             case 'uploading': {
-                displayState(transmorpherIdentifier, 'uploading', null, false);
-                setAgeElement(
-                    document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
-                    getDateForDisplay(new Date(pollingInformation.lastUpdated))
-                );
+                displayState({transmorpherIdentifier, stateName: 'uploading', resetError: false});
+                setAgeElement({
+                    ageElement: document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
+                    dateTime: getDateForDisplay({date: new Date(pollingInformation.lastUpdated)}),
+                });
                 break;
             }
             case 'processing': {
-                displayState(transmorpherIdentifier, 'processing', null, false);
-                setAgeElement(
-                    document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
-                    getDateForDisplay(new Date(pollingInformation.lastUpdated))
-                );
+                displayState({transmorpherIdentifier, stateName: 'processing', resetError: false});
+                setAgeElement({
+                    ageElement: document.querySelector(`#modal-mi-${transmorpherIdentifier} .age`),
+                    dateTime: getDateForDisplay({date: new Date(pollingInformation.lastUpdated)}),
+                });
                 break;
             }
         }
     }, 5000);
 
-    setStatusPolling(transmorpherIdentifier, intervalId);
+    setStatusPolling({transmorpherIdentifier, intervalId});
 }
 
-async function handleUploadResponse(file, response, transmorpherIdentifier, uploadToken) {
-    clearStatusPolling(transmorpherIdentifier);
+async function handleUploadResponse({file, response, transmorpherIdentifier, uploadToken}) {
+    clearStatusPolling({transmorpherIdentifier});
 
     let uploadResult = response;
 
     if (uploadToken) {
-        uploadResult = await storeUploadResponse(
+        uploadResult = await storeUploadResponse({
             transmorpherIdentifier,
             uploadToken,
             response,
-            response?.httpCode ?? file.xhr?.status
-        );
+            httpCode: response?.httpCode ?? file.xhr?.status,
+        });
     }
 
-    await displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
+    await displayUploadResult({uploadResult, transmorpherIdentifier, uploadToken});
 
     // Remove the uploaded file to reset the state.
     const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
@@ -282,42 +278,42 @@ async function handleUploadResponse(file, response, transmorpherIdentifier, uplo
     }
 }
 
-async function displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken) {
-    resetAgeElement(transmorpherIdentifier);
+async function displayUploadResult({uploadResult, transmorpherIdentifier, uploadToken}) {
+    resetAgeElement({transmorpherIdentifier});
 
     // Check for undefined, which happens when dropzone directly rejects the file.
     if (uploadResult.state !== undefined && uploadResult.state !== 'error') {
         document.querySelector(`#dz-${transmorpherIdentifier}`).classList.remove('dz-started');
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.remove('d-hidden');
 
-        await updateVersionInformation(transmorpherIdentifier);
+        await updateVersionInformation({transmorpherIdentifier});
 
-        switch (getMedium(transmorpherIdentifier).mediaType) {
+        switch (getMedium({transmorpherIdentifier}).mediaType) {
             case state.mediaTypes[MEDIA_TYPE.IMAGE]:
             case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
-                updateThumbnail(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
+                updateThumbnail({transmorpherIdentifier, thumbnailUrl: uploadResult.thumbnailUrl, fullSizeUrl: uploadResult.fullsizeUrl});
                 break;
             case state.mediaTypes[MEDIA_TYPE.VIDEO]:
-                startPolling(transmorpherIdentifier, uploadToken);
+                startPolling({transmorpherIdentifier, uploadToken});
                 break;
         }
 
-        displayState(transmorpherIdentifier, uploadResult.state);
+        displayState({transmorpherIdentifier, stateName: uploadResult.state});
     } else {
-        displayState(transmorpherIdentifier, 'error', uploadResult.clientMessage ?? uploadResult);
+        displayState({transmorpherIdentifier, stateName: 'error', message: uploadResult.clientMessage ?? uploadResult});
 
         // Start polling for updates when the upload was aborted due to another upload.
         if (uploadResult.httpCode === 404) {
-            clearStatusPolling(transmorpherIdentifier);
-            startPolling(transmorpherIdentifier, uploadResult.latestUploadToken);
-            displayState(transmorpherIdentifier, 'uploading');
+            clearStatusPolling({transmorpherIdentifier});
+            startPolling({transmorpherIdentifier, uploadToken: uploadResult.latestUploadToken});
+            displayState({transmorpherIdentifier, stateName: 'uploading'});
         }
     }
 
     document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone.options.uploadToken = null;
 }
 
-async function updateVersionInformation(transmorpherIdentifier) {
+async function updateVersionInformation({transmorpherIdentifier}) {
     const modal = document.querySelector(`#modal-mi-${transmorpherIdentifier}`);
 
     // Don't update when the modal is closed or currently fetching.
@@ -335,10 +331,10 @@ async function updateVersionInformation(transmorpherIdentifier) {
     versionList.append(defaultVersionEntry);
 
     try {
-        const versionInformation = await getVersions(transmorpherIdentifier);
+        const versionInformation = await getVersions({transmorpherIdentifier});
 
         if (!versionInformation.currentVersion) {
-            displayPlaceholder(transmorpherIdentifier);
+            displayPlaceholder({transmorpherIdentifier});
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.add('d-hidden');
 
             return;
@@ -346,15 +342,15 @@ async function updateVersionInformation(transmorpherIdentifier) {
 
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.remove('d-hidden');
 
-        const stateResponse = await getState(transmorpherIdentifier);
+        const stateResponse = await getState({transmorpherIdentifier});
 
         if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
-            clearStatusPolling(transmorpherIdentifier);
-            displayState(transmorpherIdentifier, stateResponse.state);
-            startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
+            clearStatusPolling({transmorpherIdentifier});
+            displayState({transmorpherIdentifier, stateName: stateResponse.state});
+            startPolling({transmorpherIdentifier, uploadToken: stateResponse.latestUploadToken});
         }
 
-        const medium = getMedium(transmorpherIdentifier);
+        const medium = getMedium({transmorpherIdentifier});
         const versions = versionInformation.state === 'success' ? versionInformation.versions : [];
 
         let versionAge;
@@ -362,14 +358,14 @@ async function updateVersionInformation(transmorpherIdentifier) {
         switch (medium.mediaType) {
             case state.mediaTypes[MEDIA_TYPE.IMAGE]:
             case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
-                versionAge = getDateForDisplay(new Date(versions[versionInformation.currentVersion] * 1000));
-                updateThumbnail(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
+                versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentVersion] * 1000)});
+                updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullSizeUrl: versionInformation.fullsizeUrl});
                 break;
             case state.mediaTypes[MEDIA_TYPE.VIDEO]:
-                versionAge = getDateForDisplay(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
+                versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)});
 
                 if (versionInformation.currentlyProcessedVersion) {
-                    updateVideoDisplay(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
+                    updateVideoDisplay({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl});
                 }
                 break;
         }
@@ -414,12 +410,12 @@ async function updateVersionInformation(transmorpherIdentifier) {
                         break;
                 }
 
-                addConfirmEventListener(
-                    versionEntry.querySelector('button'),
-                    createCallbackWithArguments(setVersionForMedia, transmorpherIdentifier, version),
-                    transmorpherIdentifier
-                );
-                versionAgeElement.textContent = getDateForDisplay(new Date(versions[version] * 1000));
+                addConfirmEventListener({
+                    button: versionEntry.querySelector('button'),
+                    callback: () => setVersionForMedia({transmorpherIdentifier, version}),
+                    transmorpherIdentifier,
+                });
+                versionAgeElement.textContent = getDateForDisplay({date: new Date(versions[version] * 1000)});
 
                 versionList.append(versionEntry);
                 versionEntry.classList.remove('d-none');
@@ -429,69 +425,65 @@ async function updateVersionInformation(transmorpherIdentifier) {
     }
 }
 
-async function setVersionForMedia(transmorpherIdentifier, version) {
-    const uploadingStateResponse = await getState(transmorpherIdentifier);
+async function setVersionForMedia({transmorpherIdentifier, version}) {
+    const uploadingStateResponse = await getState({transmorpherIdentifier});
 
     if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
-        openUploadConfirmModal(
+        openUploadConfirmModal({
             transmorpherIdentifier,
-            createCallbackWithArguments(makeSetVersionCall, transmorpherIdentifier, version)
-        );
+            callback: () => makeSetVersionCall({transmorpherIdentifier, version})
+        });
 
         return;
     }
 
-    await makeSetVersionCall(transmorpherIdentifier, version);
+    await makeSetVersionCall({transmorpherIdentifier, version});
 }
 
-async function makeSetVersionCall(transmorpherIdentifier, version) {
-    const medium = getMedium(transmorpherIdentifier);
-    const setVersionResult = await setVersionRequest(transmorpherIdentifier, version);
+async function makeSetVersionCall({transmorpherIdentifier, version}) {
+    const medium = getMedium({transmorpherIdentifier});
+    const setVersionResult = await setVersionRequest({transmorpherIdentifier, version});
 
     if (setVersionResult.state !== 'error') {
-        clearStatusPolling(transmorpherIdentifier);
+        clearStatusPolling({transmorpherIdentifier});
 
-        await updateVersionInformation(transmorpherIdentifier);
+        await updateVersionInformation({transmorpherIdentifier});
 
         switch (medium.mediaType) {
             case state.mediaTypes[MEDIA_TYPE.IMAGE]:
             case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
-                updateMediaDisplay(transmorpherIdentifier, setVersionResult.thumbnailUrl, setVersionResult.fullsizeUrl);
+                updateMediaDisplay({transmorpherIdentifier, thumbnailUrl: setVersionResult.thumbnailUrl, fullsizeUrl: setVersionResult.fullsizeUrl});
                 break;
             case state.mediaTypes[MEDIA_TYPE.VIDEO]:
-                startPolling(transmorpherIdentifier, setVersionResult.upload_token);
+                startPolling({transmorpherIdentifier, uploadToken: setVersionResult.upload_token});
                 break;
         }
 
-        displayState(transmorpherIdentifier, setVersionResult.state);
+        displayState({transmorpherIdentifier, stateName: setVersionResult.state});
 
         return;
     }
 
-    clearStatusPolling(transmorpherIdentifier);
-    displayModalState(transmorpherIdentifier, setVersionResult.state, setVersionResult.clientMessage);
+    clearStatusPolling({transmorpherIdentifier});
+    displayModalState({transmorpherIdentifier, stateName: setVersionResult.state, message: setVersionResult.clientMessage});
 }
 
-export function closeMoreInformationModal(transmorpherIdentifier) {
-    closeMoreInformationModalDisplay(transmorpherIdentifier);
+export function openMoreInformationModal({transmorpherIdentifier}) {
+    openMoreInformationModalDisplay({transmorpherIdentifier});
+    updateVersionInformation({transmorpherIdentifier});
 }
 
-export function openMoreInformationModal(transmorpherIdentifier) {
-    openMoreInformationModalDisplay(transmorpherIdentifier);
-    updateVersionInformation(transmorpherIdentifier);
-}
-
-async function deleteTransmorpherMedia(transmorpherIdentifier) {
-    const deleteResult = await deleteTransmorpherMediaRequest(transmorpherIdentifier);
+async function deleteTransmorpherMedia({transmorpherIdentifier}) {
+    const deleteResult = await deleteTransmorpherMediaRequest({transmorpherIdentifier});
 
     if (deleteResult.state !== 'error') {
-        clearStatusPolling(transmorpherIdentifier);
-        displayModalState(transmorpherIdentifier, 'success');
-        displayCardBorderState(transmorpherIdentifier, 'processing');
+        clearStatusPolling({transmorpherIdentifier});
+        displayModalState({transmorpherIdentifier, stateName: 'success'});
+        displayCardBorderState({transmorpherIdentifier, stateName: 'processing'});
 
-        await updateVersionInformation(transmorpherIdentifier);
+        await updateVersionInformation({transmorpherIdentifier});
 
-        displayPlaceholder(transmorpherIdentifier);
+        displayPlaceholder({transmorpherIdentifier});
 
         document.querySelector(`#dz-${transmorpherIdentifier}`).closest('.card').querySelector('.badge').classList.add('d-hidden');
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.add('d-hidden');
@@ -499,11 +491,11 @@ async function deleteTransmorpherMedia(transmorpherIdentifier) {
         return;
     }
 
-    clearStatusPolling(transmorpherIdentifier);
-    displayModalState(transmorpherIdentifier, deleteResult.state, deleteResult.clientMessage);
+    clearStatusPolling({transmorpherIdentifier});
+    displayModalState({transmorpherIdentifier, stateName: deleteResult.state, message: deleteResult.clientMessage});
 }
 
-function openUploadConfirmModal(transmorpherIdentifier, callback) {
+function openUploadConfirmModal({transmorpherIdentifier, callback}) {
     const modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
     const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
     const previewElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`);
@@ -538,22 +530,18 @@ function openUploadConfirmModal(transmorpherIdentifier, callback) {
             }
         }
 
-        await abortUpload(transmorpherIdentifier);
+        await abortUpload({transmorpherIdentifier});
         callback();
     };
 }
 
-export async function closeUploadConfirmModal(transmorpherIdentifier) {
-    closeUploadConfirmModalDisplay(transmorpherIdentifier);
+export async function closeUploadConfirmModal({transmorpherIdentifier}) {
+    closeUploadConfirmModalDisplay({transmorpherIdentifier});
 
-    const stateResponse = await getState(transmorpherIdentifier);
+    const stateResponse = await getState({transmorpherIdentifier});
 
-    clearStatusPolling(transmorpherIdentifier);
-    displayState(transmorpherIdentifier, stateResponse.state);
-    startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
-}
-
-export function closeErrorMessage(closeButton, transmorpherIdentifier) {
-    closeErrorMessageDisplay(closeButton, transmorpherIdentifier);
+    clearStatusPolling({transmorpherIdentifier});
+    displayState({transmorpherIdentifier, stateName: stateResponse.state});
+    startPolling({transmorpherIdentifier, uploadToken: stateResponse.latestUploadToken});
 }
 

@@ -2272,17 +2272,16 @@ function withDefaultHeaders() {
     }, (_options$headers = options.headers) !== null && _options$headers !== void 0 ? _options$headers : {})
   });
 }
-function request(_x, _x2) {
+function request(_x) {
   return _request.apply(this, arguments);
 }
 function _request() {
-  _request = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(method, url) {
-    var options,
-      _args = arguments;
+  _request = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(_ref) {
+    var method, url, _ref$options, options;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.n) {
         case 0:
-          options = _args.length > 2 && _args[2] !== undefined ? _args[2] : {};
+          method = _ref.method, url = _ref.url, _ref$options = _ref.options, options = _ref$options === void 0 ? {} : _ref$options;
           return _context.a(2, fetch(url, withDefaultHeaders(_objectSpread(_objectSpread({}, options), {}, {
             method: method
           }))));
@@ -2291,20 +2290,22 @@ function _request() {
   }));
   return _request.apply(this, arguments);
 }
-function requestJson(_x3, _x4) {
+function requestJson(_x2) {
   return _requestJson.apply(this, arguments);
 }
 function _requestJson() {
-  _requestJson = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(method, url) {
-    var options,
-      response,
-      _args2 = arguments;
+  _requestJson = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(_ref2) {
+    var method, url, _ref2$options, options, response;
     return _regenerator().w(function (_context2) {
       while (1) switch (_context2.n) {
         case 0:
-          options = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : {};
+          method = _ref2.method, url = _ref2.url, _ref2$options = _ref2.options, options = _ref2$options === void 0 ? {} : _ref2$options;
           _context2.n = 1;
-          return request(method, url, options);
+          return request({
+            method: method,
+            url: url,
+            options: options
+          });
         case 1:
           response = _context2.v;
           return _context2.a(2, response.json());
@@ -2313,19 +2314,25 @@ function _requestJson() {
   }));
   return _requestJson.apply(this, arguments);
 }
-function setUploadingState(_x5, _x6) {
+function setUploadingState(_x3) {
   return _setUploadingState.apply(this, arguments);
 }
 function _setUploadingState() {
-  _setUploadingState = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(transmorpherIdentifier, uploadToken) {
-    var medium, url;
+  _setUploadingState = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref3) {
+    var transmorpherIdentifier, uploadToken, medium, url;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref3.transmorpherIdentifier, uploadToken = _ref3.uploadToken;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           url = medium.routes.setUploadingState.replace('{transmorpherUpload}', uploadToken);
           _context3.n = 1;
-          return request('POST', url);
+          return request({
+            method: 'POST',
+            url: url
+          });
         case 1:
           return _context3.a(2);
       }
@@ -2333,21 +2340,25 @@ function _setUploadingState() {
   }));
   return _setUploadingState.apply(this, arguments);
 }
-function getUploadUrl(_x7, _x8, _x9) {
+function getUploadUrl(_x4) {
   return _getUploadUrl.apply(this, arguments);
 }
 function _getUploadUrl() {
-  _getUploadUrl = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(transmorpherIdentifier, chunkIndex, done) {
-    var dropzone, uploadToken, medium, chunkUploadUrl, chunkUploadUrlResponse;
+  _getUploadUrl = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(_ref4) {
+    var transmorpherIdentifier, chunkIndex, uploadToken, done, medium, chunkUploadUrl, chunkUploadUrlResponse;
     return _regenerator().w(function (_context4) {
       while (1) switch (_context4.n) {
         case 0:
-          dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
-          uploadToken = dropzone.options.uploadToken;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref4.transmorpherIdentifier, chunkIndex = _ref4.chunkIndex, uploadToken = _ref4.uploadToken, done = _ref4.done;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           chunkUploadUrl = medium.routes.chunkUrl.replace('{transmorpherUpload}', uploadToken).replace('{chunkNumber}', chunkIndex);
           _context4.n = 1;
-          return requestJson('GET', chunkUploadUrl);
+          return requestJson({
+            method: 'GET',
+            url: chunkUploadUrl
+          });
         case 1:
           chunkUploadUrlResponse = _context4.v;
           if (!(chunkUploadUrlResponse.state === 'error')) {
@@ -2363,36 +2374,48 @@ function _getUploadUrl() {
   }));
   return _getUploadUrl.apply(this, arguments);
 }
-function completeUpload(_x0, _x1) {
+function completeUpload(_x5) {
   return _completeUpload.apply(this, arguments);
 }
 function _completeUpload() {
-  _completeUpload = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(transmorpherIdentifier, uploadToken) {
-    var medium, completeUploadUrl;
+  _completeUpload = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(_ref5) {
+    var transmorpherIdentifier, uploadToken, medium, completeUploadUrl;
     return _regenerator().w(function (_context5) {
       while (1) switch (_context5.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref5.transmorpherIdentifier, uploadToken = _ref5.uploadToken;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           completeUploadUrl = medium.routes.completeUpload.replace('{transmorpherUpload}', uploadToken);
-          return _context5.a(2, requestJson('POST', completeUploadUrl));
+          return _context5.a(2, requestJson({
+            method: 'POST',
+            url: completeUploadUrl
+          }));
       }
     }, _callee5);
   }));
   return _completeUpload.apply(this, arguments);
 }
-function abortUpload(_x10) {
+function abortUpload(_x6) {
   return _abortUpload.apply(this, arguments);
 }
 function _abortUpload() {
-  _abortUpload = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(transmorpherIdentifier) {
-    var medium, abortUploadUrl;
+  _abortUpload = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(_ref6) {
+    var transmorpherIdentifier, medium, abortUploadUrl;
     return _regenerator().w(function (_context6) {
       while (1) switch (_context6.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref6.transmorpherIdentifier;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           abortUploadUrl = medium.routes.abortUpload.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
           _context6.n = 1;
-          return request('DELETE', abortUploadUrl);
+          return request({
+            method: 'DELETE',
+            url: abortUploadUrl
+          });
         case 1:
           return _context6.a(2);
       }
@@ -2400,125 +2423,160 @@ function _abortUpload() {
   }));
   return _abortUpload.apply(this, arguments);
 }
-function reserveUploadSlot(_x11) {
+function reserveUploadSlot(_x7) {
   return _reserveUploadSlot.apply(this, arguments);
 }
 function _reserveUploadSlot() {
-  _reserveUploadSlot = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(transmorpherIdentifier) {
-    var medium, url, dropzone;
+  _reserveUploadSlot = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(_ref7) {
+    var transmorpherIdentifier, filename, medium, url;
     return _regenerator().w(function (_context7) {
       while (1) switch (_context7.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref7.transmorpherIdentifier, filename = _ref7.filename;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           url = medium.routes.uploadToken.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
-          dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
-          return _context7.a(2, requestJson('POST', url, {
-            body: JSON.stringify({
-              filename: dropzone.files[0].name
-            })
+          return _context7.a(2, requestJson({
+            method: 'POST',
+            url: url,
+            options: {
+              body: JSON.stringify({
+                filename: filename
+              })
+            }
           }));
       }
     }, _callee7);
   }));
   return _reserveUploadSlot.apply(this, arguments);
 }
-function getState(_x12) {
+function getState(_x8) {
   return _getState.apply(this, arguments);
 }
 function _getState() {
-  _getState = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee8(transmorpherIdentifier) {
-    var uploadToken,
-      medium,
-      url,
-      _args8 = arguments;
+  _getState = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee8(_ref8) {
+    var transmorpherIdentifier, _ref8$uploadToken, uploadToken, medium, url;
     return _regenerator().w(function (_context8) {
       while (1) switch (_context8.n) {
         case 0:
-          uploadToken = _args8.length > 1 && _args8[1] !== undefined ? _args8[1] : null;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref8.transmorpherIdentifier, _ref8$uploadToken = _ref8.uploadToken, uploadToken = _ref8$uploadToken === void 0 ? null : _ref8$uploadToken;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           url = medium.routes.state.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
-          return _context8.a(2, requestJson('POST', url, {
-            body: JSON.stringify({
-              upload_token: uploadToken
-            })
+          return _context8.a(2, requestJson({
+            method: 'POST',
+            url: url,
+            options: {
+              body: JSON.stringify({
+                upload_token: uploadToken
+              })
+            }
           }));
       }
     }, _callee8);
   }));
   return _getState.apply(this, arguments);
 }
-function storeUploadResponse(_x13, _x14, _x15, _x16) {
+function storeUploadResponse(_x9) {
   return _storeUploadResponse.apply(this, arguments);
 }
 function _storeUploadResponse() {
-  _storeUploadResponse = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee9(transmorpherIdentifier, uploadToken, response, httpCode) {
-    var medium, url;
+  _storeUploadResponse = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee9(_ref9) {
+    var transmorpherIdentifier, uploadToken, response, httpCode, medium, url;
     return _regenerator().w(function (_context9) {
       while (1) switch (_context9.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref9.transmorpherIdentifier, uploadToken = _ref9.uploadToken, response = _ref9.response, httpCode = _ref9.httpCode;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           url = medium.routes.handleUploadResponse.replace('{transmorpherUpload}', uploadToken);
-          return _context9.a(2, requestJson('POST', url, {
-            body: JSON.stringify({
-              response: response,
-              http_code: httpCode
-            })
+          return _context9.a(2, requestJson({
+            method: 'POST',
+            url: url,
+            options: {
+              body: JSON.stringify({
+                response: response,
+                http_code: httpCode
+              })
+            }
           }));
       }
     }, _callee9);
   }));
   return _storeUploadResponse.apply(this, arguments);
 }
-function getVersions(_x17) {
+function getVersions(_x0) {
   return _getVersions.apply(this, arguments);
 }
 function _getVersions() {
-  _getVersions = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee0(transmorpherIdentifier) {
-    var medium, url;
+  _getVersions = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee0(_ref0) {
+    var transmorpherIdentifier, medium, url;
     return _regenerator().w(function (_context0) {
       while (1) switch (_context0.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref0.transmorpherIdentifier;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           url = medium.routes.getVersions.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
-          return _context0.a(2, requestJson('GET', url));
+          return _context0.a(2, requestJson({
+            method: 'GET',
+            url: url
+          }));
       }
     }, _callee0);
   }));
   return _getVersions.apply(this, arguments);
 }
-function setVersion(_x18, _x19) {
+function setVersion(_x1) {
   return _setVersion.apply(this, arguments);
 }
 function _setVersion() {
-  _setVersion = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(transmorpherIdentifier, version) {
-    var medium, url;
+  _setVersion = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(_ref1) {
+    var transmorpherIdentifier, version, medium, url;
     return _regenerator().w(function (_context1) {
       while (1) switch (_context1.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref1.transmorpherIdentifier, version = _ref1.version;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
-          return _context1.a(2, requestJson('POST', url, {
-            body: JSON.stringify({
-              version: version
-            })
+          return _context1.a(2, requestJson({
+            method: 'POST',
+            url: url,
+            options: {
+              body: JSON.stringify({
+                version: version
+              })
+            }
           }));
       }
     }, _callee1);
   }));
   return _setVersion.apply(this, arguments);
 }
-function deleteTransmorpherMedia(_x20) {
+function deleteTransmorpherMedia(_x10) {
   return _deleteTransmorpherMedia.apply(this, arguments);
 }
 function _deleteTransmorpherMedia() {
-  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee10(transmorpherIdentifier) {
-    var medium, url;
+  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee10(_ref10) {
+    var transmorpherIdentifier, medium, url;
     return _regenerator().w(function (_context10) {
       while (1) switch (_context10.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref10.transmorpherIdentifier;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           url = medium.routes["delete"].replace('{transmorpherMedia}', medium.transmorpherMediaKey);
-          return _context10.a(2, requestJson('POST', url));
+          return _context10.a(2, requestJson({
+            method: 'POST',
+            url: url
+          }));
       }
     }, _callee10);
   }));
@@ -2702,8 +2760,6 @@ var UploadHandlerFactory = /*#__PURE__*/function () {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   closeErrorMessage: () => (/* binding */ closeErrorMessage),
-/* harmony export */   closeMoreInformationModal: () => (/* binding */ closeMoreInformationModal),
 /* harmony export */   closeUploadConfirmModal: () => (/* binding */ closeUploadConfirmModal),
 /* harmony export */   openMoreInformationModal: () => (/* binding */ openMoreInformationModal),
 /* harmony export */   setupComponent: () => (/* binding */ setupComponent)
@@ -2728,15 +2784,34 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 
 
-function setupComponent(transmorpherIdentifier) {
+function setupComponent(_ref) {
+  var transmorpherIdentifier = _ref.transmorpherIdentifier;
   dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
-  var medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier);
-  (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.addConfirmEventListener)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(deleteTransmorpherMedia, transmorpherIdentifier), transmorpherIdentifier);
+  var medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)({
+    transmorpherIdentifier: transmorpherIdentifier
+  });
+  (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.addConfirmEventListener)({
+    button: document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")),
+    callback: function callback() {
+      return deleteTransmorpherMedia({
+        transmorpherIdentifier: transmorpherIdentifier
+      });
+    },
+    transmorpherIdentifier: transmorpherIdentifier
+  });
 
   // Start polling if the video is still processing or an upload is in process.
   if (medium.isProcessing || medium.isUploading) {
-    startPolling(transmorpherIdentifier, medium.latestUploadToken);
-    (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(medium.lastUpdated * 1000)));
+    startPolling({
+      transmorpherIdentifier: transmorpherIdentifier,
+      uploadToken: medium.latestUploadToken
+    });
+    (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)({
+      ageElement: document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")),
+      dateTime: (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+        date: new Date(medium.lastUpdated * 1000)
+      })
+    });
   }
   var dz = new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), _objectSpread(_objectSpread({
     url: 'placeholder',
@@ -2765,11 +2840,23 @@ function setupComponent(transmorpherIdentifier) {
           while (1) switch (_context.n) {
             case 0:
               _context.n = 1;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.setUploadingState)(transmorpherIdentifier, this.options.uploadToken);
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.setUploadingState)({
+                transmorpherIdentifier: transmorpherIdentifier,
+                uploadToken: this.options.uploadToken
+              });
             case 1:
-              (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-              (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'uploading', null, false);
-              startPolling(transmorpherIdentifier, this.options.uploadToken);
+              (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+                transmorpherIdentifier: transmorpherIdentifier
+              });
+              (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+                transmorpherIdentifier: transmorpherIdentifier,
+                stateName: 'uploading',
+                resetError: false
+              });
+              startPolling({
+                transmorpherIdentifier: transmorpherIdentifier,
+                uploadToken: this.options.uploadToken
+              });
             case 2:
               return _context.a(2);
           }
@@ -2792,7 +2879,11 @@ function setupComponent(transmorpherIdentifier) {
               }
               _context2.p = 1;
               _context2.n = 2;
-              return (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getMediaDimensions)(file, medium.mediaType, medium.translations.validation_error);
+              return (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getMediaDimensions)({
+                file: file,
+                mediaType: medium.mediaType,
+                validationError: medium.translations.validation_error
+              });
             case 2:
               dimensions = _context2.v;
               file.width = dimensions.width;
@@ -2827,18 +2918,31 @@ function setupComponent(transmorpherIdentifier) {
               return _context2.a(2);
             case 7:
               _context2.n = 8;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)({
+                transmorpherIdentifier: transmorpherIdentifier
+              });
             case 8:
               uploadingStateResponse = _context2.v;
               if (!(uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing')) {
                 _context2.n = 9;
                 break;
               }
-              openUploadConfirmModal(transmorpherIdentifier, (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(reserveUploadSlot, transmorpherIdentifier, file.done));
+              openUploadConfirmModal({
+                transmorpherIdentifier: transmorpherIdentifier,
+                callback: function callback() {
+                  return reserveUploadSlot({
+                    transmorpherIdentifier: transmorpherIdentifier,
+                    done: file.done
+                  });
+                }
+              });
               return _context2.a(2);
             case 9:
               _context2.n = 10;
-              return reserveUploadSlot(transmorpherIdentifier, file.done);
+              return reserveUploadSlot({
+                transmorpherIdentifier: transmorpherIdentifier,
+                done: file.done
+              });
             case 10:
               return _context2.a(2);
           }
@@ -2867,11 +2971,16 @@ function setupComponent(transmorpherIdentifier) {
           while (1) switch (_context3.n) {
             case 0:
               _context3.n = 1;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)(transmorpherIdentifier, this.options.uploadToken, {
-                state: 'error',
-                clientMessage: medium.translations.upload_canceled,
-                message: this.options.dictUploadCanceled
-              }, (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status);
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)({
+                transmorpherIdentifier: transmorpherIdentifier,
+                uploadToken: this.options.uploadToken,
+                response: {
+                  state: 'error',
+                  clientMessage: medium.translations.upload_canceled,
+                  message: this.options.dictUploadCanceled
+                },
+                httpCode: (_file$xhr = file.xhr) === null || _file$xhr === void 0 ? void 0 : _file$xhr.status
+              });
             case 1:
               return _context3.a(2);
           }
@@ -2890,11 +2999,19 @@ function setupComponent(transmorpherIdentifier) {
             case 0:
               this.element.classList.add('is-completing-upload');
               _context4.n = 1;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.completeUpload)(transmorpherIdentifier, this.options.uploadToken);
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.completeUpload)({
+                transmorpherIdentifier: transmorpherIdentifier,
+                uploadToken: this.options.uploadToken
+              });
             case 1:
               completeUploadResponse = _context4.v;
               _context4.n = 2;
-              return handleUploadResponse(file, completeUploadResponse, transmorpherIdentifier, this.options.uploadToken);
+              return handleUploadResponse({
+                file: file,
+                response: completeUploadResponse,
+                transmorpherIdentifier: transmorpherIdentifier,
+                uploadToken: this.options.uploadToken
+              });
             case 2:
               this.element.querySelector('.dz-default').style.display = 'block';
               this.element.classList.remove('is-completing-upload');
@@ -2909,14 +3026,19 @@ function setupComponent(transmorpherIdentifier) {
       return success;
     }(),
     error: function error(file, response) {
-      handleUploadResponse(file, response, transmorpherIdentifier, this.options.uploadToken);
+      handleUploadResponse({
+        file: file,
+        response: response,
+        transmorpherIdentifier: transmorpherIdentifier,
+        uploadToken: this.options.uploadToken
+      });
     }
   }));
   var originalSubmitRequest = dz.submitRequest.bind(dz);
 
   // Overwrite Dropzone submitRequest to set a dynamic URL for each chunk.
   dz.submitRequest = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(xhr, formData, files) {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(xhr, formData, files) {
       var _file$upload, _chunk$dataBlock$chun, _chunk$dataBlock;
       var file, chunk, chunkIndex, chunkUploadUrl;
       return _regenerator().w(function (_context5) {
@@ -2928,7 +3050,12 @@ function setupComponent(transmorpherIdentifier) {
             });
             chunkIndex = ((_chunk$dataBlock$chun = chunk === null || chunk === void 0 || (_chunk$dataBlock = chunk.dataBlock) === null || _chunk$dataBlock === void 0 ? void 0 : _chunk$dataBlock.chunkIndex) !== null && _chunk$dataBlock$chun !== void 0 ? _chunk$dataBlock$chun : 0) + 1;
             _context5.n = 1;
-            return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getUploadUrl)(transmorpherIdentifier, chunkIndex, file === null || file === void 0 ? void 0 : file.done);
+            return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getUploadUrl)({
+              transmorpherIdentifier: transmorpherIdentifier,
+              chunkIndex: chunkIndex,
+              uploadToken: this.options.uploadToken,
+              done: file === null || file === void 0 ? void 0 : file.done
+            });
           case 1:
             chunkUploadUrl = _context5.v;
             if (chunkUploadUrl) {
@@ -2944,21 +3071,26 @@ function setupComponent(transmorpherIdentifier) {
       }, _callee5, this);
     }));
     return function (_x4, _x5, _x6) {
-      return _ref2.apply(this, arguments);
+      return _ref3.apply(this, arguments);
     };
   }();
 }
-function reserveUploadSlot(_x7, _x8) {
+function reserveUploadSlot(_x7) {
   return _reserveUploadSlot.apply(this, arguments);
 }
 function _reserveUploadSlot() {
-  _reserveUploadSlot = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee8(transmorpherIdentifier, done) {
-    var getUploadTokenResult, dropzone;
+  _reserveUploadSlot = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee8(_ref4) {
+    var transmorpherIdentifier, done, dropzone, getUploadTokenResult;
     return _regenerator().w(function (_context8) {
       while (1) switch (_context8.n) {
         case 0:
+          transmorpherIdentifier = _ref4.transmorpherIdentifier, done = _ref4.done;
+          dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
           _context8.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.reserveUploadSlot)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.reserveUploadSlot)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            filename: dropzone.files[0].name
+          });
         case 1:
           getUploadTokenResult = _context8.v;
           if (!(getUploadTokenResult.state === 'error')) {
@@ -2968,7 +3100,6 @@ function _reserveUploadSlot() {
           done(getUploadTokenResult);
           return _context8.a(2);
         case 2:
-          dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
           dropzone.options.uploadToken = getUploadTokenResult.upload_token;
           done();
         case 3:
@@ -2978,7 +3109,9 @@ function _reserveUploadSlot() {
   }));
   return _reserveUploadSlot.apply(this, arguments);
 }
-function startPolling(transmorpherIdentifier, uploadToken) {
+function startPolling(_ref5) {
+  var transmorpherIdentifier = _ref5.transmorpherIdentifier,
+    uploadToken = _ref5.uploadToken;
   var expirationTime = new Date();
   expirationTime.setDate(expirationTime.getDate() + 1);
   var intervalId = setInterval(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6() {
@@ -2990,70 +3123,132 @@ function startPolling(transmorpherIdentifier, uploadToken) {
             _context6.n = 1;
             break;
           }
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           return _context6.a(2);
         case 1:
           _context6.n = 2;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier, uploadToken);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: uploadToken
+          });
         case 2:
           pollingInformation = _context6.v;
           _t2 = pollingInformation.state;
           _context6.n = _t2 === 'success' ? 3 : _t2 === 'error' ? 5 : _t2 === 'uploading' ? 6 : _t2 === 'processing' ? 7 : 8;
           break;
         case 3:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'success');
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateMediaDisplay)(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: 'success'
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateMediaDisplay)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            thumbnailUrl: pollingInformation.thumbnailUrl,
+            fullsizeUrl: pollingInformation.fullsizeUrl
+          });
           _context6.n = 4;
-          return updateVersionInformation(transmorpherIdentifier);
+          return updateVersionInformation({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 4:
           return _context6.a(3, 8);
         case 5:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           if (uploadToken !== pollingInformation.latestUploadToken) {
-            startPolling(transmorpherIdentifier, pollingInformation.latestUploadToken);
+            startPolling({
+              transmorpherIdentifier: transmorpherIdentifier,
+              uploadToken: pollingInformation.latestUploadToken
+            });
           }
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: 'error',
+            message: pollingInformation.clientMessage
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           return _context6.a(3, 8);
         case 6:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'uploading', null, false);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(pollingInformation.lastUpdated)));
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: 'uploading',
+            resetError: false
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)({
+            ageElement: document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")),
+            dateTime: (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+              date: new Date(pollingInformation.lastUpdated)
+            })
+          });
           return _context6.a(3, 8);
         case 7:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'processing', null, false);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(pollingInformation.lastUpdated)));
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: 'processing',
+            resetError: false
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)({
+            ageElement: document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")),
+            dateTime: (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+              date: new Date(pollingInformation.lastUpdated)
+            })
+          });
           return _context6.a(3, 8);
         case 8:
           return _context6.a(2);
       }
     }, _callee6);
   })), 5000);
-  (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.setStatusPolling)(transmorpherIdentifier, intervalId);
+  (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.setStatusPolling)({
+    transmorpherIdentifier: transmorpherIdentifier,
+    intervalId: intervalId
+  });
 }
-function handleUploadResponse(_x9, _x0, _x1, _x10) {
+function handleUploadResponse(_x8) {
   return _handleUploadResponse.apply(this, arguments);
 }
 function _handleUploadResponse() {
-  _handleUploadResponse = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee9(file, response, transmorpherIdentifier, uploadToken) {
-    var uploadResult, _response$httpCode, _file$xhr2, dropzone;
+  _handleUploadResponse = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee9(_ref7) {
+    var file, response, transmorpherIdentifier, uploadToken, uploadResult, _response$httpCode, _file$xhr2, dropzone;
     return _regenerator().w(function (_context9) {
       while (1) switch (_context9.n) {
         case 0:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          file = _ref7.file, response = _ref7.response, transmorpherIdentifier = _ref7.transmorpherIdentifier, uploadToken = _ref7.uploadToken;
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           uploadResult = response;
           if (!uploadToken) {
             _context9.n = 2;
             break;
           }
           _context9.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)(transmorpherIdentifier, uploadToken, response, (_response$httpCode = response === null || response === void 0 ? void 0 : response.httpCode) !== null && _response$httpCode !== void 0 ? _response$httpCode : (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: uploadToken,
+            response: response,
+            httpCode: (_response$httpCode = response === null || response === void 0 ? void 0 : response.httpCode) !== null && _response$httpCode !== void 0 ? _response$httpCode : (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status
+          });
         case 1:
           uploadResult = _context9.v;
         case 2:
           _context9.n = 3;
-          return displayUploadResult(uploadResult, transmorpherIdentifier, uploadToken);
+          return displayUploadResult({
+            uploadResult: uploadResult,
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: uploadToken
+          });
         case 3:
           // Remove the uploaded file to reset the state.
           dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
@@ -3067,16 +3262,19 @@ function _handleUploadResponse() {
   }));
   return _handleUploadResponse.apply(this, arguments);
 }
-function displayUploadResult(_x11, _x12, _x13) {
+function displayUploadResult(_x9) {
   return _displayUploadResult.apply(this, arguments);
 }
 function _displayUploadResult() {
-  _displayUploadResult = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee0(uploadResult, transmorpherIdentifier, uploadToken) {
-    var _uploadResult$clientM, _t3;
+  _displayUploadResult = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee0(_ref8) {
+    var uploadResult, transmorpherIdentifier, uploadToken, _uploadResult$clientM, _t3;
     return _regenerator().w(function (_context0) {
       while (1) switch (_context0.n) {
         case 0:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)(transmorpherIdentifier);
+          uploadResult = _ref8.uploadResult, transmorpherIdentifier = _ref8.transmorpherIdentifier, uploadToken = _ref8.uploadToken;
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
 
           // Check for undefined, which happens when dropzone directly rejects the file.
           if (!(uploadResult.state !== undefined && uploadResult.state !== 'error')) {
@@ -3086,29 +3284,55 @@ function _displayUploadResult() {
           document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
           _context0.n = 1;
-          return updateVersionInformation(transmorpherIdentifier);
+          return updateVersionInformation({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 1:
-          _t3 = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier).mediaType;
+          _t3 = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          }).mediaType;
           _context0.n = _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 3 : 4;
           break;
         case 2:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            thumbnailUrl: uploadResult.thumbnailUrl,
+            fullSizeUrl: uploadResult.fullsizeUrl
+          });
           return _context0.a(3, 4);
         case 3:
-          startPolling(transmorpherIdentifier, uploadToken);
+          startPolling({
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: uploadToken
+          });
           return _context0.a(3, 4);
         case 4:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, uploadResult.state);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: uploadResult.state
+          });
           _context0.n = 6;
           break;
         case 5:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'error', (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: 'error',
+            message: (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult
+          });
 
           // Start polling for updates when the upload was aborted due to another upload.
           if (uploadResult.httpCode === 404) {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-            startPolling(transmorpherIdentifier, uploadResult.latestUploadToken);
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'uploading');
+            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+              transmorpherIdentifier: transmorpherIdentifier
+            });
+            startPolling({
+              transmorpherIdentifier: transmorpherIdentifier,
+              uploadToken: uploadResult.latestUploadToken
+            });
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+              transmorpherIdentifier: transmorpherIdentifier,
+              stateName: 'uploading'
+            });
           }
         case 6:
           document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone.options.uploadToken = null;
@@ -3119,15 +3343,16 @@ function _displayUploadResult() {
   }));
   return _displayUploadResult.apply(this, arguments);
 }
-function updateVersionInformation(_x14) {
+function updateVersionInformation(_x0) {
   return _updateVersionInformation.apply(this, arguments);
 }
 function _updateVersionInformation() {
-  _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(transmorpherIdentifier) {
-    var modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, _t4;
+  _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(_ref9) {
+    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, _t4;
     return _regenerator().w(function (_context1) {
       while (1) switch (_context1.p = _context1.n) {
         case 0:
+          transmorpherIdentifier = _ref9.transmorpherIdentifier;
           modal = document.querySelector("#modal-mi-".concat(transmorpherIdentifier)); // Don't update when the modal is closed or currently fetching.
           if (!(!modal.classList.contains('d-flex') || modal.dataset.fetching === 'true')) {
             _context1.n = 1;
@@ -3142,40 +3367,67 @@ function _updateVersionInformation() {
           versionList.append(defaultVersionEntry);
           _context1.p = 2;
           _context1.n = 3;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getVersions)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getVersions)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 3:
           versionInformation = _context1.v;
           if (versionInformation.currentVersion) {
             _context1.n = 4;
             break;
           }
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayPlaceholder)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayPlaceholder)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
           return _context1.a(2);
         case 4:
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
           _context1.n = 5;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 5:
           stateResponse = _context1.v;
           if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, stateResponse.state);
-            startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
+            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+              transmorpherIdentifier: transmorpherIdentifier
+            });
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+              transmorpherIdentifier: transmorpherIdentifier,
+              stateName: stateResponse.state
+            });
+            startPolling({
+              transmorpherIdentifier: transmorpherIdentifier,
+              uploadToken: stateResponse.latestUploadToken
+            });
           }
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier);
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           versions = versionInformation.state === 'success' ? versionInformation.versions : [];
           _t4 = medium.mediaType;
           _context1.n = _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 7 : 8;
           break;
         case 6:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(versions[versionInformation.currentVersion] * 1000));
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
+          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+            date: new Date(versions[versionInformation.currentVersion] * 1000)
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            thumbnailUrl: versionInformation.thumbnailUrl,
+            fullSizeUrl: versionInformation.fullsizeUrl
+          });
           return _context1.a(3, 8);
         case 7:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
+          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+            date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)
+          });
           if (versionInformation.currentlyProcessedVersion) {
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateVideoDisplay)(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateVideoDisplay)({
+              transmorpherIdentifier: transmorpherIdentifier,
+              thumbnailUrl: versionInformation.thumbnailUrl
+            });
           }
           return _context1.a(3, 8);
         case 8:
@@ -3206,8 +3458,19 @@ function _updateVersionInformation() {
                 versionEntry.querySelector('.media-preview').remove();
                 break;
             }
-            (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.addConfirmEventListener)(versionEntry.querySelector('button'), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(setVersionForMedia, transmorpherIdentifier, version), transmorpherIdentifier);
-            versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(versions[version] * 1000));
+            (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.addConfirmEventListener)({
+              button: versionEntry.querySelector('button'),
+              callback: function callback() {
+                return setVersionForMedia({
+                  transmorpherIdentifier: transmorpherIdentifier,
+                  version: version
+                });
+              },
+              transmorpherIdentifier: transmorpherIdentifier
+            });
+            versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+              date: new Date(versions[version] * 1000)
+            });
             versionList.append(versionEntry);
             versionEntry.classList.remove('d-none');
           });
@@ -3222,28 +3485,42 @@ function _updateVersionInformation() {
   }));
   return _updateVersionInformation.apply(this, arguments);
 }
-function setVersionForMedia(_x15, _x16) {
+function setVersionForMedia(_x1) {
   return _setVersionForMedia.apply(this, arguments);
 }
 function _setVersionForMedia() {
-  _setVersionForMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee10(transmorpherIdentifier, version) {
-    var uploadingStateResponse;
+  _setVersionForMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee10(_ref0) {
+    var transmorpherIdentifier, version, uploadingStateResponse;
     return _regenerator().w(function (_context10) {
       while (1) switch (_context10.n) {
         case 0:
+          transmorpherIdentifier = _ref0.transmorpherIdentifier, version = _ref0.version;
           _context10.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 1:
           uploadingStateResponse = _context10.v;
           if (!(uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing')) {
             _context10.n = 2;
             break;
           }
-          openUploadConfirmModal(transmorpherIdentifier, (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(makeSetVersionCall, transmorpherIdentifier, version));
+          openUploadConfirmModal({
+            transmorpherIdentifier: transmorpherIdentifier,
+            callback: function callback() {
+              return makeSetVersionCall({
+                transmorpherIdentifier: transmorpherIdentifier,
+                version: version
+              });
+            }
+          });
           return _context10.a(2);
         case 2:
           _context10.n = 3;
-          return makeSetVersionCall(transmorpherIdentifier, version);
+          return makeSetVersionCall({
+            transmorpherIdentifier: transmorpherIdentifier,
+            version: version
+          });
         case 3:
           return _context10.a(2);
       }
@@ -3251,43 +3528,69 @@ function _setVersionForMedia() {
   }));
   return _setVersionForMedia.apply(this, arguments);
 }
-function makeSetVersionCall(_x17, _x18) {
+function makeSetVersionCall(_x10) {
   return _makeSetVersionCall.apply(this, arguments);
 }
 function _makeSetVersionCall() {
-  _makeSetVersionCall = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee11(transmorpherIdentifier, version) {
-    var medium, setVersionResult, _t5;
+  _makeSetVersionCall = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee11(_ref1) {
+    var transmorpherIdentifier, version, medium, setVersionResult, _t5;
     return _regenerator().w(function (_context11) {
       while (1) switch (_context11.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref1.transmorpherIdentifier, version = _ref1.version;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           _context11.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.setVersion)(transmorpherIdentifier, version);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.setVersion)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            version: version
+          });
         case 1:
           setVersionResult = _context11.v;
           if (!(setVersionResult.state !== 'error')) {
             _context11.n = 6;
             break;
           }
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           _context11.n = 2;
-          return updateVersionInformation(transmorpherIdentifier);
+          return updateVersionInformation({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 2:
           _t5 = medium.mediaType;
           _context11.n = _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 4 : 5;
           break;
         case 3:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateMediaDisplay)(transmorpherIdentifier, setVersionResult.thumbnailUrl, setVersionResult.fullsizeUrl);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateMediaDisplay)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            thumbnailUrl: setVersionResult.thumbnailUrl,
+            fullsizeUrl: setVersionResult.fullsizeUrl
+          });
           return _context11.a(3, 5);
         case 4:
-          startPolling(transmorpherIdentifier, setVersionResult.upload_token);
+          startPolling({
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: setVersionResult.upload_token
+          });
           return _context11.a(3, 5);
         case 5:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, setVersionResult.state);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: setVersionResult.state
+          });
           return _context11.a(2);
         case 6:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)(transmorpherIdentifier, setVersionResult.state, setVersionResult.clientMessage);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: setVersionResult.state,
+            message: setVersionResult.clientMessage
+          });
         case 7:
           return _context11.a(2);
       }
@@ -3295,43 +3598,66 @@ function _makeSetVersionCall() {
   }));
   return _makeSetVersionCall.apply(this, arguments);
 }
-function closeMoreInformationModal(transmorpherIdentifier) {
-  (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.closeMoreInformationModal)(transmorpherIdentifier);
+function openMoreInformationModal(_ref10) {
+  var transmorpherIdentifier = _ref10.transmorpherIdentifier;
+  (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.openMoreInformationModalDisplay)({
+    transmorpherIdentifier: transmorpherIdentifier
+  });
+  updateVersionInformation({
+    transmorpherIdentifier: transmorpherIdentifier
+  });
 }
-function openMoreInformationModal(transmorpherIdentifier) {
-  (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.openMoreInformationModalDisplay)(transmorpherIdentifier);
-  updateVersionInformation(transmorpherIdentifier);
-}
-function deleteTransmorpherMedia(_x19) {
+function deleteTransmorpherMedia(_x11) {
   return _deleteTransmorpherMedia.apply(this, arguments);
 }
 function _deleteTransmorpherMedia() {
-  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee12(transmorpherIdentifier) {
-    var deleteResult;
+  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee12(_ref11) {
+    var transmorpherIdentifier, deleteResult;
     return _regenerator().w(function (_context12) {
       while (1) switch (_context12.n) {
         case 0:
+          transmorpherIdentifier = _ref11.transmorpherIdentifier;
           _context12.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.deleteTransmorpherMedia)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.deleteTransmorpherMedia)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 1:
           deleteResult = _context12.v;
           if (!(deleteResult.state !== 'error')) {
             _context12.n = 3;
             break;
           }
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)(transmorpherIdentifier, 'success');
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayCardBorderState)(transmorpherIdentifier, 'processing');
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: 'success'
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayCardBorderState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: 'processing'
+          });
           _context12.n = 2;
-          return updateVersionInformation(transmorpherIdentifier);
+          return updateVersionInformation({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 2:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayPlaceholder)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayPlaceholder)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge').classList.add('d-hidden');
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
           return _context12.a(2);
         case 3:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)(transmorpherIdentifier, deleteResult.state, deleteResult.clientMessage);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: deleteResult.state,
+            message: deleteResult.clientMessage
+          });
         case 4:
           return _context12.a(2);
       }
@@ -3339,7 +3665,9 @@ function _deleteTransmorpherMedia() {
   }));
   return _deleteTransmorpherMedia.apply(this, arguments);
 }
-function openUploadConfirmModal(transmorpherIdentifier, callback) {
+function openUploadConfirmModal(_ref12) {
+  var transmorpherIdentifier = _ref12.transmorpherIdentifier,
+    callback = _ref12.callback;
   var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
   var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
   var previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
@@ -3372,7 +3700,9 @@ function openUploadConfirmModal(transmorpherIdentifier, callback) {
             }
           }
           _context7.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.abortUpload)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.abortUpload)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 1:
           callback();
         case 2:
@@ -3381,32 +3711,42 @@ function openUploadConfirmModal(transmorpherIdentifier, callback) {
     }, _callee7);
   }));
 }
-function closeUploadConfirmModal(_x20) {
+function closeUploadConfirmModal(_x12) {
   return _closeUploadConfirmModal.apply(this, arguments);
 }
 function _closeUploadConfirmModal() {
-  _closeUploadConfirmModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee13(transmorpherIdentifier) {
-    var stateResponse;
+  _closeUploadConfirmModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee13(_ref14) {
+    var transmorpherIdentifier, stateResponse;
     return _regenerator().w(function (_context13) {
       while (1) switch (_context13.n) {
         case 0:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.closeUploadConfirmModalDisplay)(transmorpherIdentifier);
+          transmorpherIdentifier = _ref14.transmorpherIdentifier;
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.closeUploadConfirmModalDisplay)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
           _context13.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
         case 1:
           stateResponse = _context13.v;
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, stateResponse.state);
-          startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: stateResponse.state
+          });
+          startPolling({
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: stateResponse.latestUploadToken
+          });
         case 2:
           return _context13.a(2);
       }
     }, _callee13);
   }));
   return _closeUploadConfirmModal.apply(this, arguments);
-}
-function closeErrorMessage(closeButton, transmorpherIdentifier) {
-  (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.closeErrorMessage)(closeButton, transmorpherIdentifier);
 }
 
 /***/ },
@@ -3441,22 +3781,30 @@ var state = {
   uploadHandler: null,
   statusPolling: {}
 };
-function registerMediaTypes(mediaTypes) {
+function registerMediaTypes(_ref) {
+  var mediaTypes = _ref.mediaTypes;
   state.mediaTypes = mediaTypes;
 }
-function setUploadHandler(uploadHandler) {
+function setUploadHandler(_ref2) {
+  var uploadHandler = _ref2.uploadHandler;
   state.uploadHandler = _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_0__["default"].create(uploadHandler);
 }
-function registerMedium(transmorpherIdentifier, medium) {
+function registerMedium(_ref3) {
+  var transmorpherIdentifier = _ref3.transmorpherIdentifier,
+    medium = _ref3.medium;
   state.media[transmorpherIdentifier] = medium;
 }
-function getMedium(transmorpherIdentifier) {
+function getMedium(_ref4) {
+  var transmorpherIdentifier = _ref4.transmorpherIdentifier;
   return state.media[transmorpherIdentifier];
 }
-function setStatusPolling(transmorpherIdentifier, intervalId) {
+function setStatusPolling(_ref5) {
+  var transmorpherIdentifier = _ref5.transmorpherIdentifier,
+    intervalId = _ref5.intervalId;
   state.statusPolling[transmorpherIdentifier] = intervalId;
 }
-function clearStatusPolling(transmorpherIdentifier) {
+function clearStatusPolling(_ref6) {
+  var transmorpherIdentifier = _ref6.transmorpherIdentifier;
   clearInterval(state.statusPolling[transmorpherIdentifier]);
   delete state.statusPolling[transmorpherIdentifier];
 }
@@ -3471,20 +3819,22 @@ function clearStatusPolling(transmorpherIdentifier) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controller.js */ "./src/resources/js/controller.js");
-/* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
+/* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
+/* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
+
 
 
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.transmorpher = {
-    registerMediaTypes: _state_js__WEBPACK_IMPORTED_MODULE_1__.registerMediaTypes,
-    setUploadHandler: _state_js__WEBPACK_IMPORTED_MODULE_1__.setUploadHandler,
-    registerMedium: _state_js__WEBPACK_IMPORTED_MODULE_1__.registerMedium,
+    registerMediaTypes: _state_js__WEBPACK_IMPORTED_MODULE_2__.registerMediaTypes,
+    setUploadHandler: _state_js__WEBPACK_IMPORTED_MODULE_2__.setUploadHandler,
+    registerMedium: _state_js__WEBPACK_IMPORTED_MODULE_2__.registerMedium,
     setupComponent: _controller_js__WEBPACK_IMPORTED_MODULE_0__.setupComponent,
     openMoreInformationModal: _controller_js__WEBPACK_IMPORTED_MODULE_0__.openMoreInformationModal,
-    closeMoreInformationModal: _controller_js__WEBPACK_IMPORTED_MODULE_0__.closeMoreInformationModal,
+    closeMoreInformationModal: _ui_js__WEBPACK_IMPORTED_MODULE_1__.closeMoreInformationModal,
     closeUploadConfirmModal: _controller_js__WEBPACK_IMPORTED_MODULE_0__.closeUploadConfirmModal,
-    closeErrorMessage: _controller_js__WEBPACK_IMPORTED_MODULE_0__.closeErrorMessage
+    closeErrorMessage: _ui_js__WEBPACK_IMPORTED_MODULE_1__.closeErrorMessage
   };
 }
 
@@ -3520,85 +3870,163 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
 
-function setAgeElement(ageElement, dateTime) {
+function setAgeElement(_ref) {
+  var ageElement = _ref.ageElement,
+    dateTime = _ref.dateTime;
   ageElement.textContent = dateTime;
   ageElement.closest('p').classList.remove('d-none');
 }
-function resetAgeElement(transmorpherIdentifier) {
+function resetAgeElement(_ref2) {
   var _document$querySelect;
+  var transmorpherIdentifier = _ref2.transmorpherIdentifier;
   (_document$querySelect = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age"))) === null || _document$querySelect === void 0 || (_document$querySelect = _document$querySelect.closest('p')) === null || _document$querySelect === void 0 || _document$querySelect.classList.add('d-none');
 }
-function displayState(transmorpherIdentifier, stateName) {
-  var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var resetError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
-  displayDropzoneState(transmorpherIdentifier, stateName, message, resetError);
-  displayModalState(transmorpherIdentifier, stateName, message, resetError);
+function displayState(_ref3) {
+  var transmorpherIdentifier = _ref3.transmorpherIdentifier,
+    stateName = _ref3.stateName,
+    _ref3$message = _ref3.message,
+    message = _ref3$message === void 0 ? null : _ref3$message,
+    _ref3$resetError = _ref3.resetError,
+    resetError = _ref3$resetError === void 0 ? true : _ref3$resetError;
+  displayDropzoneState({
+    transmorpherIdentifier: transmorpherIdentifier,
+    stateName: stateName,
+    message: message,
+    resetError: resetError
+  });
+  displayModalState({
+    transmorpherIdentifier: transmorpherIdentifier,
+    stateName: stateName,
+    message: message,
+    resetError: resetError
+  });
 }
-function displayDropzoneState(transmorpherIdentifier, stateName) {
-  var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var resetError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+function displayDropzoneState(_ref4) {
+  var transmorpherIdentifier = _ref4.transmorpherIdentifier,
+    stateName = _ref4.stateName,
+    _ref4$message = _ref4.message,
+    message = _ref4$message === void 0 ? null : _ref4$message,
+    _ref4$resetError = _ref4.resetError,
+    resetError = _ref4$resetError === void 0 ? true : _ref4$resetError;
   var stateInfo = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge');
-  displayCardBorderState(transmorpherIdentifier, stateName);
-  displayStateInformation(stateInfo, stateName, transmorpherIdentifier);
+  displayCardBorderState({
+    transmorpherIdentifier: transmorpherIdentifier,
+    stateName: stateName
+  });
+  displayStateInformation({
+    stateInfoElement: stateInfo,
+    stateName: stateName,
+    transmorpherIdentifier: transmorpherIdentifier
+  });
   if (message) {
-    displayDropzoneErrorMessage(transmorpherIdentifier, message);
+    displayDropzoneErrorMessage({
+      transmorpherIdentifier: transmorpherIdentifier,
+      message: message
+    });
     return;
   }
   if (resetError) {
-    resetModalErrorMessageDisplay(transmorpherIdentifier);
+    resetModalErrorMessageDisplay({
+      transmorpherIdentifier: transmorpherIdentifier
+    });
   }
 }
-function displayModalState(transmorpherIdentifier, stateName) {
-  var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  var resetError = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
-  displayStateInformation(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge")), stateName, transmorpherIdentifier);
+function displayModalState(_ref5) {
+  var transmorpherIdentifier = _ref5.transmorpherIdentifier,
+    stateName = _ref5.stateName,
+    _ref5$message = _ref5.message,
+    message = _ref5$message === void 0 ? null : _ref5$message,
+    _ref5$resetError = _ref5.resetError,
+    resetError = _ref5$resetError === void 0 ? true : _ref5$resetError;
+  displayStateInformation({
+    stateInfoElement: document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge")),
+    stateName: stateName,
+    transmorpherIdentifier: transmorpherIdentifier
+  });
   if (message) {
-    setModalErrorMessage(transmorpherIdentifier, message);
+    setModalErrorMessage({
+      transmorpherIdentifier: transmorpherIdentifier,
+      message: message
+    });
     return;
   }
   if (resetError) {
-    resetModalErrorMessageDisplay(transmorpherIdentifier);
+    resetModalErrorMessageDisplay({
+      transmorpherIdentifier: transmorpherIdentifier
+    });
   }
 }
-function displayStateInformation(stateInfoElement, stateName, transmorpherIdentifier) {
+function displayStateInformation(_ref6) {
+  var stateInfoElement = _ref6.stateInfoElement,
+    stateName = _ref6.stateName,
+    transmorpherIdentifier = _ref6.transmorpherIdentifier;
   stateInfoElement.className = '';
   stateInfoElement.classList.add('badge', "badge-".concat(stateName));
-  stateInfoElement.querySelector('span:first-of-type').textContent = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier).translations[stateName];
+  stateInfoElement.querySelector('span:first-of-type').textContent = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+    transmorpherIdentifier: transmorpherIdentifier
+  }).translations[stateName];
 }
-function displayCardBorderState(transmorpherIdentifier, stateName) {
+function displayCardBorderState(_ref7) {
+  var transmorpherIdentifier = _ref7.transmorpherIdentifier,
+    stateName = _ref7.stateName;
   var card = document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card');
   card.className = '';
   card.classList.add('card', "border-".concat(stateName));
 }
-function displayDropzoneErrorMessage(transmorpherIdentifier, message) {
+function displayDropzoneErrorMessage(_ref8) {
+  var transmorpherIdentifier = _ref8.transmorpherIdentifier,
+    message = _ref8.message;
   var form = document.querySelector("#dz-".concat(transmorpherIdentifier));
   var errorDisplay = form.querySelector('.error-display');
   errorDisplay.classList.remove('d-none');
   errorDisplay.querySelector('.error-message').textContent = message;
   form.querySelector('.dz-default').style.display = 'block';
 }
-function setModalErrorMessage(transmorpherIdentifier, message) {
+function setModalErrorMessage(_ref9) {
+  var transmorpherIdentifier = _ref9.transmorpherIdentifier,
+    message = _ref9.message;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = message;
 }
-function resetModalErrorMessageDisplay(transmorpherIdentifier) {
+function resetModalErrorMessageDisplay(_ref0) {
+  var transmorpherIdentifier = _ref0.transmorpherIdentifier;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = '';
 }
-function updateMediaDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl) {
-  switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier).mediaType) {
+function updateMediaDisplay(_ref1) {
+  var transmorpherIdentifier = _ref1.transmorpherIdentifier,
+    thumbnailUrl = _ref1.thumbnailUrl,
+    fullsizeUrl = _ref1.fullsizeUrl;
+  switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+    transmorpherIdentifier: transmorpherIdentifier
+  }).mediaType) {
     case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE]:
     case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT]:
-      updateThumbnail(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
+      updateThumbnail({
+        transmorpherIdentifier: transmorpherIdentifier,
+        thumbnailUrl: thumbnailUrl,
+        fullSizeUrl: fullsizeUrl
+      });
       break;
     case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO]:
-      updateVideoDisplay(transmorpherIdentifier, thumbnailUrl, fullsizeUrl);
+      updateVideoDisplay({
+        transmorpherIdentifier: transmorpherIdentifier,
+        thumbnailUrl: thumbnailUrl
+      });
       break;
   }
 }
-function updateThumbnail(transmorpherIdentifier, thumbnailUrl, fullSizeUrl) {
-  var imageElements = getPrimaryPreviewImages(transmorpherIdentifier);
+function updateThumbnail(_ref10) {
+  var transmorpherIdentifier = _ref10.transmorpherIdentifier,
+    thumbnailUrl = _ref10.thumbnailUrl,
+    fullSizeUrl = _ref10.fullSizeUrl;
+  var imageElements = getPrimaryPreviewImages({
+    transmorpherIdentifier: transmorpherIdentifier
+  });
   imageElements.forEach(function (image) {
     image.src = thumbnailUrl;
-    image.srcset = getSrcSetString(transmorpherIdentifier, thumbnailUrl);
+    image.srcset = getSrcSetString({
+      transmorpherIdentifier: transmorpherIdentifier,
+      imageUrl: thumbnailUrl
+    });
     var aTag = image.closest('.full-size-link');
     aTag.href = fullSizeUrl;
     aTag.classList.remove('disabled');
@@ -3607,19 +4035,26 @@ function updateThumbnail(transmorpherIdentifier, thumbnailUrl, fullSizeUrl) {
     image.nextElementSibling.classList.remove('d-hidden');
   });
 }
-function getPrimaryPreviewImages(transmorpherIdentifier) {
+function getPrimaryPreviewImages(_ref11) {
+  var transmorpherIdentifier = _ref11.transmorpherIdentifier;
   return document.querySelectorAll(["#dz-".concat(transmorpherIdentifier, " .media-preview .dz-image > img:first-of-type"), "#modal-mi-".concat(transmorpherIdentifier, " .card-side .media-preview .dz-image > img:first-of-type")].join(', '));
 }
-function getSrcSetString(transmorpherIdentifier, imageUrl) {
+function getSrcSetString(_ref12) {
+  var transmorpherIdentifier = _ref12.transmorpherIdentifier,
+    imageUrl = _ref12.imageUrl;
   var srcStrings = [];
-  var transformations = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier).transformations;
+  var transformations = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+    transmorpherIdentifier: transmorpherIdentifier
+  }).transformations;
   Object.keys(transformations).forEach(function (key) {
     var modifiedUrl = imageUrl.replace(/(\/).-.+(\?)/i, "$1".concat(transformations[key], "$2"));
     srcStrings.push("".concat(modifiedUrl, " ").concat(key));
   });
   return srcStrings.join(', ');
 }
-function updateVideoDisplay(transmorpherIdentifier, thumbnailUrl) {
+function updateVideoDisplay(_ref13) {
+  var transmorpherIdentifier = _ref13.transmorpherIdentifier,
+    thumbnailUrl = _ref13.thumbnailUrl;
   var videoElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " video.video-transmorpher"));
   videoElements.forEach(function (video) {
     video.src = thumbnailUrl;
@@ -3632,12 +4067,17 @@ function updateVideoDisplay(transmorpherIdentifier, thumbnailUrl) {
     return placeholder.classList.add('d-none');
   });
 }
-function displayPlaceholder(transmorpherIdentifier) {
+function displayPlaceholder(_ref14) {
+  var transmorpherIdentifier = _ref14.transmorpherIdentifier;
   var imageElements;
-  switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)(transmorpherIdentifier).mediaType) {
+  switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+    transmorpherIdentifier: transmorpherIdentifier
+  }).mediaType) {
     case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE]:
     case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT]:
-      imageElements = getPrimaryPreviewImages(transmorpherIdentifier);
+      imageElements = getPrimaryPreviewImages({
+        transmorpherIdentifier: transmorpherIdentifier
+      });
       imageElements.forEach(function (image) {
         var aTag = image.closest('.full-size-link');
         aTag.href = image.dataset.placeholderUrl;
@@ -3661,14 +4101,17 @@ function displayPlaceholder(transmorpherIdentifier) {
   });
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .current-version-age")).classList.add('d-none');
 }
-function closeMoreInformationModal(transmorpherIdentifier) {
+function closeMoreInformationModal(_ref15) {
+  var transmorpherIdentifier = _ref15.transmorpherIdentifier;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.remove('d-flex');
 }
-function openMoreInformationModalDisplay(transmorpherIdentifier) {
+function openMoreInformationModalDisplay(_ref16) {
+  var transmorpherIdentifier = _ref16.transmorpherIdentifier;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.add('d-flex');
 }
-function closeUploadConfirmModalDisplay(transmorpherIdentifier) {
+function closeUploadConfirmModalDisplay(_ref17) {
   var _document$querySelect2;
+  var transmorpherIdentifier = _ref17.transmorpherIdentifier;
   document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
   (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect2 === void 0 || _document$querySelect2.remove();
   if (document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview:not(.dz-processing)"))) {
@@ -3676,12 +4119,16 @@ function closeUploadConfirmModalDisplay(transmorpherIdentifier) {
     document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
   }
 }
-function closeErrorMessage(closeButton, transmorpherIdentifier) {
+function closeErrorMessage(_ref18) {
   var _document$querySelect3, _closeButton$closest$;
+  var closeButton = _ref18.closeButton,
+    transmorpherIdentifier = _ref18.transmorpherIdentifier;
   closeButton.closest('.error-display').classList.add('d-none');
 
   // Reset errors.
-  resetModalErrorMessageDisplay(transmorpherIdentifier);
+  resetModalErrorMessageDisplay({
+    transmorpherIdentifier: transmorpherIdentifier
+  });
   (_document$querySelect3 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect3 === void 0 || _document$querySelect3.classList.add('d-none');
   (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 || _closeButton$closest$.classList.add('d-hidden');
   closeButton.closest('.card').classList.remove('border-error');
@@ -3698,7 +4145,6 @@ function closeErrorMessage(closeButton, transmorpherIdentifier) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   addConfirmEventListener: () => (/* binding */ addConfirmEventListener),
-/* harmony export */   createCallbackWithArguments: () => (/* binding */ createCallbackWithArguments),
 /* harmony export */   getCsrfToken: () => (/* binding */ getCsrfToken),
 /* harmony export */   getDateForDisplay: () => (/* binding */ getDateForDisplay),
 /* harmony export */   getMediaDimensions: () => (/* binding */ getMediaDimensions)
@@ -3712,18 +4158,10 @@ function getCsrfToken() {
     return cookie.startsWith('XSRF-TOKEN=');
   })) === null || _document$cookie$spli === void 0 ? void 0 : _document$cookie$spli.split('=')[1]);
 }
-function createCallbackWithArguments(func) {
-  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
-  }
-  return function () {
-    for (var _len2 = arguments.length, callbackArgs = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      callbackArgs[_key2] = arguments[_key2];
-    }
-    return func.apply(this, [].concat(args, callbackArgs));
-  };
-}
-function addConfirmEventListener(button, callback, transmorpherIdentifier) {
+function addConfirmEventListener(_ref) {
+  var button = _ref.button,
+    callback = _ref.callback,
+    transmorpherIdentifier = _ref.transmorpherIdentifier;
   var pressedOnce = false;
   var buttonText = button.textContent;
   var timeOut;
@@ -3743,23 +4181,33 @@ function addConfirmEventListener(button, callback, transmorpherIdentifier) {
     }, 3000);
   });
 }
-function getDateForDisplay(date) {
+function getDateForDisplay(_ref2) {
+  var date = _ref2.date;
   if (isNaN(date)) {
     return '';
   }
   return date.toLocaleString();
 }
-function getMediaDimensions(file, mediaType, mediaTypes, validationError) {
+function getMediaDimensions(_ref3) {
+  var file = _ref3.file,
+    mediaType = _ref3.mediaType,
+    validationError = _ref3.validationError;
   switch (mediaType) {
-    case mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE]:
-      return getImageDimensions(file, validationError);
-    case mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE]:
+      return getImageDimensions({
+        file: file,
+        validationError: validationError
+      });
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT]:
       return Promise.resolve({
         width: null,
         height: null
       });
-    case mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO]:
-      return getVideoDimensions(file, validationError);
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO]:
+      return getVideoDimensions({
+        file: file,
+        validationError: validationError
+      });
     default:
       return Promise.resolve({
         width: null,
@@ -3767,7 +4215,9 @@ function getMediaDimensions(file, mediaType, mediaTypes, validationError) {
       });
   }
 }
-function getImageDimensions(file, validationError) {
+function getImageDimensions(_ref4) {
+  var file = _ref4.file,
+    validationError = _ref4.validationError;
   return new Promise(function (resolve, reject) {
     var image = new Image();
     image.src = URL.createObjectURL(file);
@@ -3783,7 +4233,9 @@ function getImageDimensions(file, validationError) {
     };
   });
 }
-function getVideoDimensions(file, validationError) {
+function getVideoDimensions(_ref5) {
+  var file = _ref5.file,
+    validationError = _ref5.validationError;
   return new Promise(function (resolve, reject) {
     var video = document.createElement('video');
     video.src = URL.createObjectURL(file);

@@ -9,13 +9,7 @@ export function getCsrfToken() {
     );
 }
 
-export function createCallbackWithArguments(func, ...args) {
-    return function (...callbackArgs) {
-        return func.apply(this, [...args, ...callbackArgs]);
-    };
-}
-
-export function addConfirmEventListener(button, callback, transmorpherIdentifier) {
+export function addConfirmEventListener({button, callback, transmorpherIdentifier}) {
     let pressedOnce = false;
     const buttonText = button.textContent;
     let timeOut;
@@ -42,7 +36,7 @@ export function addConfirmEventListener(button, callback, transmorpherIdentifier
     });
 }
 
-export function getDateForDisplay(date) {
+export function getDateForDisplay({date}) {
     if (isNaN(date)) {
         return '';
     }
@@ -50,20 +44,20 @@ export function getDateForDisplay(date) {
     return date.toLocaleString();
 }
 
-export function getMediaDimensions(file, mediaType, mediaTypes, validationError) {
+export function getMediaDimensions({file, mediaType, validationError}) {
     switch (mediaType) {
-        case mediaTypes[MEDIA_TYPE.IMAGE]:
-            return getImageDimensions(file, validationError);
-        case mediaTypes[MEDIA_TYPE.DOCUMENT]:
+        case state.mediaTypes[MEDIA_TYPE.IMAGE]:
+            return getImageDimensions({file, validationError});
+        case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
             return Promise.resolve({width: null, height: null});
-        case mediaTypes[MEDIA_TYPE.VIDEO]:
-            return getVideoDimensions(file, validationError);
+        case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+            return getVideoDimensions({file, validationError});
         default:
             return Promise.resolve({width: null, height: null});
     }
 }
 
-function getImageDimensions(file, validationError) {
+function getImageDimensions({file, validationError}) {
     return new Promise((resolve, reject) => {
         const image = new Image();
         image.src = URL.createObjectURL(file);
@@ -83,7 +77,7 @@ function getImageDimensions(file, validationError) {
     });
 }
 
-function getVideoDimensions(file, validationError) {
+function getVideoDimensions({file, validationError}) {
     return new Promise((resolve, reject) => {
         const video = document.createElement('video');
         video.src = URL.createObjectURL(file);
