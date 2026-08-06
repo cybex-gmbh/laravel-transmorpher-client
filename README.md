@@ -373,6 +373,15 @@ npx mix watch
 
 Since the package's assets are symlinked to the app directory, you will directly see the changes without needing to re-publish them to the app.
 
+> [!IMPORTANT]
+> Once done developing, make sure to publish the assets to the example app directory, so that they are available in the PullPreview environment.
+>
+> In the example app directory:
+>
+> ```bash
+> php artisan vendor:publish --tag=transmorpher.assets --force
+> ```
+
 ### [Pullpreview](https://github.com/pullpreview/action)
 
 For more information, take a look at the PullPreview section of the [github-workflow repository](https://github.com/cybex-gmbh/github-workflows#pullpreview).
