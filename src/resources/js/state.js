@@ -1,3 +1,5 @@
+import UploadHandlerFactory from './classes/UploadHandlerFactory.js';
+
 export const MEDIA_TYPE = {
     IMAGE: 'IMAGE',
     DOCUMENT: 'DOCUMENT',
@@ -7,9 +9,21 @@ export const MEDIA_TYPE = {
 export const state = {
     mediaTypes: {},
     media: {},
-    uploadHandler: '',
+    uploadHandler: null,
     statusPolling: {},
 };
+
+export function registerMediaTypes(mediaTypes) {
+    state.mediaTypes = mediaTypes;
+}
+
+export function setUploadHandler(uploadHandler) {
+    state.uploadHandler = UploadHandlerFactory.create(uploadHandler);
+}
+
+export function registerMedium(transmorpherIdentifier, medium) {
+    state.media[transmorpherIdentifier] = medium;
+}
 
 export function getMedium(transmorpherIdentifier) {
     return state.media[transmorpherIdentifier];
@@ -24,4 +38,3 @@ export function clearStatusPolling(transmorpherIdentifier) {
 
     delete state.statusPolling[transmorpherIdentifier];
 }
-

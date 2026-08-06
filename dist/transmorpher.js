@@ -2706,17 +2706,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   closeMoreInformationModal: () => (/* binding */ closeMoreInformationModal),
 /* harmony export */   closeUploadConfirmModal: () => (/* binding */ closeUploadConfirmModal),
 /* harmony export */   openMoreInformationModal: () => (/* binding */ openMoreInformationModal),
-/* harmony export */   registerMediaTypes: () => (/* binding */ registerMediaTypes),
-/* harmony export */   registerMedium: () => (/* binding */ registerMedium),
-/* harmony export */   setUploadHandler: () => (/* binding */ setUploadHandler),
 /* harmony export */   setupComponent: () => (/* binding */ setupComponent)
 /* harmony export */ });
 /* harmony import */ var dropzone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! dropzone */ "./node_modules/dropzone/dist/dropzone.mjs");
-/* harmony import */ var _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/UploadHandlerFactory.js */ "./src/resources/js/classes/UploadHandlerFactory.js");
-/* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./api.js */ "./src/resources/js/api.js");
-/* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils.js */ "./src/resources/js/utils.js");
+/* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./api.js */ "./src/resources/js/api.js");
+/* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils.js */ "./src/resources/js/utils.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
@@ -2732,26 +2728,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 
 
-
-function registerMediaTypes(mediaTypes) {
-  _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes = mediaTypes;
-}
-function setUploadHandler(uploadHandler) {
-  _state_js__WEBPACK_IMPORTED_MODULE_2__.state.uploadHandler = uploadHandler;
-}
-function registerMedium(transmorpherIdentifier, medium) {
-  _state_js__WEBPACK_IMPORTED_MODULE_2__.state.media[transmorpherIdentifier] = medium;
-}
 function setupComponent(transmorpherIdentifier) {
   dropzone__WEBPACK_IMPORTED_MODULE_0__["default"].autoDiscover = false;
-  var medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.getMedium)(transmorpherIdentifier);
-  var handler = _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_1__["default"].create(_state_js__WEBPACK_IMPORTED_MODULE_2__.state.uploadHandler);
-  (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.addConfirmEventListener)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.createCallbackWithArguments)(deleteTransmorpherMedia, transmorpherIdentifier), transmorpherIdentifier);
+  var medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier);
+  (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.addConfirmEventListener)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(deleteTransmorpherMedia, transmorpherIdentifier), transmorpherIdentifier);
 
   // Start polling if the video is still processing or an upload is in process.
   if (medium.isProcessing || medium.isUploading) {
     startPolling(transmorpherIdentifier, medium.latestUploadToken);
-    (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.getDateForDisplay)(new Date(medium.lastUpdated * 1000)));
+    (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(medium.lastUpdated * 1000)));
   }
   var dz = new dropzone__WEBPACK_IMPORTED_MODULE_0__["default"]("#dz-".concat(transmorpherIdentifier), _objectSpread(_objectSpread({
     url: 'placeholder',
@@ -2771,7 +2756,7 @@ function setupComponent(transmorpherIdentifier) {
     dictFileTooBig: medium.translations.max_file_size_exceeded,
     dictInvalidFileType: medium.translations.invalid_file_type,
     createImageThumbnails: false
-  }, handler.getDropzoneOptions({
+  }, _state_js__WEBPACK_IMPORTED_MODULE_1__.state.uploadHandler.getDropzoneOptions({
     transmorpherMedium: medium
   })), {}, {
     init: function init() {
@@ -2780,10 +2765,10 @@ function setupComponent(transmorpherIdentifier) {
           while (1) switch (_context.n) {
             case 0:
               _context.n = 1;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.setUploadingState)(transmorpherIdentifier, this.options.uploadToken);
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.setUploadingState)(transmorpherIdentifier, this.options.uploadToken);
             case 1:
-              (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
-              (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, 'uploading', null, false);
+              (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+              (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'uploading', null, false);
               startPolling(transmorpherIdentifier, this.options.uploadToken);
             case 2:
               return _context.a(2);
@@ -2807,7 +2792,7 @@ function setupComponent(transmorpherIdentifier) {
               }
               _context2.p = 1;
               _context2.n = 2;
-              return (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.getMediaDimensions)(file, medium.mediaType, medium.translations.validation_error);
+              return (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getMediaDimensions)(file, medium.mediaType, medium.translations.validation_error);
             case 2:
               dimensions = _context2.v;
               file.width = dimensions.width;
@@ -2842,14 +2827,14 @@ function setupComponent(transmorpherIdentifier) {
               return _context2.a(2);
             case 7:
               _context2.n = 8;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getState)(transmorpherIdentifier);
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
             case 8:
               uploadingStateResponse = _context2.v;
               if (!(uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing')) {
                 _context2.n = 9;
                 break;
               }
-              openUploadConfirmModal(transmorpherIdentifier, (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.createCallbackWithArguments)(reserveUploadSlot, transmorpherIdentifier, file.done));
+              openUploadConfirmModal(transmorpherIdentifier, (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(reserveUploadSlot, transmorpherIdentifier, file.done));
               return _context2.a(2);
             case 9:
               _context2.n = 10;
@@ -2882,7 +2867,7 @@ function setupComponent(transmorpherIdentifier) {
           while (1) switch (_context3.n) {
             case 0:
               _context3.n = 1;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.storeUploadResponse)(transmorpherIdentifier, this.options.uploadToken, {
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)(transmorpherIdentifier, this.options.uploadToken, {
                 state: 'error',
                 clientMessage: medium.translations.upload_canceled,
                 message: this.options.dictUploadCanceled
@@ -2905,7 +2890,7 @@ function setupComponent(transmorpherIdentifier) {
             case 0:
               this.element.classList.add('is-completing-upload');
               _context4.n = 1;
-              return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.completeUpload)(transmorpherIdentifier, this.options.uploadToken);
+              return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.completeUpload)(transmorpherIdentifier, this.options.uploadToken);
             case 1:
               completeUploadResponse = _context4.v;
               _context4.n = 2;
@@ -2943,7 +2928,7 @@ function setupComponent(transmorpherIdentifier) {
             });
             chunkIndex = ((_chunk$dataBlock$chun = chunk === null || chunk === void 0 || (_chunk$dataBlock = chunk.dataBlock) === null || _chunk$dataBlock === void 0 ? void 0 : _chunk$dataBlock.chunkIndex) !== null && _chunk$dataBlock$chun !== void 0 ? _chunk$dataBlock$chun : 0) + 1;
             _context5.n = 1;
-            return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getUploadUrl)(transmorpherIdentifier, chunkIndex, file === null || file === void 0 ? void 0 : file.done);
+            return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getUploadUrl)(transmorpherIdentifier, chunkIndex, file === null || file === void 0 ? void 0 : file.done);
           case 1:
             chunkUploadUrl = _context5.v;
             if (chunkUploadUrl) {
@@ -2973,7 +2958,7 @@ function _reserveUploadSlot() {
       while (1) switch (_context8.n) {
         case 0:
           _context8.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.reserveUploadSlot)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.reserveUploadSlot)(transmorpherIdentifier);
         case 1:
           getUploadTokenResult = _context8.v;
           if (!(getUploadTokenResult.state === 'error')) {
@@ -3005,47 +2990,47 @@ function startPolling(transmorpherIdentifier, uploadToken) {
             _context6.n = 1;
             break;
           }
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
           return _context6.a(2);
         case 1:
           _context6.n = 2;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getState)(transmorpherIdentifier, uploadToken);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier, uploadToken);
         case 2:
           pollingInformation = _context6.v;
           _t2 = pollingInformation.state;
           _context6.n = _t2 === 'success' ? 3 : _t2 === 'error' ? 5 : _t2 === 'uploading' ? 6 : _t2 === 'processing' ? 7 : 8;
           break;
         case 3:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, 'success');
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.resetAgeElement)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.updateMediaDisplay)(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'success');
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateMediaDisplay)(transmorpherIdentifier, pollingInformation.thumbnailUrl, pollingInformation.fullsizeUrl);
           _context6.n = 4;
           return updateVersionInformation(transmorpherIdentifier);
         case 4:
           return _context6.a(3, 8);
         case 5:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
           if (uploadToken !== pollingInformation.latestUploadToken) {
             startPolling(transmorpherIdentifier, pollingInformation.latestUploadToken);
           }
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.resetAgeElement)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'error', pollingInformation.clientMessage);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)(transmorpherIdentifier);
           return _context6.a(3, 8);
         case 6:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, 'uploading', null, false);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.getDateForDisplay)(new Date(pollingInformation.lastUpdated)));
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'uploading', null, false);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(pollingInformation.lastUpdated)));
           return _context6.a(3, 8);
         case 7:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, 'processing', null, false);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.getDateForDisplay)(new Date(pollingInformation.lastUpdated)));
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'processing', null, false);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.setAgeElement)(document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .age")), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(pollingInformation.lastUpdated)));
           return _context6.a(3, 8);
         case 8:
           return _context6.a(2);
       }
     }, _callee6);
   })), 5000);
-  (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.setStatusPolling)(transmorpherIdentifier, intervalId);
+  (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.setStatusPolling)(transmorpherIdentifier, intervalId);
 }
 function handleUploadResponse(_x9, _x0, _x1, _x10) {
   return _handleUploadResponse.apply(this, arguments);
@@ -3056,14 +3041,14 @@ function _handleUploadResponse() {
     return _regenerator().w(function (_context9) {
       while (1) switch (_context9.n) {
         case 0:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
           uploadResult = response;
           if (!uploadToken) {
             _context9.n = 2;
             break;
           }
           _context9.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.storeUploadResponse)(transmorpherIdentifier, uploadToken, response, (_response$httpCode = response === null || response === void 0 ? void 0 : response.httpCode) !== null && _response$httpCode !== void 0 ? _response$httpCode : (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)(transmorpherIdentifier, uploadToken, response, (_response$httpCode = response === null || response === void 0 ? void 0 : response.httpCode) !== null && _response$httpCode !== void 0 ? _response$httpCode : (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status);
         case 1:
           uploadResult = _context9.v;
         case 2:
@@ -3091,7 +3076,7 @@ function _displayUploadResult() {
     return _regenerator().w(function (_context0) {
       while (1) switch (_context0.n) {
         case 0:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.resetAgeElement)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetAgeElement)(transmorpherIdentifier);
 
           // Check for undefined, which happens when dropzone directly rejects the file.
           if (!(uploadResult.state !== undefined && uploadResult.state !== 'error')) {
@@ -3103,27 +3088,27 @@ function _displayUploadResult() {
           _context0.n = 1;
           return updateVersionInformation(transmorpherIdentifier);
         case 1:
-          _t3 = (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.getMedium)(transmorpherIdentifier).mediaType;
-          _context0.n = _t3 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.IMAGE] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.DOCUMENT] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.VIDEO] ? 3 : 4;
+          _t3 = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier).mediaType;
+          _context0.n = _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 3 : 4;
           break;
         case 2:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.updateThumbnail)(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)(transmorpherIdentifier, uploadResult.thumbnailUrl, uploadResult.fullsizeUrl);
           return _context0.a(3, 4);
         case 3:
           startPolling(transmorpherIdentifier, uploadToken);
           return _context0.a(3, 4);
         case 4:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, uploadResult.state);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, uploadResult.state);
           _context0.n = 6;
           break;
         case 5:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, 'error', (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'error', (_uploadResult$clientM = uploadResult.clientMessage) !== null && _uploadResult$clientM !== void 0 ? _uploadResult$clientM : uploadResult);
 
           // Start polling for updates when the upload was aborted due to another upload.
           if (uploadResult.httpCode === 404) {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
+            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
             startPolling(transmorpherIdentifier, uploadResult.latestUploadToken);
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, 'uploading');
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, 'uploading');
           }
         case 6:
           document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone.options.uploadToken = null;
@@ -3157,40 +3142,40 @@ function _updateVersionInformation() {
           versionList.append(defaultVersionEntry);
           _context1.p = 2;
           _context1.n = 3;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getVersions)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getVersions)(transmorpherIdentifier);
         case 3:
           versionInformation = _context1.v;
           if (versionInformation.currentVersion) {
             _context1.n = 4;
             break;
           }
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayPlaceholder)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayPlaceholder)(transmorpherIdentifier);
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
           return _context1.a(2);
         case 4:
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
           _context1.n = 5;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getState)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
         case 5:
           stateResponse = _context1.v;
           if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, stateResponse.state);
+            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, stateResponse.state);
             startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
           }
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.getMedium)(transmorpherIdentifier);
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier);
           versions = versionInformation.state === 'success' ? versionInformation.versions : [];
           _t4 = medium.mediaType;
-          _context1.n = _t4 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.IMAGE] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.DOCUMENT] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.VIDEO] ? 7 : 8;
+          _context1.n = _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 7 : 8;
           break;
         case 6:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.getDateForDisplay)(new Date(versions[versionInformation.currentVersion] * 1000));
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.updateThumbnail)(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
+          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(versions[versionInformation.currentVersion] * 1000));
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
           return _context1.a(3, 8);
         case 7:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.getDateForDisplay)(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
+          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(versions[versionInformation.currentlyProcessedVersion] * 1000));
           if (versionInformation.currentlyProcessedVersion) {
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.updateVideoDisplay)(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateVideoDisplay)(transmorpherIdentifier, versionInformation.thumbnailUrl, versionInformation.fullsizeUrl);
           }
           return _context1.a(3, 8);
         case 8:
@@ -3207,8 +3192,8 @@ function _updateVersionInformation() {
             var versionEntry = defaultVersionEntry.cloneNode(true);
             var versionAgeElement = versionEntry.querySelector('.version-age');
             switch (medium.mediaType) {
-              case _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.IMAGE]:
-              case _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.DOCUMENT]:
+              case _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE]:
+              case _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT]:
                 {
                   var transformations = medium.transformations;
                   versionEntry.querySelector('a').href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
@@ -3216,13 +3201,13 @@ function _updateVersionInformation() {
                   versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
                   break;
                 }
-              case _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.VIDEO]:
+              case _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO]:
                 // Don't show video for now, will use thumbnails later.
                 versionEntry.querySelector('.media-preview').remove();
                 break;
             }
-            (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.addConfirmEventListener)(versionEntry.querySelector('button'), (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.createCallbackWithArguments)(setVersionForMedia, transmorpherIdentifier, version), transmorpherIdentifier);
-            versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.getDateForDisplay)(new Date(versions[version] * 1000));
+            (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.addConfirmEventListener)(versionEntry.querySelector('button'), (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(setVersionForMedia, transmorpherIdentifier, version), transmorpherIdentifier);
+            versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)(new Date(versions[version] * 1000));
             versionList.append(versionEntry);
             versionEntry.classList.remove('d-none');
           });
@@ -3247,14 +3232,14 @@ function _setVersionForMedia() {
       while (1) switch (_context10.n) {
         case 0:
           _context10.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getState)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
         case 1:
           uploadingStateResponse = _context10.v;
           if (!(uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing')) {
             _context10.n = 2;
             break;
           }
-          openUploadConfirmModal(transmorpherIdentifier, (0,_utils_js__WEBPACK_IMPORTED_MODULE_5__.createCallbackWithArguments)(makeSetVersionCall, transmorpherIdentifier, version));
+          openUploadConfirmModal(transmorpherIdentifier, (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.createCallbackWithArguments)(makeSetVersionCall, transmorpherIdentifier, version));
           return _context10.a(2);
         case 2:
           _context10.n = 3;
@@ -3275,34 +3260,34 @@ function _makeSetVersionCall() {
     return _regenerator().w(function (_context11) {
       while (1) switch (_context11.n) {
         case 0:
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.getMedium)(transmorpherIdentifier);
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)(transmorpherIdentifier);
           _context11.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.setVersion)(transmorpherIdentifier, version);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.setVersion)(transmorpherIdentifier, version);
         case 1:
           setVersionResult = _context11.v;
           if (!(setVersionResult.state !== 'error')) {
             _context11.n = 6;
             break;
           }
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
           _context11.n = 2;
           return updateVersionInformation(transmorpherIdentifier);
         case 2:
           _t5 = medium.mediaType;
-          _context11.n = _t5 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.IMAGE] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.DOCUMENT] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_2__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_2__.MEDIA_TYPE.VIDEO] ? 4 : 5;
+          _context11.n = _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 4 : 5;
           break;
         case 3:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.updateMediaDisplay)(transmorpherIdentifier, setVersionResult.thumbnailUrl, setVersionResult.fullsizeUrl);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateMediaDisplay)(transmorpherIdentifier, setVersionResult.thumbnailUrl, setVersionResult.fullsizeUrl);
           return _context11.a(3, 5);
         case 4:
           startPolling(transmorpherIdentifier, setVersionResult.upload_token);
           return _context11.a(3, 5);
         case 5:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, setVersionResult.state);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, setVersionResult.state);
           return _context11.a(2);
         case 6:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayModalState)(transmorpherIdentifier, setVersionResult.state, setVersionResult.clientMessage);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)(transmorpherIdentifier, setVersionResult.state, setVersionResult.clientMessage);
         case 7:
           return _context11.a(2);
       }
@@ -3311,10 +3296,10 @@ function _makeSetVersionCall() {
   return _makeSetVersionCall.apply(this, arguments);
 }
 function closeMoreInformationModal(transmorpherIdentifier) {
-  (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.closeMoreInformationModal)(transmorpherIdentifier);
+  (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.closeMoreInformationModal)(transmorpherIdentifier);
 }
 function openMoreInformationModal(transmorpherIdentifier) {
-  (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.openMoreInformationModalDisplay)(transmorpherIdentifier);
+  (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.openMoreInformationModalDisplay)(transmorpherIdentifier);
   updateVersionInformation(transmorpherIdentifier);
 }
 function deleteTransmorpherMedia(_x19) {
@@ -3327,26 +3312,26 @@ function _deleteTransmorpherMedia() {
       while (1) switch (_context12.n) {
         case 0:
           _context12.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.deleteTransmorpherMedia)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.deleteTransmorpherMedia)(transmorpherIdentifier);
         case 1:
           deleteResult = _context12.v;
           if (!(deleteResult.state !== 'error')) {
             _context12.n = 3;
             break;
           }
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayModalState)(transmorpherIdentifier, 'success');
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayCardBorderState)(transmorpherIdentifier, 'processing');
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)(transmorpherIdentifier, 'success');
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayCardBorderState)(transmorpherIdentifier, 'processing');
           _context12.n = 2;
           return updateVersionInformation(transmorpherIdentifier);
         case 2:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayPlaceholder)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayPlaceholder)(transmorpherIdentifier);
           document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge').classList.add('d-hidden');
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
           return _context12.a(2);
         case 3:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayModalState)(transmorpherIdentifier, deleteResult.state, deleteResult.clientMessage);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayModalState)(transmorpherIdentifier, deleteResult.state, deleteResult.clientMessage);
         case 4:
           return _context12.a(2);
       }
@@ -3387,7 +3372,7 @@ function openUploadConfirmModal(transmorpherIdentifier, callback) {
             }
           }
           _context7.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.abortUpload)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.abortUpload)(transmorpherIdentifier);
         case 1:
           callback();
         case 2:
@@ -3405,13 +3390,13 @@ function _closeUploadConfirmModal() {
     return _regenerator().w(function (_context13) {
       while (1) switch (_context13.n) {
         case 0:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.closeUploadConfirmModalDisplay)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.closeUploadConfirmModalDisplay)(transmorpherIdentifier);
           _context13.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getState)(transmorpherIdentifier);
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getState)(transmorpherIdentifier);
         case 1:
           stateResponse = _context13.v;
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_2__.clearStatusPolling)(transmorpherIdentifier);
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.displayState)(transmorpherIdentifier, stateResponse.state);
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)(transmorpherIdentifier);
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)(transmorpherIdentifier, stateResponse.state);
           startPolling(transmorpherIdentifier, stateResponse.latestUploadToken);
         case 2:
           return _context13.a(2);
@@ -3421,7 +3406,7 @@ function _closeUploadConfirmModal() {
   return _closeUploadConfirmModal.apply(this, arguments);
 }
 function closeErrorMessage(closeButton, transmorpherIdentifier) {
-  (0,_ui_js__WEBPACK_IMPORTED_MODULE_4__.closeErrorMessage)(closeButton, transmorpherIdentifier);
+  (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.closeErrorMessage)(closeButton, transmorpherIdentifier);
 }
 
 /***/ },
@@ -3437,9 +3422,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   MEDIA_TYPE: () => (/* binding */ MEDIA_TYPE),
 /* harmony export */   clearStatusPolling: () => (/* binding */ clearStatusPolling),
 /* harmony export */   getMedium: () => (/* binding */ getMedium),
+/* harmony export */   registerMediaTypes: () => (/* binding */ registerMediaTypes),
+/* harmony export */   registerMedium: () => (/* binding */ registerMedium),
 /* harmony export */   setStatusPolling: () => (/* binding */ setStatusPolling),
+/* harmony export */   setUploadHandler: () => (/* binding */ setUploadHandler),
 /* harmony export */   state: () => (/* binding */ state)
 /* harmony export */ });
+/* harmony import */ var _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./classes/UploadHandlerFactory.js */ "./src/resources/js/classes/UploadHandlerFactory.js");
+
 var MEDIA_TYPE = {
   IMAGE: 'IMAGE',
   DOCUMENT: 'DOCUMENT',
@@ -3448,9 +3438,18 @@ var MEDIA_TYPE = {
 var state = {
   mediaTypes: {},
   media: {},
-  uploadHandler: '',
+  uploadHandler: null,
   statusPolling: {}
 };
+function registerMediaTypes(mediaTypes) {
+  state.mediaTypes = mediaTypes;
+}
+function setUploadHandler(uploadHandler) {
+  state.uploadHandler = _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_0__["default"].create(uploadHandler);
+}
+function registerMedium(transmorpherIdentifier, medium) {
+  state.media[transmorpherIdentifier] = medium;
+}
 function getMedium(transmorpherIdentifier) {
   return state.media[transmorpherIdentifier];
 }
@@ -3472,13 +3471,15 @@ function clearStatusPolling(transmorpherIdentifier) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controller.js */ "./src/resources/js/controller.js");
+/* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
+
 
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.transmorpher = {
-    registerMediaTypes: _controller_js__WEBPACK_IMPORTED_MODULE_0__.registerMediaTypes,
-    setUploadHandler: _controller_js__WEBPACK_IMPORTED_MODULE_0__.setUploadHandler,
-    registerMedium: _controller_js__WEBPACK_IMPORTED_MODULE_0__.registerMedium,
+    registerMediaTypes: _state_js__WEBPACK_IMPORTED_MODULE_1__.registerMediaTypes,
+    setUploadHandler: _state_js__WEBPACK_IMPORTED_MODULE_1__.setUploadHandler,
+    registerMedium: _state_js__WEBPACK_IMPORTED_MODULE_1__.registerMedium,
     setupComponent: _controller_js__WEBPACK_IMPORTED_MODULE_0__.setupComponent,
     openMoreInformationModal: _controller_js__WEBPACK_IMPORTED_MODULE_0__.openMoreInformationModal,
     closeMoreInformationModal: _controller_js__WEBPACK_IMPORTED_MODULE_0__.closeMoreInformationModal,

@@ -1,5 +1,4 @@
 import Dropzone from 'dropzone';
-import UploadHandlerFactory from './classes/UploadHandlerFactory.js';
 import {clearStatusPolling, getMedium, MEDIA_TYPE, setStatusPolling, state} from './state.js';
 import {
     abortUpload,
@@ -30,22 +29,9 @@ import {
 } from './ui.js';
 import {addConfirmEventListener, createCallbackWithArguments, getDateForDisplay, getMediaDimensions} from './utils.js';
 
-export function registerMediaTypes(mediaTypes) {
-    state.mediaTypes = mediaTypes;
-}
-
-export function setUploadHandler(uploadHandler) {
-    state.uploadHandler = uploadHandler;
-}
-
-export function registerMedium(transmorpherIdentifier, medium) {
-    state.media[transmorpherIdentifier] = medium;
-}
-
 export function setupComponent(transmorpherIdentifier) {
     Dropzone.autoDiscover = false;
     const medium = getMedium(transmorpherIdentifier);
-    const handler = UploadHandlerFactory.create(state.uploadHandler);
 
     addConfirmEventListener(
         document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
@@ -79,7 +65,7 @@ export function setupComponent(transmorpherIdentifier) {
         dictFileTooBig: medium.translations.max_file_size_exceeded,
         dictInvalidFileType: medium.translations.invalid_file_type,
         createImageThumbnails: false,
-        ...handler.getDropzoneOptions({transmorpherMedium: medium}),
+        ...state.uploadHandler.getDropzoneOptions({transmorpherMedium: medium}),
         init: function () {
             this.on('processing', async function () {
                 await setUploadingState(transmorpherIdentifier, this.options.uploadToken);

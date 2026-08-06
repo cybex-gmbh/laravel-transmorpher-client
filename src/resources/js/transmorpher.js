@@ -1,13 +1,5 @@
-import {
-    closeErrorMessage,
-    closeMoreInformationModal,
-    closeUploadConfirmModal,
-    openMoreInformationModal,
-    registerMediaTypes,
-    registerMedium,
-    setupComponent,
-    setUploadHandler,
-} from './controller.js';
+import {closeErrorMessage, closeMoreInformationModal, closeUploadConfirmModal, openMoreInformationModal, setupComponent,} from './controller.js';
+import {registerMediaTypes, registerMedium, setUploadHandler} from './state.js';
 
 if (!window.transmorpherScriptLoaded) {
     window.transmorpherScriptLoaded = true;
