@@ -46,11 +46,11 @@ export function getDateForDisplay({date}) {
 
 export function getMediaDimensions({file, mediaType, validationError}) {
     switch (mediaType) {
-        case state.mediaTypes[MEDIA_TYPE.IMAGE]:
+        case MEDIA_TYPE.IMAGE:
             return getImageDimensions({file, validationError});
-        case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
+        case MEDIA_TYPE.DOCUMENT:
             return Promise.resolve({width: null, height: null});
-        case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+        case MEDIA_TYPE.VIDEO:
             return getVideoDimensions({file, validationError});
         default:
             return Promise.resolve({width: null, height: null});

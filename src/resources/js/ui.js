@@ -1,4 +1,4 @@
-import {getMedium, MEDIA_TYPE, state} from './state.js';
+import {getMedium, MEDIA_TYPE} from './state.js';
 
 export function setAgeElement({ageElement, dateTime}) {
     ageElement.textContent = dateTime;
@@ -81,11 +81,11 @@ export function resetModalErrorMessageDisplay({transmorpherIdentifier}) {
 
 export function updateMediaDisplay({transmorpherIdentifier, thumbnailUrl, fullsizeUrl}) {
     switch (getMedium({transmorpherIdentifier}).mediaType) {
-        case state.mediaTypes[MEDIA_TYPE.IMAGE]:
-        case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
+        case MEDIA_TYPE.IMAGE:
+        case MEDIA_TYPE.DOCUMENT:
             updateThumbnail({transmorpherIdentifier, thumbnailUrl, fullSizeUrl: fullsizeUrl});
             break;
-        case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+        case MEDIA_TYPE.VIDEO:
             updateVideoDisplay({transmorpherIdentifier, thumbnailUrl});
             break;
     }
@@ -145,8 +145,8 @@ export function displayPlaceholder({transmorpherIdentifier}) {
     let imageElements;
 
     switch (getMedium({transmorpherIdentifier}).mediaType) {
-        case state.mediaTypes[MEDIA_TYPE.IMAGE]:
-        case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
+        case MEDIA_TYPE.IMAGE:
+        case MEDIA_TYPE.DOCUMENT:
             imageElements = getPrimaryPreviewImages({transmorpherIdentifier});
             imageElements.forEach(image => {
                 const aTag = image.closest('.full-size-link');
@@ -158,7 +158,7 @@ export function displayPlaceholder({transmorpherIdentifier}) {
                 image.nextElementSibling.classList.add('d-hidden');
             });
             break;
-        case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+        case MEDIA_TYPE.VIDEO:
             imageElements = document.querySelectorAll(`#component-${transmorpherIdentifier} img.video-transmorpher`);
 
             document.querySelectorAll(`#component-${transmorpherIdentifier} video.video-transmorpher`)

@@ -3291,7 +3291,7 @@ function _displayUploadResult() {
           _t3 = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           }).mediaType;
-          _context0.n = _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 3 : 4;
+          _context0.n = _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT ? 2 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO ? 3 : 4;
           break;
         case 2:
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
@@ -3407,7 +3407,7 @@ function _updateVersionInformation() {
           });
           versions = versionInformation.state === 'success' ? versionInformation.versions : [];
           _t4 = medium.mediaType;
-          _context1.n = _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 7 : 8;
+          _context1.n = _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO ? 7 : 8;
           break;
         case 6:
           versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
@@ -3444,8 +3444,8 @@ function _updateVersionInformation() {
             var versionEntry = defaultVersionEntry.cloneNode(true);
             var versionAgeElement = versionEntry.querySelector('.version-age');
             switch (medium.mediaType) {
-              case _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE]:
-              case _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT]:
+              case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE:
+              case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT:
                 {
                   var transformations = medium.transformations;
                   versionEntry.querySelector('a').href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
@@ -3453,7 +3453,7 @@ function _updateVersionInformation() {
                   versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
                   break;
                 }
-              case _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO]:
+              case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO:
                 // Don't show video for now, will use thumbnails later.
                 versionEntry.querySelector('.media-preview').remove();
                 break;
@@ -3561,7 +3561,7 @@ function _makeSetVersionCall() {
           });
         case 2:
           _t5 = medium.mediaType;
-          _context11.n = _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT] ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO] ? 4 : 5;
+          _context11.n = _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT ? 3 : _t5 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO ? 4 : 5;
           break;
         case 3:
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateMediaDisplay)({
@@ -3762,7 +3762,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   MEDIA_TYPE: () => (/* binding */ MEDIA_TYPE),
 /* harmony export */   clearStatusPolling: () => (/* binding */ clearStatusPolling),
 /* harmony export */   getMedium: () => (/* binding */ getMedium),
-/* harmony export */   registerMediaTypes: () => (/* binding */ registerMediaTypes),
 /* harmony export */   registerMedium: () => (/* binding */ registerMedium),
 /* harmony export */   setStatusPolling: () => (/* binding */ setStatusPolling),
 /* harmony export */   setUploadHandler: () => (/* binding */ setUploadHandler),
@@ -3771,40 +3770,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./classes/UploadHandlerFactory.js */ "./src/resources/js/classes/UploadHandlerFactory.js");
 
 var MEDIA_TYPE = {
-  IMAGE: 'IMAGE',
-  DOCUMENT: 'DOCUMENT',
-  VIDEO: 'VIDEO'
+  IMAGE: 'image',
+  DOCUMENT: 'document',
+  VIDEO: 'video'
 };
 var state = {
-  mediaTypes: {},
   media: {},
   uploadHandler: null,
   statusPolling: {}
 };
-function registerMediaTypes(_ref) {
-  var mediaTypes = _ref.mediaTypes;
-  state.mediaTypes = mediaTypes;
-}
-function setUploadHandler(_ref2) {
-  var uploadHandler = _ref2.uploadHandler;
+function setUploadHandler(_ref) {
+  var uploadHandler = _ref.uploadHandler;
   state.uploadHandler = _classes_UploadHandlerFactory_js__WEBPACK_IMPORTED_MODULE_0__["default"].create(uploadHandler);
 }
-function registerMedium(_ref3) {
-  var transmorpherIdentifier = _ref3.transmorpherIdentifier,
-    medium = _ref3.medium;
+function registerMedium(_ref2) {
+  var transmorpherIdentifier = _ref2.transmorpherIdentifier,
+    medium = _ref2.medium;
   state.media[transmorpherIdentifier] = medium;
 }
-function getMedium(_ref4) {
-  var transmorpherIdentifier = _ref4.transmorpherIdentifier;
+function getMedium(_ref3) {
+  var transmorpherIdentifier = _ref3.transmorpherIdentifier;
   return state.media[transmorpherIdentifier];
 }
-function setStatusPolling(_ref5) {
-  var transmorpherIdentifier = _ref5.transmorpherIdentifier,
-    intervalId = _ref5.intervalId;
+function setStatusPolling(_ref4) {
+  var transmorpherIdentifier = _ref4.transmorpherIdentifier,
+    intervalId = _ref4.intervalId;
   state.statusPolling[transmorpherIdentifier] = intervalId;
 }
-function clearStatusPolling(_ref6) {
-  var transmorpherIdentifier = _ref6.transmorpherIdentifier;
+function clearStatusPolling(_ref5) {
+  var transmorpherIdentifier = _ref5.transmorpherIdentifier;
   clearInterval(state.statusPolling[transmorpherIdentifier]);
   delete state.statusPolling[transmorpherIdentifier];
 }
@@ -3827,7 +3821,6 @@ __webpack_require__.r(__webpack_exports__);
 if (!window.transmorpherScriptLoaded) {
   window.transmorpherScriptLoaded = true;
   window.transmorpher = {
-    registerMediaTypes: _state_js__WEBPACK_IMPORTED_MODULE_2__.registerMediaTypes,
     setUploadHandler: _state_js__WEBPACK_IMPORTED_MODULE_2__.setUploadHandler,
     registerMedium: _state_js__WEBPACK_IMPORTED_MODULE_2__.registerMedium,
     setupComponent: _controller_js__WEBPACK_IMPORTED_MODULE_0__.setupComponent,
@@ -3998,15 +3991,15 @@ function updateMediaDisplay(_ref1) {
   switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
     transmorpherIdentifier: transmorpherIdentifier
   }).mediaType) {
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE]:
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT:
       updateThumbnail({
         transmorpherIdentifier: transmorpherIdentifier,
         thumbnailUrl: thumbnailUrl,
         fullSizeUrl: fullsizeUrl
       });
       break;
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO:
       updateVideoDisplay({
         transmorpherIdentifier: transmorpherIdentifier,
         thumbnailUrl: thumbnailUrl
@@ -4073,8 +4066,8 @@ function displayPlaceholder(_ref14) {
   switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
     transmorpherIdentifier: transmorpherIdentifier
   }).mediaType) {
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE]:
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT:
       imageElements = getPrimaryPreviewImages({
         transmorpherIdentifier: transmorpherIdentifier
       });
@@ -4087,7 +4080,7 @@ function displayPlaceholder(_ref14) {
         image.nextElementSibling.classList.add('d-hidden');
       });
       break;
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO:
       imageElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " img.video-transmorpher"));
       document.querySelectorAll("#component-".concat(transmorpherIdentifier, " video.video-transmorpher")).forEach(function (video) {
         return video.classList.add('d-none');
@@ -4193,17 +4186,17 @@ function getMediaDimensions(_ref3) {
     mediaType = _ref3.mediaType,
     validationError = _ref3.validationError;
   switch (mediaType) {
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE:
       return getImageDimensions({
         file: file,
         validationError: validationError
       });
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT:
       return Promise.resolve({
         width: null,
         height: null
       });
-    case _state_js__WEBPACK_IMPORTED_MODULE_0__.state.mediaTypes[_state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO]:
+    case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO:
       return getVideoDimensions({
         file: file,
         validationError: validationError

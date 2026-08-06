@@ -289,11 +289,11 @@ async function displayUploadResult({uploadResult, transmorpherIdentifier, upload
         await updateVersionInformation({transmorpherIdentifier});
 
         switch (getMedium({transmorpherIdentifier}).mediaType) {
-            case state.mediaTypes[MEDIA_TYPE.IMAGE]:
-            case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
+            case MEDIA_TYPE.IMAGE:
+            case MEDIA_TYPE.DOCUMENT:
                 updateThumbnail({transmorpherIdentifier, thumbnailUrl: uploadResult.thumbnailUrl, fullSizeUrl: uploadResult.fullsizeUrl});
                 break;
-            case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+            case MEDIA_TYPE.VIDEO:
                 startPolling({transmorpherIdentifier, uploadToken});
                 break;
         }
@@ -356,12 +356,12 @@ async function updateVersionInformation({transmorpherIdentifier}) {
         let versionAge;
 
         switch (medium.mediaType) {
-            case state.mediaTypes[MEDIA_TYPE.IMAGE]:
-            case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
+            case MEDIA_TYPE.IMAGE:
+            case MEDIA_TYPE.DOCUMENT:
                 versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentVersion] * 1000)});
                 updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullSizeUrl: versionInformation.fullsizeUrl});
                 break;
-            case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+            case MEDIA_TYPE.VIDEO:
                 versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)});
 
                 if (versionInformation.currentlyProcessedVersion) {
@@ -386,8 +386,8 @@ async function updateVersionInformation({transmorpherIdentifier}) {
                 const versionAgeElement = versionEntry.querySelector('.version-age');
 
                 switch (medium.mediaType) {
-                    case state.mediaTypes[MEDIA_TYPE.IMAGE]:
-                    case state.mediaTypes[MEDIA_TYPE.DOCUMENT]: {
+                    case MEDIA_TYPE.IMAGE:
+                    case MEDIA_TYPE.DOCUMENT: {
                         const transformations = medium.transformations;
 
                         versionEntry.querySelector('a').href = medium.routes.getDerivativeForVersion
@@ -404,7 +404,7 @@ async function updateVersionInformation({transmorpherIdentifier}) {
                             .replace('{transformations?}', transformations['150w'])} 150w`;
                         break;
                     }
-                    case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+                    case MEDIA_TYPE.VIDEO:
                         // Don't show video for now, will use thumbnails later.
                         versionEntry.querySelector('.media-preview').remove();
                         break;
@@ -450,11 +450,11 @@ async function makeSetVersionCall({transmorpherIdentifier, version}) {
         await updateVersionInformation({transmorpherIdentifier});
 
         switch (medium.mediaType) {
-            case state.mediaTypes[MEDIA_TYPE.IMAGE]:
-            case state.mediaTypes[MEDIA_TYPE.DOCUMENT]:
+            case MEDIA_TYPE.IMAGE:
+            case MEDIA_TYPE.DOCUMENT:
                 updateMediaDisplay({transmorpherIdentifier, thumbnailUrl: setVersionResult.thumbnailUrl, fullsizeUrl: setVersionResult.fullsizeUrl});
                 break;
-            case state.mediaTypes[MEDIA_TYPE.VIDEO]:
+            case MEDIA_TYPE.VIDEO:
                 startPolling({transmorpherIdentifier, uploadToken: setVersionResult.upload_token});
                 break;
         }

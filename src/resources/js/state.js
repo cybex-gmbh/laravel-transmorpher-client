@@ -1,21 +1,17 @@
 import UploadHandlerFactory from './classes/UploadHandlerFactory.js';
 
 export const MEDIA_TYPE = {
-    IMAGE: 'IMAGE',
-    DOCUMENT: 'DOCUMENT',
-    VIDEO: 'VIDEO',
+    IMAGE: 'image',
+    DOCUMENT: 'document',
+    VIDEO: 'video',
 };
 
 export const state = {
-    mediaTypes: {},
     media: {},
     uploadHandler: null,
     statusPolling: {},
 };
 
-export function registerMediaTypes({mediaTypes}) {
-    state.mediaTypes = mediaTypes;
-}
 
 export function setUploadHandler({uploadHandler}) {
     state.uploadHandler = UploadHandlerFactory.create(uploadHandler);

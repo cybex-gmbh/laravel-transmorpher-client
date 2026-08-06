@@ -112,7 +112,6 @@
 
 <script type="text/javascript">
     if (!@json($hasConnectionError)) {
-        window.transmorpher.registerMediaTypes({mediaTypes: @json($mediaTypes) });
         window.transmorpher.setUploadHandler({uploadHandler: '{{ $uploadHandler }}'});
         window.transmorpher.registerMedium({
             transmorpherIdentifier: '{{ $media->getIdentifier() }}', medium: {
