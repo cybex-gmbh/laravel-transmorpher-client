@@ -1,7 +1,7 @@
 import AbstractUploadHandler from './AbstractUploadHandler.js';
 
 export default class DefaultUploadHandler extends AbstractUploadHandler {
-    getDropzoneOptions() {
+    getDropzoneOptions({transmorpherMedium}) {
         return {
             binaryBody: false,
         };

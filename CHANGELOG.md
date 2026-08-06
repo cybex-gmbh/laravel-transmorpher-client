@@ -8,6 +8,8 @@
 > For more information, see the [upgrade guide](UPGRADE-GUIDE.md#v051-to-v060).
 
 - The Transmorpher Media Server API v1 is no longer supported
+- The default config now uses a chunk size of 5 MiB to support S3-Multi-Part uploads
+  - If a lower value is given and the Media Server is using S3-Multi-Part uploads, the chunk size will automatically be set to 5 MiB when uploading
 
 ### Features
 

@@ -7,10 +7,14 @@
 
 > [!WARNING]
 > Breaking changes!
+> 
+> If you have published the config file, you should re-publish it or compare changes.
 
 - Transmorpher Media Server API v1 is no longer supported
 - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
 - If you have published the config, or set the TRANSMORPHER_API_VERSION env key, you will need to update the default or value to 2
+- The default config now uses a chunk size of 5 MiB to support S3-Multi-Part uploads.
+  - You can still set it to a lower value, but when the Media Server is configured to use S3-Multi-Part uploads, it will automatically be set to 5 MiB when uploading.
 
 ## v0.3.0 to v0.4.0
 

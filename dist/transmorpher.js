@@ -2254,7 +2254,8 @@ var AbstractUploadHandler = /*#__PURE__*/function () {
   }
   return _createClass(AbstractUploadHandler, [{
     key: "getDropzoneOptions",
-    value: function getDropzoneOptions() {
+    value: function getDropzoneOptions(_ref) {
+      var transmorpherMedium = _ref.transmorpherMedium;
       throw new Error('getDropzoneOptions() must be implemented by subclass.');
     }
   }]);
@@ -2296,7 +2297,8 @@ var DefaultUploadHandler = /*#__PURE__*/function (_AbstractUploadHandle) {
   _inherits(DefaultUploadHandler, _AbstractUploadHandle);
   return _createClass(DefaultUploadHandler, [{
     key: "getDropzoneOptions",
-    value: function getDropzoneOptions() {
+    value: function getDropzoneOptions(_ref) {
+      var transmorpherMedium = _ref.transmorpherMedium;
       return {
         binaryBody: false
       };
@@ -2340,8 +2342,11 @@ var S3MultiPartUploadHandler = /*#__PURE__*/function (_AbstractUploadHandle) {
   _inherits(S3MultiPartUploadHandler, _AbstractUploadHandle);
   return _createClass(S3MultiPartUploadHandler, [{
     key: "getDropzoneOptions",
-    value: function getDropzoneOptions() {
+    value: function getDropzoneOptions(_ref) {
+      var transmorpherMedium = _ref.transmorpherMedium;
+      var minChunkSize = 5 * 1024 * 1024;
       return {
+        chunkSize: Math.max(minChunkSize, transmorpherMedium.chunkSize),
         binaryBody: true
       };
     }
@@ -2450,7 +2455,9 @@ if (!window.transmorpherScriptLoaded) {
       dictFileTooBig: medium.translations['max_file_size_exceeded'],
       dictInvalidFileType: medium.translations['invalid_file_type'],
       createImageThumbnails: false
-    }, handler.getDropzoneOptions()), {}, {
+    }, handler.getDropzoneOptions({
+      transmorpherMedium: medium
+    })), {}, {
       init: function init() {
         // Processing-Event is emitted when the upload starts.
         this.on('processing', function () {

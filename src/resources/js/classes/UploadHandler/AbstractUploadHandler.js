@@ -5,7 +5,7 @@ export default class AbstractUploadHandler {
         }
     }
 
-    getDropzoneOptions() {
+    getDropzoneOptions({transmorpherMedium}) {
         throw new Error('getDropzoneOptions() must be implemented by subclass.');
     }
 }
