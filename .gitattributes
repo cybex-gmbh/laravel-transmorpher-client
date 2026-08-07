@@ -3,5 +3,4 @@ amigor/ export-ignore
 .env.example export-ignore
 compose.yml export-ignore
 compose.pullpreview.yml export-ignore
-sail export-ignore
 
