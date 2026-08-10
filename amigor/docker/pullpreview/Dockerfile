@@ -11,7 +11,7 @@ RUN composer install --no-interaction --no-dev --no-scripts
 
 RUN chmod +x /var/www/docker/prod/pullpreview.initialize.sh
 
-#########################
+## App
 
 FROM cybexwebdev/php-laravel:8.4-alpine as app
 
