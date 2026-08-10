@@ -1,6 +1,6 @@
 services:
   app:
-    image: cybexwebdev/php-laravel-experimental:${DOCKER_PHP_VERSION:-8.4}-alpine-devtools
+    image: cybexwebdev/php-laravel:${DOCKER_PHP_VERSION:-8.4}-alpine-devtools
     depends_on:
       - mariadb
     environment:
