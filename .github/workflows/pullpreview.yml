@@ -52,7 +52,7 @@ jobs:
     uses: cybex-gmbh/github-workflows/.github/workflows/pullpreview.yml@main
     with:
       PULLPREVIEW_ADMINS: jheusinger, gael-connan-cybex, holyfabi, lupinitylabs, mszulik
-      INSTANCE_TYPE: large
+      INSTANCE_TYPE: xlarge
       ARTIFACT_NAME: transmorpher-env
     secrets:
       ENV_VARS: |

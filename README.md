@@ -282,15 +282,56 @@ Additionally, you have the option to specify the validation rules marked with a 
 
 ## Development
 
-### Frontend Assets
+The Laravel Transmorpher Client comes with a demonstration app which can be used to test the client package.
 
-For installing frontend dependencies you will have to run:
+The file structure in the container is as follows:
+
+- /var/www: example app
+- /var/package: package
+
+### Companion app
+
+To get started:
+
+```bash
+cp .env.example .env # Execute this outside of the container
+
+docker compose up -d
+docker compose exec app shell
+
+composer install
+php artisan migrate
+php artisan db:seed --class=PullpreviewSeeder
+```
+
+The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update cybex/laravel-transmorpher-client` in the app directory.
+The .env in the root directory is symlinked to the app directory.
+
+The container is set up to start in the app directory.
+
+### Working on the package
+
+When in the container, switch to the package directory:
+
+```bash
+cd /var/package
+```
+
+Install composer dependencies:
+
+```bash
+composer install
+```
+
+Install node dependencies:
 
 ```bash
 npm install
 ```
 
-For compiling assets you can use the following command in the project root:
+### Frontend Assets
+
+For compiling assets you can use the following command inside the package directory:
 
 ```bash
 npx mix
@@ -321,28 +362,6 @@ List of available transformations:
 - page*
 
 > Marked with * only applies to documents.
-
-### Companion app
-
-The Laravel Transmorpher Client comes with a demonstration app which can be used to test the client package.
-
-To get started:
-
-```bash
-cp .env.example .env
-
-./sail up -d
-./sail shell
-
-composer install
-php artisan migrate
-php artisan db:seed --class=PullpreviewSeeder
-```
-
-The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update` in the app directory.
-The .env in the root directory is symlinked to the app directory.
-
-Laravel Sail is set up to start in the app directory.
 
 ### [Pullpreview](https://github.com/pullpreview/action)
 

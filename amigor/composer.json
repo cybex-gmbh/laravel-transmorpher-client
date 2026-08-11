@@ -2,10 +2,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "vendor/cybex/laravel-transmorpher-client",
-            "options": {
-                "symlink": true
-            }
+            "url": "../package"
         }
     ],
     "name": "laravel/laravel",
@@ -41,11 +38,6 @@
         }
     },
     "scripts": {
-        "symlink-package": [
-            "mkdir -p vendor/cybex && rm -f vendor/cybex/laravel-transmorpher-client && ln -s -f ../../../ vendor/cybex/laravel-transmorpher-client"
-        ],
-        "pre-install-cmd": "@symlink-package",
-        "pre-update-cmd": "@symlink-package",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
