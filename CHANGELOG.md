@@ -10,11 +10,15 @@
 - The Transmorpher Media Server API v1 is no longer supported
 - The default config now uses a chunk size of 5 MiB to support S3-Multi-Part uploads
   - If a lower value is given and the Media Server is using S3-Multi-Part uploads, the chunk size will automatically be set to 5 MiB when uploading
+- The `config/transmorpher.php` file was split up into multiple config files in `config/transmorpher/`
+  - Some config keys have been renamed 
+  - Removed unused `transmorpher.client_name` config key and `getClientName()` method from Media classes
 
 ### Features
 
 - Now supports Transmorpher Media Server API v2
   - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
+- The config file has been split up and configs can now be published individually
 
 ### Fixes
 
