@@ -7,14 +7,68 @@
 
 > [!WARNING]
 > Breaking changes!
-> 
-> If you have published the config file, you should re-publish it or compare changes.
+>
+> The config file has been split up into multiple files.
+> If you have published the config file, you need to re-publish.
 
 - Transmorpher Media Server API v1 is no longer supported
 - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
 - If you have published the config, or set the TRANSMORPHER_API_VERSION env key, you will need to update the default or value to 2
 - The default config now uses a chunk size of 5 MiB to support S3-Multi-Part uploads.
   - You can still set it to a lower value, but when the Media Server is configured to use S3-Multi-Part uploads, it will automatically be set to 5 MiB when uploading.
+
+### Config file structure
+
+> [!NOTE]
+> Likelihood of impact: medium
+>
+> Impact: Published config files no longer work.
+
+The old single config file has been removed and split up into multiple config files in `config/transmorpher/`.
+
+To publish all config files:
+
+```bash
+php artisan vendor:publish --tag=transmorpher.config
+```
+
+To publish a single config file:
+
+```bash
+php artisan vendor:publish --tag=transmorpher.config.api
+php artisan vendor:publish --tag=transmorpher.config.delivery
+php artisan vendor:publish --tag=transmorpher.config.routes
+php artisan vendor:publish --tag=transmorpher.config.upload
+php artisan vendor:publish --tag=transmorpher.config.upload.image
+php artisan vendor:publish --tag=transmorpher.config.upload.document
+php artisan vendor:publish --tag=transmorpher.config.upload.video
+```
+
+#### Config key changes
+
+Some config keys have been adjusted.
+
+| Old key                                 | New key                                 |
+|-----------------------------------------|-----------------------------------------|
+| `transmorpher.api.s2s_url`              | `transmorpher.api.s2s.url`              |
+| `transmorpher.api.web_url`              | `transmorpher.api.web.url`              |
+| `transmorpher.api.auth_token`           | `transmorpher.api.auth.token`           |
+| `transmorpher.api.notifications_route`  | `transmorpher.routes.notifications`     |
+| `transmorpher.routeMiddleware`          | `transmorpher.routes.middleware`        |
+| `transmorpher.delivery.placeholder_url` | `transmorpher.delivery.placeholder.url` |
+
+#### Removed config
+
+- `transmorpher.client_name` has been removed as it was unused.
+
+### Media::getClientName()
+
+> [!NOTE]
+> Likelihood of impact: low
+>
+> Impact: Method calls will fail
+
+The method was unused and therefore removed.
 
 ## v0.3.0 to v0.4.0
 
