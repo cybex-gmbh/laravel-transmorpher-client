@@ -7,6 +7,7 @@ return [
 //    'middleware' => ['web', 'auth'],
 
     // The route the Transmorpher server can use to send signed notifications to.
-    'notifications' => 'transmorpher/notifications',
+    // Will be prefixed with "transmorpher", full default route: "transmorpher/notifications"
+    'notifications' => 'notifications',
 ];
 

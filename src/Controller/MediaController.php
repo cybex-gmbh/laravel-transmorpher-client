@@ -23,11 +23,13 @@ class MediaController
     /**
      * @param Request $request
      * @param TransmorpherMedia $transmorpherMedia
+     * @param int $version
+     *
      * @return JsonResponse
      */
-    public function setVersion(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
+    public function setVersion(Request $request, TransmorpherMedia $transmorpherMedia, int $version): JsonResponse
     {
-        return response()->json($transmorpherMedia->getMedia()->setVersion($request->input('version')));
+        return response()->json($transmorpherMedia->getMedia()->setVersion($version));
     }
 
     /**

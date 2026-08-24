@@ -30,14 +30,12 @@ class UploadController
         return response()->json($transmorpherUpload->TransmorpherMedia->getMedia()->completeUpload($transmorpherUpload));
     }
 
-    public function abortUpload(Request $request, TransmorpherMedia $transmorpherMedia): JsonResponse
+    public function abortUpload(Request $request, TransmorpherUpload $transmorpherUpload): JsonResponse
     {
-        $transmorpherUpload = $transmorpherMedia->TransmorpherUploads()->firstWhere('token', $transmorpherMedia->latest_upload_token);
-
         if ($transmorpherUpload->state !== UploadState::INITIALIZING && $transmorpherUpload->state !== UploadState::UPLOADING) {
             return response()->json(trans('transmorpher::errors.cannot_abort_finished_upload'), 400);
         }
 
-        return response()->json($transmorpherMedia->getMedia()->abortUpload($transmorpherUpload));
+        return response()->json($transmorpherUpload->TransmorpherMedia->getMedia()->abortUpload($transmorpherUpload));
     }
 }

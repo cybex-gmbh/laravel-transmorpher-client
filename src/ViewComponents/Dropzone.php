@@ -87,18 +87,18 @@ class Dropzone extends Component
         $domain = config('app.url');
         $routes =  Route::getRoutes()->getRoutesByName();
 
-        $this->stateRoute = sprintf('%s/%s', $domain, $routes['transmorpherState']->uri);
-        $this->uploadTokenRoute = sprintf('%s/%s', $domain, $routes['transmorpherUploadToken']->uri);
-        $this->handleUploadResponseRoute = sprintf('%s/%s', $domain, $routes['transmorpherHandleUploadResponse']->uri);
-        $this->getVersionsRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetVersions']->uri);
-        $this->setVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetVersion']->uri);
-        $this->deleteRoute = sprintf('%s/%s', $domain, $routes['transmorpherDelete']->uri);
-        $this->getOriginalRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetOriginal']->uri);
-        $this->getDerivativeForVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetDerivativeForVersion']->uri);
-        $this->setUploadingStateRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetUploadingState']->uri);
-        $this->getChunkUrlRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetChunkUploadUrl']->uri);
-        $this->completeUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherCompleteUpload']->uri);
-        $this->abortUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherAbortUpload']->uri);
+        $this->stateRoute = sprintf('%s/%s', $domain, $routes['transmorpher.media.state']->uri);
+        $this->uploadTokenRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.reserve']->uri);
+        $this->handleUploadResponseRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.response']->uri);
+        $this->getVersionsRoute = sprintf('%s/%s', $domain, $routes['transmorpher.versions.get']->uri);
+        $this->setVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpher.versions.set']->uri);
+        $this->deleteRoute = sprintf('%s/%s', $domain, $routes['transmorpher.media.delete']->uri);
+        $this->getOriginalRoute = sprintf('%s/%s', $domain, $routes['transmorpher.versions.original.get']->uri);
+        $this->getDerivativeForVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpher.versions.derivative.get']->uri);
+        $this->setUploadingStateRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.state.set']->uri);
+        $this->getChunkUrlRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.url']->uri);
+        $this->completeUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.complete']->uri);
+        $this->abortUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.abort']->uri);
     }
 
     /**
