@@ -75,21 +75,28 @@ class TransmorpherServiceProvider extends ServiceProvider
 
     protected function registerRoutes(): void
     {
-        Route::post(config('transmorpher.routes.notifications'), ApiController::class)->name('transmorpherNotifications');
+        Route::prefix('transmorpher')->name('transmorpher.')->group(function () {
+            Route::post(config('transmorpher.routes.notifications'), ApiController::class)->name('notifications');
 
-        Route::middleware(array_merge(config('transmorpher.routes.middleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
-            Route::post('transmorpher/{transmorpherMedia}/token', [UploadController::class, 'getUploadToken'])->name('transmorpherUploadToken');
-            Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadController::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
-            Route::post('transmorpher/{transmorpherMedia}/state', [UploadStateController::class, 'getState'])->name('transmorpherState');
-            Route::get('transmorpher/{transmorpherMedia}/getVersions', [MediaController::class, 'getVersions'])->name('transmorpherGetVersions');
-            Route::post('transmorpher/{transmorpherMedia}/setVersion', [MediaController::class, 'setVersion'])->name('transmorpherSetVersion');
-            Route::post('transmorpher/{transmorpherMedia}/delete', [MediaController::class, 'delete'])->name('transmorpherDelete');
-            Route::get('transmorpher/{transmorpherMedia}/getOriginal/{version}', [MediaController::class, 'getOriginal'])->name('transmorpherGetOriginal');
-            Route::get('transmorpher/{transmorpherMedia}/getDerivativeForVersion/{version}/{transformations?}', [MediaController::class, 'getDerivativeForVersion'])->name('transmorpherGetDerivativeForVersion');
-            Route::post('transmorpher/setUploadingState/{transmorpherUpload}', [UploadStateController::class, 'setUploadingState'])->name('transmorpherSetUploadingState');
-            Route::get('transmorpher/{transmorpherUpload}/chunkUrl/{chunkNumber}', [UploadController::class, 'getChunkUploadUrl'])->name('transmorpherGetChunkUploadUrl');
-            Route::post('transmorpher/completeUpload/{transmorpherUpload}', [UploadController::class, 'completeUpload'])->name('transmorpherCompleteUpload');
-            Route::delete('transmorpher/abortUpload/{transmorpherMedia}', [UploadController::class, 'abortUpload'])->name('transmorpherAbortUpload');
+            Route::middleware(array_merge(config('transmorpher.routes.middleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
+                # Media
+                Route::post('media/{transmorpherMedia}/state', [UploadStateController::class, 'getState'])->name('media.state');
+                Route::delete('media/{transmorpherMedia}', [MediaController::class, 'delete'])->name('media.delete');
+
+                # Versions
+                Route::get('media/{transmorpherMedia}/versions', [MediaController::class, 'getVersions'])->name('versions.get');
+                Route::patch('media/{transmorpherMedia}/versions/{version}', [MediaController::class, 'setVersion'])->name('versions.set');
+                Route::get('media/{transmorpherMedia}/versions/{version}/original', [MediaController::class, 'getOriginal'])->name('versions.original.get');
+                Route::get('media/{transmorpherMedia}/versions/{version}/derivative/{transformations?}', [MediaController::class, 'getDerivativeForVersion'])->name('versions.derivative.get');
+
+                # Upload
+                Route::post('media/{transmorpherMedia}/uploads/reserve', [UploadController::class, 'getUploadToken'])->name('uploads.reserve');
+                Route::post('uploads/{transmorpherUpload}/response/handle', [UploadController::class, 'handleUploadResponse'])->name('uploads.response');
+                Route::post('uploads/{transmorpherUpload}/state/set', [UploadStateController::class, 'setUploadingState'])->name('uploads.state.set');
+                Route::get('uploads/{transmorpherUpload}/chunkUrl/{chunkNumber}', [UploadController::class, 'getChunkUploadUrl'])->name('uploads.url');
+                Route::post('uploads/{transmorpherUpload}/complete', [UploadController::class, 'completeUpload'])->name('uploads.complete');
+                Route::delete('uploads/{transmorpherUpload}/abort', [UploadController::class, 'abortUpload'])->name('uploads.abort');
+            });
         });
     }
 
