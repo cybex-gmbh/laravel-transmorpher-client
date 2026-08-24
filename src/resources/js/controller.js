@@ -115,6 +115,7 @@ export function setupComponent({transmorpherIdentifier}) {
             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
                 openUploadConfirmModal({
                     transmorpherIdentifier,
+                    uploadToken: uploadingStateResponse.latestUploadToken,
                     callback: () => reserveUploadSlot({transmorpherIdentifier, done: file.done})
                 });
 
@@ -436,6 +437,7 @@ async function setVersionForMedia({transmorpherIdentifier, version}) {
     if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
         openUploadConfirmModal({
             transmorpherIdentifier,
+            uploadToken: uploadingStateResponse.latestUploadToken,
             callback: () => makeSetVersionCall({transmorpherIdentifier, version})
         });
 
@@ -500,7 +502,7 @@ async function deleteTransmorpherMedia({transmorpherIdentifier}) {
     displayModalState({transmorpherIdentifier, stateName: deleteResult.state, message: deleteResult.clientMessage});
 }
 
-function openUploadConfirmModal({transmorpherIdentifier, callback}) {
+function openUploadConfirmModal({transmorpherIdentifier, uploadToken, callback}) {
     const modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
     const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
     const previewElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`);
@@ -535,7 +537,7 @@ function openUploadConfirmModal({transmorpherIdentifier, callback}) {
             }
         }
 
-        await abortUpload({transmorpherIdentifier});
+        await abortUpload({transmorpherIdentifier, uploadToken});
         callback();
     };
 }
