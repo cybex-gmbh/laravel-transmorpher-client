@@ -539,6 +539,13 @@
   pointer-events: none;
   cursor: default;
 }
+.transmorpher video.video-transmorpher {
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
 .transmorpher .button, .transmorpher .version-list button {
   padding: 0.2rem 1rem;
   border: 0;
