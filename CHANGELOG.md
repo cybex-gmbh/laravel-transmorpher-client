@@ -13,6 +13,7 @@
 - The `config/transmorpher.php` file was split up into multiple config files in `config/transmorpher/`
   - Some config keys have been renamed 
   - Removed unused `transmorpher.client_name` config key and `getClientName()` method from Media classes
+- Route names and paths have changed to be more uniform
 
 ### Features
 
