@@ -34,7 +34,7 @@ class UploadController
     {
         $transmorpherUpload = $transmorpherMedia->TransmorpherUploads()->firstWhere('token', $transmorpherMedia->latest_upload_token);
 
-        if ($transmorpherUpload->state !== UploadState::INITIALIZING || $transmorpherUpload->state !== UploadState::UPLOADING) {
+        if ($transmorpherUpload->state !== UploadState::INITIALIZING && $transmorpherUpload->state !== UploadState::UPLOADING) {
             return response()->json(trans('transmorpher::errors.cannot_abort_finished_upload'), 400);
         }
 
