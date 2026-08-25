@@ -28,8 +28,12 @@
                 </div>
                 <form method="POST" class="dropzone" id="dz-{{ $media->getIdentifier() }}">
                     <div class="media-preview">
-                        <div class="error-display d-none">
-                            <span class="error-message"></span>
+                        <div class="error-display @if(!$hasConnectionError) d-none @endif">
+                            <span class="error-message">
+                                @if($hasConnectionError)
+                                    {{ trans('transmorpher::errors.no_server_connection') }}
+                                @endif
+                            </span>
                             <button type="button" class="btn-close" onclick="closeErrorMessage(this, '{{ $media->getIdentifier() }}')">⨉</button>
                         </div>
                         <x-transmorpher::media-preview :media="$media"/>
@@ -105,42 +109,44 @@
 </div>
 
 <script type="text/javascript">
-    mediaTypes = @json($mediaTypes);
-    uploadHandler = '{{ $uploadHandler }}'
-    media['{{ $media->getIdentifier() }}'] = {
-        transmorpherMediaKey: {{ $transmorpherMediaKey }},
-        routes: {
-            state: '{{ $stateRoute }}',
-            handleUploadResponse: '{{ $handleUploadResponseRoute }}',
-            getVersions: '{{ $getVersionsRoute }}',
-            setVersion: '{{ $setVersionRoute }}',
-            delete: '{{ $deleteRoute }}',
-            getOriginal: '{{ $getOriginalRoute }}',
-            getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
-            uploadToken: '{{ $uploadTokenRoute }}',
-            setUploadingState: '{{ $setUploadingStateRoute }}',
-            chunkUrl: '{{ $getChunkUrlRoute }}',
-            completeUpload: '{{ $completeUploadRoute }}',
-            abortUpload: '{{ $abortUploadRoute }}'
-        },
-        transformations: @json($srcSetTransformations),
-        translations: @json($translations),
-        webUploadUrl: '{{ $media->getWebUploadUrl() }}',
-        mediaType: '{{ $media->type->value }}',
-        chunkSize: {{ $media->getChunkSize() }},
-        maxFilesize: {{ $media->getMaxFileSize() }},
-        maxThumbnailFilesize: {{ $media->getMaxFileSize() }},
-        isProcessing: @json($isProcessing),
-        isUploading: @json($isUploading),
-        lastUpdated: '{{ $lastUpdated }}',
-        latestUploadToken: '{{ $latestUploadToken }}',
-        acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}',
-        minWidth: '{{ $acceptedMinWidth }}',
-        maxWidth: '{{ $acceptedMaxWidth }}',
-        minHeight: '{{ $acceptedMinHeight }}',
-        maxHeight: '{{ $acceptedMaxHeight }}',
-        ratio: '{{ $acceptedCalculatedRatio }}'
-    }
+    if (!@json($hasConnectionError)) {
+        mediaTypes = @json($mediaTypes);
+        uploadHandler = '{{ $uploadHandler }}'
+        media['{{ $media->getIdentifier() }}'] = {
+            transmorpherMediaKey: {{ $transmorpherMediaKey }},
+            routes: {
+                state: '{{ $stateRoute }}',
+                handleUploadResponse: '{{ $handleUploadResponseRoute }}',
+                getVersions: '{{ $getVersionsRoute }}',
+                setVersion: '{{ $setVersionRoute }}',
+                delete: '{{ $deleteRoute }}',
+                getOriginal: '{{ $getOriginalRoute }}',
+                getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
+                uploadToken: '{{ $uploadTokenRoute }}',
+                setUploadingState: '{{ $setUploadingStateRoute }}',
+                chunkUrl: '{{ $getChunkUrlRoute }}',
+                completeUpload: '{{ $completeUploadRoute }}',
+                abortUpload: '{{ $abortUploadRoute }}'
+            },
+            transformations: @json($srcSetTransformations),
+            translations: @json($translations),
+            webUploadUrl: '{{ $media->getWebUploadUrl() }}',
+            mediaType: '{{ $media->type->value }}',
+            chunkSize: {{ $media->getChunkSize() }},
+            maxFilesize: {{ $media->getMaxFileSize() }},
+            maxThumbnailFilesize: {{ $media->getMaxFileSize() }},
+            isProcessing: @json($isProcessing),
+            isUploading: @json($isUploading),
+            lastUpdated: '{{ $lastUpdated }}',
+            latestUploadToken: '{{ $latestUploadToken }}',
+            acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}',
+            minWidth: '{{ $acceptedMinWidth }}',
+            maxWidth: '{{ $acceptedMaxWidth }}',
+            minHeight: '{{ $acceptedMinHeight }}',
+            maxHeight: '{{ $acceptedMaxHeight }}',
+            ratio: '{{ $acceptedCalculatedRatio }}'
+        }
 
-    setupComponent('{{ $media->getIdentifier() }}');
+        setupComponent('{{ $media->getIdentifier() }}');
+    }
 </script>

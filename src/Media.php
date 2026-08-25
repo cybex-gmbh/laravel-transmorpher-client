@@ -107,11 +107,10 @@ abstract class Media
             throw new InvalidArgumentException(sprintf('Argument must be a valid resource type, %s given.', gettype($fileHandle)));
         }
 
-        $uploadHandler = $this->getUploadHandler();
+        $uploadHandlerResponse = $this->getUploadHandler();
 
-        // If the response is an array, there was an error.
-        if (is_array($uploadHandler)) {
-            throw new Exception(sprintf('Failed to retrieve upload handler from server: %s', $uploadHandler['message']));
+        if ($uploadHandlerResponse['state'] === UploadState::ERROR->value) {
+            throw new Exception(sprintf('Failed to retrieve upload handler from server: %s', $uploadHandlerResponse['message']));
         }
 
         $fileName ??= basename(stream_get_meta_data($fileHandle)['uri']);
@@ -139,7 +138,7 @@ abstract class Media
                 // The server will return the web URL, we need to replace it with the S2S URL.
                 $url = str_replace(TransmorpherApi::WEB->getUrl(), TransmorpherApi::S2S->getUrl(), $responseForClient['url']);
                 $chunk = fread($fileHandle, $chunkSize);
-                $responseFromServer = match ($uploadHandler) {
+                $responseFromServer = match ($uploadHandlerResponse['uploadHandler']) {
                     's3-multi-part' => Http::withBody($chunk)->put($url),
                     default => $this->configureApiRequest()
                         ->attach('file', $chunk, $fileName)
@@ -560,7 +559,10 @@ abstract class Media
             return $this->extractResponseForClient($responseFromServer);
         }
 
-        return $responseFromServer->body();
+        return [
+            'state' => UploadState::SUCCESS,
+            'uploadHandler' => $responseFromServer->body()
+        ];
     }
 
     /**
