@@ -19,6 +19,7 @@
 ### Fixes
 
 - Fixed an issue where thumbnails for very wide images were extending beyond the dropzone area
+- Fixed an issue where the HTML video player would overflow the dropzone area
 
 ### Development
 
