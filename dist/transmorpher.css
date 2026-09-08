@@ -308,6 +308,9 @@
 .transmorpher .dropzone .dz-preview.dz-image-preview {
   background: transparent;
 }
+.transmorpher .dropzone.is-completing-upload .dz-preview .dz-progress {
+  opacity: 1;
+}
 .transmorpher .transparency-indicator, .transmorpher .more-information-modal .card .card-body .card-side .media-preview, .transmorpher .dropzone {
   background-image: linear-gradient(135deg, #ebedef 25%, #d8dbe0 0, #d8dbe0 50%, #ebedef 0, #ebedef 75%, #d8dbe0 0, #d8dbe0);
   background-size: 2rem 2rem;
@@ -325,12 +328,18 @@
   position: relative;
 }
 .transmorpher *[class*=-transmorpher] img:first-of-type {
+  width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .transmorpher .dropzone.dz-clickable *:not(.video-transmorpher, .error-display, .error-display *, .dz-default, .dz-default *, .dz-preview, .dz.preview *, .media-display), .transmorpher .full-size-link:not(.disabled) {
   cursor: zoom-in;
 }
 .transmorpher .full-size-link {
+  display: block;
   width: 100%;
   height: 100%;
 }
@@ -529,6 +538,13 @@
 .transmorpher .media-display a.full-size-link.disabled {
   pointer-events: none;
   cursor: default;
+}
+.transmorpher video.video-transmorpher {
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .transmorpher .button, .transmorpher .version-list button {
   padding: 0.2rem 1rem;

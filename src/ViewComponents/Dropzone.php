@@ -23,6 +23,7 @@ class Dropzone extends Component
     public array $srcSetTransformations;
     public ?float $acceptedCalculatedRatio;
     public array $translations;
+    public ?string $uploadHandler = null;
     public string $stateRoute;
     public string $uploadTokenRoute;
     public string $handleUploadResponseRoute;
@@ -32,6 +33,10 @@ class Dropzone extends Component
     public string $getOriginalRoute;
     public string $getDerivativeForVersionRoute;
     public string $setUploadingStateRoute;
+    public string $getChunkUrlRoute;
+    public string $completeUploadRoute;
+    public string $abortUploadRoute;
+    public bool $hasConnectionError = false;
 
     public function __construct(
         public Media $media,
@@ -74,6 +79,14 @@ class Dropzone extends Component
             'ratio' => $this->acceptedDisplayRatio,
         ]);
 
+        $uploadHandlerResponse = $this->media->getUploadHandler();
+
+        if ($uploadHandlerResponse['state'] === UploadState::ERROR->value) {
+            $this->hasConnectionError = true;
+        } else {
+            $this->uploadHandler = $uploadHandlerResponse['uploadHandler'];
+        }
+
         $domain = config('app.url');
         $routes =  Route::getRoutes()->getRoutesByName();
 
@@ -86,6 +99,9 @@ class Dropzone extends Component
         $this->getOriginalRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetOriginal']->uri);
         $this->getDerivativeForVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetDerivativeForVersion']->uri);
         $this->setUploadingStateRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetUploadingState']->uri);
+        $this->getChunkUrlRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetChunkUploadUrl']->uri);
+        $this->completeUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherCompleteUpload']->uri);
+        $this->abortUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherAbortUpload']->uri);
     }
 
     /**

@@ -9,8 +9,8 @@ return [
 //    'routeMiddleware' => ['web', 'auth'],
 
     'api' => [
-        // Optionally, specify the Transmorpher API version which should be used. For supported versions, check the SupportedApiVersion enum.
-        'version' => env('TRANSMORPHER_API_VERSION', 1),
+        /** Optionally, specify the Transmorpher API version which should be used. For supported versions, check the {@link \Transmorpher\Enums\SupportedApiVersion} enum. */
+        'version' => env('TRANSMORPHER_API_VERSION', 2),
         // The API URL used when communicating between servers. Might be useful in situations where, for example, docker containers communicate with each other.
         's2s_url' => env('TRANSMORPHER_S2S_API_BASE_URL', env('TRANSMORPHER_WEB_API_BASE_URL')),
         // The API URL used when making requests to the Transmorpher media server from the web.
@@ -36,7 +36,8 @@ return [
 
     'upload' => [
         // Chunk size in mb.
-        'chunk_size' => 1 * 1024 * 1024,
+        // If the server is configured to use S3-Multi-Part uploads, values lower than 5MiB will automatically be set to 5MiB.
+        'chunk_size' => 5 * 1024 * 1024,
         'image' => [
             'validations' => [
                 // Max file size in mb.

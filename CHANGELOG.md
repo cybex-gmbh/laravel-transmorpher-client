@@ -2,9 +2,29 @@
 
 ## [v0.6.0](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.5.1...v0.6.0)
 
+> [!WARNING]
+> Breaking changes!
+>
+> For more information, see the [upgrade guide](UPGRADE-GUIDE.md#v051-to-v060).
+
+- The Transmorpher Media Server API v1 is no longer supported
+- The default config now uses a chunk size of 5 MiB to support S3-Multi-Part uploads
+  - If a lower value is given and the Media Server is using S3-Multi-Part uploads, the chunk size will automatically be set to 5 MiB when uploading
+
+### Features
+
+- Now supports Transmorpher Media Server API v2
+  - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
+
+### Fixes
+
+- Fixed an issue where thumbnails for very wide images were extending beyond the dropzone area
+- Fixed an issue where the HTML video player would overflow the dropzone area
+
 ### Development
 
 - A new base image has been introduced, for usage see the [README Development section](README.md#development)
+- The package's assets are now symlinked to the app directory, manually publishing assets after compiling is no longer needed
 
 ## [v0.5.1](https://github.com/cybex-gmbh/laravel-transmorpher-client/compare/v0.5.0...v0.5.1)
 

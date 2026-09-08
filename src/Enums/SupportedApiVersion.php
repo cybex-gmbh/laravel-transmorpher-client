@@ -4,7 +4,7 @@ namespace Transmorpher\Enums;
 
 enum SupportedApiVersion: int
 {
-    case VERSION_1 = 1;
+    case VERSION_2 = 2;
 
     /**
      * Checks whether the configured API version is supported.

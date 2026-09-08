@@ -75,7 +75,7 @@ You can specify the Transmorpher API version which should be used. Make sure the
 For versions supported by the client, check the SupportedApiVersion enum.
 
 ```dotenv
-TRANSMORPHER_API_VERSION=1
+TRANSMORPHER_API_VERSION=2
 ```
 
 ### Allow models to have images and videos
@@ -280,6 +280,32 @@ Additionally, you have the option to specify the validation rules marked with a 
 <x-transmorpher::dropzone :media="$image" acceptedMinWidth="1920" acceptedMinHeight="1080" :acceptedRatio="16/9"></x-transmorpher::dropzone>
 ```
 
+### Displaying derivatives
+
+To show derivatives on a webpage, you can use an HTML image tag.
+
+**NOTE**: These examples use Blade syntax and assume you have a valid `Media`-class instance in your template.
+
+```html
+<img src="{{ $media->getUrl() }}"></img>
+```
+
+You also have the possibility to apply transformations.
+
+```html
+<img src="{{ $media->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
+```
+
+List of available transformations:
+
+- width
+- height
+- format
+- quality
+- page*
+
+> Marked with * only applies to documents.
+
 ## Development
 
 The Laravel Transmorpher Client comes with a demonstration app which can be used to test the client package.
@@ -304,8 +330,10 @@ php artisan migrate
 php artisan db:seed --class=PullpreviewSeeder
 ```
 
-The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update cybex/laravel-transmorpher-client` in the app directory.
+The package source code is symlinked to the app's `vendor` directory.
+When changing branches or updating assets, you need to run `composer update cybex/laravel-transmorpher-client` in the app directory.
 The .env in the root directory is symlinked to the app directory.
+The package's compiled assets are symlinked to the app directory.
 
 The container is set up to start in the app directory.
 
@@ -337,31 +365,22 @@ For compiling assets you can use the following command inside the package direct
 npx mix
 ```
 
-### Transformations
+To listen for changes and automatically recompile assets, you can use:
 
-To show derivatives on a webpage, you can use an HTML image tag.
-
-**NOTE**: These examples use Blade syntax and assume you have a valid `Media`-class instance in your template.
-
-```html
-<img src="{{ $media->getUrl() }}"></img>
+```bash
+npx mix watch
 ```
 
-You also have the possibility to apply transformations.
+Since the package's assets are symlinked to the app directory, you will directly see the changes without needing to re-publish them to the app.
 
-```html
-<img src="{{ $media->getUrl(['width' => 300, 'format' => 'png']) }}"></img>
-```
-
-List of available transformations:
-
-- width
-- height
-- format
-- quality
-- page*
-
-> Marked with * only applies to documents.
+> [!IMPORTANT]
+> Once done developing, make sure to publish the assets to the example app directory, so that they are available in the PullPreview environment.
+>
+> In the example app directory:
+>
+> ```bash
+> php artisan vendor:publish --tag=transmorpher.assets --force
+> ```
 
 ### [Pullpreview](https://github.com/pullpreview/action)
 

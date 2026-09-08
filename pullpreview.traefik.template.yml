@@ -1,0 +1,46 @@
+http:
+  routers:
+    app:
+      rule: "Host(`${PULLPREVIEW_PUBLIC_DNS}`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: production
+      service: app
+      priority: 1
+
+    app-root:
+      rule: "Host(`${PULLPREVIEW_PUBLIC_DNS}`) && Path(`/`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: production
+      middlewares:
+        - htpasswd
+      service: app
+      priority: 2
+
+    transmorpher:
+      rule: "Host(`transmorpher.${PULLPREVIEW_PUBLIC_DNS}`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: production
+      service: transmorpher
+
+  middlewares:
+    htpasswd:
+      basicAuth:
+        # Generated in the PullPreview workflow when the PULLPREVIEW_BASIC_AUTH secret is passed.
+        usersFile: "/.htpasswd"
+
+  services:
+    app:
+      loadBalancer:
+        servers:
+          - url: "http://app:80"
+
+    transmorpher:
+      loadBalancer:
+        servers:
+          - url: "http://transmorpher:80"

@@ -6,17 +6,18 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Transmorpher\Controller\ApiController;
+use Transmorpher\Controller\MediaController;
+use Transmorpher\Controller\UploadController;
+use Transmorpher\Controller\UploadStateController;
 use Transmorpher\Enums\SupportedApiVersion;
 use Transmorpher\Exceptions\UnsupportedApiVersionException;
-use Transmorpher\Controller\ApiController;
-use Transmorpher\Controller\UploadStateController;
-use Transmorpher\Controller\UploadController;
-use Transmorpher\Controller\MediaController;
 
 class TransmorpherServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
+     *
      * @throws UnsupportedApiVersionException
      */
     public function boot(): void
@@ -25,6 +26,27 @@ class TransmorpherServiceProvider extends ServiceProvider
             throw new UnsupportedApiVersionException();
         }
 
+        $this->publishResources();
+
+        $this->registerRoutes();
+        $this->registerBladeNamespace();
+
+        $this->loadMigrations();
+        $this->loadViews();
+        $this->loadTranslations();
+
+    }
+
+    /**
+     * Register the application services.
+     */
+    public function register(): void
+    {
+        $this->mergeConfigs();
+    }
+
+    protected function publishResources(): void
+    {
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
@@ -42,27 +64,12 @@ class TransmorpherServiceProvider extends ServiceProvider
                 __DIR__ . '/lang' => $this->app->langPath('vendor/transmorpher'),
             ], ['transmorpher', 'transmorpher.lang']);
         }
-
-        $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
-        $this->registerRoutes();
-        $this->loadViewsFrom(__DIR__ . '/resources/views', 'transmorpher');
-        $this->loadTranslationsFrom(__DIR__ . '/lang', 'transmorpher');
-
-        Blade::componentNamespace('Transmorpher\\ViewComponents', 'transmorpher');
-    }
-
-    /**
-     * Register the application services.
-     */
-    public function register(): void
-    {
-        // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher.php', 'transmorpher');
     }
 
     protected function registerRoutes(): void
     {
         Route::post(config('transmorpher.api.notifications_route'), ApiController::class)->name('transmorpherNotifications');
+
         Route::middleware(array_merge(config('transmorpher.routeMiddleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
             Route::post('transmorpher/{transmorpherMedia}/token', [UploadController::class, 'getUploadToken'])->name('transmorpherUploadToken');
             Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadController::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
@@ -73,6 +80,34 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::get('transmorpher/{transmorpherMedia}/getOriginal/{version}', [MediaController::class, 'getOriginal'])->name('transmorpherGetOriginal');
             Route::get('transmorpher/{transmorpherMedia}/getDerivativeForVersion/{version}/{transformations?}', [MediaController::class, 'getDerivativeForVersion'])->name('transmorpherGetDerivativeForVersion');
             Route::post('transmorpher/setUploadingState/{transmorpherUpload}', [UploadStateController::class, 'setUploadingState'])->name('transmorpherSetUploadingState');
+            Route::get('transmorpher/{transmorpherUpload}/chunkUrl/{chunkNumber}', [UploadController::class, 'getChunkUploadUrl'])->name('transmorpherGetChunkUploadUrl');
+            Route::post('transmorpher/completeUpload/{transmorpherUpload}', [UploadController::class, 'completeUpload'])->name('transmorpherCompleteUpload');
+            Route::delete('transmorpher/abortUpload/{transmorpherMedia}', [UploadController::class, 'abortUpload'])->name('transmorpherAbortUpload');
         });
+    }
+
+    protected function registerBladeNamespace(): void
+    {
+        Blade::componentNamespace('Transmorpher\\ViewComponents', 'transmorpher');
+    }
+
+    protected function loadMigrations(): void
+    {
+        $this->loadMigrationsFrom(sprintf('%s/Migrations', __DIR__));
+    }
+
+    protected function loadViews(): void
+    {
+        $this->loadViewsFrom(__DIR__ . '/resources/views', 'transmorpher');
+    }
+
+    protected function loadTranslations(): void
+    {
+        $this->loadTranslationsFrom(__DIR__ . '/lang', 'transmorpher');
+    }
+
+    protected function mergeConfigs(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher.php', 'transmorpher');
     }
 }
