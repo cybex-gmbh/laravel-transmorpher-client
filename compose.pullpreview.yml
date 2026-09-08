@@ -1,5 +1,3 @@
-x-app-image: &app-image amigor-prod-8.4/app
-
 x-common-volumes: &common-volumes
   - 'storage:/var/www/storage'
   - '.env:/var/www/.env'
@@ -27,7 +25,6 @@ x-transmorpher-app-url: &transmorpher-app-url
 services:
   app:
     container_name: ${COMPOSE_PROJECT_NAME}
-    image: *app-image
     build:
       context: .
       dockerfile: amigor/docker/prod/Dockerfile
@@ -45,23 +42,12 @@ services:
       - traefik
       - internal
     volumes: *common-volumes
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`)'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls=true'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=production'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}.priority=1'
-      # Protect the root with Basic Auth.
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-root.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`) && Path(`/`)'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-root.middlewares=htpasswd'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-root.tls=true'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-root.tls.certresolver=production'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-root.priority=2'
-      - 'traefik.http.middlewares.htpasswd.basicauth.usersfile=/.htpasswd'
 
   initialize:
     command: [ '/var/www/docker/prod/pullpreview.initialize.sh' ]
-    image: *app-image
+    build:
+      context: .
+      dockerfile: amigor/docker/prod/Dockerfile
     restart: 'on-failure'
     depends_on:
       mariadb:
@@ -96,11 +82,6 @@ services:
     environment:
       <<: *transmorpher-app-url
       CONTAINER_ROLE: web
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-transmorpher.rule=Host(`transmorpher.${PULLPREVIEW_PUBLIC_DNS}`)'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-transmorpher.tls=true'
-      - 'traefik.http.routers.${COMPOSE_PROJECT_NAME}-transmorpher.tls.certresolver=production'
 
   transmorpher-worker-transcoding:
     <<: *transmorpher-common
@@ -177,7 +158,7 @@ services:
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION: true
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_EMAIL: 'cloud@cybex-online.com'
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_CASERVER: 'https://acme-v02.api.letsencrypt.org/directory'
-      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_STORAGE: '/letsencrypt/acme.json'
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_STORAGE: 'acme.json'
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_HTTPCHALLENGE: true
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_HTTPCHALLENGE_ENTRYPOINT: web
       TRAEFIK_ENTRYPOINTS_WEB: true
@@ -187,12 +168,13 @@ services:
       TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME: https
       TRAEFIK_ENTRYPOINTS_WEBSECURE: true
       TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS: ':443'
-      TRAEFIK_PROVIDERS_DOCKER: true
-      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
-      TRAEFIK_PROVIDERS_DOCKER_NETWORK: traefik
+      TRAEFIK_PROVIDERS_FILE: true
+      TRAEFIK_PROVIDERS_FILE_FILENAME: /etc/traefik/pullpreview.traefik.yml
+      TRAEFIK_PROVIDERS_FILE_WATCH: true
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./amigor/storage/letsencrypt:/letsencrypt
+      - ./pullpreview.traefik.yml:/etc/traefik/pullpreview.traefik.yml:ro
+      # Needs to be mounted so that it is synced to the server for use in the pre-script
+      - ./pullpreview.traefik.template.yml:/pullpreview.traefik.template.yml:ro
       - ./amigor/storage/logs:/logs
       - ./.htpasswd:/.htpasswd:ro
     networks:
