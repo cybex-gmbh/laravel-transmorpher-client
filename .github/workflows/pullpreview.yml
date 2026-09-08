@@ -46,7 +46,7 @@ jobs:
       pull-requests: write # to remove labels
 
     name: Deploy PullPreview staging environment
-    uses: cybex-gmbh/github-workflows/.github/workflows/pullpreview.yml@chore/update-pullpreview
+    uses: cybex-gmbh/github-workflows/.github/workflows/pullpreview.yml@main
     with:
       PULLPREVIEW_ADMINS: jheusinger, gael-connan-cybex, holyfabi, lupinitylabs, mszulik
       INSTANCE_TYPE: xlarge
