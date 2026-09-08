@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout Transmorpher Client repo
         # https://github.com/actions/checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           sparse-checkout: |
             amigor/.env.transmorpher
@@ -29,7 +29,7 @@ jobs:
 
       - name: Upload transmorpher env file
         # https://github.com/actions/upload-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: transmorpher-env
           include-hidden-files: true
