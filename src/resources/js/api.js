@@ -57,9 +57,9 @@ export async function completeUpload({transmorpherIdentifier, uploadToken}) {
     return requestJson({method: 'POST', url: completeUploadUrl});
 }
 
-export async function abortUpload({transmorpherIdentifier}) {
+export async function abortUpload({transmorpherIdentifier, uploadToken}) {
     const medium = getMedium({transmorpherIdentifier});
-    const abortUploadUrl = medium.routes.abortUpload.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+    const abortUploadUrl = medium.routes.abortUpload.replace('{transmorpherUpload}', uploadToken);
 
     await request({method: 'DELETE', url: abortUploadUrl});
 }
@@ -119,22 +119,16 @@ export async function getVersions({transmorpherIdentifier}) {
 
 export async function setVersion({transmorpherIdentifier, version}) {
     const medium = getMedium({transmorpherIdentifier});
-    const url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+    const url = medium.routes.setVersion
+        .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
+        .replace('{version}', version);
 
-    return requestJson({
-        method: 'POST',
-        url,
-        options: {
-            body: JSON.stringify({
-                version,
-            }),
-        },
-    });
+    return requestJson({method: 'PATCH', url});
 }
 
 export async function deleteTransmorpherMedia({transmorpherIdentifier}) {
     const medium = getMedium({transmorpherIdentifier});
     const url = medium.routes.delete.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
 
-    return requestJson({method: 'POST', url});
+    return requestJson({method: 'DELETE', url});
 }

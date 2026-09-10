@@ -70,6 +70,17 @@ Some config keys have been adjusted.
 
 The method was unused and therefore removed.
 
+### Route names and paths
+
+> [!NOTE]
+> Likelihood of impact: low
+>
+> Impact: References to routes will fail
+
+Route names and paths have changed to be more uniform.
+
+If you have previously referenced the routes, you will need to update your references.
+
 ## v0.3.0 to v0.4.0
 
 - [Release Notes](CHANGELOG.md#v040)
