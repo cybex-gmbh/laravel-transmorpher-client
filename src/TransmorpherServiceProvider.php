@@ -48,9 +48,7 @@ class TransmorpherServiceProvider extends ServiceProvider
     protected function publishResources(): void
     {
         if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__ . '/../config/transmorpher.php' => config_path('transmorpher.php'),
-            ], ['transmorpher', 'transmorpher.config']);
+            $this->publishConfigs();
 
             $this->publishes([
                 __DIR__ . '/../dist' => public_path('vendor/transmorpher'),
@@ -66,11 +64,20 @@ class TransmorpherServiceProvider extends ServiceProvider
         }
     }
 
+    protected function publishConfigs(): void
+    {
+        foreach (['api', 'delivery', 'routes', 'upload', 'upload/image', 'upload/document', 'upload/video'] as $config) {
+            $this->publishes([
+                sprintf('%s/../config/transmorpher/%s.php', __DIR__, $config) => config_path(sprintf('transmorpher/%s.php', $config)),
+            ], ['transmorpher', 'transmorpher.config', sprintf('transmorpher.config.%s', str_replace('/', '.', $config))]);
+        }
+    }
+
     protected function registerRoutes(): void
     {
-        Route::post(config('transmorpher.api.notifications_route'), ApiController::class)->name('transmorpherNotifications');
+        Route::post(config('transmorpher.routes.notifications'), ApiController::class)->name('transmorpherNotifications');
 
-        Route::middleware(array_merge(config('transmorpher.routeMiddleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
+        Route::middleware(array_merge(config('transmorpher.routes.middleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
             Route::post('transmorpher/{transmorpherMedia}/token', [UploadController::class, 'getUploadToken'])->name('transmorpherUploadToken');
             Route::post('transmorpher/handleUploadResponse/{transmorpherUpload}', [UploadController::class, 'handleUploadResponse'])->name('transmorpherHandleUploadResponse');
             Route::post('transmorpher/{transmorpherMedia}/state', [UploadStateController::class, 'getState'])->name('transmorpherState');
@@ -108,6 +115,12 @@ class TransmorpherServiceProvider extends ServiceProvider
 
     protected function mergeConfigs(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher.php', 'transmorpher');
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher/api.php', 'transmorpher.api');
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher/delivery.php', 'transmorpher.delivery');
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher/routes.php', 'transmorpher.routes');
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher/upload.php', 'transmorpher.upload');
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher/upload/image.php', 'transmorpher.upload.image');
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher/upload/document.php', 'transmorpher.upload.document');
+        $this->mergeConfigFrom(__DIR__ . '/../config/transmorpher/upload/video.php', 'transmorpher.upload.video');
     }
 }
