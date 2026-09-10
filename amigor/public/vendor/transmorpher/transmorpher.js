@@ -3448,7 +3448,11 @@ function _updateVersionInformation() {
               case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT:
                 {
                   var transformations = medium.transformations;
-                  versionEntry.querySelector('a').href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
+                  var fullSizeLink = versionEntry.querySelector('a.full-size-link');
+                  var enlargeIcon = versionEntry.querySelector('.enlarge-icon');
+                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
+                  fullSizeLink.classList.remove('disabled');
+                  enlargeIcon.classList.remove('d-hidden');
                   versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']);
                   versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
                   break;

@@ -389,11 +389,16 @@ async function updateVersionInformation({transmorpherIdentifier}) {
                     case MEDIA_TYPE.IMAGE:
                     case MEDIA_TYPE.DOCUMENT: {
                         const transformations = medium.transformations;
+                        const fullSizeLink = versionEntry.querySelector('a.full-size-link');
+                        const enlargeIcon = versionEntry.querySelector('.enlarge-icon');
 
-                        versionEntry.querySelector('a').href = medium.routes.getDerivativeForVersion
+                        fullSizeLink.href = medium.routes.getDerivativeForVersion
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
                             .replace('{version}', version)
                             .replace('{transformations?}', '');
+                        fullSizeLink.classList.remove('disabled');
+                        enlargeIcon.classList.remove('d-hidden');
+
                         versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
                             .replace('{version}', version)
