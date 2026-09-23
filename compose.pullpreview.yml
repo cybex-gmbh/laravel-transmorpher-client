@@ -2,8 +2,8 @@ x-common-volumes: &common-volumes
   - 'storage:/var/www/storage'
   - '.env:/var/www/.env'
 
-x-transmorpher-app-image: &transmorpher-app-image cybexwebdev/transmorpher:chore-v2-route-naming-app
-x-transmorpher-transcoder-image: &transmorpher-transcoder-image cybexwebdev/transmorpher:chore-v2-route-naming-transcoder
+x-transmorpher-app-image: &transmorpher-app-image cybexwebdev/transmorpher:chore-token-permission-nesting-app
+x-transmorpher-transcoder-image: &transmorpher-transcoder-image cybexwebdev/transmorpher:chore-token-permission-nesting-transcoder
 
 x-transmorpher-common: &transmorpher-common
   image: *transmorpher-app-image
@@ -14,7 +14,7 @@ x-transmorpher-common: &transmorpher-common
       condition: service_started
   volumes:
     - 'transmorpher-storage:/var/www/storage'
-    - './amigor/.env.transmorpher:/var/www/.env'
+    - '.env.transmorpher:/var/www/.env'
   networks:
     - traefik
     - internal
@@ -86,27 +86,21 @@ services:
   transmorpher-worker-transcoding:
     <<: *transmorpher-common
     image: *transmorpher-transcoder-image
+    command: [ "shell", "php artisan transmorpher:queue-work video_transcoding" ]
     environment:
       <<: *transmorpher-app-url
-      CONTAINER_ROLE: worker
-      SERVICE_INSTANCES: ${VIDEO_TRANSCODING_WORKERS_AMOUNT:-1}
-      QUEUE: video-transcoding
 
   transmorpher-worker-client-notifications:
     <<: *transmorpher-common
+    command: [ "shell", "php artisan transmorpher:queue-work client_notifications" ]
     environment:
       <<: *transmorpher-app-url
-      CONTAINER_ROLE: worker
-      SERVICE_INSTANCES: 1
-      QUEUE: client-notifications
 
   transmorpher-worker-email:
     <<: *transmorpher-common
+    command: [ "shell", "php artisan transmorpher:queue-work email" ]
     environment:
       <<: *transmorpher-app-url
-      CONTAINER_ROLE: worker
-      SERVICE_INSTANCES: 1
-      QUEUE: email
 
   transmorpher-scheduler:
     <<: *transmorpher-common
@@ -145,7 +139,7 @@ services:
   ########################################################################## Traefik ##########################################################################
 
   traefik:
-    image: traefik:mimolette
+    image: traefik:langres
     ports:
       - '80:80'
       - '443:443'
