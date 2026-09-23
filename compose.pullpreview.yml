@@ -27,7 +27,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}
     build:
       context: .
-      dockerfile: amigor/docker/prod/Dockerfile
+      dockerfile: docker/amigor/Dockerfile
     depends_on:
       mariadb:
         condition: service_healthy
@@ -44,10 +44,10 @@ services:
     volumes: *common-volumes
 
   initialize:
-    command: [ '/var/www/docker/prod/pullpreview.initialize.sh' ]
+    command: [ '/var/www/docker/amigor/pullpreview.initialize.sh' ]
     build:
       context: .
-      dockerfile: amigor/docker/prod/Dockerfile
+      dockerfile: docker/amigor/Dockerfile
     restart: 'on-failure'
     depends_on:
       mariadb:
