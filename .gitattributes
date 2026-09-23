@@ -1,6 +1,8 @@
 amigor/ export-ignore
+docker/ export-ignore
 .github/ export-ignore
 .env.example export-ignore
+.env.transmorpher export-ignore
 compose.yml export-ignore
 compose.pullpreview.yml export-ignore
 
