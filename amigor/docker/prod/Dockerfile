@@ -5,6 +5,7 @@ FROM cybexwebdev/php-laravel:8.4-alpine-devtools as build
 WORKDIR /var/www
 
 COPY --chown=www-data:www-data ./amigor /var/www
+COPY --chown=www-data:www-data .env.transmorpher /var/www/.env.transmorpher
 COPY --chown=www-data:www-data . /var/package
 
 RUN composer install --no-interaction --no-dev --no-scripts
