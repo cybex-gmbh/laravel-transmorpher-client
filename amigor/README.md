@@ -31,9 +31,19 @@ Basic Laravel 13 app with the following adjustments:
 
 ## resources/views/welcome.blade.php
 
-Replace `body` with:
+Replace with:
 
 ```bladehtml
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Laravel</title>
+</head>
+
+<body style="padding:50px; display:flex; gap:50px; flex-wrap:wrap">
 @foreach(App\Models\User::first()->images as $image)
 <x-transmorpher::dropzone :media="$image" width="300px"></x-transmorpher::dropzone>
 @endforeach
@@ -45,6 +55,10 @@ Replace `body` with:
 @foreach(App\Models\User::first()->videos as $video)
 <x-transmorpher::dropzone :media="$video" width="300px"></x-transmorpher::dropzone>
 @endforeach
+</body>
+
+</html>
+
 ```
 
 ## database/seeders/PullpreviewSeeder.php
@@ -71,10 +85,16 @@ Replace the middleware key with:
 
 ## app/Models/User.php
 
+Implement the interface:
+
+```php
+... implements \Transmorpher\HasTransmorpherMediaInterface
+```
+
 Add the `HasTransmorpherMedia` trait:
 
 ```php
-use HasTransmorpherMedia;
+use \Transmorpher\HasTransmorpherMedia;
 ```
 
 add media to the user:
@@ -94,6 +114,31 @@ protected array $transmorpherVideos = [
     'teaser',
     'full'
 ];    
+```
+
+## bootstrap/app.php
+
+Add the TrustProxies middleware:
+
+```php
+...
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->trustProxies(at: '*', headers: Request::HEADER_X_FORWARDED_TRAEFIK);
+})
+...
+```
+
+## app/Providers/AppServiceProvider.php
+
+Add morph alias for User:
+
+```php
+public function boot(): void
+{
+    Relation::enforceMorphMap([
+        'user' => 'App\Models\User',
+    ]);
+}
 ```
 
 ## docker/prod/Dockerfile
@@ -139,29 +184,4 @@ if ${PULLPREVIEW:-false}; then
         shell php /var/www/artisan db:seed --class=PullpreviewSeeder --force
     fi
 fi
-```
-
-## bootstrap/app.php
-
-Add the TrustProxies middleware:
-
-```php
-...
-->withMiddleware(function (Middleware $middleware): void {
-    $middleware->trustProxies(at: '*', headers: Request::HEADER_X_FORWARDED_TRAEFIK);
-})
-...
-```
-
-## app/Providers/AppServiceProvider.php
-
-Add morph alias for User:
-
-```php
-public function boot(): void
-{
-    Relation::enforceMorphMap([
-        'user' => 'App\Models\User',
-    ]);
-}
 ```

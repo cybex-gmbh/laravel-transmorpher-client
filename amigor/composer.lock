@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cda2add6397422fb1a2eb5b9207f1575",
+    "content-hash": "ec5be74177c687abbbb2d9bfdeb6e155",
     "packages": [
         {
             "name": "brick/math",
@@ -139,6 +139,57 @@
                 }
             ],
             "time": "2026-09-06T14:11:38+00:00"
+        },
+        {
+            "name": "cybex/laravel-transmorpher-client",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../package",
+                "reference": "373dc2be0a8a1235dcdc445b1e05bb6ec4dfe178"
+            },
+            "require": {
+                "enyo/dropzone": "^5.9",
+                "ext-sodium": "*",
+                "illuminate/support": "^9.0|^10.0|^11.0|^12.0|^13.0",
+                "laravel/framework": "^9.0|^10.0|^11.0|^12.0|^13.0",
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Transmorpher\\TransmorpherServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Transmorpher\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Szulik",
+                    "email": "webdevelopment@cybex-online.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A client package for Laravel applications that use the Transmorpher media server.",
+            "homepage": "https://github.com/cybex-gmbh/laravel-transmorpher-client",
+            "keywords": [
+                "cybex",
+                "laravel",
+                "laravel-transmorpher-client",
+                "transmorpher",
+                "transmorpher-client"
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "dflydev/dot-access-data",
@@ -510,6 +561,46 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "enyo/dropzone",
+            "version": "v5.9.3",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:enyo/dropzone-packagist.git",
+                "reference": "286b2dc1f1195bd12169e4c9d5f91cfbe46e245f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/enyo/dropzone-packagist/zipball/286b2dc1f1195bd12169e4c9d5f91cfbe46e245f",
+                "reference": "286b2dc1f1195bd12169e4c9d5f91cfbe46e245f",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matias Meno",
+                    "email": "m@tias.me",
+                    "homepage": "http://www.yesmeno.com"
+                }
+            ],
+            "description": "Handles drag and drop of files for you.",
+            "homepage": "http://www.dropzonejs.com",
+            "keywords": [
+                "drag and drop",
+                "dragndrop",
+                "file upload",
+                "upload"
+            ],
+            "support": {
+                "issues": "https://github.com/dropzone/dropzone-packagist/issues",
+                "source": "https://github.com/dropzone/dropzone-packagist/tree/v5.9.3"
+            },
+            "time": "2021-09-21T17:03:36+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -8347,7 +8438,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "cybex/laravel-transmorpher-client": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
