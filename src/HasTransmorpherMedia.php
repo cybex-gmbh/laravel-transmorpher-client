@@ -23,8 +23,17 @@ trait HasTransmorpherMedia
      */
     public static function bootHasTransmorpherMedia(): void
     {
-        if (static::getModel()->getTransmorpherAlias() === static::class) {
-            throw new MissingMorphAliasException(static::class);
+        // Laravel 13+ no longer allows accessing the model while booting.
+        if (method_exists(static::class, 'whenBooted')) {
+            static::whenBooted(function () {
+                if (static::getModel()->getTransmorpherAlias() === static::class) {
+                    throw new MissingMorphAliasException(static::class);
+                }
+            });
+        } else {
+            if (static::getModel()->getTransmorpherAlias() === static::class) {
+                throw new MissingMorphAliasException(static::class);
+            }
         }
     }
 
