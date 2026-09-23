@@ -87,18 +87,27 @@ services:
     <<: *transmorpher-common
     image: *transmorpher-transcoder-image
     command: [ "shell", "php artisan transmorpher:queue-work video_transcoding" ]
+    depends_on:
+      transmorpher-initialize:
+        condition: service_completed_successfully
     environment:
       <<: *transmorpher-app-url
 
   transmorpher-worker-client-notifications:
     <<: *transmorpher-common
     command: [ "shell", "php artisan transmorpher:queue-work client_notifications" ]
+    depends_on:
+      transmorpher-initialize:
+        condition: service_completed_successfully
     environment:
       <<: *transmorpher-app-url
 
   transmorpher-worker-email:
     <<: *transmorpher-common
     command: [ "shell", "php artisan transmorpher:queue-work email" ]
+    depends_on:
+      transmorpher-initialize:
+        condition: service_completed_successfully
     environment:
       <<: *transmorpher-app-url
 
