@@ -12,10 +12,11 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements \Transmorpher\HasTransmorpherMediaInterface
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+    use \Transmorpher\HasTransmorpherMedia;
 
     /**
      * Get the attributes that should be cast.
@@ -29,4 +30,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected array $transmorpherImages = [
+        'front',
+        'back'
+    ];
+
+    protected array $transmorpherDocuments = [
+        'document',
+        'user-guide'
+    ];
+
+    protected array $transmorpherVideos = [
+        'teaser',
+        'full'
+    ];
 }
