@@ -19,6 +19,7 @@
 
 - Now supports Transmorpher Media Server API v2
   - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
+- Now supports Laravel 13
 - The config file has been split up and configs can now be published individually
 
 ### Fixes
