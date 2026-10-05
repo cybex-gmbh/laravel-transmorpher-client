@@ -116,7 +116,7 @@ export async function setVersion({transmorpherIdentifier, version}) {
     const medium = getMedium({transmorpherIdentifier});
     const url = routes.versions.set
         .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
-        .replace('{version}', version);
+        .replace('{version}', version.number);
 
     return requestJson({method: 'PATCH', url});
 }
