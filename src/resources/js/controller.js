@@ -20,6 +20,7 @@ import {
     displayState,
     openMoreInformationModalDisplay,
     resetAgeElement,
+    resetDropzoneErrorMessage,
     setAgeElement,
     updateMediaDisplay,
     updateThumbnail,
@@ -127,13 +128,10 @@ export function setupComponent({transmorpherIdentifier}) {
         accept: function (file, done) {
             file.done = done;
 
-            // Remove previous elements to maintain a clean overlay.
+            // Hides the "Drop here" CTA when a file is dropped in, to only show the progress bar.
             this.element.querySelector('.dz-default').style.display = 'none';
-            const errorElement = this.element.querySelector('.dz-error');
-
-            if (errorElement) {
-                errorElement.remove();
-            }
+            // Closes any previous error message when a new file is dropped in.
+            resetDropzoneErrorMessage({transmorpherIdentifier});
 
             this.emit('thumbnail', file);
         },
