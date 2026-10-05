@@ -2544,7 +2544,7 @@ function _setVersion() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version);
+          url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number);
           return _context1.a(2, requestJson({
             method: 'PATCH',
             url: url
@@ -3344,7 +3344,7 @@ function updateVersionInformation(_x0) {
 }
 function _updateVersionInformation() {
   _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(_ref9) {
-    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, _t4;
+    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, cacheInvalidatorPrefix, _t4;
     return _regenerator().w(function (_context1) {
       while (1) switch (_context1.p = _context1.n) {
         case 0:
@@ -3407,7 +3407,7 @@ function _updateVersionInformation() {
           break;
         case 6:
           versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-            date: new Date(versions[versionInformation.currentVersion] * 1000)
+            date: new Date(versionInformation.currentVersion.createdAt * 1000)
           });
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
             transmorpherIdentifier: transmorpherIdentifier,
@@ -3417,7 +3417,7 @@ function _updateVersionInformation() {
           return _context1.a(3, 8);
         case 7:
           versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-            date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)
+            date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)
           });
           if (versionInformation.currentlyProcessedVersion) {
             (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateVideoDisplay)({
@@ -3430,15 +3430,19 @@ function _updateVersionInformation() {
           currentVersionAgeElement = modal.querySelector('.current-version-age');
           currentVersionAgeElement.textContent = versionAge;
           currentVersionAgeElement.classList.remove('d-none');
-          Object.keys(versions).sort(function (a, b) {
-            return versions[b] - versions[a];
+          cacheInvalidatorPrefix = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getCacheInvalidatorFromUrl)({
+            url: versionInformation.fullsizeUrl
+          });
+          versions.sort(function (a, b) {
+            return b.number - a.number;
           }).forEach(function (version) {
             // Don't show the currently processed or current version.
-            if (version === String(versionInformation.currentlyProcessedVersion) || version === String(versionInformation.currentVersion)) {
+            if (version.number === versionInformation.currentlyProcessedVersion.number || version.number === versionInformation.currentVersion.number) {
               return;
             }
             var versionEntry = defaultVersionEntry.cloneNode(true);
             var versionAgeElement = versionEntry.querySelector('.version-age');
+            var fullCacheInvalidator = "".concat(cacheInvalidatorPrefix).concat(version.hash);
             switch (medium.mediaType) {
               case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE:
               case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT:
@@ -3446,11 +3450,11 @@ function _updateVersionInformation() {
                   var transformations = medium.transformations;
                   var fullSizeLink = versionEntry.querySelector('a.full-size-link');
                   var enlargeIcon = versionEntry.querySelector('.enlarge-icon');
-                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
+                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number).replace('{transformations?}', '') + fullCacheInvalidator;
                   fullSizeLink.classList.remove('disabled');
                   enlargeIcon.classList.remove('d-hidden');
-                  versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']);
-                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
+                  versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number).replace('{transformations?}', transformations['150w']) + fullCacheInvalidator;
+                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number).replace('{transformations?}', transformations['150w'])).concat(fullCacheInvalidator, " 150w");
                   break;
                 }
               case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO:
@@ -3469,7 +3473,7 @@ function _updateVersionInformation() {
               transmorpherIdentifier: transmorpherIdentifier
             });
             versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-              date: new Date(versions[version] * 1000)
+              date: new Date(version.createdAt * 1000)
             });
             versionList.append(versionEntry);
             versionEntry.classList.remove('d-none');
@@ -4141,6 +4145,7 @@ function closeErrorMessage(_ref18) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   addConfirmEventListener: () => (/* binding */ addConfirmEventListener),
+/* harmony export */   getCacheInvalidatorFromUrl: () => (/* binding */ getCacheInvalidatorFromUrl),
 /* harmony export */   getCsrfToken: () => (/* binding */ getCsrfToken),
 /* harmony export */   getDateForDisplay: () => (/* binding */ getDateForDisplay),
 /* harmony export */   getMediaDimensions: () => (/* binding */ getMediaDimensions)
@@ -4211,9 +4216,16 @@ function getMediaDimensions(_ref3) {
       });
   }
 }
-function getImageDimensions(_ref4) {
-  var file = _ref4.file,
-    validationError = _ref4.validationError;
+function getCacheInvalidatorFromUrl(_ref4) {
+  var _versionParameter$mat;
+  var url = _ref4.url;
+  var versionParameter = new URL(url).searchParams.get('v');
+  var cacheInvalidator = versionParameter === null || versionParameter === void 0 || (_versionParameter$mat = versionParameter.match(/^\d+_/)) === null || _versionParameter$mat === void 0 ? void 0 : _versionParameter$mat[0];
+  return cacheInvalidator ? "?v=".concat(cacheInvalidator) : null;
+}
+function getImageDimensions(_ref5) {
+  var file = _ref5.file,
+    validationError = _ref5.validationError;
   return new Promise(function (resolve, reject) {
     var image = new Image();
     image.src = URL.createObjectURL(file);
@@ -4229,9 +4241,9 @@ function getImageDimensions(_ref4) {
     };
   });
 }
-function getVideoDimensions(_ref5) {
-  var file = _ref5.file,
-    validationError = _ref5.validationError;
+function getVideoDimensions(_ref6) {
+  var file = _ref6.file,
+    validationError = _ref6.validationError;
   return new Promise(function (resolve, reject) {
     var video = document.createElement('video');
     video.src = URL.createObjectURL(file);
