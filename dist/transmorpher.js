@@ -3416,10 +3416,10 @@ function _updateVersionInformation() {
           });
           return _context1.a(3, 8);
         case 7:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-            date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)
-          });
           if (versionInformation.currentlyProcessedVersion) {
+            versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+              date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)
+            });
             (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateVideoDisplay)({
               transmorpherIdentifier: transmorpherIdentifier,
               thumbnailUrl: versionInformation.thumbnailUrl
@@ -3431,13 +3431,14 @@ function _updateVersionInformation() {
           currentVersionAgeElement.textContent = versionAge;
           currentVersionAgeElement.classList.remove('d-none');
           cacheInvalidatorPrefix = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getCacheInvalidatorFromUrl)({
-            url: versionInformation.fullsizeUrl
+            url: versionInformation.thumbnailUrl
           });
           versions.sort(function (a, b) {
             return b.number - a.number;
           }).forEach(function (version) {
+            var _versionInformation$c;
             // Don't show the currently processed or current version.
-            if (version.number === versionInformation.currentlyProcessedVersion.number || version.number === versionInformation.currentVersion.number) {
+            if (version.number === ((_versionInformation$c = versionInformation.currentlyProcessedVersion) === null || _versionInformation$c === void 0 ? void 0 : _versionInformation$c.number) || version.number === versionInformation.currentVersion.number) {
               return;
             }
             var versionEntry = defaultVersionEntry.cloneNode(true);
