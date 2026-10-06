@@ -20,12 +20,13 @@ import {
     displayState,
     openMoreInformationModalDisplay,
     resetAgeElement,
+    resetDropzoneErrorMessage,
     setAgeElement,
     updateMediaDisplay,
     updateThumbnail,
     updateVideoDisplay,
 } from './ui.js';
-import {addConfirmEventListener, getDateForDisplay, getMediaDimensions} from './utils.js';
+import {addConfirmEventListener, getCacheInvalidatorFromUrl, getDateForDisplay, getMediaDimensions} from './utils.js';
 
 export function setupComponent({transmorpherIdentifier}) {
     Dropzone.autoDiscover = false;
@@ -127,13 +128,10 @@ export function setupComponent({transmorpherIdentifier}) {
         accept: function (file, done) {
             file.done = done;
 
-            // Remove previous elements to maintain a clean overlay.
+            // Hides the "Drop here" CTA when a file is dropped in, to only show the progress bar.
             this.element.querySelector('.dz-default').style.display = 'none';
-            const errorElement = this.element.querySelector('.dz-error');
-
-            if (errorElement) {
-                errorElement.remove();
-            }
+            // Closes any previous error message when a new file is dropped in.
+            resetDropzoneErrorMessage({transmorpherIdentifier});
 
             this.emit('thumbnail', file);
         },
@@ -359,13 +357,12 @@ async function updateVersionInformation({transmorpherIdentifier}) {
         switch (medium.mediaType) {
             case MEDIA_TYPE.IMAGE:
             case MEDIA_TYPE.DOCUMENT:
-                versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentVersion] * 1000)});
+                versionAge = getDateForDisplay({date: new Date(versionInformation.currentVersion.createdAt * 1000)});
                 updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullsizeUrl: versionInformation.fullsizeUrl});
                 break;
             case MEDIA_TYPE.VIDEO:
-                versionAge = getDateForDisplay({date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)});
-
                 if (versionInformation.currentlyProcessedVersion) {
+                    versionAge = getDateForDisplay({date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)});
                     updateVideoDisplay({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl});
                 }
                 break;
@@ -375,16 +372,19 @@ async function updateVersionInformation({transmorpherIdentifier}) {
         currentVersionAgeElement.textContent = versionAge;
         currentVersionAgeElement.classList.remove('d-none');
 
-        Object.keys(versions)
-            .sort((a, b) => versions[b] - versions[a])
+        const cacheInvalidatorPrefix = getCacheInvalidatorFromUrl({url: versionInformation.thumbnailUrl});
+
+        versions
+            .sort((a, b) => b.number - a.number)
             .forEach(version => {
                 // Don't show the currently processed or current version.
-                if (version === String(versionInformation.currentlyProcessedVersion) || version === String(versionInformation.currentVersion)) {
+                if (version.number === versionInformation.currentlyProcessedVersion?.number || version.number === versionInformation.currentVersion.number) {
                     return;
                 }
 
                 const versionEntry = defaultVersionEntry.cloneNode(true);
                 const versionAgeElement = versionEntry.querySelector('.version-age');
+                const fullCacheInvalidator = `${cacheInvalidatorPrefix}${version.hash}`
 
                 switch (medium.mediaType) {
                     case MEDIA_TYPE.IMAGE:
@@ -395,19 +395,21 @@ async function updateVersionInformation({transmorpherIdentifier}) {
 
                         fullSizeLink.href = medium.routes.getDerivativeForVersion
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
-                            .replace('{version}', version)
-                            .replace('{transformations?}', '');
+                            .replace('{version}', version.number)
+                            .replace('{transformations?}', '')
+                            + fullCacheInvalidator;
                         fullSizeLink.classList.remove('disabled');
                         enlargeIcon.classList.remove('d-hidden');
 
                         versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
-                            .replace('{version}', version)
-                            .replace('{transformations?}', transformations['150w']);
+                            .replace('{version}', version.number)
+                            .replace('{transformations?}', transformations['150w'])
+                            + fullCacheInvalidator;
                         versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${medium.routes.getDerivativeForVersion
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
-                            .replace('{version}', version)
-                            .replace('{transformations?}', transformations['150w'])} 150w`;
+                            .replace('{version}', version.number)
+                            .replace('{transformations?}', transformations['150w'])}${fullCacheInvalidator} 150w`;
                         break;
                     }
                     case MEDIA_TYPE.VIDEO:
@@ -418,10 +420,10 @@ async function updateVersionInformation({transmorpherIdentifier}) {
 
                 addConfirmEventListener({
                     button: versionEntry.querySelector('button'),
-                    callback: () => setVersionForMedia({transmorpherIdentifier, version}),
+                    callback: () => setVersionForMedia({transmorpherIdentifier, version: version}),
                     transmorpherIdentifier,
                 });
-                versionAgeElement.textContent = getDateForDisplay({date: new Date(versions[version] * 1000)});
+                versionAgeElement.textContent = getDateForDisplay({date: new Date(version.createdAt * 1000)});
 
                 versionList.append(versionEntry);
                 versionEntry.classList.remove('d-none');

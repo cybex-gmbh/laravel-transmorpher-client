@@ -14,6 +14,7 @@
   - Some config keys have been renamed 
   - Removed unused `transmorpher.client_name` config key and `getClientName()` method from Media classes
 - Route names and paths have changed to be more uniform
+- Error messages are now cleared once a new file is dropped into the dropzone
 
 ### Features
 
@@ -26,6 +27,7 @@
 
 - Fixed an issue where thumbnails for very wide images were extending beyond the dropzone area
 - Fixed an issue where the HTML video player would overflow the dropzone area
+- Fixed an issue where version thumbnails would display old images due to browser caching, when a media has been deleted and re-uploaded
 
 ### Development
 
