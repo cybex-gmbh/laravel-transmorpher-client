@@ -361,9 +361,8 @@ async function updateVersionInformation({transmorpherIdentifier}) {
                 updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullsizeUrl: versionInformation.fullsizeUrl});
                 break;
             case MEDIA_TYPE.VIDEO:
-                versionAge = getDateForDisplay({date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)});
-
                 if (versionInformation.currentlyProcessedVersion) {
+                    versionAge = getDateForDisplay({date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)});
                     updateVideoDisplay({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl});
                 }
                 break;
@@ -373,13 +372,13 @@ async function updateVersionInformation({transmorpherIdentifier}) {
         currentVersionAgeElement.textContent = versionAge;
         currentVersionAgeElement.classList.remove('d-none');
 
-        const cacheInvalidatorPrefix = getCacheInvalidatorFromUrl({url: versionInformation.fullsizeUrl});
+        const cacheInvalidatorPrefix = getCacheInvalidatorFromUrl({url: versionInformation.thumbnailUrl});
 
         versions
             .sort((a, b) => b.number - a.number)
             .forEach(version => {
                 // Don't show the currently processed or current version.
-                if (version.number === versionInformation.currentlyProcessedVersion.number || version.number === versionInformation.currentVersion.number) {
+                if (version.number === versionInformation.currentlyProcessedVersion?.number || version.number === versionInformation.currentVersion.number) {
                     return;
                 }
 
