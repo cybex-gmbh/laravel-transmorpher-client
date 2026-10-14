@@ -69,7 +69,6 @@ export function setupComponent({transmorpherIdentifier}) {
             this.on('processing', async function () {
                 await setUploadingState({transmorpherIdentifier, uploadToken: this.options.uploadToken});
 
-                clearStatusPolling({transmorpherIdentifier});
                 displayState({transmorpherIdentifier, stateName: 'uploading', resetError: false});
                 startPolling({transmorpherIdentifier, uploadToken: this.options.uploadToken});
             });
@@ -198,6 +197,8 @@ async function reserveUploadSlot({transmorpherIdentifier, done}) {
 }
 
 function startPolling({transmorpherIdentifier, uploadToken}) {
+    clearStatusPolling({transmorpherIdentifier});
+
     const expirationTime = new Date();
     expirationTime.setDate(expirationTime.getDate() + 1);
 
@@ -303,7 +304,6 @@ async function displayUploadResult({uploadResult, transmorpherIdentifier, upload
 
         // Start polling for updates when the upload was aborted due to another upload.
         if (uploadResult.httpCode === 404) {
-            clearStatusPolling({transmorpherIdentifier});
             startPolling({transmorpherIdentifier, uploadToken: uploadResult.latestUploadToken});
             displayState({transmorpherIdentifier, stateName: 'uploading'});
         }
@@ -332,7 +332,7 @@ async function updateVersionInformation({transmorpherIdentifier}) {
     try {
         const versionInformation = await getVersions({transmorpherIdentifier});
 
-        if (!versionInformation.currentVersion) {
+        if (!versionInformation.versions) {
             displayPlaceholder({transmorpherIdentifier});
             document.querySelector(`#modal-mi-${transmorpherIdentifier} .card-side .confirm-delete`).classList.add('d-hidden');
 
@@ -344,25 +344,27 @@ async function updateVersionInformation({transmorpherIdentifier}) {
         const stateResponse = await getState({transmorpherIdentifier});
 
         if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
-            clearStatusPolling({transmorpherIdentifier});
             displayState({transmorpherIdentifier, stateName: stateResponse.state});
             startPolling({transmorpherIdentifier, uploadToken: stateResponse.latestUploadToken});
         }
 
         const medium = getMedium({transmorpherIdentifier});
-        const versions = versionInformation.state === 'success' ? versionInformation.versions : [];
+        const processedVersions = versionInformation.versions
+            .filter(version => version.processed)
+            .sort((versionA, versionB) => versionB.number - versionA.number);
+        const currentlyProcessedVersion = processedVersions[0];
 
         let versionAge;
 
         switch (medium.mediaType) {
             case MEDIA_TYPE.IMAGE:
             case MEDIA_TYPE.DOCUMENT:
-                versionAge = getDateForDisplay({date: new Date(versionInformation.currentVersion.createdAt * 1000)});
+                versionAge = getDateForDisplay({date: new Date(currentlyProcessedVersion.createdAt)});
                 updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullsizeUrl: versionInformation.fullsizeUrl});
                 break;
             case MEDIA_TYPE.VIDEO:
-                if (versionInformation.currentlyProcessedVersion) {
-                    versionAge = getDateForDisplay({date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)});
+                if (currentlyProcessedVersion) {
+                    versionAge = getDateForDisplay({date: new Date(currentlyProcessedVersion.createdAt)});
                     updateVideoDisplay({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl});
                 }
                 break;
@@ -374,11 +376,10 @@ async function updateVersionInformation({transmorpherIdentifier}) {
 
         const cacheInvalidatorPrefix = getCacheInvalidatorFromUrl({url: versionInformation.thumbnailUrl});
 
-        versions
-            .sort((a, b) => b.number - a.number)
+        processedVersions
             .forEach(version => {
-                // Don't show the currently processed or current version.
-                if (version.number === versionInformation.currentlyProcessedVersion?.number || version.number === versionInformation.currentVersion.number) {
+                // Don't show the currently processed version, as it is shown on the left as the main version.
+                if (version.number === currentlyProcessedVersion.number) {
                     return;
                 }
 
@@ -423,7 +424,7 @@ async function updateVersionInformation({transmorpherIdentifier}) {
                     callback: () => setVersionForMedia({transmorpherIdentifier, version: version}),
                     transmorpherIdentifier,
                 });
-                versionAgeElement.textContent = getDateForDisplay({date: new Date(version.createdAt * 1000)});
+                versionAgeElement.textContent = getDateForDisplay({date: new Date(version.createdAt)});
 
                 versionList.append(versionEntry);
                 versionEntry.classList.remove('d-none');
@@ -549,8 +550,6 @@ export async function closeUploadConfirmModal({transmorpherIdentifier}) {
 
     const stateResponse = await getState({transmorpherIdentifier});
 
-    clearStatusPolling({transmorpherIdentifier});
     displayState({transmorpherIdentifier, stateName: stateResponse.state});
     startPolling({transmorpherIdentifier, uploadToken: stateResponse.latestUploadToken});
 }
-
