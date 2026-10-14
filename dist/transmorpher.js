@@ -2840,9 +2840,6 @@ function setupComponent(_ref) {
                 uploadToken: this.options.uploadToken
               });
             case 1:
-              (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-                transmorpherIdentifier: transmorpherIdentifier
-              });
               (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
                 transmorpherIdentifier: transmorpherIdentifier,
                 stateName: 'uploading',
@@ -3108,6 +3105,9 @@ function _reserveUploadSlot() {
 function startPolling(_ref5) {
   var transmorpherIdentifier = _ref5.transmorpherIdentifier,
     uploadToken = _ref5.uploadToken;
+  (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+    transmorpherIdentifier: transmorpherIdentifier
+  });
   var expirationTime = new Date();
   expirationTime.setDate(expirationTime.getDate() + 1);
   var intervalId = setInterval(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6() {
@@ -3318,9 +3318,6 @@ function _displayUploadResult() {
 
           // Start polling for updates when the upload was aborted due to another upload.
           if (uploadResult.httpCode === 404) {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-              transmorpherIdentifier: transmorpherIdentifier
-            });
             startPolling({
               transmorpherIdentifier: transmorpherIdentifier,
               uploadToken: uploadResult.latestUploadToken
@@ -3344,7 +3341,7 @@ function updateVersionInformation(_x0) {
 }
 function _updateVersionInformation() {
   _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(_ref9) {
-    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, cacheInvalidatorPrefix, _t4;
+    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, processedVersions, currentlyProcessedVersion, versionAge, currentVersionAgeElement, cacheInvalidatorPrefix, _t4;
     return _regenerator().w(function (_context1) {
       while (1) switch (_context1.p = _context1.n) {
         case 0:
@@ -3368,7 +3365,7 @@ function _updateVersionInformation() {
           });
         case 3:
           versionInformation = _context1.v;
-          if (versionInformation.currentVersion) {
+          if (versionInformation.versions) {
             _context1.n = 4;
             break;
           }
@@ -3386,9 +3383,6 @@ function _updateVersionInformation() {
         case 5:
           stateResponse = _context1.v;
           if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-              transmorpherIdentifier: transmorpherIdentifier
-            });
             (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
               transmorpherIdentifier: transmorpherIdentifier,
               stateName: stateResponse.state
@@ -3401,13 +3395,18 @@ function _updateVersionInformation() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          versions = versionInformation.state === 'success' ? versionInformation.versions : [];
+          processedVersions = versionInformation.versions.filter(function (version) {
+            return version.processed;
+          }).sort(function (versionA, versionB) {
+            return versionB.number - versionA.number;
+          });
+          currentlyProcessedVersion = processedVersions[0];
           _t4 = medium.mediaType;
           _context1.n = _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO ? 7 : 8;
           break;
         case 6:
           versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-            date: new Date(versionInformation.currentVersion.createdAt * 1000)
+            date: new Date(currentlyProcessedVersion.createdAt)
           });
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
             transmorpherIdentifier: transmorpherIdentifier,
@@ -3416,9 +3415,9 @@ function _updateVersionInformation() {
           });
           return _context1.a(3, 8);
         case 7:
-          if (versionInformation.currentlyProcessedVersion) {
+          if (currentlyProcessedVersion) {
             versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-              date: new Date(versionInformation.currentlyProcessedVersion.createdAt * 1000)
+              date: new Date(currentlyProcessedVersion.createdAt)
             });
             (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateVideoDisplay)({
               transmorpherIdentifier: transmorpherIdentifier,
@@ -3433,12 +3432,9 @@ function _updateVersionInformation() {
           cacheInvalidatorPrefix = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getCacheInvalidatorFromUrl)({
             url: versionInformation.thumbnailUrl
           });
-          versions.sort(function (a, b) {
-            return b.number - a.number;
-          }).forEach(function (version) {
-            var _versionInformation$c;
-            // Don't show the currently processed or current version.
-            if (version.number === ((_versionInformation$c = versionInformation.currentlyProcessedVersion) === null || _versionInformation$c === void 0 ? void 0 : _versionInformation$c.number) || version.number === versionInformation.currentVersion.number) {
+          processedVersions.forEach(function (version) {
+            // Don't show the currently processed version, as it is shown on the left as the main version.
+            if (version.number === currentlyProcessedVersion.number) {
               return;
             }
             var versionEntry = defaultVersionEntry.cloneNode(true);
@@ -3474,7 +3470,7 @@ function _updateVersionInformation() {
               transmorpherIdentifier: transmorpherIdentifier
             });
             versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-              date: new Date(version.createdAt * 1000)
+              date: new Date(version.createdAt)
             });
             versionList.append(versionEntry);
             versionEntry.classList.remove('d-none');
@@ -3738,9 +3734,6 @@ function _closeUploadConfirmModal() {
           });
         case 1:
           stateResponse = _context13.v;
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
             transmorpherIdentifier: transmorpherIdentifier,
             stateName: stateResponse.state
