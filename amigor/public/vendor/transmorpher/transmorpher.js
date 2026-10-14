@@ -2544,7 +2544,7 @@ function _setVersion() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version);
+          url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number);
           return _context1.a(2, requestJson({
             method: 'PATCH',
             url: url
@@ -2840,9 +2840,6 @@ function setupComponent(_ref) {
                 uploadToken: this.options.uploadToken
               });
             case 1:
-              (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-                transmorpherIdentifier: transmorpherIdentifier
-              });
               (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
                 transmorpherIdentifier: transmorpherIdentifier,
                 stateName: 'uploading',
@@ -2952,12 +2949,12 @@ function setupComponent(_ref) {
     accept: function accept(file, done) {
       file.done = done;
 
-      // Remove previous elements to maintain a clean overlay.
+      // Hides the "Drop here" CTA when a file is dropped in, to only show the progress bar.
       this.element.querySelector('.dz-default').style.display = 'none';
-      var errorElement = this.element.querySelector('.dz-error');
-      if (errorElement) {
-        errorElement.remove();
-      }
+      // Closes any previous error message when a new file is dropped in.
+      (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.resetDropzoneErrorMessage)({
+        transmorpherIdentifier: transmorpherIdentifier
+      });
       this.emit('thumbnail', file);
     },
     canceled: function () {
@@ -3108,6 +3105,9 @@ function _reserveUploadSlot() {
 function startPolling(_ref5) {
   var transmorpherIdentifier = _ref5.transmorpherIdentifier,
     uploadToken = _ref5.uploadToken;
+  (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
+    transmorpherIdentifier: transmorpherIdentifier
+  });
   var expirationTime = new Date();
   expirationTime.setDate(expirationTime.getDate() + 1);
   var intervalId = setInterval(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6() {
@@ -3318,9 +3318,6 @@ function _displayUploadResult() {
 
           // Start polling for updates when the upload was aborted due to another upload.
           if (uploadResult.httpCode === 404) {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-              transmorpherIdentifier: transmorpherIdentifier
-            });
             startPolling({
               transmorpherIdentifier: transmorpherIdentifier,
               uploadToken: uploadResult.latestUploadToken
@@ -3344,7 +3341,7 @@ function updateVersionInformation(_x0) {
 }
 function _updateVersionInformation() {
   _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(_ref9) {
-    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, _t4;
+    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, processedVersions, currentlyProcessedVersion, versionAge, currentVersionAgeElement, cacheInvalidatorPrefix, _t4;
     return _regenerator().w(function (_context1) {
       while (1) switch (_context1.p = _context1.n) {
         case 0:
@@ -3368,7 +3365,7 @@ function _updateVersionInformation() {
           });
         case 3:
           versionInformation = _context1.v;
-          if (versionInformation.currentVersion) {
+          if (versionInformation.versions) {
             _context1.n = 4;
             break;
           }
@@ -3386,9 +3383,6 @@ function _updateVersionInformation() {
         case 5:
           stateResponse = _context1.v;
           if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-              transmorpherIdentifier: transmorpherIdentifier
-            });
             (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
               transmorpherIdentifier: transmorpherIdentifier,
               stateName: stateResponse.state
@@ -3401,13 +3395,18 @@ function _updateVersionInformation() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          versions = versionInformation.state === 'success' ? versionInformation.versions : [];
+          processedVersions = versionInformation.versions.filter(function (version) {
+            return version.processed;
+          }).sort(function (versionA, versionB) {
+            return versionB.number - versionA.number;
+          });
+          currentlyProcessedVersion = processedVersions[0];
           _t4 = medium.mediaType;
           _context1.n = _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT ? 6 : _t4 === _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO ? 7 : 8;
           break;
         case 6:
           versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-            date: new Date(versions[versionInformation.currentVersion] * 1000)
+            date: new Date(currentlyProcessedVersion.createdAt)
           });
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateThumbnail)({
             transmorpherIdentifier: transmorpherIdentifier,
@@ -3416,10 +3415,10 @@ function _updateVersionInformation() {
           });
           return _context1.a(3, 8);
         case 7:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-            date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)
-          });
-          if (versionInformation.currentlyProcessedVersion) {
+          if (currentlyProcessedVersion) {
+            versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
+              date: new Date(currentlyProcessedVersion.createdAt)
+            });
             (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.updateVideoDisplay)({
               transmorpherIdentifier: transmorpherIdentifier,
               thumbnailUrl: versionInformation.thumbnailUrl
@@ -3430,15 +3429,17 @@ function _updateVersionInformation() {
           currentVersionAgeElement = modal.querySelector('.current-version-age');
           currentVersionAgeElement.textContent = versionAge;
           currentVersionAgeElement.classList.remove('d-none');
-          Object.keys(versions).sort(function (a, b) {
-            return versions[b] - versions[a];
-          }).forEach(function (version) {
-            // Don't show the currently processed or current version.
-            if (version === String(versionInformation.currentlyProcessedVersion) || version === String(versionInformation.currentVersion)) {
+          cacheInvalidatorPrefix = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getCacheInvalidatorFromUrl)({
+            url: versionInformation.thumbnailUrl
+          });
+          processedVersions.forEach(function (version) {
+            // Don't show the currently processed version, as it is shown on the left as the main version.
+            if (version.number === currentlyProcessedVersion.number) {
               return;
             }
             var versionEntry = defaultVersionEntry.cloneNode(true);
             var versionAgeElement = versionEntry.querySelector('.version-age');
+            var fullCacheInvalidator = "".concat(cacheInvalidatorPrefix).concat(version.hash);
             switch (medium.mediaType) {
               case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.IMAGE:
               case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.DOCUMENT:
@@ -3446,11 +3447,11 @@ function _updateVersionInformation() {
                   var transformations = medium.transformations;
                   var fullSizeLink = versionEntry.querySelector('a.full-size-link');
                   var enlargeIcon = versionEntry.querySelector('.enlarge-icon');
-                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
+                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number).replace('{transformations?}', '') + fullCacheInvalidator;
                   fullSizeLink.classList.remove('disabled');
                   enlargeIcon.classList.remove('d-hidden');
-                  versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']);
-                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
+                  versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number).replace('{transformations?}', transformations['150w']) + fullCacheInvalidator;
+                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version.number).replace('{transformations?}', transformations['150w'])).concat(fullCacheInvalidator, " 150w");
                   break;
                 }
               case _state_js__WEBPACK_IMPORTED_MODULE_1__.MEDIA_TYPE.VIDEO:
@@ -3469,7 +3470,7 @@ function _updateVersionInformation() {
               transmorpherIdentifier: transmorpherIdentifier
             });
             versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.getDateForDisplay)({
-              date: new Date(versions[version] * 1000)
+              date: new Date(version.createdAt)
             });
             versionList.append(versionEntry);
             versionEntry.classList.remove('d-none');
@@ -3733,9 +3734,6 @@ function _closeUploadConfirmModal() {
           });
         case 1:
           stateResponse = _context13.v;
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_1__.clearStatusPolling)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_3__.displayState)({
             transmorpherIdentifier: transmorpherIdentifier,
             stateName: stateResponse.state
@@ -3857,6 +3855,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getSrcSetString: () => (/* binding */ getSrcSetString),
 /* harmony export */   openMoreInformationModalDisplay: () => (/* binding */ openMoreInformationModalDisplay),
 /* harmony export */   resetAgeElement: () => (/* binding */ resetAgeElement),
+/* harmony export */   resetDropzoneErrorMessage: () => (/* binding */ resetDropzoneErrorMessage),
 /* harmony export */   resetModalErrorMessageDisplay: () => (/* binding */ resetModalErrorMessageDisplay),
 /* harmony export */   setAgeElement: () => (/* binding */ setAgeElement),
 /* harmony export */   setModalErrorMessage: () => (/* binding */ setModalErrorMessage),
@@ -3978,19 +3977,27 @@ function displayDropzoneErrorMessage(_ref8) {
   errorDisplay.querySelector('.error-message').textContent = message;
   form.querySelector('.dz-default').style.display = 'block';
 }
-function setModalErrorMessage(_ref9) {
-  var transmorpherIdentifier = _ref9.transmorpherIdentifier,
-    message = _ref9.message;
+function resetDropzoneErrorMessage(_ref9) {
+  var transmorpherIdentifier = _ref9.transmorpherIdentifier;
+  var form = document.querySelector("#dz-".concat(transmorpherIdentifier));
+  var errorDisplay = form.querySelector('.error-display');
+  errorDisplay.classList.add('d-none');
+  errorDisplay.querySelector('.error-message').textContent = '';
+  form.querySelector('.dz-default').style.display = 'none';
+}
+function setModalErrorMessage(_ref0) {
+  var transmorpherIdentifier = _ref0.transmorpherIdentifier,
+    message = _ref0.message;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = message;
 }
-function resetModalErrorMessageDisplay(_ref0) {
-  var transmorpherIdentifier = _ref0.transmorpherIdentifier;
+function resetModalErrorMessageDisplay(_ref1) {
+  var transmorpherIdentifier = _ref1.transmorpherIdentifier;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .error-message")).textContent = '';
 }
-function updateMediaDisplay(_ref1) {
-  var transmorpherIdentifier = _ref1.transmorpherIdentifier,
-    thumbnailUrl = _ref1.thumbnailUrl,
-    fullsizeUrl = _ref1.fullsizeUrl;
+function updateMediaDisplay(_ref10) {
+  var transmorpherIdentifier = _ref10.transmorpherIdentifier,
+    thumbnailUrl = _ref10.thumbnailUrl,
+    fullsizeUrl = _ref10.fullsizeUrl;
   switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
     transmorpherIdentifier: transmorpherIdentifier
   }).mediaType) {
@@ -4010,10 +4017,10 @@ function updateMediaDisplay(_ref1) {
       break;
   }
 }
-function updateThumbnail(_ref10) {
-  var transmorpherIdentifier = _ref10.transmorpherIdentifier,
-    thumbnailUrl = _ref10.thumbnailUrl,
-    fullsizeUrl = _ref10.fullsizeUrl;
+function updateThumbnail(_ref11) {
+  var transmorpherIdentifier = _ref11.transmorpherIdentifier,
+    thumbnailUrl = _ref11.thumbnailUrl,
+    fullsizeUrl = _ref11.fullsizeUrl;
   var imageElements = getPrimaryPreviewImages({
     transmorpherIdentifier: transmorpherIdentifier
   });
@@ -4031,13 +4038,13 @@ function updateThumbnail(_ref10) {
     image.nextElementSibling.classList.remove('d-hidden');
   });
 }
-function getPrimaryPreviewImages(_ref11) {
-  var transmorpherIdentifier = _ref11.transmorpherIdentifier;
+function getPrimaryPreviewImages(_ref12) {
+  var transmorpherIdentifier = _ref12.transmorpherIdentifier;
   return document.querySelectorAll(["#dz-".concat(transmorpherIdentifier, " .media-preview .dz-image > img:first-of-type"), "#modal-mi-".concat(transmorpherIdentifier, " .card-side .media-preview .dz-image > img:first-of-type")].join(', '));
 }
-function getSrcSetString(_ref12) {
-  var transmorpherIdentifier = _ref12.transmorpherIdentifier,
-    imageUrl = _ref12.imageUrl;
+function getSrcSetString(_ref13) {
+  var transmorpherIdentifier = _ref13.transmorpherIdentifier,
+    imageUrl = _ref13.imageUrl;
   var srcStrings = [];
   var transformations = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
     transmorpherIdentifier: transmorpherIdentifier
@@ -4048,9 +4055,9 @@ function getSrcSetString(_ref12) {
   });
   return srcStrings.join(', ');
 }
-function updateVideoDisplay(_ref13) {
-  var transmorpherIdentifier = _ref13.transmorpherIdentifier,
-    thumbnailUrl = _ref13.thumbnailUrl;
+function updateVideoDisplay(_ref14) {
+  var transmorpherIdentifier = _ref14.transmorpherIdentifier,
+    thumbnailUrl = _ref14.thumbnailUrl;
   var videoElements = document.querySelectorAll("#component-".concat(transmorpherIdentifier, " video.video-transmorpher"));
   videoElements.forEach(function (video) {
     video.src = thumbnailUrl;
@@ -4063,8 +4070,8 @@ function updateVideoDisplay(_ref13) {
     return placeholder.classList.add('d-none');
   });
 }
-function displayPlaceholder(_ref14) {
-  var transmorpherIdentifier = _ref14.transmorpherIdentifier;
+function displayPlaceholder(_ref15) {
+  var transmorpherIdentifier = _ref15.transmorpherIdentifier;
   var imageElements;
   switch ((0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
     transmorpherIdentifier: transmorpherIdentifier
@@ -4097,17 +4104,17 @@ function displayPlaceholder(_ref14) {
   });
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .current-version-age")).classList.add('d-none');
 }
-function closeMoreInformationModal(_ref15) {
-  var transmorpherIdentifier = _ref15.transmorpherIdentifier;
+function closeMoreInformationModal(_ref16) {
+  var transmorpherIdentifier = _ref16.transmorpherIdentifier;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.remove('d-flex');
 }
-function openMoreInformationModalDisplay(_ref16) {
-  var transmorpherIdentifier = _ref16.transmorpherIdentifier;
+function openMoreInformationModalDisplay(_ref17) {
+  var transmorpherIdentifier = _ref17.transmorpherIdentifier;
   document.querySelector("#modal-mi-".concat(transmorpherIdentifier)).classList.add('d-flex');
 }
-function closeUploadConfirmModalDisplay(_ref17) {
+function closeUploadConfirmModalDisplay(_ref18) {
   var _document$querySelect2;
-  var transmorpherIdentifier = _ref17.transmorpherIdentifier;
+  var transmorpherIdentifier = _ref18.transmorpherIdentifier;
   document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
   (_document$querySelect2 = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"))) === null || _document$querySelect2 === void 0 || _document$querySelect2.remove();
   if (document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview:not(.dz-processing)"))) {
@@ -4115,10 +4122,10 @@ function closeUploadConfirmModalDisplay(_ref17) {
     document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'block';
   }
 }
-function closeErrorMessage(_ref18) {
+function closeErrorMessage(_ref19) {
   var _document$querySelect3, _closeButton$closest$;
-  var closeButton = _ref18.closeButton,
-    transmorpherIdentifier = _ref18.transmorpherIdentifier;
+  var closeButton = _ref19.closeButton,
+    transmorpherIdentifier = _ref19.transmorpherIdentifier;
   closeButton.closest('.error-display').classList.add('d-none');
 
   // Reset errors.
@@ -4141,6 +4148,7 @@ function closeErrorMessage(_ref18) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   addConfirmEventListener: () => (/* binding */ addConfirmEventListener),
+/* harmony export */   getCacheInvalidatorFromUrl: () => (/* binding */ getCacheInvalidatorFromUrl),
 /* harmony export */   getCsrfToken: () => (/* binding */ getCsrfToken),
 /* harmony export */   getDateForDisplay: () => (/* binding */ getDateForDisplay),
 /* harmony export */   getMediaDimensions: () => (/* binding */ getMediaDimensions)
@@ -4211,9 +4219,16 @@ function getMediaDimensions(_ref3) {
       });
   }
 }
-function getImageDimensions(_ref4) {
-  var file = _ref4.file,
-    validationError = _ref4.validationError;
+function getCacheInvalidatorFromUrl(_ref4) {
+  var _versionParameter$mat;
+  var url = _ref4.url;
+  var versionParameter = new URL(url).searchParams.get('v');
+  var cacheInvalidator = versionParameter === null || versionParameter === void 0 || (_versionParameter$mat = versionParameter.match(/^\d+_/)) === null || _versionParameter$mat === void 0 ? void 0 : _versionParameter$mat[0];
+  return cacheInvalidator ? "?v=".concat(cacheInvalidator) : null;
+}
+function getImageDimensions(_ref5) {
+  var file = _ref5.file,
+    validationError = _ref5.validationError;
   return new Promise(function (resolve, reject) {
     var image = new Image();
     image.src = URL.createObjectURL(file);
@@ -4229,9 +4244,9 @@ function getImageDimensions(_ref4) {
     };
   });
 }
-function getVideoDimensions(_ref5) {
-  var file = _ref5.file,
-    validationError = _ref5.validationError;
+function getVideoDimensions(_ref6) {
+  var file = _ref6.file,
+    validationError = _ref6.validationError;
   return new Promise(function (resolve, reject) {
     var video = document.createElement('video');
     video.src = URL.createObjectURL(file);
