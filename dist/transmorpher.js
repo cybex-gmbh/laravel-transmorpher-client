@@ -2764,18 +2764,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   openMoreInformationModal: () => (/* binding */ openMoreInformationModal),
 /* harmony export */   openUploadConfirmModal: () => (/* binding */ openUploadConfirmModal),
 /* harmony export */   setupComponent: () => (/* binding */ setupComponent),
-/* harmony export */   startPolling: () => (/* binding */ startPolling),
-/* harmony export */   updateVersionInformation: () => (/* binding */ updateVersionInformation)
+/* harmony export */   startPolling: () => (/* binding */ startPolling)
 /* harmony export */ });
 /* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
 /* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./api.js */ "./src/resources/js/api.js");
 /* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils.js */ "./src/resources/js/utils.js");
 /* harmony import */ var _dropzone_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./dropzone.js */ "./src/resources/js/dropzone.js");
+/* harmony import */ var _versions_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./versions.js */ "./src/resources/js/versions.js");
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+
 
 
 
@@ -2859,7 +2860,7 @@ function startPolling(_ref2) {
             fullsizeUrl: pollingInformation.fullsizeUrl
           });
           _context.n = 4;
-          return updateVersionInformation({
+          return (0,_versions_js__WEBPACK_IMPORTED_MODULE_5__.updateVersionInformation)({
             transmorpherIdentifier: transmorpherIdentifier
           });
         case 4:
@@ -2919,292 +2920,33 @@ function startPolling(_ref2) {
     intervalId: intervalId
   });
 }
-function updateVersionInformation(_x) {
-  return _updateVersionInformation.apply(this, arguments);
-}
-function _updateVersionInformation() {
-  _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref4) {
-    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, _t2;
-    return _regenerator().w(function (_context3) {
-      while (1) switch (_context3.p = _context3.n) {
-        case 0:
-          transmorpherIdentifier = _ref4.transmorpherIdentifier;
-          modal = document.querySelector("#modal-mi-".concat(transmorpherIdentifier)); // Don't update when the modal is closed or currently fetching.
-          if (!(!modal.classList.contains('d-flex') || modal.dataset.fetching === 'true')) {
-            _context3.n = 1;
-            break;
-          }
-          return _context3.a(2);
-        case 1:
-          modal.dataset.fetching = 'true';
-          versionList = modal.querySelector('.version-list > ul');
-          defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true); // Clear list while preserving one cloneable template entry.
-          versionList.replaceChildren();
-          versionList.append(defaultVersionEntry);
-          _context3.p = 2;
-          _context3.n = 3;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.getVersions)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-        case 3:
-          versionInformation = _context3.v;
-          if (versionInformation.currentVersion) {
-            _context3.n = 4;
-            break;
-          }
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayPlaceholder)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
-          return _context3.a(2);
-        case 4:
-          document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
-          _context3.n = 5;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.getState)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-        case 5:
-          stateResponse = _context3.v;
-          if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
-            (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
-              transmorpherIdentifier: transmorpherIdentifier
-            });
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayState)({
-              transmorpherIdentifier: transmorpherIdentifier,
-              stateName: stateResponse.state
-            });
-            startPolling({
-              transmorpherIdentifier: transmorpherIdentifier,
-              uploadToken: stateResponse.latestUploadToken
-            });
-          }
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          versions = versionInformation.state === 'success' ? versionInformation.versions : [];
-          _t2 = medium.mediaType;
-          _context3.n = _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE ? 6 : _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT ? 6 : _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO ? 7 : 8;
-          break;
-        case 6:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
-            date: new Date(versions[versionInformation.currentVersion] * 1000)
-          });
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateThumbnail)({
-            transmorpherIdentifier: transmorpherIdentifier,
-            thumbnailUrl: versionInformation.thumbnailUrl,
-            fullsizeUrl: versionInformation.fullsizeUrl
-          });
-          return _context3.a(3, 8);
-        case 7:
-          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
-            date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)
-          });
-          if (versionInformation.currentlyProcessedVersion) {
-            (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateVideoDisplay)({
-              transmorpherIdentifier: transmorpherIdentifier,
-              thumbnailUrl: versionInformation.thumbnailUrl
-            });
-          }
-          return _context3.a(3, 8);
-        case 8:
-          currentVersionAgeElement = modal.querySelector('.current-version-age');
-          currentVersionAgeElement.textContent = versionAge;
-          currentVersionAgeElement.classList.remove('d-none');
-          Object.keys(versions).sort(function (a, b) {
-            return versions[b] - versions[a];
-          }).forEach(function (version) {
-            // Don't show the currently processed or current version.
-            if (version === String(versionInformation.currentlyProcessedVersion) || version === String(versionInformation.currentVersion)) {
-              return;
-            }
-            var versionEntry = defaultVersionEntry.cloneNode(true);
-            var versionAgeElement = versionEntry.querySelector('.version-age');
-            switch (medium.mediaType) {
-              case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE:
-              case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT:
-                {
-                  var transformations = medium.transformations;
-                  var fullSizeLink = versionEntry.querySelector('a.full-size-link');
-                  var enlargeIcon = versionEntry.querySelector('.enlarge-icon');
-                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
-                  fullSizeLink.classList.remove('disabled');
-                  enlargeIcon.classList.remove('d-hidden');
-                  versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']);
-                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
-                  break;
-                }
-              case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO:
-                // Don't show video for now, will use thumbnails later.
-                versionEntry.querySelector('.media-preview').remove();
-                break;
-            }
-            (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.addConfirmEventListener)({
-              button: versionEntry.querySelector('button'),
-              callback: function callback() {
-                return setVersionForMedia({
-                  transmorpherIdentifier: transmorpherIdentifier,
-                  version: version
-                });
-              },
-              transmorpherIdentifier: transmorpherIdentifier
-            });
-            versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
-              date: new Date(versions[version] * 1000)
-            });
-            versionList.append(versionEntry);
-            versionEntry.classList.remove('d-none');
-          });
-        case 9:
-          _context3.p = 9;
-          modal.dataset.fetching = 'false';
-          return _context3.f(9);
-        case 10:
-          return _context3.a(2);
-      }
-    }, _callee3, null, [[2,, 9, 10]]);
-  }));
-  return _updateVersionInformation.apply(this, arguments);
-}
-function setVersionForMedia(_x2) {
-  return _setVersionForMedia.apply(this, arguments);
-}
-function _setVersionForMedia() {
-  _setVersionForMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(_ref5) {
-    var transmorpherIdentifier, version, uploadingStateResponse;
-    return _regenerator().w(function (_context4) {
-      while (1) switch (_context4.n) {
-        case 0:
-          transmorpherIdentifier = _ref5.transmorpherIdentifier, version = _ref5.version;
-          _context4.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.getState)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-        case 1:
-          uploadingStateResponse = _context4.v;
-          if (!(uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing')) {
-            _context4.n = 2;
-            break;
-          }
-          openUploadConfirmModal({
-            transmorpherIdentifier: transmorpherIdentifier,
-            callback: function callback() {
-              return makeSetVersionCall({
-                transmorpherIdentifier: transmorpherIdentifier,
-                version: version
-              });
-            }
-          });
-          return _context4.a(2);
-        case 2:
-          _context4.n = 3;
-          return makeSetVersionCall({
-            transmorpherIdentifier: transmorpherIdentifier,
-            version: version
-          });
-        case 3:
-          return _context4.a(2);
-      }
-    }, _callee4);
-  }));
-  return _setVersionForMedia.apply(this, arguments);
-}
-function makeSetVersionCall(_x3) {
-  return _makeSetVersionCall.apply(this, arguments);
-}
-function _makeSetVersionCall() {
-  _makeSetVersionCall = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(_ref6) {
-    var transmorpherIdentifier, version, medium, setVersionResult, _t3;
-    return _regenerator().w(function (_context5) {
-      while (1) switch (_context5.n) {
-        case 0:
-          transmorpherIdentifier = _ref6.transmorpherIdentifier, version = _ref6.version;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          _context5.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.setVersion)({
-            transmorpherIdentifier: transmorpherIdentifier,
-            version: version
-          });
-        case 1:
-          setVersionResult = _context5.v;
-          if (!(setVersionResult.state !== 'error')) {
-            _context5.n = 6;
-            break;
-          }
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          _context5.n = 2;
-          return updateVersionInformation({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-        case 2:
-          _t3 = medium.mediaType;
-          _context5.n = _t3 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE ? 3 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT ? 3 : _t3 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO ? 4 : 5;
-          break;
-        case 3:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateMediaDisplay)({
-            transmorpherIdentifier: transmorpherIdentifier,
-            thumbnailUrl: setVersionResult.thumbnailUrl,
-            fullsizeUrl: setVersionResult.fullsizeUrl
-          });
-          return _context5.a(3, 5);
-        case 4:
-          startPolling({
-            transmorpherIdentifier: transmorpherIdentifier,
-            uploadToken: setVersionResult.upload_token
-          });
-          return _context5.a(3, 5);
-        case 5:
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayState)({
-            transmorpherIdentifier: transmorpherIdentifier,
-            stateName: setVersionResult.state
-          });
-          return _context5.a(2);
-        case 6:
-          (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayModalState)({
-            transmorpherIdentifier: transmorpherIdentifier,
-            stateName: setVersionResult.state,
-            message: setVersionResult.clientMessage
-          });
-        case 7:
-          return _context5.a(2);
-      }
-    }, _callee5);
-  }));
-  return _makeSetVersionCall.apply(this, arguments);
-}
-function openMoreInformationModal(_ref7) {
-  var transmorpherIdentifier = _ref7.transmorpherIdentifier;
+function openMoreInformationModal(_ref4) {
+  var transmorpherIdentifier = _ref4.transmorpherIdentifier;
   (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.openMoreInformationModalDisplay)({
     transmorpherIdentifier: transmorpherIdentifier
   });
-  updateVersionInformation({
+  (0,_versions_js__WEBPACK_IMPORTED_MODULE_5__.updateVersionInformation)({
     transmorpherIdentifier: transmorpherIdentifier
   });
 }
-function deleteTransmorpherMedia(_x4) {
+function deleteTransmorpherMedia(_x) {
   return _deleteTransmorpherMedia.apply(this, arguments);
 }
 function _deleteTransmorpherMedia() {
-  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(_ref8) {
+  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref5) {
     var transmorpherIdentifier, deleteResult;
-    return _regenerator().w(function (_context6) {
-      while (1) switch (_context6.n) {
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
         case 0:
-          transmorpherIdentifier = _ref8.transmorpherIdentifier;
-          _context6.n = 1;
+          transmorpherIdentifier = _ref5.transmorpherIdentifier;
+          _context3.n = 1;
           return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.deleteTransmorpherMedia)({
             transmorpherIdentifier: transmorpherIdentifier
           });
         case 1:
-          deleteResult = _context6.v;
+          deleteResult = _context3.v;
           if (!(deleteResult.state !== 'error')) {
-            _context6.n = 3;
+            _context3.n = 3;
             break;
           }
           (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
@@ -3218,8 +2960,8 @@ function _deleteTransmorpherMedia() {
             transmorpherIdentifier: transmorpherIdentifier,
             stateName: 'processing'
           });
-          _context6.n = 2;
-          return updateVersionInformation({
+          _context3.n = 2;
+          return (0,_versions_js__WEBPACK_IMPORTED_MODULE_5__.updateVersionInformation)({
             transmorpherIdentifier: transmorpherIdentifier
           });
         case 2:
@@ -3228,7 +2970,7 @@ function _deleteTransmorpherMedia() {
           });
           document.querySelector("#dz-".concat(transmorpherIdentifier)).closest('.card').querySelector('.badge').classList.add('d-hidden');
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
-          return _context6.a(2);
+          return _context3.a(2);
         case 3:
           (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
             transmorpherIdentifier: transmorpherIdentifier
@@ -3239,15 +2981,15 @@ function _deleteTransmorpherMedia() {
             message: deleteResult.clientMessage
           });
         case 4:
-          return _context6.a(2);
+          return _context3.a(2);
       }
-    }, _callee6);
+    }, _callee3);
   }));
   return _deleteTransmorpherMedia.apply(this, arguments);
 }
-function openUploadConfirmModal(_ref9) {
-  var transmorpherIdentifier = _ref9.transmorpherIdentifier,
-    callback = _ref9.callback;
+function openUploadConfirmModal(_ref6) {
+  var transmorpherIdentifier = _ref6.transmorpherIdentifier,
+    callback = _ref6.callback;
   var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
   var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
   var previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
@@ -3291,25 +3033,25 @@ function openUploadConfirmModal(_ref9) {
     }, _callee2);
   }));
 }
-function closeUploadConfirmModal(_x5) {
+function closeUploadConfirmModal(_x2) {
   return _closeUploadConfirmModal.apply(this, arguments);
 }
 function _closeUploadConfirmModal() {
-  _closeUploadConfirmModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7(_ref1) {
+  _closeUploadConfirmModal = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(_ref8) {
     var transmorpherIdentifier, stateResponse;
-    return _regenerator().w(function (_context7) {
-      while (1) switch (_context7.n) {
+    return _regenerator().w(function (_context4) {
+      while (1) switch (_context4.n) {
         case 0:
-          transmorpherIdentifier = _ref1.transmorpherIdentifier;
+          transmorpherIdentifier = _ref8.transmorpherIdentifier;
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.closeUploadConfirmModalDisplay)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          _context7.n = 1;
+          _context4.n = 1;
           return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.getState)({
             transmorpherIdentifier: transmorpherIdentifier
           });
         case 1:
-          stateResponse = _context7.v;
+          stateResponse = _context4.v;
           (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
             transmorpherIdentifier: transmorpherIdentifier
           });
@@ -3322,9 +3064,9 @@ function _closeUploadConfirmModal() {
             uploadToken: stateResponse.latestUploadToken
           });
         case 2:
-          return _context7.a(2);
+          return _context4.a(2);
       }
-    }, _callee7);
+    }, _callee4);
   }));
   return _closeUploadConfirmModal.apply(this, arguments);
 }
@@ -3347,6 +3089,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils.js */ "./src/resources/js/utils.js");
 /* harmony import */ var _controller_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./controller.js */ "./src/resources/js/controller.js");
+/* harmony import */ var _versions_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./versions.js */ "./src/resources/js/versions.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
@@ -3357,6 +3100,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
 
 
 
@@ -3735,7 +3479,7 @@ function _displayUploadResult() {
           document.querySelector("#dz-".concat(transmorpherIdentifier)).classList.remove('dz-started');
           document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
           _context8.n = 1;
-          return (0,_controller_js__WEBPACK_IMPORTED_MODULE_5__.updateVersionInformation)({
+          return (0,_versions_js__WEBPACK_IMPORTED_MODULE_6__.updateVersionInformation)({
             transmorpherIdentifier: transmorpherIdentifier
           });
         case 1:
@@ -4289,6 +4033,292 @@ function getVideoDimensions(_ref5) {
       reject(validationError);
     };
   });
+}
+
+/***/ },
+
+/***/ "./src/resources/js/versions.js"
+/*!**************************************!*\
+  !*** ./src/resources/js/versions.js ***!
+  \**************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateVersionInformation: () => (/* binding */ updateVersionInformation)
+/* harmony export */ });
+/* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./api.js */ "./src/resources/js/api.js");
+/* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils.js */ "./src/resources/js/utils.js");
+/* harmony import */ var _controller_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./controller.js */ "./src/resources/js/controller.js");
+function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+
+
+
+
+
+function updateVersionInformation(_x) {
+  return _updateVersionInformation.apply(this, arguments);
+}
+function _updateVersionInformation() {
+  _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(_ref) {
+    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, versions, versionAge, currentVersionAgeElement, _t;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          transmorpherIdentifier = _ref.transmorpherIdentifier;
+          modal = document.querySelector("#modal-mi-".concat(transmorpherIdentifier)); // Don't update when the modal is closed or currently fetching.
+          if (!(!modal.classList.contains('d-flex') || modal.dataset.fetching === 'true')) {
+            _context.n = 1;
+            break;
+          }
+          return _context.a(2);
+        case 1:
+          modal.dataset.fetching = 'true';
+          versionList = modal.querySelector('.version-list > ul');
+          defaultVersionEntry = versionList.querySelector('.version-entry').cloneNode(true); // Clear list while preserving one cloneable template entry.
+          versionList.replaceChildren();
+          versionList.append(defaultVersionEntry);
+          _context.p = 2;
+          _context.n = 3;
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.getVersions)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+        case 3:
+          versionInformation = _context.v;
+          if (versionInformation.currentVersion) {
+            _context.n = 4;
+            break;
+          }
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayPlaceholder)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.add('d-hidden');
+          return _context.a(2);
+        case 4:
+          document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .confirm-delete")).classList.remove('d-hidden');
+          _context.n = 5;
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.getState)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+        case 5:
+          stateResponse = _context.v;
+          if (stateResponse.state === 'uploading' || stateResponse.state === 'processing') {
+            (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
+              transmorpherIdentifier: transmorpherIdentifier
+            });
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayState)({
+              transmorpherIdentifier: transmorpherIdentifier,
+              stateName: stateResponse.state
+            });
+            (0,_controller_js__WEBPACK_IMPORTED_MODULE_4__.startPolling)({
+              transmorpherIdentifier: transmorpherIdentifier,
+              uploadToken: stateResponse.latestUploadToken
+            });
+          }
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          versions = versionInformation.state === 'success' ? versionInformation.versions : [];
+          _t = medium.mediaType;
+          _context.n = _t === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE ? 6 : _t === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT ? 6 : _t === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO ? 7 : 8;
+          break;
+        case 6:
+          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
+            date: new Date(versions[versionInformation.currentVersion] * 1000)
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateThumbnail)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            thumbnailUrl: versionInformation.thumbnailUrl,
+            fullsizeUrl: versionInformation.fullsizeUrl
+          });
+          return _context.a(3, 8);
+        case 7:
+          versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
+            date: new Date(versions[versionInformation.currentlyProcessedVersion] * 1000)
+          });
+          if (versionInformation.currentlyProcessedVersion) {
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateVideoDisplay)({
+              transmorpherIdentifier: transmorpherIdentifier,
+              thumbnailUrl: versionInformation.thumbnailUrl
+            });
+          }
+          return _context.a(3, 8);
+        case 8:
+          currentVersionAgeElement = modal.querySelector('.current-version-age');
+          currentVersionAgeElement.textContent = versionAge;
+          currentVersionAgeElement.classList.remove('d-none');
+          Object.keys(versions).sort(function (a, b) {
+            return versions[b] - versions[a];
+          }).forEach(function (version) {
+            // Don't show the currently processed or current version.
+            if (version === String(versionInformation.currentlyProcessedVersion) || version === String(versionInformation.currentVersion)) {
+              return;
+            }
+            var versionEntry = defaultVersionEntry.cloneNode(true);
+            var versionAgeElement = versionEntry.querySelector('.version-age');
+            switch (medium.mediaType) {
+              case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE:
+              case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT:
+                {
+                  var transformations = medium.transformations;
+                  var fullSizeLink = versionEntry.querySelector('a.full-size-link');
+                  var enlargeIcon = versionEntry.querySelector('.enlarge-icon');
+                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
+                  fullSizeLink.classList.remove('disabled');
+                  enlargeIcon.classList.remove('d-hidden');
+                  versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']);
+                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
+                  break;
+                }
+              case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO:
+                // Don't show video for now, will use thumbnails later.
+                versionEntry.querySelector('.media-preview').remove();
+                break;
+            }
+            (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.addConfirmEventListener)({
+              button: versionEntry.querySelector('button'),
+              callback: function callback() {
+                return setVersionForMedia({
+                  transmorpherIdentifier: transmorpherIdentifier,
+                  version: version
+                });
+              },
+              transmorpherIdentifier: transmorpherIdentifier
+            });
+            versionAgeElement.textContent = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
+              date: new Date(versions[version] * 1000)
+            });
+            versionList.append(versionEntry);
+            versionEntry.classList.remove('d-none');
+          });
+        case 9:
+          _context.p = 9;
+          modal.dataset.fetching = 'false';
+          return _context.f(9);
+        case 10:
+          return _context.a(2);
+      }
+    }, _callee, null, [[2,, 9, 10]]);
+  }));
+  return _updateVersionInformation.apply(this, arguments);
+}
+function setVersionForMedia(_x2) {
+  return _setVersionForMedia.apply(this, arguments);
+}
+function _setVersionForMedia() {
+  _setVersionForMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(_ref2) {
+    var transmorpherIdentifier, version, uploadingStateResponse;
+    return _regenerator().w(function (_context2) {
+      while (1) switch (_context2.n) {
+        case 0:
+          transmorpherIdentifier = _ref2.transmorpherIdentifier, version = _ref2.version;
+          _context2.n = 1;
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.getState)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+        case 1:
+          uploadingStateResponse = _context2.v;
+          if (!(uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing')) {
+            _context2.n = 2;
+            break;
+          }
+          (0,_controller_js__WEBPACK_IMPORTED_MODULE_4__.openUploadConfirmModal)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            callback: function callback() {
+              return makeSetVersionCall({
+                transmorpherIdentifier: transmorpherIdentifier,
+                version: version
+              });
+            }
+          });
+          return _context2.a(2);
+        case 2:
+          _context2.n = 3;
+          return makeSetVersionCall({
+            transmorpherIdentifier: transmorpherIdentifier,
+            version: version
+          });
+        case 3:
+          return _context2.a(2);
+      }
+    }, _callee2);
+  }));
+  return _setVersionForMedia.apply(this, arguments);
+}
+function makeSetVersionCall(_x3) {
+  return _makeSetVersionCall.apply(this, arguments);
+}
+function _makeSetVersionCall() {
+  _makeSetVersionCall = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref3) {
+    var transmorpherIdentifier, version, medium, setVersionResult, _t2;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
+        case 0:
+          transmorpherIdentifier = _ref3.transmorpherIdentifier, version = _ref3.version;
+          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          _context3.n = 1;
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.setVersion)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            version: version
+          });
+        case 1:
+          setVersionResult = _context3.v;
+          if (!(setVersionResult.state !== 'error')) {
+            _context3.n = 6;
+            break;
+          }
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          _context3.n = 2;
+          return updateVersionInformation({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+        case 2:
+          _t2 = medium.mediaType;
+          _context3.n = _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE ? 3 : _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT ? 3 : _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO ? 4 : 5;
+          break;
+        case 3:
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateMediaDisplay)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            thumbnailUrl: setVersionResult.thumbnailUrl,
+            fullsizeUrl: setVersionResult.fullsizeUrl
+          });
+          return _context3.a(3, 5);
+        case 4:
+          (0,_controller_js__WEBPACK_IMPORTED_MODULE_4__.startPolling)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: setVersionResult.upload_token
+          });
+          return _context3.a(3, 5);
+        case 5:
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: setVersionResult.state
+          });
+          return _context3.a(2);
+        case 6:
+          (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.clearStatusPolling)({
+            transmorpherIdentifier: transmorpherIdentifier
+          });
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.displayModalState)({
+            transmorpherIdentifier: transmorpherIdentifier,
+            stateName: setVersionResult.state,
+            message: setVersionResult.clientMessage
+          });
+        case 7:
+          return _context3.a(2);
+      }
+    }, _callee3);
+  }));
+  return _makeSetVersionCall.apply(this, arguments);
 }
 
 /***/ }

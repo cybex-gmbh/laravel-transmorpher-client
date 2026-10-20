@@ -10,7 +10,8 @@ import {
 } from './api.js';
 import {displayState, resetAgeElement, updateThumbnail} from './ui.js';
 import {getMediaDimensions} from './utils.js';
-import {openUploadConfirmModal, startPolling, updateVersionInformation} from './controller.js';
+import {openUploadConfirmModal, startPolling} from './controller.js';
+import {updateVersionInformation} from './versions.js';
 
 export function createDropzone({transmorpherIdentifier}) {
     Dropzone.autoDiscover = false;
