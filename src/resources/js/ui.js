@@ -203,3 +203,15 @@ export function closeErrorMessage({closeButton, transmorpherIdentifier}) {
     closeButton.closest('.card').classList.remove('border-error');
 }
 
+export function setProgressBarVisibility({progressBarElement, isVisible}) {
+    if (!progressBarElement) {
+        return;
+    }
+
+    if (isVisible) {
+        progressBarElement.style.display = 'block';
+
+        return;
+    }
+    progressBarElement.style.display = 'none';
+}

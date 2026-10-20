@@ -2992,19 +2992,24 @@ function openUploadConfirmModal(_ref6) {
     callback = _ref6.callback;
   var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
   var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
-  var previewElement = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
+  var progressBar = document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-preview ~ .dz-preview"));
   modal.classList.add('d-flex');
-  if (previewElement) {
-    previewElement.style.display = 'none';
-  }
+
+  // When a second file is added to Dropzone, a second progress bar is shown. We initially hide that second progress bar.
+  (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.setProgressBarVisibility)({
+    progressBarElement: progressBar,
+    isVisible: false
+  });
   modal.querySelector('.badge-error').onclick = /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
     var _dropzone$files$;
     return _regenerator().w(function (_context2) {
       while (1) switch (_context2.n) {
         case 0:
-          if (previewElement) {
-            previewElement.style.display = 'block';
-          }
+          // At this point the user wants to overwrite the current upload. We show the progress bar again.
+          (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.setProgressBarVisibility)({
+            progressBarElement: progressBar,
+            isVisible: true
+          });
           document.querySelector("#modal-uc-".concat(transmorpherIdentifier)).classList.remove('d-flex');
 
           // If there is an upload in progress, remove it.
@@ -3017,9 +3022,10 @@ function openUploadConfirmModal(_ref6) {
           } else if (dropzone.files[0]) {
             // If the file is not uploading, the overwrite button was clicked after finishing upload.
             document.querySelector("#dz-".concat(transmorpherIdentifier, " .dz-default")).style.display = 'none';
-            if (previewElement) {
-              previewElement.style.display = 'block';
-            }
+            (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.setProgressBarVisibility)({
+              progressBarElement: progressBar,
+              isVisible: true
+            });
           }
           _context2.n = 1;
           return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.abortUpload)({
@@ -3647,6 +3653,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   resetModalErrorMessageDisplay: () => (/* binding */ resetModalErrorMessageDisplay),
 /* harmony export */   setAgeElement: () => (/* binding */ setAgeElement),
 /* harmony export */   setModalErrorMessage: () => (/* binding */ setModalErrorMessage),
+/* harmony export */   setProgressBarVisibility: () => (/* binding */ setProgressBarVisibility),
 /* harmony export */   updateMediaDisplay: () => (/* binding */ updateMediaDisplay),
 /* harmony export */   updateThumbnail: () => (/* binding */ updateThumbnail),
 /* harmony export */   updateVideoDisplay: () => (/* binding */ updateVideoDisplay)
@@ -3915,6 +3922,18 @@ function closeErrorMessage(_ref18) {
   (_document$querySelect3 = document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .card-side .badge.badge-error"))) === null || _document$querySelect3 === void 0 || _document$querySelect3.classList.add('d-none');
   (_closeButton$closest$ = closeButton.closest('.card').querySelector('.badge.badge-error')) === null || _closeButton$closest$ === void 0 || _closeButton$closest$.classList.add('d-hidden');
   closeButton.closest('.card').classList.remove('border-error');
+}
+function setProgressBarVisibility(_ref19) {
+  var progressBarElement = _ref19.progressBarElement,
+    isVisible = _ref19.isVisible;
+  if (!progressBarElement) {
+    return;
+  }
+  if (isVisible) {
+    progressBarElement.style.display = 'block';
+    return;
+  }
+  progressBarElement.style.display = 'none';
 }
 
 /***/ },

@@ -8,7 +8,7 @@ import {
     displayState,
     openMoreInformationModalDisplay,
     resetAgeElement,
-    setAgeElement,
+    setAgeElement, setProgressBarVisibility,
     updateMediaDisplay,
 } from './ui.js';
 import {addConfirmEventListener, getDateForDisplay} from './utils.js';
@@ -122,18 +122,16 @@ async function deleteTransmorpherMedia({transmorpherIdentifier}) {
 export function openUploadConfirmModal({transmorpherIdentifier, callback}) {
     const modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
     const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
-    const previewElement = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`);
+    const progressBar = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`);
 
     modal.classList.add('d-flex');
 
-    if (previewElement) {
-        previewElement.style.display = 'none';
-    }
+    // When a second file is added to Dropzone, a second progress bar is shown. We initially hide that second progress bar.
+    setProgressBarVisibility({progressBarElement: progressBar, isVisible: false});
 
     modal.querySelector('.badge-error').onclick = async function () {
-        if (previewElement) {
-            previewElement.style.display = 'block';
-        }
+        // At this point the user wants to overwrite the current upload. We show the progress bar again.
+        setProgressBarVisibility({progressBarElement: progressBar, isVisible: true});
 
         document.querySelector(`#modal-uc-${transmorpherIdentifier}`).classList.remove('d-flex');
 
@@ -149,9 +147,7 @@ export function openUploadConfirmModal({transmorpherIdentifier, callback}) {
             // If the file is not uploading, the overwrite button was clicked after finishing upload.
             document.querySelector(`#dz-${transmorpherIdentifier} .dz-default`).style.display = 'none';
 
-            if (previewElement) {
-                previewElement.style.display = 'block';
-            }
+            setProgressBarVisibility({progressBarElement: progressBar, isVisible: true});
         }
 
         await abortUpload({transmorpherIdentifier});
