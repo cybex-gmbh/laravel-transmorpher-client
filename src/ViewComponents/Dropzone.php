@@ -5,7 +5,6 @@ namespace Transmorpher\ViewComponents;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Component;
 use Illuminate\View\View;
-use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Media;
@@ -19,7 +18,6 @@ class Dropzone extends Component
     public string|int $transmorpherMediaKey;
     public ?string $latestUploadToken;
     public int $lastUpdated;
-    public array $mediaTypes;
     public array $srcSetTransformations;
     public ?float $acceptedCalculatedRatio;
     public array $translations;
@@ -58,7 +56,6 @@ class Dropzone extends Component
         $this->transmorpherMediaKey = $media->getTransmorpherMedia()->getKey();
         $this->latestUploadToken = $media->getTransmorpherMedia()->latest_upload_token;
         $this->lastUpdated = $media->getTransmorpherMedia()->updated_at->timestamp;
-        $this->mediaTypes = array_column(MediaType::cases(), 'value', 'name');
         $this->srcSetTransformations = [
             '150w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(150)])),
             '300w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(300)])),
