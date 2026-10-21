@@ -137,7 +137,6 @@ async function setVersionForMedia({transmorpherIdentifier, version}) {
 }
 
 async function makeSetVersionCall({transmorpherIdentifier, version}) {
-    const medium = getMedium({transmorpherIdentifier});
     const setVersionResult = await setVersionRequest({transmorpherIdentifier, version});
 
     if (setVersionResult.state !== 'error') {
@@ -145,7 +144,7 @@ async function makeSetVersionCall({transmorpherIdentifier, version}) {
 
         await updateVersionInformation({transmorpherIdentifier});
 
-        switch (medium.mediaType) {
+        switch (getMedium({transmorpherIdentifier}).mediaType) {
             case MEDIA_TYPE.IMAGE:
             case MEDIA_TYPE.DOCUMENT:
                 updateMediaDisplay({transmorpherIdentifier, thumbnailUrl: setVersionResult.thumbnailUrl, fullsizeUrl: setVersionResult.fullsizeUrl});
