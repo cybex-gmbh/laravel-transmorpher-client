@@ -2239,7 +2239,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   abortUpload: () => (/* binding */ abortUpload),
 /* harmony export */   completeUpload: () => (/* binding */ completeUpload),
-/* harmony export */   deleteTransmorpherMedia: () => (/* binding */ deleteTransmorpherMedia),
+/* harmony export */   deleteMedia: () => (/* binding */ deleteMedia),
 /* harmony export */   getState: () => (/* binding */ getState),
 /* harmony export */   getUploadUrl: () => (/* binding */ getUploadUrl),
 /* harmony export */   getVersions: () => (/* binding */ getVersions),
@@ -2559,11 +2559,11 @@ function _setVersion() {
   }));
   return _setVersion.apply(this, arguments);
 }
-function deleteTransmorpherMedia(_x10) {
-  return _deleteTransmorpherMedia.apply(this, arguments);
+function deleteMedia(_x10) {
+  return _deleteMedia.apply(this, arguments);
 }
-function _deleteTransmorpherMedia() {
-  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee10(_ref10) {
+function _deleteMedia() {
+  _deleteMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee10(_ref10) {
     var transmorpherIdentifier, medium, url;
     return _regenerator().w(function (_context10) {
       while (1) switch (_context10.n) {
@@ -2580,7 +2580,7 @@ function _deleteTransmorpherMedia() {
       }
     }, _callee10);
   }));
-  return _deleteTransmorpherMedia.apply(this, arguments);
+  return _deleteMedia.apply(this, arguments);
 }
 
 /***/ },
@@ -2790,7 +2790,7 @@ function setupComponent(_ref) {
   (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.addConfirmEventListener)({
     button: document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .confirm-delete")),
     callback: function callback() {
-      return deleteTransmorpherMedia({
+      return deleteMedia({
         transmorpherIdentifier: transmorpherIdentifier
       });
     },
@@ -2929,18 +2929,18 @@ function openMoreInformationModal(_ref4) {
     transmorpherIdentifier: transmorpherIdentifier
   });
 }
-function deleteTransmorpherMedia(_x) {
-  return _deleteTransmorpherMedia.apply(this, arguments);
+function deleteMedia(_x) {
+  return _deleteMedia.apply(this, arguments);
 }
-function _deleteTransmorpherMedia() {
-  _deleteTransmorpherMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref5) {
+function _deleteMedia() {
+  _deleteMedia = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref5) {
     var transmorpherIdentifier, deleteResult;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.n) {
         case 0:
           transmorpherIdentifier = _ref5.transmorpherIdentifier;
           _context3.n = 1;
-          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.deleteTransmorpherMedia)({
+          return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.deleteMedia)({
             transmorpherIdentifier: transmorpherIdentifier
           });
         case 1:
@@ -2985,7 +2985,7 @@ function _deleteTransmorpherMedia() {
       }
     }, _callee3);
   }));
-  return _deleteTransmorpherMedia.apply(this, arguments);
+  return _deleteMedia.apply(this, arguments);
 }
 function openUploadConfirmModal(_ref6) {
   var transmorpherIdentifier = _ref6.transmorpherIdentifier,
@@ -4274,14 +4274,11 @@ function makeSetVersionCall(_x3) {
 }
 function _makeSetVersionCall() {
   _makeSetVersionCall = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref3) {
-    var transmorpherIdentifier, version, medium, setVersionResult, _t2;
+    var transmorpherIdentifier, version, setVersionResult, _t2;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.n) {
         case 0:
           transmorpherIdentifier = _ref3.transmorpherIdentifier, version = _ref3.version;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
           _context3.n = 1;
           return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.setVersion)({
             transmorpherIdentifier: transmorpherIdentifier,
@@ -4301,7 +4298,9 @@ function _makeSetVersionCall() {
             transmorpherIdentifier: transmorpherIdentifier
           });
         case 2:
-          _t2 = medium.mediaType;
+          _t2 = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
+            transmorpherIdentifier: transmorpherIdentifier
+          }).mediaType;
           _context3.n = _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE ? 3 : _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT ? 3 : _t2 === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO ? 4 : 5;
           break;
         case 3:

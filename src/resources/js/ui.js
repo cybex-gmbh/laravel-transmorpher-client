@@ -213,5 +213,6 @@ export function setProgressBarVisibility({progressBarElement, isVisible}) {
 
         return;
     }
+
     progressBarElement.style.display = 'none';
 }
