@@ -132,7 +132,7 @@ export async function setVersion({transmorpherIdentifier, version}) {
     });
 }
 
-export async function deleteTransmorpherMedia({transmorpherIdentifier}) {
+export async function deleteMedia({transmorpherIdentifier}) {
     const medium = getMedium({transmorpherIdentifier});
     const url = medium.routes.delete.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
 

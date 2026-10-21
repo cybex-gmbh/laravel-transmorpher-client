@@ -1,5 +1,5 @@
 import {clearStatusPolling, getMedium, setStatusPolling} from './state.js';
-import {abortUpload, deleteTransmorpherMedia as deleteTransmorpherMediaRequest, getState} from './api.js';
+import {abortUpload, deleteMedia as deleteMediaRequest, getState} from './api.js';
 import {
     closeUploadConfirmModalDisplay,
     displayCardBorderState,
@@ -20,7 +20,7 @@ export function setupComponent({transmorpherIdentifier}) {
 
     addConfirmEventListener({
         button: document.querySelector(`#modal-mi-${transmorpherIdentifier} .confirm-delete`),
-        callback: () => deleteTransmorpherMedia({transmorpherIdentifier}),
+        callback: () => deleteMedia({transmorpherIdentifier}),
         transmorpherIdentifier,
     });
 
@@ -97,8 +97,8 @@ export function openMoreInformationModal({transmorpherIdentifier}) {
     updateVersionInformation({transmorpherIdentifier});
 }
 
-async function deleteTransmorpherMedia({transmorpherIdentifier}) {
-    const deleteResult = await deleteTransmorpherMediaRequest({transmorpherIdentifier});
+async function deleteMedia({transmorpherIdentifier}) {
+    const deleteResult = await deleteMediaRequest({transmorpherIdentifier});
 
     if (deleteResult.state !== 'error') {
         clearStatusPolling({transmorpherIdentifier});
