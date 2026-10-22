@@ -447,7 +447,7 @@ abstract class Media
      */
     public function getMaxFileSize(): int
     {
-        return config(sprintf('transmorpher.upload.%s.validations.max_file_size', $this->type->value));
+        return config(sprintf('transmorpher.upload.%s.validations.max_file_size_mb', $this->type->value));
     }
 
     /**

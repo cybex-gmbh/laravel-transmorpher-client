@@ -4,12 +4,14 @@ return [
     /** Optionally, specify the Transmorpher API version which should be used. For supported versions, check the {@link \Transmorpher\Enums\SupportedApiVersion} enum. */
     'version' => env('TRANSMORPHER_API_VERSION', 2),
 
-    // The API URL used when communicating between servers. Might be useful in situations where, for example, docker containers communicate with each other.
+    // Optional. Overrides the web.url for server-to-server calls. Used in local Docker development setups.
+    // Example pointing to a container: http://transmorpher/api
     's2s' => [
         'url' => env('TRANSMORPHER_S2S_API_BASE_URL', env('TRANSMORPHER_WEB_API_BASE_URL')),
     ],
 
-    // The API URL used when making requests to the Transmorpher media server from the web.
+    // The base API URL used when making requests to the Transmorpher media server from the web.
+    // Example: https://transmorpher.test/api
     'web' => [
         'url' => env('TRANSMORPHER_WEB_API_BASE_URL'),
     ],
