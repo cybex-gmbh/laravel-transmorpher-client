@@ -299,7 +299,7 @@ abstract class Media
      */
     public function getPlaceholderUrl(): string
     {
-        return config('transmorpher.delivery.placeholder_url');
+        return config('transmorpher.delivery.placeholder.url');
     }
 
     /**
@@ -447,7 +447,7 @@ abstract class Media
      */
     public function getMaxFileSize(): int
     {
-        return config(sprintf('transmorpher.upload.%s.validations.max_file_size', $this->type->value));
+        return config(sprintf('transmorpher.upload.%s.validations.max_file_size_mb', $this->type->value));
     }
 
     /**
@@ -579,23 +579,13 @@ abstract class Media
     }
 
     /**
-     * Get the configured client name.
-     *
-     * @return string The client name.
-     */
-    protected function getClientName(): string
-    {
-        return config('transmorpher.client_name');
-    }
-
-    /**
      * Get the Laravel Sanctum auth token.
      *
      * @return string The Laravel Sanctum auth token.
      */
     protected function getAuthToken(): string
     {
-        return config('transmorpher.api.auth_token');
+        return config('transmorpher.api.auth.token');
     }
 
     /**
