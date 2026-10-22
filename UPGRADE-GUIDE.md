@@ -48,14 +48,17 @@ php artisan vendor:publish --tag=transmorpher.config.upload.video
 
 Some config keys have been adjusted.
 
-| Old key                                 | New key                                 |
-|-----------------------------------------|-----------------------------------------|
-| `transmorpher.api.s2s_url`              | `transmorpher.api.s2s.url`              |
-| `transmorpher.api.web_url`              | `transmorpher.api.web.url`              |
-| `transmorpher.api.auth_token`           | `transmorpher.api.auth.token`           |
-| `transmorpher.api.notifications_route`  | `transmorpher.routes.notifications`     |
-| `transmorpher.routeMiddleware`          | `transmorpher.routes.middleware`        |
-| `transmorpher.delivery.placeholder_url` | `transmorpher.delivery.placeholder.url` |
+| Old key                                                  | New key                                                     |
+|----------------------------------------------------------|-------------------------------------------------------------|
+| `transmorpher.api.s2s_url`                               | `transmorpher.api.s2s.url`                                  |
+| `transmorpher.api.web_url`                               | `transmorpher.api.web.url`                                  |
+| `transmorpher.api.auth_token`                            | `transmorpher.api.auth.token`                               |
+| `transmorpher.api.notifications_route`                   | `transmorpher.routes.notifications`                         |
+| `transmorpher.routeMiddleware`                           | `transmorpher.routes.middleware`                            |
+| `transmorpher.delivery.placeholder_url`                  | `transmorpher.delivery.placeholder.url`                     |
+| `transmorpher.upload.image.validations.max_file_size`    | `transmorpher.upload.image.validations.max_file_size_mb`    |
+| `transmorpher.upload.document.validations.max_file_size` | `transmorpher.upload.document.validations.max_file_size_mb` |
+| `transmorpher.upload.video.validations.max_file_size`    | `transmorpher.upload.video.validations.max_file_size_mb`    |
 
 #### Removed config
 
