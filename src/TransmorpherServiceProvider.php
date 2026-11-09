@@ -75,7 +75,7 @@ class TransmorpherServiceProvider extends ServiceProvider
 
     protected function registerRoutes(): void
     {
-        Route::prefix('transmorpher')->name('transmorpher.')->group(function () {
+        Route::prefix(config('transmorpher.routes.prefix'))->name('transmorpher.')->group(function () {
             Route::post(config('transmorpher.routes.notifications'), ApiController::class)->name('notifications');
 
             Route::middleware(array_merge(config('transmorpher.routes.middleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {

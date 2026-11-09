@@ -20,6 +20,7 @@
 - Now supports Transmorpher Media Server API v2
   - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
 - The config file has been split up and configs can now be published individually
+- The prefix for routes provided by this package can now be configured via the `transmorpher.routes.prefix` config key
 
 ### Fixes
 
