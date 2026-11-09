@@ -88,7 +88,7 @@ class Dropzone extends Component
         $routes =  Route::getRoutes()->getRoutesByName();
 
         $this->stateRoute = sprintf('%s/%s', $domain, $routes['transmorpher.media.state']->uri);
-        $this->uploadTokenRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.reserve']->uri);
+        $this->uploadTokenRoute = sprintf('%s/%s', $domain, $routes['transmorpher.media.reserve']->uri);
         $this->handleUploadResponseRoute = sprintf('%s/%s', $domain, $routes['transmorpher.uploads.response']->uri);
         $this->getVersionsRoute = sprintf('%s/%s', $domain, $routes['transmorpher.versions.get']->uri);
         $this->setVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpher.versions.set']->uri);
