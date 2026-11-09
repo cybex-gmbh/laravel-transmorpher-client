@@ -8,7 +8,8 @@ import {
     displayState,
     openMoreInformationModalDisplay,
     resetAgeElement,
-    setAgeElement, setProgressBarVisibility,
+    setAgeElement,
+    setProgressBarVisibility,
     updateMediaDisplay,
 } from './ui.js';
 import {addConfirmEventListener, getDateForDisplay} from './utils.js';
@@ -150,7 +151,7 @@ export function openUploadConfirmModal({transmorpherIdentifier, uploadToken, cal
             setProgressBarVisibility({progressBarElement: progressBar, isVisible: true});
         }
 
-        await abortUpload({transmorpherIdentifier, uploadToken});
+        await abortUpload({uploadToken});
         callback();
     };
 }

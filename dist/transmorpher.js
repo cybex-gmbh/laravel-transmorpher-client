@@ -2250,6 +2250,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ "./src/resources/js/utils.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./routes */ "./src/resources/js/routes.js");
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -2260,6 +2261,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
 
 
 function withDefaultHeaders() {
@@ -2319,15 +2321,12 @@ function setUploadingState(_x3) {
 }
 function _setUploadingState() {
   _setUploadingState = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(_ref3) {
-    var transmorpherIdentifier, uploadToken, medium, url;
+    var uploadToken, url;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.n) {
         case 0:
-          transmorpherIdentifier = _ref3.transmorpherIdentifier, uploadToken = _ref3.uploadToken;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          url = medium.routes.setUploadingState.replace('{transmorpherUpload}', uploadToken);
+          uploadToken = _ref3.uploadToken;
+          url = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.uploads.setState.replace('{transmorpherUpload}', uploadToken);
           _context3.n = 1;
           return request({
             method: 'POST',
@@ -2345,15 +2344,12 @@ function getUploadUrl(_x4) {
 }
 function _getUploadUrl() {
   _getUploadUrl = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4(_ref4) {
-    var transmorpherIdentifier, chunkIndex, uploadToken, done, medium, chunkUploadUrl, chunkUploadUrlResponse;
+    var chunkIndex, uploadToken, done, chunkUploadUrl, chunkUploadUrlResponse;
     return _regenerator().w(function (_context4) {
       while (1) switch (_context4.n) {
         case 0:
-          transmorpherIdentifier = _ref4.transmorpherIdentifier, chunkIndex = _ref4.chunkIndex, uploadToken = _ref4.uploadToken, done = _ref4.done;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          chunkUploadUrl = medium.routes.chunkUrl.replace('{transmorpherUpload}', uploadToken).replace('{chunkNumber}', chunkIndex);
+          chunkIndex = _ref4.chunkIndex, uploadToken = _ref4.uploadToken, done = _ref4.done;
+          chunkUploadUrl = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.uploads.url.replace('{transmorpherUpload}', uploadToken).replace('{chunkNumber}', chunkIndex);
           _context4.n = 1;
           return requestJson({
             method: 'GET',
@@ -2379,15 +2375,12 @@ function completeUpload(_x5) {
 }
 function _completeUpload() {
   _completeUpload = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(_ref5) {
-    var transmorpherIdentifier, uploadToken, medium, completeUploadUrl;
+    var uploadToken, completeUploadUrl;
     return _regenerator().w(function (_context5) {
       while (1) switch (_context5.n) {
         case 0:
-          transmorpherIdentifier = _ref5.transmorpherIdentifier, uploadToken = _ref5.uploadToken;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          completeUploadUrl = medium.routes.completeUpload.replace('{transmorpherUpload}', uploadToken);
+          uploadToken = _ref5.uploadToken;
+          completeUploadUrl = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.uploads.complete.replace('{transmorpherUpload}', uploadToken);
           return _context5.a(2, requestJson({
             method: 'POST',
             url: completeUploadUrl
@@ -2402,15 +2395,12 @@ function abortUpload(_x6) {
 }
 function _abortUpload() {
   _abortUpload = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(_ref6) {
-    var transmorpherIdentifier, uploadToken, medium, abortUploadUrl;
+    var uploadToken, abortUploadUrl;
     return _regenerator().w(function (_context6) {
       while (1) switch (_context6.n) {
         case 0:
-          transmorpherIdentifier = _ref6.transmorpherIdentifier, uploadToken = _ref6.uploadToken;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          abortUploadUrl = medium.routes.abortUpload.replace('{transmorpherUpload}', uploadToken);
+          uploadToken = _ref6.uploadToken;
+          abortUploadUrl = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.uploads.abort.replace('{transmorpherUpload}', uploadToken);
           _context6.n = 1;
           return request({
             method: 'DELETE',
@@ -2436,7 +2426,7 @@ function _reserveUploadSlot() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes.uploadToken.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+          url = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.media.reserveUpload.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
           return _context7.a(2, requestJson({
             method: 'POST',
             url: url,
@@ -2464,7 +2454,7 @@ function _getState() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes.state.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+          url = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.media.getState.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
           return _context8.a(2, requestJson({
             method: 'POST',
             url: url,
@@ -2484,15 +2474,12 @@ function storeUploadResponse(_x9) {
 }
 function _storeUploadResponse() {
   _storeUploadResponse = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee9(_ref9) {
-    var transmorpherIdentifier, uploadToken, response, httpCode, medium, url;
+    var uploadToken, response, httpCode, url;
     return _regenerator().w(function (_context9) {
       while (1) switch (_context9.n) {
         case 0:
-          transmorpherIdentifier = _ref9.transmorpherIdentifier, uploadToken = _ref9.uploadToken, response = _ref9.response, httpCode = _ref9.httpCode;
-          medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
-            transmorpherIdentifier: transmorpherIdentifier
-          });
-          url = medium.routes.handleUploadResponse.replace('{transmorpherUpload}', uploadToken);
+          uploadToken = _ref9.uploadToken, response = _ref9.response, httpCode = _ref9.httpCode;
+          url = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.uploads.handleResponse.replace('{transmorpherUpload}', uploadToken);
           return _context9.a(2, requestJson({
             method: 'POST',
             url: url,
@@ -2521,7 +2508,7 @@ function _getVersions() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes.getVersions.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+          url = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.versions.get.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
           return _context0.a(2, requestJson({
             method: 'GET',
             url: url
@@ -2544,7 +2531,7 @@ function _setVersion() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version);
+          url = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.versions.set.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version);
           return _context1.a(2, requestJson({
             method: 'PATCH',
             url: url
@@ -2567,7 +2554,7 @@ function _deleteMedia() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes["delete"].replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+          url = _routes__WEBPACK_IMPORTED_MODULE_2__.routes.media["delete"].replace('{transmorpherMedia}', medium.transmorpherMediaKey);
           return _context10.a(2, requestJson({
             method: 'DELETE',
             url: url
@@ -3025,7 +3012,6 @@ function openUploadConfirmModal(_ref6) {
           }
           _context2.n = 1;
           return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.abortUpload)({
-            transmorpherIdentifier: transmorpherIdentifier,
             uploadToken: uploadToken
           });
         case 1:
@@ -3144,7 +3130,6 @@ function createDropzone(_ref) {
             case 0:
               _context.n = 1;
               return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.setUploadingState)({
-                transmorpherIdentifier: transmorpherIdentifier,
                 uploadToken: this.options.uploadToken
               });
             case 1:
@@ -3276,7 +3261,6 @@ function createDropzone(_ref) {
             case 0:
               _context3.n = 1;
               return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)({
-                transmorpherIdentifier: transmorpherIdentifier,
                 uploadToken: this.options.uploadToken,
                 response: {
                   state: 'error',
@@ -3304,7 +3288,6 @@ function createDropzone(_ref) {
               this.element.classList.add('is-completing-upload');
               _context4.n = 1;
               return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.completeUpload)({
-                transmorpherIdentifier: transmorpherIdentifier,
                 uploadToken: this.options.uploadToken
               });
             case 1:
@@ -3355,7 +3338,6 @@ function createDropzone(_ref) {
             chunkIndex = ((_chunk$dataBlock$chun = chunk === null || chunk === void 0 || (_chunk$dataBlock = chunk.dataBlock) === null || _chunk$dataBlock === void 0 ? void 0 : _chunk$dataBlock.chunkIndex) !== null && _chunk$dataBlock$chun !== void 0 ? _chunk$dataBlock$chun : 0) + 1;
             _context5.n = 1;
             return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.getUploadUrl)({
-              transmorpherIdentifier: transmorpherIdentifier,
               chunkIndex: chunkIndex,
               uploadToken: this.options.uploadToken,
               done: file === null || file === void 0 ? void 0 : file.done
@@ -3434,7 +3416,6 @@ function _handleUploadResponse() {
           }
           _context7.n = 1;
           return (0,_api_js__WEBPACK_IMPORTED_MODULE_2__.storeUploadResponse)({
-            transmorpherIdentifier: transmorpherIdentifier,
             uploadToken: uploadToken,
             response: response,
             httpCode: (_response$httpCode = response === null || response === void 0 ? void 0 : response.httpCode) !== null && _response$httpCode !== void 0 ? _response$httpCode : (_file$xhr2 = file.xhr) === null || _file$xhr2 === void 0 ? void 0 : _file$xhr2.status
@@ -3545,6 +3526,44 @@ function _displayUploadResult() {
 
 /***/ },
 
+/***/ "./src/resources/js/routes.js"
+/*!************************************!*\
+  !*** ./src/resources/js/routes.js ***!
+  \************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   registerRoutes: () => (/* binding */ registerRoutes),
+/* harmony export */   routes: () => (/* binding */ routes)
+/* harmony export */ });
+var routes = {
+  media: {
+    "delete": '',
+    getState: '',
+    reserveUpload: ''
+  },
+  uploads: {
+    abort: '',
+    complete: '',
+    handleResponse: '',
+    setState: '',
+    url: ''
+  },
+  versions: {
+    get: '',
+    getDerivative: '',
+    getOriginal: '',
+    set: ''
+  }
+};
+function registerRoutes(_ref) {
+  var newRoutes = _ref.routes;
+  routes = newRoutes;
+}
+
+/***/ },
+
 /***/ "./src/resources/js/state.js"
 /*!***********************************!*\
   !*** ./src/resources/js/state.js ***!
@@ -3609,6 +3628,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controller.js */ "./src/resources/js/controller.js");
 /* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
 /* harmony import */ var _state_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./state.js */ "./src/resources/js/state.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./routes */ "./src/resources/js/routes.js");
+
 
 
 
@@ -3617,6 +3638,7 @@ if (!window.transmorpherScriptLoaded) {
   window.transmorpher = {
     setUploadHandler: _state_js__WEBPACK_IMPORTED_MODULE_2__.setUploadHandler,
     registerMedium: _state_js__WEBPACK_IMPORTED_MODULE_2__.registerMedium,
+    registerRoutes: _routes__WEBPACK_IMPORTED_MODULE_3__.registerRoutes,
     setupComponent: _controller_js__WEBPACK_IMPORTED_MODULE_0__.setupComponent,
     openMoreInformationModal: _controller_js__WEBPACK_IMPORTED_MODULE_0__.openMoreInformationModal,
     closeMoreInformationModal: _ui_js__WEBPACK_IMPORTED_MODULE_1__.closeMoreInformationModal,
@@ -4069,10 +4091,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ui_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui.js */ "./src/resources/js/ui.js");
 /* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils.js */ "./src/resources/js/utils.js");
 /* harmony import */ var _controller_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./controller.js */ "./src/resources/js/controller.js");
+/* harmony import */ var _routes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./routes */ "./src/resources/js/routes.js");
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+
 
 
 
@@ -4185,11 +4209,11 @@ function _updateVersionInformation() {
                   var transformations = medium.transformations;
                   var fullSizeLink = versionEntry.querySelector('a.full-size-link');
                   var enlargeIcon = versionEntry.querySelector('.enlarge-icon');
-                  fullSizeLink.href = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
+                  fullSizeLink.href = _routes__WEBPACK_IMPORTED_MODULE_5__.routes.versions.getDerivative.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', '');
                   fullSizeLink.classList.remove('disabled');
                   enlargeIcon.classList.remove('d-hidden');
-                  versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']);
-                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(medium.routes.getDerivativeForVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
+                  versionEntry.querySelector('.dz-image img:first-of-type').src = _routes__WEBPACK_IMPORTED_MODULE_5__.routes.versions.getDerivative.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']);
+                  versionEntry.querySelector('.dz-image img:first-of-type').srcset = "".concat(_routes__WEBPACK_IMPORTED_MODULE_5__.routes.versions.getDerivative.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version).replace('{transformations?}', transformations['150w']), " 150w");
                   break;
                 }
               case _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO:
