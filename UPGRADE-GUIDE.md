@@ -9,7 +9,7 @@
 > Breaking changes!
 >
 > The config file has been split up into multiple files.
-> If you have published the config file, you need to re-publish.
+> If you have published the config file, you need to re-publish and restore any changes you made.
 
 - Transmorpher Media Server API v1 is no longer supported
 - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
