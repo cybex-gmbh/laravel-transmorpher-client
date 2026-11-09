@@ -2402,15 +2402,15 @@ function abortUpload(_x6) {
 }
 function _abortUpload() {
   _abortUpload = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(_ref6) {
-    var transmorpherIdentifier, medium, abortUploadUrl;
+    var transmorpherIdentifier, uploadToken, medium, abortUploadUrl;
     return _regenerator().w(function (_context6) {
       while (1) switch (_context6.n) {
         case 0:
-          transmorpherIdentifier = _ref6.transmorpherIdentifier;
+          transmorpherIdentifier = _ref6.transmorpherIdentifier, uploadToken = _ref6.uploadToken;
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          abortUploadUrl = medium.routes.abortUpload.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+          abortUploadUrl = medium.routes.abortUpload.replace('{transmorpherUpload}', uploadToken);
           _context6.n = 1;
           return request({
             method: 'DELETE',
@@ -2544,15 +2544,10 @@ function _setVersion() {
           medium = (0,_state_js__WEBPACK_IMPORTED_MODULE_0__.getMedium)({
             transmorpherIdentifier: transmorpherIdentifier
           });
-          url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey);
+          url = medium.routes.setVersion.replace('{transmorpherMedia}', medium.transmorpherMediaKey).replace('{version}', version);
           return _context1.a(2, requestJson({
-            method: 'POST',
-            url: url,
-            options: {
-              body: JSON.stringify({
-                version: version
-              })
-            }
+            method: 'PATCH',
+            url: url
           }));
       }
     }, _callee1);
@@ -2574,7 +2569,7 @@ function _deleteMedia() {
           });
           url = medium.routes["delete"].replace('{transmorpherMedia}', medium.transmorpherMediaKey);
           return _context10.a(2, requestJson({
-            method: 'POST',
+            method: 'DELETE',
             url: url
           }));
       }
@@ -2989,6 +2984,7 @@ function _deleteMedia() {
 }
 function openUploadConfirmModal(_ref6) {
   var transmorpherIdentifier = _ref6.transmorpherIdentifier,
+    uploadToken = _ref6.uploadToken,
     callback = _ref6.callback;
   var modal = document.querySelector("#modal-uc-".concat(transmorpherIdentifier));
   var dropzone = document.querySelector("#dz-".concat(transmorpherIdentifier)).dropzone;
@@ -3029,7 +3025,8 @@ function openUploadConfirmModal(_ref6) {
           }
           _context2.n = 1;
           return (0,_api_js__WEBPACK_IMPORTED_MODULE_1__.abortUpload)({
-            transmorpherIdentifier: transmorpherIdentifier
+            transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: uploadToken
           });
         case 1:
           callback();
@@ -3235,6 +3232,7 @@ function createDropzone(_ref) {
               }
               (0,_controller_js__WEBPACK_IMPORTED_MODULE_5__.openUploadConfirmModal)({
                 transmorpherIdentifier: transmorpherIdentifier,
+                uploadToken: uploadingStateResponse.latestUploadToken,
                 callback: function callback() {
                   return reserveUploadSlot({
                     transmorpherIdentifier: transmorpherIdentifier,
@@ -4248,6 +4246,7 @@ function _setVersionForMedia() {
           }
           (0,_controller_js__WEBPACK_IMPORTED_MODULE_4__.openUploadConfirmModal)({
             transmorpherIdentifier: transmorpherIdentifier,
+            uploadToken: uploadingStateResponse.latestUploadToken,
             callback: function callback() {
               return makeSetVersionCall({
                 transmorpherIdentifier: transmorpherIdentifier,

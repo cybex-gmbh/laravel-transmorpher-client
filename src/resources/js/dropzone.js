@@ -86,6 +86,7 @@ export function createDropzone({transmorpherIdentifier}) {
             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
                 openUploadConfirmModal({
                     transmorpherIdentifier,
+                    uploadToken: uploadingStateResponse.latestUploadToken,
                     callback: () => reserveUploadSlot({transmorpherIdentifier, done: file.done})
                 });
 

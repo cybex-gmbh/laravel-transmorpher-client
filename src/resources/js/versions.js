@@ -127,6 +127,7 @@ async function setVersionForMedia({transmorpherIdentifier, version}) {
     if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
         openUploadConfirmModal({
             transmorpherIdentifier,
+            uploadToken: uploadingStateResponse.latestUploadToken,
             callback: () => makeSetVersionCall({transmorpherIdentifier, version})
         });
 
