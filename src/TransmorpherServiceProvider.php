@@ -79,23 +79,31 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::post(config('transmorpher.routes.notifications'), ApiController::class)->name('notifications');
 
             Route::middleware(array_merge(config('transmorpher.routes.middleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
-                # Media
-                Route::post('media/{transmorpherMedia}/state', [UploadStateController::class, 'getState'])->name('media.state');
-                Route::delete('media/{transmorpherMedia}', [MediaController::class, 'delete'])->name('media.delete');
+                Route::prefix('media/{transmorpherMedia}')->group(function () {
+                    Route::name('media.')->group(function () {
+                        Route::post('state', [UploadStateController::class, 'getState'])->name('state');
+                        Route::delete('', [MediaController::class, 'delete'])->name('delete');
+                        Route::post('upload/reserve', [UploadController::class, 'getUploadToken'])->name('reserve');
+                    });
 
-                # Versions
-                Route::get('media/{transmorpherMedia}/versions', [MediaController::class, 'getVersions'])->name('versions.get');
-                Route::patch('media/{transmorpherMedia}/versions/{version}', [MediaController::class, 'setVersion'])->name('versions.set');
-                Route::get('media/{transmorpherMedia}/versions/{version}/original', [MediaController::class, 'getOriginal'])->name('versions.original.get');
-                Route::get('media/{transmorpherMedia}/versions/{version}/derivative/{transformations?}', [MediaController::class, 'getDerivativeForVersion'])->name('versions.derivative.get');
+                    Route::prefix('versions')->name('versions.')->group(function () {
+                        Route::get('', [MediaController::class, 'getVersions'])->name('get');
 
-                # Upload
-                Route::post('media/{transmorpherMedia}/uploads/reserve', [UploadController::class, 'getUploadToken'])->name('uploads.reserve');
-                Route::post('uploads/{transmorpherUpload}/response/handle', [UploadController::class, 'handleUploadResponse'])->name('uploads.response');
-                Route::post('uploads/{transmorpherUpload}/state/set', [UploadStateController::class, 'setUploadingState'])->name('uploads.state.set');
-                Route::get('uploads/{transmorpherUpload}/chunkUrl/{chunkNumber}', [UploadController::class, 'getChunkUploadUrl'])->name('uploads.url');
-                Route::post('uploads/{transmorpherUpload}/complete', [UploadController::class, 'completeUpload'])->name('uploads.complete');
-                Route::delete('uploads/{transmorpherUpload}/abort', [UploadController::class, 'abortUpload'])->name('uploads.abort');
+                        Route::prefix('{version}')->group(function () {
+                            Route::patch('', [MediaController::class, 'setVersion'])->name('set');
+                            Route::get('original', [MediaController::class, 'getOriginal'])->name('original.get');
+                            Route::get('derivative/{transformations?}', [MediaController::class, 'getDerivativeForVersion'])->name('derivative.get');
+                        });
+                    });
+                });
+
+                Route::prefix('uploads/{transmorpherUpload}')->name('uploads.')->group(function () {
+                    Route::post('response/handle', [UploadController::class, 'handleUploadResponse'])->name('response');
+                    Route::post('state/set', [UploadStateController::class, 'setUploadingState'])->name('state.set');
+                    Route::get('chunkUrl/{chunkNumber}', [UploadController::class, 'getChunkUploadUrl'])->name('url');
+                    Route::post('complete', [UploadController::class, 'completeUpload'])->name('complete');
+                    Route::delete('abort', [UploadController::class, 'abortUpload'])->name('abort');
+                });
             });
         });
     }
