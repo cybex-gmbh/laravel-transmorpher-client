@@ -24,15 +24,17 @@ php artisan migrate
 
 ### Config values
 
-If you want to configure certain configuration values used by the package, you can do so by publishing the `transmorpher.php` file to your project directory.
+If you want to configure certain configuration values used by the package, you can publish one or more files from the `config/transmorpher` directory.
 
 ```bash
 php artisan vendor:publish --tag=transmorpher.config
 ```
 
-There you can configure values such as the route to which the Transmorpher media server sends information after transcoding a video.
+The `transmorpher.config` tag publishes all config files. For fine-grained publishing, use the interactive mode of `php artisan vendor:publish`.
 
-By default, the `web` and `auth` middlewares are applied to this package's routes. You can configure this in the config file.
+You can configure values such as `transmorpher.routes.notifications`, which is the route to which the Transmorpher media server sends notifications.
+
+By default, the `web` and `auth` middlewares are applied to this package's routes. You can configure this via `transmorpher.routes.middleware`.
 
 ### .env keys
 
@@ -272,7 +274,7 @@ There are some validation rules which can be applied for the dropzone component:
 >
 > As comparisons between floating point numbers can be problematic, large dimensions (>10000px) can cause the ratio to not be 100% accurate.
 
-All those validation rules can be configured in the `transmorpher.php` config file and will be applied to all dropzones.
+All those validation rules can be configured in the files under `config/transmorpher/upload` and will be applied to all dropzones.
 
 Additionally, you have the option to specify the validation rules marked with a '*' for a specific dropzone, which will take priority over the rules specified in the config file.
 
