@@ -38,6 +38,8 @@ export function setupComponent({transmorpherIdentifier}) {
 }
 
 export function startPolling({transmorpherIdentifier, uploadToken}) {
+    clearStatusPolling({transmorpherIdentifier});
+
     const expirationTime = new Date();
     expirationTime.setDate(expirationTime.getDate() + 1);
 
@@ -161,7 +163,6 @@ export async function closeUploadConfirmModal({transmorpherIdentifier}) {
 
     const stateResponse = await getState({transmorpherIdentifier});
 
-    clearStatusPolling({transmorpherIdentifier});
     displayState({transmorpherIdentifier, stateName: stateResponse.state});
     startPolling({transmorpherIdentifier, uploadToken: stateResponse.latestUploadToken});
 }

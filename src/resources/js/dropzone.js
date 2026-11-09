@@ -1,14 +1,7 @@
 import Dropzone from 'dropzone';
 import {clearStatusPolling, getMedium, MEDIA_TYPE, state} from './state.js';
-import {
-    completeUpload,
-    getState,
-    getUploadUrl,
-    reserveUploadSlot as reserveUploadSlotRequest,
-    setUploadingState,
-    storeUploadResponse,
-} from './api.js';
-import {displayState, resetAgeElement, updateThumbnail} from './ui.js';
+import {completeUpload, getState, getUploadUrl, reserveUploadSlot as reserveUploadSlotRequest, setUploadingState, storeUploadResponse,} from './api.js';
+import {displayState, resetAgeElement, resetDropzoneErrorMessage, updateThumbnail} from './ui.js';
 import {getMediaDimensions} from './utils.js';
 import {openUploadConfirmModal, startPolling} from './controller.js';
 import {updateVersionInformation} from './versions.js';
@@ -39,7 +32,6 @@ export function createDropzone({transmorpherIdentifier}) {
             this.on('processing', async function () {
                 await setUploadingState({uploadToken: this.options.uploadToken});
 
-                clearStatusPolling({transmorpherIdentifier});
                 displayState({transmorpherIdentifier, stateName: 'uploading', resetError: false});
                 startPolling({transmorpherIdentifier, uploadToken: this.options.uploadToken});
             });
@@ -98,13 +90,10 @@ export function createDropzone({transmorpherIdentifier}) {
         accept: function (file, done) {
             file.done = done;
 
-            // Remove previous elements to maintain a clean overlay.
+            // Hides the "Drop here" CTA when a file is dropped in, to only show the progress bar.
             this.element.querySelector('.dz-default').style.display = 'none';
-            const errorElement = this.element.querySelector('.dz-error');
-
-            if (errorElement) {
-                errorElement.remove();
-            }
+            // Closes any previous error message when a new file is dropped in.
+            resetDropzoneErrorMessage({transmorpherIdentifier});
 
             this.emit('thumbnail', file);
         },
@@ -220,7 +209,6 @@ async function displayUploadResult({uploadResult, transmorpherIdentifier, upload
 
         // Start polling for updates when the upload was aborted due to another upload.
         if (uploadResult.httpCode === 404) {
-            clearStatusPolling({transmorpherIdentifier});
             startPolling({transmorpherIdentifier, uploadToken: uploadResult.latestUploadToken});
             displayState({transmorpherIdentifier, stateName: 'uploading'});
         }
