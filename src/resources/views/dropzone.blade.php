@@ -113,23 +113,10 @@
 <script type="text/javascript">
     if (!@json($hasConnectionError)) {
         window.transmorpher.setUploadHandler({uploadHandler: '{{ $uploadHandler }}'});
+
         window.transmorpher.registerMedium({
             transmorpherIdentifier: '{{ $media->getIdentifier() }}', medium: {
                 transmorpherMediaKey: {{ $transmorpherMediaKey }},
-                routes: {
-                    state: '{{ $stateRoute }}',
-                    handleUploadResponse: '{{ $handleUploadResponseRoute }}',
-                    getVersions: '{{ $getVersionsRoute }}',
-                    setVersion: '{{ $setVersionRoute }}',
-                    delete: '{{ $deleteRoute }}',
-                    getOriginal: '{{ $getOriginalRoute }}',
-                    getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
-                    uploadToken: '{{ $uploadTokenRoute }}',
-                    setUploadingState: '{{ $setUploadingStateRoute }}',
-                    chunkUrl: '{{ $getChunkUrlRoute }}',
-                    completeUpload: '{{ $completeUploadRoute }}',
-                    abortUpload: '{{ $abortUploadRoute }}'
-                },
                 transformations: @json($srcSetTransformations),
                 translations: @json($translations),
                 webUploadUrl: '{{ $media->getWebUploadUrl() }}',
@@ -148,6 +135,10 @@
                 maxHeight: '{{ $acceptedMaxHeight }}',
                 ratio: '{{ $acceptedCalculatedRatio }}'
             }
+        });
+
+        window.transmorpher.registerRoutes({
+            routes: @json($routes)
         });
 
         window.transmorpher.setupComponent({transmorpherIdentifier: '{{ $media->getIdentifier() }}'});
