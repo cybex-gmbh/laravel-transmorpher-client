@@ -16,16 +16,16 @@ jobs:
         uses: actions/checkout@v7
         with:
           sparse-checkout: |
-            amigor/.env.transmorpher
+            .env.transmorpher
           # https://git-scm.com/docs/git-sparse-checkout#_internalscone_mode_handling
           sparse-checkout-cone-mode: false
 
       - name: Write secrets in .env file
         run: |
-          echo "TRANSMORPHER_AUTH_TOKEN_HASH=\"${{ secrets.PULLPREVIEW_SANCTUM_AUTH_TOKEN_HASH }}\"" >> amigor/.env.transmorpher
-          echo "TRANSMORPHER_SIGNING_KEYPAIR=\"${{ secrets.PULLPREVIEW_SODIUM_KEYPAIR }}\"" >> amigor/.env.transmorpher
-          echo "SEED_USER_NAME=\"${{ secrets.PULLPREVIEW_USER_NAME }}\"" >> amigor/.env.transmorpher
-          echo "SEED_USER_EMAIL=\"${{ secrets.PULLPREVIEW_USER_EMAIL }}\"" >> amigor/.env.transmorpher
+          echo "TRANSMORPHER_AUTH_TOKEN_HASH=\"${{ secrets.PULLPREVIEW_SANCTUM_AUTH_TOKEN_HASH }}\"" >> .env.transmorpher
+          echo "TRANSMORPHER_SIGNING_KEYPAIR=\"${{ secrets.PULLPREVIEW_SODIUM_KEYPAIR }}\"" >> .env.transmorpher
+          echo "SEED_USER_NAME=\"${{ secrets.PULLPREVIEW_USER_NAME }}\"" >> .env.transmorpher
+          echo "SEED_USER_EMAIL=\"${{ secrets.PULLPREVIEW_USER_EMAIL }}\"" >> .env.transmorpher
 
       - name: Upload transmorpher env file
         # https://github.com/actions/upload-artifact
@@ -34,8 +34,7 @@ jobs:
           name: transmorpher-env
           include-hidden-files: true
           path: |
-            placeholderSoFilePathsArePreserved
-            amigor/.env.transmorpher
+            .env.transmorpher
 
   deploy-staging-environment:
     needs: prepare-transmorpher-environment
