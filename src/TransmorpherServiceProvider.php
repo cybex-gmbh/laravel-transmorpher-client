@@ -81,9 +81,9 @@ class TransmorpherServiceProvider extends ServiceProvider
             Route::middleware(array_merge(config('transmorpher.routes.middleware', ['web', 'auth']), [SubstituteBindings::class]))->group(function () {
                 Route::prefix('media/{transmorpherMedia}')->group(function () {
                     Route::name('media.')->group(function () {
-                        Route::post('state', [UploadStateController::class, 'getState'])->name('state');
+                        Route::post('state', [UploadStateController::class, 'getState'])->name('state.get');
                         Route::delete('', [MediaController::class, 'delete'])->name('delete');
-                        Route::post('upload/reserve', [UploadController::class, 'getUploadToken'])->name('reserve');
+                        Route::post('upload/reserve', [UploadController::class, 'getUploadToken'])->name('upload.reserve');
                     });
 
                     Route::prefix('versions')->name('versions.')->group(function () {
@@ -98,7 +98,7 @@ class TransmorpherServiceProvider extends ServiceProvider
                 });
 
                 Route::prefix('uploads/{transmorpherUpload}')->name('uploads.')->group(function () {
-                    Route::post('response/handle', [UploadController::class, 'handleUploadResponse'])->name('response');
+                    Route::post('response/handle', [UploadController::class, 'handleUploadResponse'])->name('response.handle');
                     Route::post('state/set', [UploadStateController::class, 'setUploadingState'])->name('state.set');
                     Route::get('chunkUrl/{chunkNumber}', [UploadController::class, 'getChunkUploadUrl'])->name('url');
                     Route::post('complete', [UploadController::class, 'completeUpload'])->name('complete');

@@ -93,13 +93,13 @@ class Dropzone extends Component
         $this->routes = [
             'media' => [
                 'delete' => $this->assembleRoute('media.delete'),
-                'getState' => $this->assembleRoute('media.state'),
-                'reserveUpload' => $this->assembleRoute('media.reserve'),
+                'getState' => $this->assembleRoute('media.state.get'),
+                'reserveUpload' => $this->assembleRoute('media.upload.reserve'),
             ],
             'uploads' => [
                 'abort' => $this->assembleRoute('uploads.abort'),
                 'complete' => $this->assembleRoute('uploads.complete'),
-                'handleResponse' => $this->assembleRoute('uploads.response'),
+                'handleResponse' => $this->assembleRoute('uploads.response.handle'),
                 'setState' => $this->assembleRoute('uploads.state.set'),
                 'url' => $this->assembleRoute('uploads.url'),
             ],
