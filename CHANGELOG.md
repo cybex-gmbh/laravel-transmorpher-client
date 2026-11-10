@@ -13,12 +13,14 @@
 - The `config/transmorpher.php` file was split up into multiple config files in `config/transmorpher/`
   - Some config keys have been renamed 
   - Removed unused `transmorpher.client_name` config key and `getClientName()` method from Media classes
+- Route names and paths have changed to be more uniform
 
 ### Features
 
 - Now supports Transmorpher Media Server API v2
   - To use this version of the package, you need a Transmorpher Media Server v0.9.0 or higher
 - The config file has been split up and configs can now be published individually
+- The prefix for routes provided by this package can now be configured via the `transmorpher.routes.prefix` config key
 
 ### Fixes
 

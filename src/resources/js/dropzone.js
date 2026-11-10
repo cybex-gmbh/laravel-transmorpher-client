@@ -37,7 +37,7 @@ export function createDropzone({transmorpherIdentifier}) {
         ...state.uploadHandler.getDropzoneOptions({transmorpherMedium: medium}),
         init: function () {
             this.on('processing', async function () {
-                await setUploadingState({transmorpherIdentifier, uploadToken: this.options.uploadToken});
+                await setUploadingState({uploadToken: this.options.uploadToken});
 
                 clearStatusPolling({transmorpherIdentifier});
                 displayState({transmorpherIdentifier, stateName: 'uploading', resetError: false});
@@ -86,6 +86,7 @@ export function createDropzone({transmorpherIdentifier}) {
             if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
                 openUploadConfirmModal({
                     transmorpherIdentifier,
+                    uploadToken: uploadingStateResponse.latestUploadToken,
                     callback: () => reserveUploadSlot({transmorpherIdentifier, done: file.done})
                 });
 
@@ -109,7 +110,6 @@ export function createDropzone({transmorpherIdentifier}) {
         },
         canceled: async function (file) {
             await storeUploadResponse({
-                transmorpherIdentifier,
                 uploadToken: this.options.uploadToken,
                 response: {
                     state: 'error',
@@ -122,7 +122,7 @@ export function createDropzone({transmorpherIdentifier}) {
         success: async function (file) {
             this.element.classList.add('is-completing-upload');
 
-            const completeUploadResponse = await completeUpload({transmorpherIdentifier, uploadToken: this.options.uploadToken});
+            const completeUploadResponse = await completeUpload({uploadToken: this.options.uploadToken});
             await handleUploadResponse({file, response: completeUploadResponse, transmorpherIdentifier, uploadToken: this.options.uploadToken});
 
             this.element.querySelector('.dz-default').style.display = 'block';
@@ -141,7 +141,7 @@ export function createDropzone({transmorpherIdentifier}) {
         const chunk = file?.upload?.chunks?.find(candidateChunk => candidateChunk.xhr === xhr);
         const chunkIndex = (chunk?.dataBlock?.chunkIndex ?? 0) + 1;
 
-        const chunkUploadUrl = await getUploadUrl({transmorpherIdentifier, chunkIndex, uploadToken: this.options.uploadToken, done: file?.done});
+        const chunkUploadUrl = await getUploadUrl({chunkIndex, uploadToken: this.options.uploadToken, done: file?.done});
 
         if (!chunkUploadUrl) {
             return;
@@ -178,7 +178,6 @@ async function handleUploadResponse({file, response, transmorpherIdentifier, upl
 
     if (uploadToken) {
         uploadResult = await storeUploadResponse({
-            transmorpherIdentifier,
             uploadToken,
             response,
             httpCode: response?.httpCode ?? file.xhr?.status,

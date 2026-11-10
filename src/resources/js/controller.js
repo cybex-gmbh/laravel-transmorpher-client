@@ -8,7 +8,8 @@ import {
     displayState,
     openMoreInformationModalDisplay,
     resetAgeElement,
-    setAgeElement, setProgressBarVisibility,
+    setAgeElement,
+    setProgressBarVisibility,
     updateMediaDisplay,
 } from './ui.js';
 import {addConfirmEventListener, getDateForDisplay} from './utils.js';
@@ -119,7 +120,7 @@ async function deleteMedia({transmorpherIdentifier}) {
     displayModalState({transmorpherIdentifier, stateName: deleteResult.state, message: deleteResult.clientMessage});
 }
 
-export function openUploadConfirmModal({transmorpherIdentifier, callback}) {
+export function openUploadConfirmModal({transmorpherIdentifier, uploadToken, callback}) {
     const modal = document.querySelector(`#modal-uc-${transmorpherIdentifier}`);
     const dropzone = document.querySelector(`#dz-${transmorpherIdentifier}`).dropzone;
     const progressBar = document.querySelector(`#dz-${transmorpherIdentifier} .dz-preview ~ .dz-preview`);
@@ -150,7 +151,7 @@ export function openUploadConfirmModal({transmorpherIdentifier, callback}) {
             setProgressBarVisibility({progressBarElement: progressBar, isVisible: true});
         }
 
-        await abortUpload({transmorpherIdentifier});
+        await abortUpload({uploadToken});
         callback();
     };
 }
