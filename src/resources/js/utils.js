@@ -57,6 +57,13 @@ export function getMediaDimensions({file, mediaType, validationError}) {
     }
 }
 
+export function getCacheInvalidatorFromUrl({url}) {
+    const versionParameter = new URL(url).searchParams.get('v');
+    const cacheInvalidator = versionParameter?.match(/^\d+_/)?.[0];
+
+    return cacheInvalidator ? `?v=${cacheInvalidator}` : null;
+}
+
 function getImageDimensions({file, validationError}) {
     return new Promise((resolve, reject) => {
         const image = new Image();
