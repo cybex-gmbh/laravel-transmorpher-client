@@ -71,6 +71,15 @@ export function displayDropzoneErrorMessage({transmorpherIdentifier, message}) {
     form.querySelector('.dz-default').style.display = 'block';
 }
 
+export function resetDropzoneErrorMessage({transmorpherIdentifier}) {
+    const form = document.querySelector(`#dz-${transmorpherIdentifier}`);
+    const errorDisplay = form.querySelector('.error-display');
+
+    errorDisplay.classList.add('d-none');
+    errorDisplay.querySelector('.error-message').textContent = '';
+    form.querySelector('.dz-default').style.display = 'none';
+}
+
 export function setModalErrorMessage({transmorpherIdentifier, message}) {
     document.querySelector(`#modal-mi-${transmorpherIdentifier} .error-message`).textContent = message;
 }
@@ -172,7 +181,7 @@ export function displayPlaceholder({transmorpherIdentifier}) {
         image.classList.remove('d-none');
     });
 
-    document.querySelector(`#modal-mi-${transmorpherIdentifier} .current-version-age`).classList.add('d-none');
+    document.querySelector(`#modal-mi-${transmorpherIdentifier} .latest-processed-version-age`).classList.add('d-none');
 }
 
 export function closeMoreInformationModal({transmorpherIdentifier}) {

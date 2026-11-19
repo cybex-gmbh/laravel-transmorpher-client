@@ -69,7 +69,7 @@
                             </div>
                             <span class="error-message"></span>
                         </div>
-                        <span class="current-version-age"></span>
+                        <span class="latest-processed-version-age"></span>
                         <div class="media-preview">
                             <x-transmorpher::media-preview :media="$media"/>
                         </div>
