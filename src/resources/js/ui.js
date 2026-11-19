@@ -181,7 +181,7 @@ export function displayPlaceholder({transmorpherIdentifier}) {
         image.classList.remove('d-none');
     });
 
-    document.querySelector(`#modal-mi-${transmorpherIdentifier} .current-version-age`).classList.add('d-none');
+    document.querySelector(`#modal-mi-${transmorpherIdentifier} .latest-processed-version-age`).classList.add('d-none');
 }
 
 export function closeMoreInformationModal({transmorpherIdentifier}) {
