@@ -429,7 +429,7 @@
   width: -moz-fit-content;
   width: fit-content;
 }
-.transmorpher .current-version-age {
+.transmorpher .latest-processed-version-age {
   text-align: center;
 }
 .transmorpher .version-list {

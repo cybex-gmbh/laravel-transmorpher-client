@@ -45,34 +45,34 @@ export async function updateVersionInformation({transmorpherIdentifier}) {
         const processedVersions = versionInformation.versions
             .filter(version => version.processed)
             .sort((versionA, versionB) => versionB.number - versionA.number);
-        const currentlyProcessedVersion = processedVersions[0];
+        const latestProcessedVersion = processedVersions[0];
 
         let versionAge;
 
         switch (medium.mediaType) {
             case MEDIA_TYPE.IMAGE:
             case MEDIA_TYPE.DOCUMENT:
-                versionAge = getDateForDisplay({date: new Date(currentlyProcessedVersion.createdAt)});
+                versionAge = getDateForDisplay({date: new Date(latestProcessedVersion.createdAt)});
                 updateThumbnail({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl, fullsizeUrl: versionInformation.fullsizeUrl});
                 break;
             case MEDIA_TYPE.VIDEO:
-                if (currentlyProcessedVersion) {
-                    versionAge = getDateForDisplay({date: new Date(currentlyProcessedVersion.createdAt)});
+                if (latestProcessedVersion) {
+                    versionAge = getDateForDisplay({date: new Date(latestProcessedVersion.createdAt)});
                     updateVideoDisplay({transmorpherIdentifier, thumbnailUrl: versionInformation.thumbnailUrl});
                 }
                 break;
         }
 
-        const currentVersionAgeElement = modal.querySelector('.current-version-age');
-        currentVersionAgeElement.textContent = versionAge;
-        currentVersionAgeElement.classList.remove('d-none');
+        const latestProcessedVersionAgeElement = modal.querySelector('.latest-processed-version-age');
+        latestProcessedVersionAgeElement.textContent = versionAge;
+        latestProcessedVersionAgeElement.classList.remove('d-none');
 
         const cacheInvalidatorPrefix = getCacheInvalidatorFromUrl({url: versionInformation.thumbnailUrl});
 
         processedVersions
             .forEach(version => {
                 // Don't show the currently processed version, as it is shown on the left as the main version.
-                if (version.number === currentlyProcessedVersion.number) {
+                if (version.number === latestProcessedVersion.number) {
                     return;
                 }
 

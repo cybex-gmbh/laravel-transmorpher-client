@@ -3912,7 +3912,7 @@ function displayPlaceholder(_ref15) {
     image.srcset = '';
     image.classList.remove('d-none');
   });
-  document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .current-version-age")).classList.add('d-none');
+  document.querySelector("#modal-mi-".concat(transmorpherIdentifier, " .latest-processed-version-age")).classList.add('d-none');
 }
 function closeMoreInformationModal(_ref16) {
   var transmorpherIdentifier = _ref16.transmorpherIdentifier;
@@ -4118,7 +4118,7 @@ function updateVersionInformation(_x) {
 }
 function _updateVersionInformation() {
   _updateVersionInformation = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(_ref) {
-    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, processedVersions, currentlyProcessedVersion, versionAge, currentVersionAgeElement, cacheInvalidatorPrefix, _t;
+    var transmorpherIdentifier, modal, versionList, defaultVersionEntry, versionInformation, stateResponse, medium, processedVersions, latestProcessedVersion, versionAge, latestProcessedVersionAgeElement, cacheInvalidatorPrefix, _t;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
@@ -4177,13 +4177,13 @@ function _updateVersionInformation() {
           }).sort(function (versionA, versionB) {
             return versionB.number - versionA.number;
           });
-          currentlyProcessedVersion = processedVersions[0];
+          latestProcessedVersion = processedVersions[0];
           _t = medium.mediaType;
           _context.n = _t === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.IMAGE ? 6 : _t === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.DOCUMENT ? 6 : _t === _state_js__WEBPACK_IMPORTED_MODULE_0__.MEDIA_TYPE.VIDEO ? 7 : 8;
           break;
         case 6:
           versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
-            date: new Date(currentlyProcessedVersion.createdAt)
+            date: new Date(latestProcessedVersion.createdAt)
           });
           (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateThumbnail)({
             transmorpherIdentifier: transmorpherIdentifier,
@@ -4192,9 +4192,9 @@ function _updateVersionInformation() {
           });
           return _context.a(3, 8);
         case 7:
-          if (currentlyProcessedVersion) {
+          if (latestProcessedVersion) {
             versionAge = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getDateForDisplay)({
-              date: new Date(currentlyProcessedVersion.createdAt)
+              date: new Date(latestProcessedVersion.createdAt)
             });
             (0,_ui_js__WEBPACK_IMPORTED_MODULE_2__.updateVideoDisplay)({
               transmorpherIdentifier: transmorpherIdentifier,
@@ -4203,15 +4203,15 @@ function _updateVersionInformation() {
           }
           return _context.a(3, 8);
         case 8:
-          currentVersionAgeElement = modal.querySelector('.current-version-age');
-          currentVersionAgeElement.textContent = versionAge;
-          currentVersionAgeElement.classList.remove('d-none');
+          latestProcessedVersionAgeElement = modal.querySelector('.latest-processed-version-age');
+          latestProcessedVersionAgeElement.textContent = versionAge;
+          latestProcessedVersionAgeElement.classList.remove('d-none');
           cacheInvalidatorPrefix = (0,_utils_js__WEBPACK_IMPORTED_MODULE_3__.getCacheInvalidatorFromUrl)({
             url: versionInformation.thumbnailUrl
           });
           processedVersions.forEach(function (version) {
             // Don't show the currently processed version, as it is shown on the left as the main version.
-            if (version.number === currentlyProcessedVersion.number) {
+            if (version.number === latestProcessedVersion.number) {
               return;
             }
             var versionEntry = defaultVersionEntry.cloneNode(true);
