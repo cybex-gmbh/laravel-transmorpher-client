@@ -13,7 +13,7 @@
                 <div class="details">
                     <img role="button" src="{{ mix('icons/more-info.svg', 'vendor/transmorpher') }}" alt="@lang('transmorpher::image-alt-tags.open_more_information_modal')"
                          class="icon"
-                         onclick="openMoreInformationModal('{{ $media->getIdentifier() }}')">
+                         onclick="window.transmorpher.openMoreInformationModal({ transmorpherIdentifier: '{{ $media->getIdentifier() }}' })">
                 </div>
             </div>
             <div class="card-body">
@@ -34,7 +34,9 @@
                                     {{ trans('transmorpher::errors.no_server_connection') }}
                                 @endif
                             </span>
-                            <button type="button" class="btn-close" onclick="closeErrorMessage(this, '{{ $media->getIdentifier() }}')">⨉</button>
+                            <button type="button" class="btn-close"
+                                    onclick="window.transmorpher.closeErrorMessage({ closeButton: this, transmorpherIdentifier: '{{ $media->getIdentifier() }}' })">⨉
+                            </button>
                         </div>
                         <x-transmorpher::media-preview :media="$media"/>
                     </div>
@@ -50,7 +52,7 @@
                              alt="@lang('transmorpher::image-alt-tags.icon', ['iconFor' => $media->type->value])" class="icon">
                         {{ $mediaName }}
                     </div>
-                    <button class="btn-close" onclick="closeMoreInformationModal('{{ $media->getIdentifier() }}')">⨉</button>
+                    <button class="btn-close" onclick="window.transmorpher.closeMoreInformationModal({ transmorpherIdentifier: '{{ $media->getIdentifier() }}' })">⨉</button>
                 </div>
                 <div class="card-body">
                     <div class="card-side">
@@ -97,7 +99,7 @@
                 {{ $media->type->getUploadInProgressTranslation() }}
             </div>
             <div class="card-body">
-                <button class="button" onclick="closeUploadConfirmModal('{{ $media->getIdentifier() }}')">
+                <button class="button" onclick="window.transmorpher.closeUploadConfirmModal({ transmorpherIdentifier: '{{ $media->getIdentifier() }}' })">
                     @lang('transmorpher::dropzone.cancel')
                 </button>
                 <button class="button badge-error">
@@ -110,43 +112,44 @@
 
 <script type="text/javascript">
     if (!@json($hasConnectionError)) {
-        mediaTypes = @json($mediaTypes);
-        uploadHandler = '{{ $uploadHandler }}'
-        media['{{ $media->getIdentifier() }}'] = {
-            transmorpherMediaKey: {{ $transmorpherMediaKey }},
-            routes: {
-                state: '{{ $stateRoute }}',
-                handleUploadResponse: '{{ $handleUploadResponseRoute }}',
-                getVersions: '{{ $getVersionsRoute }}',
-                setVersion: '{{ $setVersionRoute }}',
-                delete: '{{ $deleteRoute }}',
-                getOriginal: '{{ $getOriginalRoute }}',
-                getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
-                uploadToken: '{{ $uploadTokenRoute }}',
-                setUploadingState: '{{ $setUploadingStateRoute }}',
-                chunkUrl: '{{ $getChunkUrlRoute }}',
-                completeUpload: '{{ $completeUploadRoute }}',
-                abortUpload: '{{ $abortUploadRoute }}'
-            },
-            transformations: @json($srcSetTransformations),
-            translations: @json($translations),
-            webUploadUrl: '{{ $media->getWebUploadUrl() }}',
-            mediaType: '{{ $media->type->value }}',
-            chunkSize: {{ $media->getChunkSize() }},
-            maxFilesize: {{ $media->getMaxFileSize() }},
-            maxThumbnailFilesize: {{ $media->getMaxFileSize() }},
-            isProcessing: @json($isProcessing),
-            isUploading: @json($isUploading),
-            lastUpdated: '{{ $lastUpdated }}',
-            latestUploadToken: '{{ $latestUploadToken }}',
-            acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}',
-            minWidth: '{{ $acceptedMinWidth }}',
-            maxWidth: '{{ $acceptedMaxWidth }}',
-            minHeight: '{{ $acceptedMinHeight }}',
-            maxHeight: '{{ $acceptedMaxHeight }}',
-            ratio: '{{ $acceptedCalculatedRatio }}'
-        }
+        window.transmorpher.setUploadHandler({uploadHandler: '{{ $uploadHandler }}'});
+        window.transmorpher.registerMedium({
+            transmorpherIdentifier: '{{ $media->getIdentifier() }}', medium: {
+                transmorpherMediaKey: {{ $transmorpherMediaKey }},
+                routes: {
+                    state: '{{ $stateRoute }}',
+                    handleUploadResponse: '{{ $handleUploadResponseRoute }}',
+                    getVersions: '{{ $getVersionsRoute }}',
+                    setVersion: '{{ $setVersionRoute }}',
+                    delete: '{{ $deleteRoute }}',
+                    getOriginal: '{{ $getOriginalRoute }}',
+                    getDerivativeForVersion: '{{ $getDerivativeForVersionRoute }}',
+                    uploadToken: '{{ $uploadTokenRoute }}',
+                    setUploadingState: '{{ $setUploadingStateRoute }}',
+                    chunkUrl: '{{ $getChunkUrlRoute }}',
+                    completeUpload: '{{ $completeUploadRoute }}',
+                    abortUpload: '{{ $abortUploadRoute }}'
+                },
+                transformations: @json($srcSetTransformations),
+                translations: @json($translations),
+                webUploadUrl: '{{ $media->getWebUploadUrl() }}',
+                mediaType: '{{ $media->type->value }}',
+                chunkSize: {{ $media->getChunkSize() }},
+                maxFilesize: {{ $media->getMaxFileSize() }},
+                maxThumbnailFilesize: {{ $media->getMaxFileSize() }},
+                isProcessing: @json($isProcessing),
+                isUploading: @json($isUploading),
+                lastUpdated: '{{ $lastUpdated }}',
+                latestUploadToken: '{{ $latestUploadToken }}',
+                acceptedFileTypes: '{{ $media->getAcceptedFileTypes() }}',
+                minWidth: '{{ $acceptedMinWidth }}',
+                maxWidth: '{{ $acceptedMaxWidth }}',
+                minHeight: '{{ $acceptedMinHeight }}',
+                maxHeight: '{{ $acceptedMaxHeight }}',
+                ratio: '{{ $acceptedCalculatedRatio }}'
+            }
+        });
 
-        setupComponent('{{ $media->getIdentifier() }}');
+        window.transmorpher.setupComponent({transmorpherIdentifier: '{{ $media->getIdentifier() }}'});
     }
 </script>
