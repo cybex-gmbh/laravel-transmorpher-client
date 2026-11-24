@@ -17,7 +17,7 @@ abstract class OnDemandDerivativeMedia extends Media
      */
     public function getOriginal(int $versionNumber): array
     {
-        $response = $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('%s/%s/version/%s/original', $this->type->value, $this->getIdentifier(), $versionNumber)));
+        $response = $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('%s/%s/versions/%s/original', $this->type->value, $this->getIdentifier(), $versionNumber)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }
@@ -32,7 +32,7 @@ abstract class OnDemandDerivativeMedia extends Media
      */
     public function getDerivativeForVersion(int $versionNumber, string $transformations): array
     {
-        $response = $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('%s/%s/version/%s/derivative/%s', $this->type->value, $this->getIdentifier(), $versionNumber, $transformations)));
+        $response = $this->configureApiRequest()->get(TransmorpherApi::S2S->getUrl(sprintf('%s/%s/versions/%s/derivative/%s', $this->type->value, $this->getIdentifier(), $versionNumber, $transformations)));
 
         return ['binary' => $response->body(), 'mimetype' => $response->header('Content-Type')];
     }

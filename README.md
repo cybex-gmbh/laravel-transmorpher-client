@@ -24,15 +24,17 @@ php artisan migrate
 
 ### Config values
 
-If you want to configure certain configuration values used by the package, you can do so by publishing the `transmorpher.php` file to your project directory.
+If you want to configure certain configuration values used by the package, you can publish one or more files from the `config/transmorpher` directory.
 
 ```bash
 php artisan vendor:publish --tag=transmorpher.config
 ```
 
-There you can configure values such as the route to which the Transmorpher media server sends information after transcoding a video.
+The `transmorpher.config` tag publishes all config files. For fine-grained publishing, use the interactive mode of `php artisan vendor:publish`.
 
-By default, the `web` and `auth` middlewares are applied to this package's routes. You can configure this in the config file.
+You can configure values such as `transmorpher.routes.notifications`, which is the route to which the Transmorpher media server sends notifications.
+
+By default, the `web` and `auth` middlewares are applied to this package's routes. You can configure this via `transmorpher.routes.middleware`.
 
 ### .env keys
 
@@ -75,7 +77,7 @@ You can specify the Transmorpher API version which should be used. Make sure the
 For versions supported by the client, check the SupportedApiVersion enum.
 
 ```dotenv
-TRANSMORPHER_API_VERSION=1
+TRANSMORPHER_API_VERSION=2
 ```
 
 ### Allow models to have images and videos
@@ -272,7 +274,7 @@ There are some validation rules which can be applied for the dropzone component:
 >
 > As comparisons between floating point numbers can be problematic, large dimensions (>10000px) can cause the ratio to not be 100% accurate.
 
-All those validation rules can be configured in the `transmorpher.php` config file and will be applied to all dropzones.
+All those validation rules can be configured in the files under `config/transmorpher/upload` and will be applied to all dropzones.
 
 Additionally, you have the option to specify the validation rules marked with a '*' for a specific dropzone, which will take priority over the rules specified in the config file.
 
@@ -280,23 +282,7 @@ Additionally, you have the option to specify the validation rules marked with a 
 <x-transmorpher::dropzone :media="$image" acceptedMinWidth="1920" acceptedMinHeight="1080" :acceptedRatio="16/9"></x-transmorpher::dropzone>
 ```
 
-## Development
-
-### Frontend Assets
-
-For installing frontend dependencies you will have to run:
-
-```bash
-npm install
-```
-
-For compiling assets you can use the following command in the project root:
-
-```bash
-npx mix
-```
-
-### Transformations
+### Displaying derivatives
 
 To show derivatives on a webpage, you can use an HTML image tag.
 
@@ -322,27 +308,81 @@ List of available transformations:
 
 > Marked with * only applies to documents.
 
-### Companion app
+## Development
 
 The Laravel Transmorpher Client comes with a demonstration app which can be used to test the client package.
+
+The file structure in the container is as follows:
+
+- /var/www: example app
+- /var/package: package
+
+### Companion app
 
 To get started:
 
 ```bash
-cp .env.example .env
+cp .env.example .env # Execute this outside of the container
 
-./sail up -d
-./sail shell
+docker compose up -d
+docker compose exec app shell
 
 composer install
 php artisan migrate
 php artisan db:seed --class=PullpreviewSeeder
 ```
 
-The package source code is symlinked to the app's `vendor` directory. When changing branches or updating assets, you need to run `composer update` in the app directory.
+The package source code is symlinked to the app's `vendor` directory.
+When changing branches or updating assets, you need to run `composer update cybex/laravel-transmorpher-client` in the app directory.
 The .env in the root directory is symlinked to the app directory.
+The package's compiled assets are symlinked to the app directory.
 
-Laravel Sail is set up to start in the app directory.
+The container is set up to start in the app directory.
+
+### Working on the package
+
+When in the container, switch to the package directory:
+
+```bash
+cd /var/package
+```
+
+Install composer dependencies:
+
+```bash
+composer install
+```
+
+Install node dependencies:
+
+```bash
+npm install
+```
+
+### Frontend Assets
+
+For compiling assets you can use the following command inside the package directory:
+
+```bash
+npx mix
+```
+
+To listen for changes and automatically recompile assets, you can use:
+
+```bash
+npx mix watch
+```
+
+Since the package's assets are symlinked to the app directory, you will directly see the changes without needing to re-publish them to the app.
+
+> [!IMPORTANT]
+> Once done developing, make sure to publish the assets to the example app directory, so that they are available in the PullPreview environment.
+>
+> In the example app directory:
+>
+> ```bash
+> php artisan vendor:publish --tag=transmorpher.assets --force
+> ```
 
 ### [Pullpreview](https://github.com/pullpreview/action)
 

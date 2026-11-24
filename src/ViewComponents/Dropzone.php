@@ -5,7 +5,6 @@ namespace Transmorpher\ViewComponents;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Component;
 use Illuminate\View\View;
-use Transmorpher\Enums\MediaType;
 use Transmorpher\Enums\Transformation;
 use Transmorpher\Enums\UploadState;
 use Transmorpher\Media;
@@ -19,19 +18,14 @@ class Dropzone extends Component
     public string|int $transmorpherMediaKey;
     public ?string $latestUploadToken;
     public int $lastUpdated;
-    public array $mediaTypes;
     public array $srcSetTransformations;
     public ?float $acceptedCalculatedRatio;
     public array $translations;
-    public string $stateRoute;
-    public string $uploadTokenRoute;
-    public string $handleUploadResponseRoute;
-    public string $getVersionsRoute;
-    public string $setVersionRoute;
-    public string $deleteRoute;
-    public string $getOriginalRoute;
-    public string $getDerivativeForVersionRoute;
-    public string $setUploadingStateRoute;
+    public ?string $uploadHandler = null;
+    public bool $hasConnectionError = false;
+    public array $routes;
+
+    protected array $routesByName;
 
     public function __construct(
         public Media $media,
@@ -53,7 +47,6 @@ class Dropzone extends Component
         $this->transmorpherMediaKey = $media->getTransmorpherMedia()->getKey();
         $this->latestUploadToken = $media->getTransmorpherMedia()->latest_upload_token;
         $this->lastUpdated = $media->getTransmorpherMedia()->updated_at->timestamp;
-        $this->mediaTypes = array_column(MediaType::cases(), 'value', 'name');
         $this->srcSetTransformations = [
             '150w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(150)])),
             '300w' => implode('+', array_filter([$thumbnailDefaultTransformationsUrlRepresentation, Transformation::WIDTH->getUrlRepresentation(300)])),
@@ -74,18 +67,15 @@ class Dropzone extends Component
             'ratio' => $this->acceptedDisplayRatio,
         ]);
 
-        $domain = config('app.url');
-        $routes =  Route::getRoutes()->getRoutesByName();
+        $uploadHandlerResponse = $this->media->getUploadHandler();
 
-        $this->stateRoute = sprintf('%s/%s', $domain, $routes['transmorpherState']->uri);
-        $this->uploadTokenRoute = sprintf('%s/%s', $domain, $routes['transmorpherUploadToken']->uri);
-        $this->handleUploadResponseRoute = sprintf('%s/%s', $domain, $routes['transmorpherHandleUploadResponse']->uri);
-        $this->getVersionsRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetVersions']->uri);
-        $this->setVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetVersion']->uri);
-        $this->deleteRoute = sprintf('%s/%s', $domain, $routes['transmorpherDelete']->uri);
-        $this->getOriginalRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetOriginal']->uri);
-        $this->getDerivativeForVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetDerivativeForVersion']->uri);
-        $this->setUploadingStateRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetUploadingState']->uri);
+        if ($uploadHandlerResponse['state'] === UploadState::ERROR->value) {
+            $this->hasConnectionError = true;
+        } else {
+            $this->uploadHandler = $uploadHandlerResponse['uploadHandler'];
+        }
+
+        $this->assembleRoutes();
     }
 
     /**
@@ -96,5 +86,37 @@ class Dropzone extends Component
     public function render(): string|View
     {
         return view('transmorpher::dropzone');
+    }
+
+    protected function assembleRoutes(): void
+    {
+        $this->routes = [
+            'media' => [
+                'delete' => $this->assembleRoute('media.delete'),
+                'getState' => $this->assembleRoute('media.state.get'),
+                'reserveUpload' => $this->assembleRoute('media.upload.reserve'),
+            ],
+            'uploads' => [
+                'abort' => $this->assembleRoute('uploads.abort'),
+                'complete' => $this->assembleRoute('uploads.complete'),
+                'handleResponse' => $this->assembleRoute('uploads.response.handle'),
+                'setState' => $this->assembleRoute('uploads.state.set'),
+                'url' => $this->assembleRoute('uploads.url'),
+            ],
+            'versions' => [
+                'get' => $this->assembleRoute('versions.get'),
+                'getDerivative' => $this->assembleRoute('versions.derivative.get'),
+                'getOriginal' => $this->assembleRoute('versions.original.get'),
+                'set' => $this->assembleRoute('versions.set'),
+            ],
+        ];
+    }
+
+    protected function assembleRoute(string $routeName): string
+    {
+        $domain = config('app.url');
+        $this->routesByName ??= Route::getRoutes()->getRoutesByName();
+
+        return sprintf('%s/%s', $domain, $this->routesByName[sprintf('transmorpher.%s', $routeName)]->uri);
     }
 }

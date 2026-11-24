@@ -60,7 +60,7 @@ class TransmorpherUpload extends Model
         return 'token';
     }
 
-    public function handleStateUpdate(array $response, int $httpCode = null): array
+    public function handleStateUpdate(array $response, ?int $httpCode = null): array
     {
         $transmorpher = $this->TransmorpherMedia->getMedia();
 
@@ -74,6 +74,13 @@ class TransmorpherUpload extends Model
             $transmorpher->updateAfterSuccessfulUpload($response, $this);
         } else {
             $this->update(['state' => $response['state'], 'message' => $response['message']]);
+
+            // If we receive 404, it means the upload token has expired or the upload was overwritten.
+            // If we receive 0, it means the upload was canceled manually by the user.
+            // In these cases, we cannot abort the upload at this point.
+            if ($httpCode !== 404 && $httpCode !== 0) {
+                $transmorpher->abortUpload($this);
+            }
         }
 
         $response['latestUploadToken'] = $this->TransmorpherMedia->latest_upload_token;

@@ -7,4 +7,5 @@ return [
     'unexpected_error' => 'An unexpected error occurred.',
     'upload_canceled_or_took_too_long' => 'Canceled by a new upload or the upload took too long.',
     'version_no_longer_available' => 'Selected version is no longer available.',
+    'cannot_abort_finished_upload' => 'Cannot abort an upload which is not in progress.',
 ];

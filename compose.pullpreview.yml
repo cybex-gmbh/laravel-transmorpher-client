@@ -1,104 +1,154 @@
+x-common-volumes: &common-volumes
+  - 'storage:/var/www/storage'
+  - '.env:/var/www/.env'
+
+x-transmorpher-app-image: &transmorpher-app-image cybexwebdev/transmorpher:branch-feature-more-version-information-app
+x-transmorpher-transcoder-image: &transmorpher-transcoder-image cybexwebdev/transmorpher:branch-feature-more-version-information-transcoder
+
+x-transmorpher-common: &transmorpher-common
+  image: *transmorpher-app-image
+  depends_on:
+    transmorpher-mariadb:
+      condition: service_healthy
+    traefik:
+      condition: service_started
+  volumes:
+    - 'transmorpher-storage:/var/www/storage'
+    - '.env.transmorpher:/var/www/.env'
+  networks:
+    - traefik
+    - internal
+
+x-transmorpher-app-url: &transmorpher-app-url
+  APP_URL: https://transmorpher.${PULLPREVIEW_PUBLIC_DNS}
+
 services:
   app:
-    container_name: ${APP_CONTAINER_NAME:-transmorpher-amigor}
+    container_name: ${COMPOSE_PROJECT_NAME}
     build:
       context: .
-      dockerfile: ./amigor/docker/Dockerfile
-    networks:
-      - traefik
-      - internal
+      dockerfile: docker/amigor/Dockerfile
     depends_on:
-      mysql:
+      mariadb:
         condition: service_healthy
       traefik:
         condition: service_started
     environment:
-      PULLPREVIEW: true
-      PULLPREVIEW_FIRST_RUN: ${PULLPREVIEW_FIRST_RUN}
+      APP_URL: https://${PULLPREVIEW_PUBLIC_DNS}
       TRANSMORPHER_WEB_DELIVERY_BASE_URL: https://transmorpher.${PULLPREVIEW_PUBLIC_DNS}
       TRANSMORPHER_WEB_API_BASE_URL: https://transmorpher.${PULLPREVIEW_PUBLIC_DNS}/api
-      APP_URL: https://${PULLPREVIEW_PUBLIC_DNS}
-    volumes:
-      - 'app-storage:/var/www/html/amigor/storage'
-      - '.env:/var/www/html/amigor/.env'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`)'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.tls=true'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.tls.certresolver=production'
-      - 'traefik.http.routers.${APP_CONTAINER_NAME:-transmorpher-amigor}.priority=1'
-      - 'traefik.http.routers.amigor-root.rule=Host(`${PULLPREVIEW_PUBLIC_DNS}`) && Path(`/`)'
-      - 'traefik.http.routers.amigor-root.middlewares=htpasswd'
-      - 'traefik.http.routers.amigor-root.tls=true'
-      - 'traefik.http.routers.amigor-root.tls.certresolver=production'
-      - 'traefik.http.routers.amigor-root.priority=2'
-      - 'traefik.http.middlewares.htpasswd.basicauth.usersfile=/.htpasswd'
-  mysql:
-    image: 'mysql/mysql-server:8.0'
-    container_name: ${MYSQL_CONTAINER_NAME:-amigor-mysql-1}
-    ports:
-      - '3306:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: '${DB_DATABASE}'
-      MYSQL_USER: '${DB_USERNAME}'
-      MYSQL_PASSWORD: '${DB_PASSWORD}'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-    volumes:
-      - 'mysql:/var/lib/mysql'
-    networks:
-      - internal
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}" ]
-      retries: 3
-      timeout: 5s
-  transmorpher:
-    container_name: ${TRANSMORPHER_CONTAINER_NAME:-transmorpher}
-    image: 'cybexwebdev/transmorpher'
+      CONTAINER_ROLE: web
     networks:
       - traefik
       - internal
+    volumes: *common-volumes
+
+  initialize:
+    command: [ '/var/www/docker/amigor/pullpreview.initialize.sh' ]
+    build:
+      context: .
+      dockerfile: docker/amigor/Dockerfile
+    restart: 'on-failure'
     depends_on:
-      mysql-transmorpher:
+      mariadb:
         condition: service_healthy
-      traefik:
-        condition: service_started
     environment:
       PULLPREVIEW: true
       PULLPREVIEW_FIRST_RUN: ${PULLPREVIEW_FIRST_RUN}
-      VIDEO_TRANSCODING_WORKERS_AMOUNT: ${VIDEO_TRANSCODING_WORKERS_AMOUNT:-1}
-      APP_URL: https://transmorpher.${PULLPREVIEW_PUBLIC_DNS}
-      CLIENT_CONTAINER_NAME: ${APP_CONTAINER_NAME:-transmorpher-amigor}
-    volumes:
-      - 'transmorpher-storage:/var/www/html/storage'
-      - './amigor/.env.transmorpher:/var/www/html/.env'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.rule=Host(`transmorpher.${PULLPREVIEW_PUBLIC_DNS}`)'
-      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.tls=true'
-      - 'traefik.http.routers.${TRANSMORPHER_CONTAINER_NAME:-transmorpher}.tls.certresolver=production'
-  mysql-transmorpher:
-    image: 'mysql/mysql-server:8.0'
-    container_name: ${TRANSMORPHER_MYSQL_CONTAINER_NAME:-transmorpher-mysql-1}
+    volumes: *common-volumes
+    networks:
+      - internal
+
+  mariadb:
+    image: 'mariadb:lts-noble'
     environment:
-      MYSQL_ROOT_PASSWORD: 'password'
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: 'transmorpher'
-      MYSQL_USER: 'transmorpher'
-      MYSQL_PASSWORD: 'password'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MARIADB_DATABASE: '${DB_DATABASE}'
+      MARIADB_USER: '${DB_USERNAME}'
+      MARIADB_PASSWORD: '${DB_PASSWORD}'
+      MARIADB_ROOT_PASSWORD: '${DB_PASSWORD}'
     volumes:
-      - 'mysql-transmorpher:/var/lib/mysql'
+      - 'mariadb:/var/lib/mysql'
     networks:
       - internal
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-ppassword" ]
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       retries: 3
       timeout: 5s
+
+  ########################################################################## Transmorpher ##########################################################################
+
+  transmorpher:
+    <<: *transmorpher-common
+    environment:
+      <<: *transmorpher-app-url
+      CONTAINER_ROLE: web
+
+  transmorpher-worker-transcoding:
+    <<: *transmorpher-common
+    image: *transmorpher-transcoder-image
+    command: [ "shell", "php artisan transmorpher:queue-work video_transcoding" ]
+    depends_on:
+      transmorpher-initialize:
+        condition: service_completed_successfully
+    environment:
+      <<: *transmorpher-app-url
+
+  transmorpher-worker-client-notifications:
+    <<: *transmorpher-common
+    command: [ "shell", "php artisan transmorpher:queue-work client_notifications" ]
+    depends_on:
+      transmorpher-initialize:
+        condition: service_completed_successfully
+    environment:
+      <<: *transmorpher-app-url
+
+  transmorpher-worker-email:
+    <<: *transmorpher-common
+    command: [ "shell", "php artisan transmorpher:queue-work email" ]
+    depends_on:
+      transmorpher-initialize:
+        condition: service_completed_successfully
+    environment:
+      <<: *transmorpher-app-url
+
+  transmorpher-scheduler:
+    <<: *transmorpher-common
+    environment:
+      <<: *transmorpher-app-url
+      CONTAINER_ROLE: scheduler
+
+  transmorpher-initialize:
+    <<: *transmorpher-common
+    command: [ '/var/www/docker/prod/pullpreview.initialize.sh' ]
+    restart: 'on-failure'
+    environment:
+      <<: *transmorpher-app-url
+      CLIENT_CONTAINER_NAME: ${COMPOSE_PROJECT_NAME}
+      PULLPREVIEW: true
+      PULLPREVIEW_FIRST_RUN: ${PULLPREVIEW_FIRST_RUN}
+    networks:
+      - internal
+
+  transmorpher-mariadb:
+    image: 'mariadb:lts-noble'
+    environment:
+      MARIADB_DATABASE: 'transmorpher'
+      MARIADB_USER: 'transmorpher'
+      MARIADB_PASSWORD: 'transmorpher'
+      MARIADB_ROOT_PASSWORD: 'transmorpher'
+    volumes:
+      - 'transmorpher-mariadb:/var/lib/mysql'
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      retries: 3
+      timeout: 5s
+
+  ########################################################################## Traefik ##########################################################################
+
   traefik:
-    image: traefik:mimolette
-    container_name: ${TRAEFIK_CONTAINER_NAME:-amigor-traefik}
+    image: traefik:langres
     ports:
       - '80:80'
       - '443:443'
@@ -111,7 +161,7 @@ services:
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION: true
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_EMAIL: 'cloud@cybex-online.com'
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_CASERVER: 'https://acme-v02.api.letsencrypt.org/directory'
-      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_STORAGE: '/letsencrypt/acme.json'
+      TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_STORAGE: 'acme.json'
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_HTTPCHALLENGE: true
       TRAEFIK_CERTIFICATESRESOLVERS_PRODUCTION_ACME_HTTPCHALLENGE_ENTRYPOINT: web
       TRAEFIK_ENTRYPOINTS_WEB: true
@@ -121,16 +171,19 @@ services:
       TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME: https
       TRAEFIK_ENTRYPOINTS_WEBSECURE: true
       TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS: ':443'
-      TRAEFIK_PROVIDERS_DOCKER: true
-      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
-      TRAEFIK_PROVIDERS_DOCKER_NETWORK: traefik
+      TRAEFIK_PROVIDERS_FILE: true
+      TRAEFIK_PROVIDERS_FILE_FILENAME: /etc/traefik/pullpreview.traefik.yml
+      TRAEFIK_PROVIDERS_FILE_WATCH: true
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./amigor/storage/letsencrypt:/letsencrypt
+      - ./pullpreview.traefik.yml:/etc/traefik/pullpreview.traefik.yml:ro
+      # Needs to be mounted so that it is synced to the server for use in the pre-script
+      - ./pullpreview.traefik.template.yml:/pullpreview.traefik.template.yml:ro
       - ./amigor/storage/logs:/logs
       - ./.htpasswd:/.htpasswd:ro
     networks:
       - traefik
+
+  ########################################################################## Networks & Volumes ##########################################################################
 
 networks:
   internal:
@@ -139,11 +192,11 @@ networks:
     name: traefik
 
 volumes:
-  mysql:
+  mariadb:
     driver: local
-  mysql-transmorpher:
+  transmorpher-mariadb:
     driver: local
-  app-storage:
+  storage:
     driver: local
   transmorpher-storage:
     driver: local

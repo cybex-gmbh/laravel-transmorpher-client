@@ -51,7 +51,7 @@ class ApiController
      */
     protected function verifySignature(Request $notification): bool|string
     {
-        return sodium_crypto_sign_open(sodium_hex2bin($notification->get('signed_notification')), Http::get(TransmorpherApi::S2S->getUrl('publickey')));
+        return sodium_crypto_sign_open(sodium_hex2bin($notification->get('signed_notification')), Http::get(TransmorpherApi::S2S->getUrl('meta/publicKey')));
     }
 
     /**
