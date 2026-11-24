@@ -9,8 +9,8 @@ on:
 jobs:
   build-push-docker-image:
     name: Build and push docker image
-    # https://github.com/cybex-gmbh/github-workflows/blob/main/.github/workflows/docker-build-push.yml
-    uses: cybex-gmbh/github-workflows/.github/workflows/docker-build-push.yml@main
+    # https://github.com/cybex-gmbh/github-workflows/blob/main/.github/workflows/build.yml
+    uses: cybex-gmbh/github-workflows/.github/workflows/build.yml@main
     with:
       DOCKER_REPOSITORY: cybexwebdev/transmorpher-amigor
       DOCKERFILE_PATH: ./docker/amigor/Dockerfile
