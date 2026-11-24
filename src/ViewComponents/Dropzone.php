@@ -22,19 +22,10 @@ class Dropzone extends Component
     public ?float $acceptedCalculatedRatio;
     public array $translations;
     public ?string $uploadHandler = null;
-    public string $stateRoute;
-    public string $uploadTokenRoute;
-    public string $handleUploadResponseRoute;
-    public string $getVersionsRoute;
-    public string $setVersionRoute;
-    public string $deleteRoute;
-    public string $getOriginalRoute;
-    public string $getDerivativeForVersionRoute;
-    public string $setUploadingStateRoute;
-    public string $getChunkUrlRoute;
-    public string $completeUploadRoute;
-    public string $abortUploadRoute;
     public bool $hasConnectionError = false;
+    public array $routes;
+
+    protected array $routesByName;
 
     public function __construct(
         public Media $media,
@@ -84,21 +75,7 @@ class Dropzone extends Component
             $this->uploadHandler = $uploadHandlerResponse['uploadHandler'];
         }
 
-        $domain = config('app.url');
-        $routes =  Route::getRoutes()->getRoutesByName();
-
-        $this->stateRoute = sprintf('%s/%s', $domain, $routes['transmorpherState']->uri);
-        $this->uploadTokenRoute = sprintf('%s/%s', $domain, $routes['transmorpherUploadToken']->uri);
-        $this->handleUploadResponseRoute = sprintf('%s/%s', $domain, $routes['transmorpherHandleUploadResponse']->uri);
-        $this->getVersionsRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetVersions']->uri);
-        $this->setVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetVersion']->uri);
-        $this->deleteRoute = sprintf('%s/%s', $domain, $routes['transmorpherDelete']->uri);
-        $this->getOriginalRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetOriginal']->uri);
-        $this->getDerivativeForVersionRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetDerivativeForVersion']->uri);
-        $this->setUploadingStateRoute = sprintf('%s/%s', $domain, $routes['transmorpherSetUploadingState']->uri);
-        $this->getChunkUrlRoute = sprintf('%s/%s', $domain, $routes['transmorpherGetChunkUploadUrl']->uri);
-        $this->completeUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherCompleteUpload']->uri);
-        $this->abortUploadRoute = sprintf('%s/%s', $domain, $routes['transmorpherAbortUpload']->uri);
+        $this->assembleRoutes();
     }
 
     /**
@@ -109,5 +86,37 @@ class Dropzone extends Component
     public function render(): string|View
     {
         return view('transmorpher::dropzone');
+    }
+
+    protected function assembleRoutes(): void
+    {
+        $this->routes = [
+            'media' => [
+                'delete' => $this->assembleRoute('media.delete'),
+                'getState' => $this->assembleRoute('media.state.get'),
+                'reserveUpload' => $this->assembleRoute('media.upload.reserve'),
+            ],
+            'uploads' => [
+                'abort' => $this->assembleRoute('uploads.abort'),
+                'complete' => $this->assembleRoute('uploads.complete'),
+                'handleResponse' => $this->assembleRoute('uploads.response.handle'),
+                'setState' => $this->assembleRoute('uploads.state.set'),
+                'url' => $this->assembleRoute('uploads.url'),
+            ],
+            'versions' => [
+                'get' => $this->assembleRoute('versions.get'),
+                'getDerivative' => $this->assembleRoute('versions.derivative.get'),
+                'getOriginal' => $this->assembleRoute('versions.original.get'),
+                'set' => $this->assembleRoute('versions.set'),
+            ],
+        ];
+    }
+
+    protected function assembleRoute(string $routeName): string
+    {
+        $domain = config('app.url');
+        $this->routesByName ??= Route::getRoutes()->getRoutesByName();
+
+        return sprintf('%s/%s', $domain, $this->routesByName[sprintf('transmorpher.%s', $routeName)]->uri);
     }
 }

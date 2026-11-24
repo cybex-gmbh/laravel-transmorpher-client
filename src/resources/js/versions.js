@@ -3,6 +3,7 @@ import {getState, getVersions, setVersion as setVersionRequest} from './api.js';
 import {displayModalState, displayPlaceholder, displayState, updateMediaDisplay, updateThumbnail, updateVideoDisplay} from './ui.js';
 import {addConfirmEventListener, getDateForDisplay} from './utils.js';
 import {openUploadConfirmModal, startPolling} from './controller.js';
+import {routes} from "./routes";
 
 export async function updateVersionInformation({transmorpherIdentifier}) {
     const modal = document.querySelector(`#modal-mi-${transmorpherIdentifier}`);
@@ -83,18 +84,18 @@ export async function updateVersionInformation({transmorpherIdentifier}) {
                         const fullSizeLink = versionEntry.querySelector('a.full-size-link');
                         const enlargeIcon = versionEntry.querySelector('.enlarge-icon');
 
-                        fullSizeLink.href = medium.routes.getDerivativeForVersion
+                        fullSizeLink.href = routes.versions.getDerivative
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
                             .replace('{version}', version)
                             .replace('{transformations?}', '');
                         fullSizeLink.classList.remove('disabled');
                         enlargeIcon.classList.remove('d-hidden');
 
-                        versionEntry.querySelector('.dz-image img:first-of-type').src = medium.routes.getDerivativeForVersion
+                        versionEntry.querySelector('.dz-image img:first-of-type').src = routes.versions.getDerivative
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
                             .replace('{version}', version)
                             .replace('{transformations?}', transformations['150w']);
-                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${medium.routes.getDerivativeForVersion
+                        versionEntry.querySelector('.dz-image img:first-of-type').srcset = `${routes.versions.getDerivative
                             .replace('{transmorpherMedia}', medium.transmorpherMediaKey)
                             .replace('{version}', version)
                             .replace('{transformations?}', transformations['150w'])} 150w`;
@@ -127,6 +128,7 @@ async function setVersionForMedia({transmorpherIdentifier, version}) {
     if (uploadingStateResponse.state === 'uploading' || uploadingStateResponse.state === 'processing') {
         openUploadConfirmModal({
             transmorpherIdentifier,
+            uploadToken: uploadingStateResponse.latestUploadToken,
             callback: () => makeSetVersionCall({transmorpherIdentifier, version})
         });
 
